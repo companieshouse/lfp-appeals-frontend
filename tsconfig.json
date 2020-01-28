@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "strict": true,
+      "pretty": true,
+      "baseUrl": "./",
+      "removeComments": true,
+      "experimentalDecorators": true,
+      "target": "es6",
+      "emitDecoratorMetadata": true,
+      "moduleResolution": "node",
+      "importHelpers": true,
+      "plugins": [
+        {
+          "name": "typescript-tslint-plugin"
+        }
+      ]
+    },
+    "include": [
+      "./src/**/*.ts"
+    ]
+  }
