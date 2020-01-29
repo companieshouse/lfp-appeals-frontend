@@ -45,45 +45,77 @@
 {% block header %}
   {{ govukHeader({
     homepageUrl: "/appeals",
-    serviceName: "Penalty Appeals",
+    serviceName: "Appeal a late filing penalty",
     serviceUrl: "/appeals",
     containerClasses: "govuk-width-container"})
   }}
 {% endblock %}
 
+{% block pageTitle %}
+  Appeal a late filing penalty
+{% endblock %}
+
 {% block beforeContent %}
-  {{ govukPhaseBanner({
+  {# {{ govukPhaseBanner({
     tag: {
       text: "Beta"
     }
   }) 
-  }}
+  }} #}
   {% block backLink %}{% endblock %}
+  <div class="govuk-breadcrumbs">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/">Home</a>
+      </li>
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/browse/business">Business and self-employed</a>
+      </li>
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/browse/business/limited-company">Running a limited company</a>
+      </li>
+    </ol>
+  </div>
 {% endblock %}
 
-{% block footer %}
-  {{ govukFooter({
-    meta: {
-      items: [
-        {
-          href: "http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml",
-          text: "Policies"
-        },
-        {
-          href: "/help/cookies",
-          text: "Cookies"
-        },
-        {
-          href: "/help/contact-us",
-          text: "Contact us"
-        },
-        {
-          href: "https://developer.companieshouse.gov.uk/",
-          text: "Developers"
-        }
-      ]
-    }
-  }) }}
+{% block content%}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    
+      <h1 class="govuk-heading-xl">
+        {# {% if serviceName %}
+          {{ serviceName }}
+        {% endif %} #}
+        Appeal a late filing penalty
+      </h1>
+
+      <p class="govuk-body-l">Use this service to appeal a penalty issued to a company for not filing its annual accounts on time.</p>
+      <p>It may take up to 30 minutes to complete this application.</p>
+      
+      {{ govukButton({
+        text: "Start now",
+        href: "signin",
+        isStartButton: true
+      }) }}
+
+      <h2 class="govuk-heading-m">Before you start</h2>
+      
+      <p>
+        <a href="https://www.gov.uk/government/publications/late-filing-penalties/late-filing-penalties#appealing" target="_blank">Read the guidance on appealing a penalty.</a>
+      </p>
+
+      <h3 class="govuk-heading-s">You'll need:</h3>
+      
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the company number</li>
+        <li>the company authentication code for online filing</li>
+        <li>the penalty reference</li>
+        <li>The reason for the appeal</li>
+        <li>documents that support the reason for the appeal (optional)</li>
+      </ul>
+
+    </div>
+  </div>
 {% endblock %}
 
 {% block bodyEnd %}
