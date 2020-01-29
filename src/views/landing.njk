@@ -56,12 +56,6 @@
 {% endblock %}
 
 {% block beforeContent %}
-  {# {{ govukPhaseBanner({
-    tag: {
-      text: "Beta"
-    }
-  }) 
-  }} #}
   {% block backLink %}{% endblock %}
   <div class="govuk-breadcrumbs">
     <ol class="govuk-breadcrumbs__list">
@@ -82,19 +76,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
     
-      <h1 class="govuk-heading-xl">
-        {# {% if serviceName %}
-          {{ serviceName }}
-        {% endif %} #}
-        Appeal a late filing penalty
-      </h1>
+      <h1 class="govuk-heading-xl">Appeal a late filing penalty</h1>
 
       <p class="govuk-body-l">Use this service to appeal a penalty issued to a company for not filing its annual accounts on time.</p>
       <p>It may take up to 30 minutes to complete this application.</p>
       
       {{ govukButton({
         text: "Start now",
-        href: "signin",
         isStartButton: true
       }) }}
 
