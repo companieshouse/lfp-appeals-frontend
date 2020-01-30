@@ -31,7 +31,6 @@
     "gulp": "^4.0.2",
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "gulp-util": "^3.0.8",
     "gulp-watch-sass": "^1.4.1",
     "node-sass": "^4.13.1",
     "sass-lint": "^1.13.1",
