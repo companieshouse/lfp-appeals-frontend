@@ -7,6 +7,8 @@ import * as path from 'path';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import './controllers/index';
+import { RedisService } from './services/RedisService';
+import { SessionMiddleware } from './middleware/SessionMiddleware';
 import { TYPES } from './Types';
 
 export class Server {
@@ -35,6 +37,8 @@ export class Server {
 
   private createContainerWithBindings(): Container {
     const container = new Container();
+    container.bind<RedisService>(TYPES.RedisService).to(RedisService);
+    container.bind<SessionMiddleware>(TYPES.SessionMiddleware).to(SessionMiddleware);
     return container;
   }
 

@@ -21,6 +21,10 @@ To run this app, cd to the root directory, and type the following commands:
 - `npm install`
 - `npm start`
 
+- Create a redis docker instance with `docker run --name redis-instance -p 6379:6379 -d redis`
+- `npm install`
+- `npm start`
+
 
 Then open your browswer and go to http://localhost:3000.
 
