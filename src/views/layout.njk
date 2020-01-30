@@ -30,48 +30,54 @@
 {% endblock %}
 
 {% block header %}
-  {{ govukHeader({
-    homepageUrl: "/appeals",
-    serviceName: serviceName,
-    serviceUrl: "/appeals",
-    containerClasses: "govuk-width-container"})
+  {{
+    govukHeader({
+      homepageUrl: "/appeals",
+      serviceName: serviceName,
+      serviceUrl: "/appeals",
+      containerClasses: "govuk-width-container"
+    })
   }}
 {% endblock %}
 
 {% set mainClasses = mainClasses | default("govuk-main-wrapper--auto-spacing") %}
 
 {% block beforeContent %}
-  {{ govukPhaseBanner({
-    tag: {
-      text: "Beta"
-    }
-  }) }}
+  {{
+    govukPhaseBanner({
+      tag: {
+        text: "Beta"
+      }
+    })
+  }}
   {% block backLink %}{% endblock %}
 {% endblock %}
 
 {% block footer %}
-  {{ govukFooter({
-    meta: {
-      items: [
-        {
-          href: "http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml",
-          text: "Policies"
-        },
-        {
-          href: "https://www.gov.uk/help/cookies",
-          text: "Cookies"
-        },
-        {
-          href: "https://www.gov.uk/contact",
-          text: "Contact us"
-        },
-        {
-          href: "https://developer.companieshouse.gov.uk/",
-          text: "Developers"
-        }
-      ]
-    }
-  }) }}
+  {{
+    govukFooter({
+      meta: {
+        items: [
+          {
+            href: "http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml",
+            text: "Policies"
+          },
+          {
+            href: "https://www.gov.uk/help/cookies",
+            text: "Cookies"
+          },
+          {
+            href: "https://www.gov.uk/contact",
+            text: "Contact us"
+          },
+          {
+            href: "https://developer.companieshouse.gov.uk/",
+            text: "Developers"
+          }
+        ]
+      }
+    })
+  }}
 {% endblock %}
 
 {% block bodyEnd %}
