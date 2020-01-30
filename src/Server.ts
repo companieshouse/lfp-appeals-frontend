@@ -4,10 +4,10 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import 'reflect-metadata';
 import * as path from 'path';
-import { SessionHandlerInstance } from './middleware/SessionHandler';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/HomeController';
+import './controllers/index';
+import { RedisService } from './services/RedisService';
 
 export class Server {
 
@@ -16,14 +16,12 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
-    let container = new Container();
-    this.server = new InversifyExpressServer(new Container());
+    this.server = new InversifyExpressServer(this.setupBindings());
     this.server.setConfig((app) => {
       app.set('port', port);
       this.setupStaticFolders(app);
       this.setupParsers(app);
       this.setViewEngine(app);
-      this.setupAppConfig(app);
     });
 
   }
@@ -33,6 +31,12 @@ export class Server {
       console.log(('  App is running at http://localhost:%d in %s mode'), this.port, process.env.NODE_ENV);
       console.log('  Press CTRL-C to stop\n');
     });
+  }
+
+  private setupBindings(): Container {
+    const container = new Container();
+    container.bind<RedisService>('RedisService').to(RedisService);
+    return container;
   }
 
   private setupStaticFolders(app: express.Application): void {
@@ -59,12 +63,6 @@ export class Server {
       autoescape: true,
       express: app,
     });
-  }
-
-  private setupAppConfig(app: express.Application): void {
-    const sessionHandler = SessionHandlerInstance();
-    const clientSessions = sessionHandler.createNewSession();
-    clientSessions.set('Hello', 'Test', console.log);
   }
 
 }

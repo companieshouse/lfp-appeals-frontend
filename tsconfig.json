@@ -18,6 +18,7 @@
         }
       ]
     },
+    "experimentalDecorators": true,
     "include": [
       "./src/**/*.ts"
     ]

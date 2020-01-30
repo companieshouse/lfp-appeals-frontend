@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { controller, httpGet } from 'inversify-express-utils';
+import { controller, httpGet, BaseHttpController } from 'inversify-express-utils';
 
-@controller('/home')
-export class HomeController {
+@controller('/')
+export class HomeController extends BaseHttpController {
 
-    @httpGet('/')
+    constructor() {
+        super();
+    }
+
+    @httpGet('index')
     public sayHello(req: Request, res: Response, next: NextFunction): void {
         res.render('index');
     }
