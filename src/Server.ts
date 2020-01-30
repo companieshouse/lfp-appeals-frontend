@@ -1,32 +1,44 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as session from 'express-session';
 import * as nunjucks from 'nunjucks';
+import 'reflect-metadata';
 import * as path from 'path';
-import { router } from './routes/Routes';
+import { Container } from 'inversify';
+import { InversifyExpressServer } from 'inversify-express-utils';
+import './controllers/index';
+import { TYPES } from './Types';
 
 export class Server {
 
-  private app: express.Express;
+  private server: InversifyExpressServer;
+  private port: number;
 
-  constructor(port?: number) {
-    this.app = express();
-    this.app.set('port', process.env.PORT || port || 3000);
-    this.setupStaticFolders(this.app);
-    this.setupParsers(this.app);
-    this.setViewEngine(this.app);
-    this.setupAppConfig(this.app);
+  constructor(port: number) {
+    this.port = port;
+    this.server = new InversifyExpressServer(this.createContainerWithBindings());
+    this.server.setConfig((app) => {
+      app.set('port', port);
+      this.setupStaticFolders(app);
+      this.setupParsers(app);
+      this.setViewEngine(app);
+    });
+
   }
 
   public start(): void {
-    this.app.listen(this.app.get('port'), () => {
-      console.log(('  App is running at http://localhost:%d in %s mode'), this.app.get('port'), this.app.get('env'));
+    this.server.build().listen(this.port, () => {
+      console.log(('  App is running at http://localhost:%d in %s mode'), this.port, process.env.NODE_ENV);
       console.log('  Press CTRL-C to stop\n');
     });
   }
 
-  private setupStaticFolders(app: express.Express): void {
+  private createContainerWithBindings(): Container {
+    const container = new Container();
+    return container;
+  }
+
+  private setupStaticFolders(app: express.Application): void {
     app.use(express.static(path.join(__dirname, '/public')));
     app.use(express.static(path.join(__dirname, '/node_modules/govuk-frontend')));
     app.use(express.static(path.join(__dirname, '/node_modules/govuk-frontend/govuk/')));
@@ -34,13 +46,13 @@ export class Server {
 
   }
 
-  private setupParsers(app: express.Express): void {
+  private setupParsers(app: express.Application): void {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
   }
 
-  private setViewEngine(app: express.Express): void {
+  private setViewEngine(app: express.Application): void {
     app.set('view engine', 'njk');
     nunjucks.configure([
       'src/views',
@@ -50,11 +62,6 @@ export class Server {
       autoescape: true,
       express: app,
     });
-  }
-
-  private setupAppConfig(app: express.Express): void {
-    app.use(session({ secret: 'secret', resave: true, saveUninitialized: false }));
-    app.use(router);
   }
 
 }
