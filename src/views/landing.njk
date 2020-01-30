@@ -1,6 +1,5 @@
 {% extends "layout.njk" %}
 
-{% from "govuk/components/back-link/macro.njk"   import govukBackLink %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk"      import govukButton %}
 
@@ -9,26 +8,21 @@
 {% endblock %}
 
 {% block beforeContent %}
-  {% block backLink %}{% endblock %}
-  <div class="govuk-breadcrumbs">
-    <ol class="govuk-breadcrumbs__list">
-      <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/">Home</a>
-      </li>
-      <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/browse/business">Business and self-employed</a>
-      </li>
-      <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="https://www.gov.uk/browse/business/limited-company">Running a limited company</a>
-      </li>
-    </ol>
-  </div>
+  {{
+    govukBreadcrumbs({
+      items: [
+        { href: 'https://www.gov.uk/', text: 'Home' },
+        { href: 'https://www.gov.uk/browse/business', text: 'Business and self-employed' },
+        { href: 'https://www.gov.uk/browse/business/limited-company', text: 'Running a limited company' }
+      ]
+    })
+  }}
 {% endblock %}
 
 {% block content%}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">Appeal a late filing penalty</h1>
+      <h1 class="govuk-heading-xl">{{ serviceName }}</h1>
       <p class="govuk-body-l">Use this service to appeal a penalty issued to a company for not filing its annual accounts on time.</p>
       <p>It may take up to 30 minutes to complete this application.</p>
       {{ 
@@ -42,7 +36,7 @@
       <p>
         <a href="https://www.gov.uk/government/publications/late-filing-penalties/late-filing-penalties#appealing" target="_blank">Read the guidance on appealing a penalty.</a>
       </p>
-      <h3 class="govuk-heading-s">You'll need:</h3>
+      <h3 class="govuk-heading-s">You’ll need:</h3>
       <ul class="govuk-list govuk-list--bullet">
         <li>the company number</li>
         <li>the company authentication code for online filing</li>
