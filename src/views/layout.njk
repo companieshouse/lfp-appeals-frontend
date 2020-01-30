@@ -5,6 +5,8 @@
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
 
+{% set serviceName = "Appeal a late filing penalty" %}
+
 {% block head %}
   <!--[if !IE 8]><!-->
   <link href="/css/application.css" rel="stylesheet"/>
@@ -31,7 +33,7 @@
 {% block header %}
   {{ govukHeader({
     homepageUrl: "/appeals",
-    serviceName: "Appeal a late filing penalty",
+    serviceName: serviceName,
     serviceUrl: "/appeals",
     containerClasses: "govuk-width-container"})
   }}
