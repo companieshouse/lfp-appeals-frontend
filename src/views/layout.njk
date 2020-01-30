@@ -1,4 +1,4 @@
-{% extends "govuk/template.html" %}
+{% extends "govuk/template.njk" %}
 
 {% from "govuk/components/footer/macro.njk"       import govukFooter %}
 {% from "govuk/components/header/macro.njk"       import govukHeader %}
@@ -26,12 +26,6 @@
           crossorigin="anonymous"></script>
 
   {% block download %}{% endblock %}
-{% endblock %}
-
-
-
-{% block pageTitle %}
-  layout
 {% endblock %}
 
 {% block header %}
@@ -79,13 +73,8 @@
   }) }}
 {% endblock %}
 
-
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="govuk/all.js"></script>
-  <script>
-    window
-      .GOVUKFrontend
-      .initAll()
-  </script>
+  <script>window.GOVUKFrontend.initAll()</script>
 {% endblock %}
