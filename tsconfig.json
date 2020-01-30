@@ -10,6 +10,8 @@
       "emitDecoratorMetadata": true,
       "moduleResolution": "node",
       "importHelpers": true,
+      "lib": ["es6", "dom"],
+      "types": ["reflect-metadata"],
       "plugins": [
         {
           "name": "typescript-tslint-plugin"
