@@ -35,7 +35,7 @@
     "gulp-watch-sass": "^1.4.1",
     "node-sass": "^4.13.1",
     "sass-lint": "^1.13.1",
-    "tslint": "^5.7.0",
+    "tslint": "^6.0.0",
     "typescript": "^3.7.5",
     "typescript-tslint-plugin": "^0.5.5"
   }
