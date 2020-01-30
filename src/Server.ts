@@ -8,6 +8,8 @@ import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import './controllers/index';
 import { RedisService } from './services/RedisService';
+import { SessionMiddleware } from './middleware/SessionMiddleware';
+import { TYPES } from './Types';
 
 export class Server {
 
@@ -16,7 +18,7 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
-    this.server = new InversifyExpressServer(this.setupBindings());
+    this.server = new InversifyExpressServer(this.createContainerWithBindings());
     this.server.setConfig((app) => {
       app.set('port', port);
       this.setupStaticFolders(app);
@@ -33,9 +35,10 @@ export class Server {
     });
   }
 
-  private setupBindings(): Container {
+  private createContainerWithBindings(): Container {
     const container = new Container();
-    container.bind<RedisService>('RedisService').to(RedisService);
+    container.bind<RedisService>(TYPES.RedisService).to(RedisService);
+    container.bind<SessionMiddleware>(TYPES.SessionMiddleware).to(SessionMiddleware);
     return container;
   }
 

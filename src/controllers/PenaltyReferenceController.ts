@@ -1,21 +1,21 @@
-import { Request, Response, NextFunction } from 'express';
-import { controller, httpGet, BaseHttpController } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { RedisService } from '../services/RedisService';
+import { controller, httpGet, BaseHttpController, httpPost } from 'inversify-express-utils';
+import { TYPES } from '../Types';
 
 @controller('/penalty-reference')
 export class PenaltyReferenceController extends BaseHttpController {
 
-    constructor(@inject('RedisService') private redisService: RedisService) {
+    constructor() {
         super();
     }
 
-    @httpGet('/')
-    public home(req: Request, res: Response, next: NextFunction): void {
-        const session = this.redisService.createNewSession();
-        session.on('connect', () => console.log('Connected.'));
-        session.set('session', 'New Session');
-        res.render('penalty-reference');
+    @httpGet('/', TYPES.SessionMiddleware)
+    public home(): void {
+        console.log('get');
+        this.httpContext.response.render('penalty-reference');
+    }
+
+    @httpPost('/')
+    public postData(): void {
     }
 
 }
