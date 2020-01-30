@@ -1,7 +1,7 @@
-{% extends "govuk/template.njk" %}
+{% extends "govuk/template.html" %}
 
-{% from "govuk/components/footer/macro.njk" import govukFooter %}
-{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/footer/macro.njk"       import govukFooter %}
+{% from "govuk/components/header/macro.njk"       import govukHeader %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
 
@@ -28,14 +28,16 @@
   {% block download %}{% endblock %}
 {% endblock %}
 
+
+
 {% block pageTitle %}
   layout
 {% endblock %}
 
 {% block header %}
   {{ govukHeader({
-    homepageUrl: "/",
-    serviceName: serviceName,
+    homepageUrl: "/appeals",
+    serviceName: "Appeal a late filing penalty",
     serviceUrl: "/appeals",
     containerClasses: "govuk-width-container"})
   }}
@@ -76,6 +78,7 @@
     }
   }) }}
 {% endblock %}
+
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}

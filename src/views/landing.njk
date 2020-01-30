@@ -1,18 +1,9 @@
 {% extends "layout.njk" %}
 {% extends "govuk/template.njk" %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/back-link/macro.njk"   import govukBackLink %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-
-{% block header %}
-  {{ govukHeader({
-    homepageUrl: "/appeals",
-    serviceName: "Appeal a late filing penalty",
-    serviceUrl: "/appeals",
-    containerClasses: "govuk-width-container"})
-  }}
-{% endblock %}
+{% from "govuk/components/button/macro.njk"      import govukButton %}
 
 {% block pageTitle %}
   {% if serviceName %}
