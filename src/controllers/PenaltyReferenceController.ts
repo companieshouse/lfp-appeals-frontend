@@ -10,11 +10,11 @@ export class PenaltyReferenceController extends BaseHttpController {
 
     @httpGet('/', TYPES.SessionMiddleware)
     public home(): void {
-        console.log('get');
+        console.log('gets');
         this.httpContext.response.render('penalty-reference');
     }
 
-    @httpPost('/')
+    @httpPost('/', TYPES.SessionMiddleware)
     public postData(): void {
     }
 

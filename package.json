@@ -9,9 +9,9 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run build && node build/App.js",
+    "watch": "npm run build:clean && gulp start:watch",
     "build": "gulp build",
     "build:clean": "gulp build:clean",
-    "sass:watch": "gulp sass:watch",
     "lint": "./node_modules/.bin/tslint -c tslint.json -p tsconfig.json",
     "lint:scss": "sass-lint './src/public/sass/**/*.scss' --verbose --ignore 'node_modules/**/*.scss'",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -38,6 +38,7 @@
     "@types/redis": "^2.8.14",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2",
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-watch-sass": "^1.4.1",
