@@ -10,6 +10,7 @@
   "scripts": {
     "start": "npm run build && NODE_ENV=local node build/App.js",
     "build": "gulp build",
+    "watch": "npm run build:clean && gulp start:watch",
     "build:clean": "gulp build:clean",
     "sass:watch": "gulp sass:watch",
     "lint": "./node_modules/.bin/tslint -c tslint.json -p tsconfig.json",
@@ -41,6 +42,7 @@
     "@types/redis": "^2.8.14",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2",
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-watch-sass": "^1.4.1",
