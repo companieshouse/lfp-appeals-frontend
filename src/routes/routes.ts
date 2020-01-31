@@ -1,4 +1,4 @@
-import { HomeController } from '../controllers/HomeController';
+import { LandingController } from '../controllers/LandingController';
 import { Router } from 'express';
 
 export const router: Router = Router();
@@ -6,9 +6,9 @@ export const router: Router = Router();
 /**
  * Controllers (route handlers).
  */
-const homeController = new HomeController();
+const landingController = new LandingController();
 
 /**
  * Route definitions
  */
-router.get('/', homeController.sayHello);
+router.get('/', landingController.renderView);
