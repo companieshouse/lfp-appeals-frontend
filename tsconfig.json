@@ -10,7 +10,7 @@
       "emitDecoratorMetadata": true,
       "moduleResolution": "node",
       "importHelpers": true,
-      "lib": ["es6", "dom"],
+      "lib": ["es6"],
       "types": ["reflect-metadata"],
       "plugins": [
         {
