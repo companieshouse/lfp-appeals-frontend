@@ -7,6 +7,7 @@ This repo contains the frontend code for the LFP appeals service. It's currenty 
 - [expressJS](https://expressjs.com/)
 - [NunJucks](https://mozilla.github.io/nunjucks)
 - [gulpJS](https://gulpjs.com/)
+- [inversify](https://github.com/inversify/)
 
 ## Recommendations
 
@@ -17,11 +18,9 @@ IntelliJ does not have a Nunjuck plugin
 ## How to run it
 
 To run this app, cd to the root directory, and type the following commands:
+- `npm install`
+- `npm start`
 
-```
-npm install
-npm start
-```
 
 Then open your browswer and go to http://localhost:3000.
 
