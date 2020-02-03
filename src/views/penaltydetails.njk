@@ -1,0 +1,121 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"  import govukBackLink %}
+{% from "govuk/components/input/macro.njk"      import govukInput %}
+{% from "govuk/components/details/macro.njk"    import govukDetails %}
+{% from "govuk/components/button/macro.njk"     import govukButton %}
+
+
+
+{% block pageTitle %}
+  {% if errorList.length > 0 %}
+    Error:
+  {% endif %}
+  Tell us the penalty details
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: "alpha"
+    },
+    html: 'This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.'
+    })
+  }}
+  {{
+    govukBackLink({
+      text: "Back",
+      href: "sign-in"
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorList.length > 0 %}
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem with the details you gave us",
+            errorList: errorList
+          })
+        }}
+      {% endif %}
+      <h1 class="govuk-heading-xl">
+        What are the penalty details?
+      </h1>
+
+      <form method="post" action="">
+        {% if companyNumberErr.flag %}
+          {% set conoError = {
+            text: companyNumberErr.text
+          } %}
+        {% else %}
+          {% set conoError = false %}
+        {% endif %}
+
+        {{
+          govukInput({
+            label: {
+              text: "Company number"
+            },
+            hint: {
+              text: "This is the 8-character reference issued by Companies House when the company was set up."
+            },
+            errorMessage: conoError,
+            classes: "govuk-input--company-number",
+            id: "company-number",
+            name: "companyNumber",
+            value: companyNumber
+          })
+        }}
+
+        {% if penaltyReferenceErr.flag %}
+          {% set refError = {
+            text: penaltyReferenceErr.text
+          } %}
+        {% else %}
+          {% set refError = false %}
+        {% endif %}
+
+        {{
+          govukInput({
+            label: {
+              text: "Reference number"
+            },
+            hint: {
+              text: "This is the 9-character reference shown on the penalty notice."
+            },
+            errorMessage: refError,
+            classes: "govuk-input--penalty-reference",
+            id: "penalty-reference",
+            name: "penaltyReference",
+            value: penaltyReference
+          })
+        }}
+
+        <div class="govuk-form-group">
+          {% set detailsHTML %}
+          <p>
+            Your company number and reference number are shown at the bottom of your penalty notice.
+          </p>
+          <img src='/images/penalty-notice-image.png' class='call-out-image' alt=''/>
+          {% endset -%}
+          {{
+            govukDetails({
+              summaryText: "Help with company number and penalty reference number",
+              html: detailsHTML
+            })
+          }}
+        </div>
+        {{
+          govukButton({
+            text: "Continue"
+          })
+        }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
