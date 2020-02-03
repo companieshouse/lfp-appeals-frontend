@@ -6,8 +6,9 @@ import 'reflect-metadata';
 import * as path from 'path';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/index';
-import { TYPES } from './Types';
+import './index';
+import { SessionService } from './services/SessionService';
+import { TYPES } from './constants/Types';
 
 export class Server {
 
@@ -35,6 +36,7 @@ export class Server {
 
   private createContainerWithBindings(): Container {
     const container = new Container();
+    // container.bind<SessionService>(TYPES.SessionService).to(SessionService);
     return container;
   }
 

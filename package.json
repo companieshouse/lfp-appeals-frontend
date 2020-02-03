@@ -25,6 +25,7 @@
     "nunjucks": "^3.2.0",
     "inversify": "^5.0.1",
     "inversify-express-utils": "^6.3.2",
+    "inversify-binding-decorators": "4.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
