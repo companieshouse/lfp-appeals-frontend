@@ -1,24 +1,27 @@
-import { createClient, RedisClient } from 'redis';
-import { injectable } from 'inversify';
-import { promisify } from 'util';
-
-export const getAsync = (client: RedisClient) => promisify(client.get).bind(client);
-export const setAsync = (client: RedisClient) => promisify(client.set).bind(client);
+import { RedisClient } from 'redis';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../Types';
+import { IMap } from '../utils/Types';
+import { getAsync, setAsync, setObjectAsync, getObjectAsync } from '../utils/RedisUtils';
 
 @injectable()
 export class RedisService {
 
-    public readonly client: RedisClient;
-    constructor() {
-        this.client = this.createClient();
+    constructor(@inject(TYPES.RedisClient) private readonly redisClient: RedisClient) { }
+
+    public async get(key: string): Promise<string | undefined | null> {
+        return getAsync(this.redisClient)(key);
     }
 
-    private createClient(): RedisClient {
-        return createClient({
-            host: '127.0.0.1',
-            port: 6379,
-        });
+    public async set(key: string, value: string): Promise<any> {
+        return setAsync(this.redisClient)(key, value);
     }
 
-    public disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
+    public async setObject<T>(key: string, values: IMap<T>): Promise<any> {
+        return setObjectAsync(this.redisClient)(key, values);
+    }
+
+    public async getObject(key: string): Promise<IMap<string> | undefined | null> {
+        return getObjectAsync(this.redisClient)(key);
+    }
 }

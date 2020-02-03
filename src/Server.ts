@@ -10,6 +10,7 @@ import './controllers/index';
 import { RedisService } from './services/RedisService';
 import { SessionMiddleware } from './middleware/SessionMiddleware';
 import { TYPES } from './Types';
+import { RedisClient, createClient } from 'redis';
 
 export class Server {
 
@@ -39,6 +40,14 @@ export class Server {
     const container = new Container();
     container.bind<RedisService>(TYPES.RedisService).to(RedisService);
     container.bind<SessionMiddleware>(TYPES.SessionMiddleware).to(SessionMiddleware);
+    container.bind<RedisClient>(TYPES.RedisClient).toConstantValue(
+      createClient(
+        {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_HOST)
+        }
+      )
+    );
     return container;
   }
 
