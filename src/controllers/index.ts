@@ -1,2 +1,2 @@
 import './LandingController';
-import './AbstractRestController';
+import './HealthCheckController';

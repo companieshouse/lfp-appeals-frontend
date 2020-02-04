@@ -4,13 +4,14 @@ import { TYPES } from '../InjectableTypes';
 import { IMap } from '../utils/Types';
 import { promisify } from 'util';
 import { createClient, RedisClient } from 'redis';
+import { HealthCheckModel } from '../models/HealthCheckModel';
 
 @provide(TYPES.RedisService)
 export class RedisService {
 
-    private healthObject: any = {
-        n: 0,
-        lastTimeVisited: new Date().getTime().toString()
+    private healthObject: HealthCheckModel = {
+        timesVisited: 0,
+        lastTimeVisited: new Date().toISOString()
     };
 
     constructor(@inject(TYPES.RedisClient) private readonly redisClient: RedisClient) {
@@ -18,11 +19,11 @@ export class RedisService {
     }
 
     public async checkHealth(): Promise<any> {
-        return this.getObject('healthCheck').then(obj => {
+        return this.getObject<HealthCheckModel>('healthCheck').then(obj => {
             if (obj) {
                 this.healthObject = obj;
-                this.healthObject.n = Number(this.healthObject.n) + 1;
-                this.healthObject.lastTimeVisited = new Date().getTime().toString();
+                this.healthObject.timesVisited = Number(this.healthObject.timesVisited) + 1;
+                this.healthObject.lastTimeVisited = new Date().toISOString();
                 this.setObject('healthCheck', this.healthObject);
             } else {
                 this.setObject('healthCheck', this.healthObject);
@@ -39,11 +40,11 @@ export class RedisService {
         return setAsync(this.redisClient)(key, value);
     }
 
-    public async setObject<T>(key: string, values: IMap<T>): Promise<any> {
+    public async setObject<T>(key: string, values: T): Promise<any> {
         return setObjectAsync(this.redisClient)(key, values);
     }
 
-    public async getObject<T>(key: string): Promise<IMap<T> | undefined | null> {
+    public async getObject<T>(key: string): Promise<T> {
         return getObjectAsync(this.redisClient)(key);
     }
 
@@ -127,7 +128,7 @@ export const createRedisClient = () => {
             host: process.env.REDIS_HOST,
             port: Number(process.env.REDIS_HOST)
         }
-    ).on('error', logError);
+    ).on('error', (err) => { throw err; });
 };
 /**
  * Disconnects the redis client.

@@ -23,6 +23,7 @@
     "express": "^4.15.5",
     "express-session": "^1.15.6",
     "govuk-frontend": "^3.5.0",
+    "http-status-codes": "^1.4.0",
     "inversify": "^5.0.1",
     "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",

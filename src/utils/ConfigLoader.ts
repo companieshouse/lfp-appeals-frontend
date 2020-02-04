@@ -1,12 +1,17 @@
 import * as dotenv from 'dotenv';
 
-const DEFAULT_ENV_FILE = `${__dirname}/../../.env.local`;
+const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
-export const loadConfig = () => {
+const validateConfig = (config: dotenv.DotenvConfigOutput) => {
+  if (config.error) throw config.error;
+  else return config;
+};
+
+export const loadEnvironmentVariablesFromFiles = () => {
+  validateConfig(dotenv.config({ path: DEFAULT_ENV_FILE }));
   if (process.env.NODE_ENV) {
     const path = `${__dirname}/../../.env.${process.env.NODE_ENV}`;
-    return dotenv.config({ path });
+    validateConfig(dotenv.config({ path }));
   }
-  return dotenv.config({ path: DEFAULT_ENV_FILE });
 };
 

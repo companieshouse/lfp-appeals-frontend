@@ -1,12 +1,10 @@
 import { Server } from './Server';
-import { loadConfig } from './utils/ConfigLoader';
+import { loadEnvironmentVariablesFromFiles } from './utils/ConfigLoader';
 
 /**
- * Load environment config.
+ * Load environment config from files.
  */
-const config = loadConfig();
-if (config.error)
-    throw config.error;
+loadEnvironmentVariablesFromFiles();
 /**
  * Instantiates and starts the server.
  */

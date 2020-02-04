@@ -22,8 +22,8 @@ To run this app, cd to the root directory, and type the following commands:
 - `npm start`
 
 - Create a redis docker instance with `docker run --name redis-instance -p 6379:6379 -d redis`
-- Ensure the variables in `.env.local` are set according to your setup. For current setup: `REDIS_HOST=127.0.0.1` and `REDIS_PORT=6379`
-- If you want a different configuration create `.env.<your-env-name-here>` file with the necessary secrets and variables as described on this README. The `env.local` file contains all non-secret variables.
+- Ensure the variables in `.env` are set according to your setup. For current setup: `REDIS_HOST=127.0.0.1` and `REDIS_PORT=6379`
+- If you want a different configuration create `.env.<your-env-name-here>` file with the necessary secrets and variables as described on this README. The `.env` file contains all non-secret variables.
 - `npm install`
 - `npm start`
 
