@@ -17,10 +17,15 @@ IntelliJ does not have a Nunjuck plugin
 
 ## How to run it
 
-To run this app, cd to the root directory, and type the following commands:
+- Create a redis docker instance with `docker run --name redis-instance -p 6379:6379 -d redis`
+- Ensure the variables in `.env.local` are set according to your setup. 
 - `npm install`
 - `npm start`
+- Then open your browswer and go to http://localhost:3000.
 
+## Config Files:
 
-Then open your browswer and go to http://localhost:3000.
+- `.env` is the default config file but it does not have to exist.
+- `.env.local` is the config file for running the app in a local environment.
+- If you want a different configuration create `.env.<NODE_ENV>` file with the necessary secrets and variables as described on this README. Note that the `NODE_ENV` variable has to be set with the same name as the config name pretended.
 

@@ -4,10 +4,10 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import 'reflect-metadata';
 import * as path from 'path';
-import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/index';
-import { TYPES } from './Types';
+import './controllers/Index';
+import { createContainer } from './ContainerFactory';
+import { handler } from './middleware/ErrorHandler';
 
 export class Server {
 
@@ -16,14 +16,14 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
-    this.server = new InversifyExpressServer(this.createContainerWithBindings());
+    this.server = new InversifyExpressServer(createContainer());
     this.server.setConfig((app) => {
       app.set('port', port);
+      app.use(handler);
       this.setupStaticFolders(app);
       this.setupParsers(app);
       this.setViewEngine(app);
     });
-
   }
 
   public start(): void {
@@ -31,11 +31,6 @@ export class Server {
       console.log(('  App is running at http://localhost:%d in %s mode'), this.port, process.env.NODE_ENV);
       console.log('  Press CTRL-C to stop\n');
     });
-  }
-
-  private createContainerWithBindings(): Container {
-    const container = new Container();
-    return container;
   }
 
   private setupStaticFolders(app: express.Application): void {
