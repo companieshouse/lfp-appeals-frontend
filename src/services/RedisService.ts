@@ -1,36 +1,12 @@
-import { inject, Container } from 'inversify';
+import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
-import { TYPES } from '../InjectableTypes';
-import { IMap } from '../utils/Types';
 import { promisify } from 'util';
-import { createClient, RedisClient } from 'redis';
-import { HealthCheckModel } from '../models/HealthCheckModel';
+import { RedisClient } from 'redis';
 
-@provide(TYPES.RedisService)
+@provide(RedisService)
 export class RedisService {
 
-    private healthObject: HealthCheckModel = {
-        timesVisited: 0,
-        lastTimeVisited: new Date().toISOString()
-    };
-
-    constructor(@inject(TYPES.RedisClient) private readonly redisClient: RedisClient) {
-        this.redisClient.on('connect', () => this.checkHealth);
-    }
-
-    public async checkHealth(): Promise<any> {
-        return this.getObject<HealthCheckModel>('healthCheck').then(obj => {
-            if (obj) {
-                this.healthObject = obj;
-                this.healthObject.timesVisited = Number(this.healthObject.timesVisited) + 1;
-                this.healthObject.lastTimeVisited = new Date().toISOString();
-                this.setObject('healthCheck', this.healthObject);
-            } else {
-                this.setObject('healthCheck', this.healthObject);
-            }
-            return this.healthObject;
-        });
-    }
+    constructor(@inject(RedisClient) private readonly redisClient: RedisClient) {}
 
     public async get(key: string): Promise<string> {
         return getAsync(this.redisClient)(key);
@@ -40,12 +16,12 @@ export class RedisService {
         return setAsync(this.redisClient)(key, value);
     }
 
-    public async setObject<T>(key: string, values: T): Promise<any> {
-        return setObjectAsync(this.redisClient)(key, values);
-    }
-
     public async getObject<T>(key: string): Promise<T> {
         return getObjectAsync(this.redisClient)(key);
+    }
+
+    public async setObject<T>(key: string, values: T): Promise<any> {
+        return setObjectAsync(this.redisClient)(key, values);
     }
 
     public ping(): boolean {
@@ -80,6 +56,7 @@ const actOnConnectionStatus =
  * Function used as the fail function in this context.
  */
 const logError = () => console.error('Redis Not online');
+
 /**
  * Partially applied function which uses the above function as the fail function.
  * @param cond The condiditon function
@@ -91,7 +68,6 @@ const standardAction = (cond: () => boolean) => actOnConnectionStatus(cond)(logE
  */
 const getAsync = (client: RedisClient) =>
     standardAction(() => client.connected)(promisify(client.get).bind(client));
-
 
 /**
  * Implementation of redis setting a value async.
@@ -109,29 +85,11 @@ const getObjectAsync = (client: RedisClient) =>
  * Implementation of redis setting an object async.
  */
 const setObjectAsync = (client: RedisClient) => standardAction(() => client.connected)
-    (async <T>(key: string, values: IMap<T>) =>
+    (async <T>(key: string, values: T) =>
         new Promise((resolve, reject) => {
             client.hmset(key, values as any, (err: any, reply: any) => {
                 if (err) return reject(err);
                 return resolve(reply);
             });
         }));
-
-
-/**
- * Creates a redis client instance and uses fail function to log errors. Rather than
- * crash the app.
- */
-export const createRedisClient = () => {
-    return createClient(
-        {
-            host: process.env.REDIS_HOST,
-            port: Number(process.env.REDIS_HOST)
-        }
-    ).on('error', (err) => { throw err; });
-};
-/**
- * Disconnects the redis client.
- */
-export const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
 

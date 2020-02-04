@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "npm run build && node build/App.js",
+    "start": "npm run build && NODE_ENV=local node build/App.js",
     "build": "gulp build",
     "build:clean": "gulp build:clean",
     "sass:watch": "gulp sass:watch",

@@ -5,8 +5,8 @@ import * as nunjucks from 'nunjucks';
 import 'reflect-metadata';
 import * as path from 'path';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/index';
-import { assembleContainers } from './InjectableTypes';
+import './controllers/Index';
+import { createContainer } from './ContainerFactory';
 import { handler } from './middleware/ErrorHandler';
 
 export class Server {
@@ -16,7 +16,7 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
-    this.server = new InversifyExpressServer(assembleContainers());
+    this.server = new InversifyExpressServer(createContainer());
     this.server.setConfig((app) => {
       app.set('port', port);
       app.use(handler);
