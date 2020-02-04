@@ -1,12 +1,12 @@
 import { Server } from './Server';
-import { loadConfig } from './utils/Config';
+import { loadConfig } from './utils/ConfigLoader';
 
 /**
  * Load environment config.
  */
 const config = loadConfig();
 if (config.error)
-    console.error(config.error);
+    throw config.error;
 /**
  * Instantiates and starts the server.
  */

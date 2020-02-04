@@ -5,4 +5,4 @@ node_modules/
 .DS_Store
 .vscode/
 .env.*
-!.env.example
+!.env.local
