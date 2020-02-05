@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { controller, httpGet, httpPost, BaseHttpController, request, response } from 'inversify-express-utils';
 import { inject } from "inversify";
-import { TYPES } from '../constants/Types';
 import { SessionService } from '../services/SessionService';
 import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
 
 @controller('/penalty-reference')
 export class PenaltyDetailsController extends BaseHttpController {
 
-    constructor(@inject(TYPES.SessionService) private sessionService: SessionService) {
+    constructor(@inject(SessionService) private sessionService: SessionService) {
         super();
     }
 
@@ -23,7 +22,7 @@ export class PenaltyDetailsController extends BaseHttpController {
        // Set reference number on view
 
 
-//         res.sendStatus(200);
+        // es.sendStatus(200);
         // Return view
         res
         .status(OK)
@@ -39,10 +38,8 @@ export class PenaltyDetailsController extends BaseHttpController {
       console.log(companyNumber);
       console.log(penaltyReference);
 
-
-//         validateCompanyNumber();
-//
-//         validateReferenceNumber();
+        this.validateCompanyNumber(companyNumber);
+        this.validateReferenceNumber(penaltyReference);
 
         try {
             // create session
@@ -53,4 +50,14 @@ export class PenaltyDetailsController extends BaseHttpController {
         } catch (err) {
             res.status(BAD_REQUEST).json({ error: err.message })}
     }
+
+
+    validateCompanyNumber(companyNumber: string): void {
+
+    }
+
+    validateReferenceNumber(referenceNumber: string): void {
+        
+    }
+    
 }

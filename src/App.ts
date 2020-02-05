@@ -1,6 +1,7 @@
 import { Server } from './Server';
-/**
- * Instantiates and starts the server.
- */
+import { loadEnvironmentVariablesFromFiles } from './utils/ConfigLoader';
+
+loadEnvironmentVariablesFromFiles();
+
 const server = new Server(Number(process.env.PORT) || 3000);
 server.start();

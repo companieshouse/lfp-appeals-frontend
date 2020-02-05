@@ -1,8 +1,7 @@
 import { injectable, inject } from "inversify";
 import { provide } from 'inversify-binding-decorators';
-import { TYPES } from '../constants/Types';
 
-@provide(TYPES.SessionService)
+@provide(SessionService)
 export class SessionService {
 
     public getSession(id: string) {

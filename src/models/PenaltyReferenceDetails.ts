@@ -1,5 +1,4 @@
 import { provide } from 'inversify-binding-decorators';
-import { TYPES } from '../constants/Types'
 
 interface IPenaltyReferenceDetails {
   companyNumber: string;
@@ -7,7 +6,7 @@ interface IPenaltyReferenceDetails {
   _id?: string;
 }
 
-@provide(TYPES.PenaltyReferenceDetails)
+@provide(PenaltyReferenceDetails)
 export class PenaltyReferenceDetails implements IPenaltyReferenceDetails {
   constructor(
     public companyNumber: string,
