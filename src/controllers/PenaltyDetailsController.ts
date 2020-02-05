@@ -1,13 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { controller, httpGet, httpPost, BaseHttpController, request, response } from 'inversify-express-utils';
 import { inject } from "inversify";
+<<<<<<< HEAD
+=======
+import { TYPES } from '../constants/Types';
+>>>>>>> a9fdcaab9d9856722a0d30fd3edbbfb7789d8e68
 import { SessionService } from '../services/SessionService';
 import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
 
 @controller('/penalty-reference')
 export class PenaltyDetailsController extends BaseHttpController {
 
+<<<<<<< HEAD
     constructor(@inject(SessionService) private sessionService: SessionService) {
+=======
+    constructor(@inject(TYPES.SessionService) private sessionService: SessionService) {
+>>>>>>> a9fdcaab9d9856722a0d30fd3edbbfb7789d8e68
         super();
     }
 
@@ -22,7 +30,11 @@ export class PenaltyDetailsController extends BaseHttpController {
        // Set reference number on view
 
 
+<<<<<<< HEAD
         // es.sendStatus(200);
+=======
+//         res.sendStatus(200);
+>>>>>>> a9fdcaab9d9856722a0d30fd3edbbfb7789d8e68
         // Return view
         res
         .status(OK)
@@ -38,8 +50,15 @@ export class PenaltyDetailsController extends BaseHttpController {
       console.log(companyNumber);
       console.log(penaltyReference);
 
+<<<<<<< HEAD
         this.validateCompanyNumber(companyNumber);
         this.validateReferenceNumber(penaltyReference);
+=======
+
+//         validateCompanyNumber();
+//
+//         validateReferenceNumber();
+>>>>>>> a9fdcaab9d9856722a0d30fd3edbbfb7789d8e68
 
         try {
             // create session
@@ -50,6 +69,7 @@ export class PenaltyDetailsController extends BaseHttpController {
         } catch (err) {
             res.status(BAD_REQUEST).json({ error: err.message })}
     }
+<<<<<<< HEAD
 
 
     validateCompanyNumber(companyNumber: string): void {
@@ -60,4 +80,6 @@ export class PenaltyDetailsController extends BaseHttpController {
         
     }
     
+=======
+>>>>>>> a9fdcaab9d9856722a0d30fd3edbbfb7789d8e68
 }
