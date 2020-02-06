@@ -17,21 +17,23 @@
 
         {{
           govukInput({
-            id: 'other-reason',
-            name: 'otherReason',
             label: {
               text: 'Short title for the reason'
-            }
+            },
+            id: 'reason',
+            name: 'reason',
+            value: reason | default('')
           })
         }}
 
         {{
           govukTextarea({
-            id: 'other-information',
-            name: 'otherInformation',
             label: {
               text: 'Detailed description of the reason'
             },
+            id: 'description',
+            name: 'description',
+            value: description | default(''),
             rows: 8
           })
         }}
