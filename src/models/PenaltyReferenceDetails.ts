@@ -1,6 +1,6 @@
 interface PenaltyReferenceDetails {
 
   companyNumber: string;
-  referenceNumber: string;
+  penaltyReference: string;
 
 }

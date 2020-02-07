@@ -18,8 +18,7 @@ const schema = Joi.object({
             'string.max': 'You must enter your full eight character company number',
             'string.pattern.base': 'You must enter your full eight character company number'
         })
-        ,
-
+    ,
     penaltyReference: Joi.string()
         .replace(' ', '')
         .min(9).max(9)
@@ -30,13 +29,13 @@ const schema = Joi.object({
         })
 });
 
-const padNumber = (companyNumber: string):string => {
+const padNumber = (companyNumber: string): string => {
     if (/^(SC|NI)/gm.test(companyNumber)) {
         const leadingLetters = companyNumber.substring(0, 2);
         let trailingChars = companyNumber.substring(2, companyNumber.length);
         trailingChars = trailingChars.padStart(6, '0');
         companyNumber = leadingLetters + trailingChars;
-    } else if(companyNumber.length > 0) {
+    } else if (companyNumber.length > 0) {
         companyNumber = companyNumber.padStart(8, '0');
     }
     return companyNumber;
@@ -53,7 +52,7 @@ class ValidationError {
 
 }
 
- class ValidationResult {
+class ValidationResult {
 
     constructor(public readonly errors: ValidationError[] = []) { }
 
@@ -74,12 +73,12 @@ export class PenaltyDetailsController extends BaseHttpController {
     @httpGet('')
     public getPenaltyDetailsView(): void {
 
-       // Check session for stored penalty details
-      this.sessionService.getSession('1');
+        // Check session for stored penalty details
+        this.sessionService.getSession('1');
 
-       // Set company number on view
+        // Set company number on view
 
-       // Set reference number on view
+        // Set reference number on view
 
         this.httpContext.response.render('penaltydetails');
     }
@@ -90,34 +89,34 @@ export class PenaltyDetailsController extends BaseHttpController {
         const body: PenaltyReferenceDetails = this.httpContext.request.body;
 
         const validationResult = this.validate(body);
-    
+
         this.httpContext.response.render('penaltydetails', { ...body, validationResult });
     }
 
     private validate(data: PenaltyReferenceDetails): ValidationResult {
 
-        const results = schema.validate(
-                {
-                    companyNumber: padNumber(data.companyNumber),
-                    penaltyReference: data.referenceNumber
-                },
-                {
-                    abortEarly: false
-                }
-            )
-        console.log(results.error?.message);
-        
+        const results: Joi.ValidationResult = schema.validate(
+            {
+                companyNumber: padNumber(data.companyNumber),
+                penaltyReference: data.penaltyReference
+            },
+            {
+                abortEarly: false
+            }
+        )
+
+        console.log(results.error?.details);
+
+
         const result: ValidationResult = new ValidationResult();
 
-        if (!data.companyNumber) {
+        results.error?.details.forEach((item: Joi.ValidationErrorItem) => {
+            let path: string = item.path[0] as string;
 
-            result.errors.push(new ValidationError('companyNymber', 'You must enter a company nymber'));
+            result.errors.push(new ValidationError(path, item.message));
 
-        }
-
+        });
         return result;
-
-        
     }
 
 }
