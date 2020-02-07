@@ -15,11 +15,15 @@ export const schema = Joi.object({
         }),
     penaltyReference: Joi.string()
         .replace(' ', '')
+        .insensitive()
+        .uppercase()
         .min(9).max(9)
+        .regex(/([A-Z]{1}[0-9]{8})/)
         .messages({
             'string.empty': 'You must enter a penalty reference number',
             'string.min': 'You must enter your reference number exactly as shown on your penalty notice',
-            'string.max': 'You must enter your reference number exactly as shown on your penalty notice'
+            'string.max': 'You must enter your reference number exactly as shown on your penalty notice',
+            'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
         })
 });
 export const padNumber = (companyNumber: string): string => {
