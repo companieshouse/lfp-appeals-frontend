@@ -3,7 +3,6 @@ import { controller, httpGet, httpPost, BaseHttpController, request, response } 
 import { inject } from 'inversify';
 import { SessionService } from '../services/SessionService';
 import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
-import {check, validationResult, body} from 'express-validator';
 import * as Joi from '@hapi/joi';
 
 const schema = Joi.object({
@@ -12,7 +11,7 @@ const schema = Joi.object({
         .insensitive()
         .uppercase()
         .min(1).max(8)
-        .regex(new RegExp('^([a-zA-Z]{2})?[0-9]{6,8}'))
+        .regex(/^(SC|NI)?[0-9]{6,8}/)
         .messages({
             'string.empty': 'You must enter a company number',
             'string.min': 'You must enter your full eight character company number',
@@ -32,12 +31,12 @@ const schema = Joi.object({
 });
 
 const padNumber = (companyNumber: string):string => {
-    if (/^([a-zA-Z]{2}?)/gm.test(companyNumber)) {
+    if (/^(SC|NI)/gm.test(companyNumber)) {
         const leadingLetters = companyNumber.substring(0, 2);
         let trailingChars = companyNumber.substring(2, companyNumber.length);
         trailingChars = trailingChars.padStart(6, '0');
         companyNumber = leadingLetters + trailingChars;
-    } else {
+    } else if(companyNumber.length > 0) {
         companyNumber = companyNumber.padStart(8, '0');
     }
     return companyNumber;
