@@ -4,7 +4,7 @@ import { inject } from 'inversify';
 import { SessionService } from '../services/SessionService';
 import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
 import {check, validationResult, body} from 'express-validator';
-const Joi = require('@hapi/joi');
+import * as Joi from '@hapi/joi';
 
 const schema = Joi.object({
     companyNumber: Joi.string()
@@ -12,13 +12,14 @@ const schema = Joi.object({
         .insensitive()
         .uppercase()
         .min(1).max(8)
-        .pattern(new RegExp('^([a-zA-Z]{2})?[0-9]{6,8}'))
+        .regex(new RegExp('^([a-zA-Z]{2})?[0-9]{6,8}'))
         .messages({
             'string.empty': 'You must enter a company number',
             'string.min': 'You must enter your full eight character company number',
             'string.max': 'You must enter your full eight character company number',
             'string.pattern.base': 'You must enter your full eight character company number'
-        }),
+        })
+        ,
 
     penaltyReference: Joi.string()
         .replace(' ', '')
@@ -28,7 +29,7 @@ const schema = Joi.object({
             'string.min': 'You must enter your reference number exactly as shown on your penalty notice',
             'string.max': 'You must enter your reference number exactly as shown on your penalty notice'
         })
-})
+});
 
 const padNumber = (companyNumber: string):string => {
     if (/^([a-zA-Z]{2}?)/gm.test(companyNumber)) {
@@ -43,6 +44,27 @@ const padNumber = (companyNumber: string):string => {
 };
 
 
+
+class ValidationError {
+    constructor(public readonly field: string, public readonly text: string) { }
+
+    get href(): string {
+        return `#${this.field}-error`;
+    }
+
+}
+
+ class ValidationResult {
+
+    constructor(public readonly errors: ValidationError[] = []) { }
+
+    public getErrorForField(field: string): ValidationError | undefined {
+
+        return this.errors.find(error => error.field == field);
+    }
+
+}
+
 @controller('/penalty-reference')
 export class PenaltyDetailsController extends BaseHttpController {
 
@@ -51,7 +73,7 @@ export class PenaltyDetailsController extends BaseHttpController {
     }
 
     @httpGet('')
-    public getPenaltyDetailsView(req: Request, res: Response, next: NextFunction): void {
+    public getPenaltyDetailsView(): void {
 
        // Check session for stored penalty details
       this.sessionService.getSession('1');
@@ -60,28 +82,43 @@ export class PenaltyDetailsController extends BaseHttpController {
 
        // Set reference number on view
 
-
-        // es.sendStatus(200);
-        // Return view
-        res
-        .status(OK)
-        .render('penaltydetails');
+        this.httpContext.response.render('penaltydetails');
     }
 
     @httpPost('')
     public createPenaltyDetails(@request() req: Request, @response() res: Response): void {
 
-        const results = schema
-            .validate(
+        const body: PenaltyReferenceDetails = this.httpContext.request.body;
+
+        const validationResult = this.validate(body);
+    
+        this.httpContext.response.render('penaltydetails', { ...body, validationResult });
+    }
+
+    private validate(data: PenaltyReferenceDetails): ValidationResult {
+
+        const results = schema.validate(
                 {
-                    companyNumber: padNumber(req.body.companyNumber),
-                    penaltyReference: req.body.penaltyReference
+                    companyNumber: padNumber(data.companyNumber),
+                    penaltyReference: data.referenceNumber
                 },
                 {
                     abortEarly: false
                 }
             )
-        console.log(results)
+        console.log(results.error?.message);
+        
+        const result: ValidationResult = new ValidationResult();
 
+        if (!data.companyNumber) {
+
+            result.errors.push(new ValidationError('companyNymber', 'You must enter a company nymber'));
+
+        }
+
+        return result;
+
+        
     }
+
 }
