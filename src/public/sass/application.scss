@@ -5,11 +5,5 @@ $govuk-global-styles: true;
 // Patterns that aren't in govuk-frontend
 @import "patterns/related-items";
 
-// Add extra styles here
-.govuk-input--company-number {
-    max-width: 13ex;
-  }
-
-.govuk-input--penalty-reference {
-    max-width: 20ex;
-}
+// Patterns for input text boxes of custom size
+@import "patterns/text-input";
