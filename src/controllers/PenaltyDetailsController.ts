@@ -8,6 +8,7 @@ import { ValidationResult} from '../models/ValidationResult';
 import { ValidationError} from '../models/ValidationError';
 import { PENALTY_DETAILS_PREFIX} from '../utils/Paths';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
+import { Validate } from '../utils/Validate'
 
 @controller(PENALTY_DETAILS_PREFIX)
 export class PenaltyDetailsController extends BaseHttpController {
@@ -21,37 +22,12 @@ export class PenaltyDetailsController extends BaseHttpController {
     @httpPost('')
     public createPenaltyDetails(@request() req: Request, @response() res: Response): void {
 
-        let body: PenaltyReferenceDetails = new PenaltyReferenceDetails(req.body.companyNumber, req.body.penaltyReference);
+        const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
+            req.body.companyNumber, req.body.penaltyReference);
 
-        const validationResult = this.validate(body);
+        const validationResult = Validate.validate(body);
 
         this.httpContext.response.render('penaltydetails', { ...body, validationResult });
-    }
-
-    private validate(data: PenaltyReferenceDetails): ValidationResult {
-
-        const results: Joi.ValidationResult = penaltyDetailsSchema.validate(
-            {
-                companyNumber: padNumber(data.companyNumber),
-                penaltyReference: data.penaltyReference
-            },
-            {
-                abortEarly: false
-            }
-        )
-
-        console.log(results.error?.details);
-
-
-        const result: ValidationResult = new ValidationResult();
-
-        results.error?.details.forEach((item: Joi.ValidationErrorItem) => {
-            let path: string = item.path[0] as string;
-
-            result.errors.push(new ValidationError(path, item.message));
-
-        });
-        return result;
     }
 
 }
