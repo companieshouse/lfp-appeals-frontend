@@ -4,7 +4,7 @@ import { RedisService } from '../services/RedisService';
 import { OK, INTERNAL_SERVER_ERROR } from 'http-status-codes';
 
 @controller('/healthCheck')
-export abstract class HealthCheckController extends BaseHttpController {
+export class HealthCheckController extends BaseHttpController {
 
     constructor(@inject(RedisService) private readonly redisService: RedisService) {
         super();
