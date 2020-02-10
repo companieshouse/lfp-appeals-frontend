@@ -1,6 +1,6 @@
 import * as Joi from '@hapi/joi';
 
-export const schema = Joi.object({
+export const penaltyDetailsSchema = Joi.object({
     companyNumber: Joi.string()
         .replace(' ', '')
         .insensitive()
@@ -26,6 +26,8 @@ export const schema = Joi.object({
             'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
         })
 });
+
+
 export const padNumber = (companyNumber: string): string => {
     if (/^(SC|NI)/gm.test(companyNumber)) {
         const leadingLetters = companyNumber.substring(0, 2);

@@ -4,7 +4,7 @@ import { inject } from 'inversify';
 import { SessionService } from '../services/SessionService';
 import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
 import * as Joi from '@hapi/joi';
-import { schema, padNumber } from '../utils/PenaltyReferenceDetailsValidator';
+import { penaltyDetailsSchema, padNumber } from '../utils/Schemas';
 import { ValidationResult} from '../models/ValidationResult';
 import { ValidationError} from '../models/ValidationError';
 import { PENALTY_DETAILS_PREFIX, PENALTY_DETAILS_ENTRY_PREFIX} from '../utils/Paths';
@@ -41,7 +41,7 @@ export class PenaltyDetailsController extends BaseHttpController {
 
     private validate(data: PenaltyReferenceDetails): ValidationResult {
 
-        const results: Joi.ValidationResult = schema.validate(
+        const results: Joi.ValidationResult = penaltyDetailsSchema.validate(
             {
                 companyNumber: padNumber(data.companyNumber),
                 penaltyReference: data.penaltyReference
