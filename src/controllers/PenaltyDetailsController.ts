@@ -1,22 +1,23 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { controller, httpGet, httpPost, BaseHttpController, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { CREATED, BAD_REQUEST, OK } from 'http-status-codes';
-import * as Joi from '@hapi/joi';
-import { penaltyDetailsSchema, padNumber } from '../utils/Schemas';
-import { ValidationResult} from '../models/ValidationResult';
-import { ValidationError} from '../models/ValidationError';
-import { PENALTY_DETAILS_PREFIX} from '../utils/Paths';
+import { BAD_REQUEST, OK } from 'http-status-codes';
+import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { Validate } from '../utils/Validate'
+import { RedisService } from '../services/RedisService';
 
 @controller(PENALTY_DETAILS_PREFIX)
 export class PenaltyDetailsController extends BaseHttpController {
 
-    @httpGet('')
-    public getPenaltyDetailsView(): void {
+    constructor(@inject(RedisService) private readonly redisService: RedisService) {
+        super();
+    }
 
-        this.httpContext.response.render('penaltydetails');
+    @httpGet('')
+    public getPenaltyDetailsView(@request() req: Request, @response() res: Response): void {
+
+        res.render('penaltydetails');
     }
 
     @httpPost('')
@@ -27,7 +28,15 @@ export class PenaltyDetailsController extends BaseHttpController {
 
         const validationResult = Validate.validate(body);
 
-        this.httpContext.response.render('penaltydetails', { ...body, validationResult });
+        if (validationResult.errors.length < 1) {
+
+            // save data to session here 
+            // render page for now
+            res.status(OK).render('penaltydetails');
+        } else {
+            res.status(BAD_REQUEST).render('penaltydetails', { ...body, validationResult });
+        }
+
     }
 
 }
