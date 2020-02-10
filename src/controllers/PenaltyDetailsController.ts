@@ -7,15 +7,16 @@ import * as Joi from '@hapi/joi';
 import { schema, padNumber } from '../utils/PenaltyReferenceDetailsValidator';
 import { ValidationResult} from '../models/ValidationResult';
 import { ValidationError} from '../models/ValidationError';
+import { PENALTY_DETAILS_PREFIX, PENALTY_DETAILS_ENTRY_PREFIX} from '../utils/Paths';
 
-@controller('/penalty-reference')
+@controller(PENALTY_DETAILS_PREFIX)
 export class PenaltyDetailsController extends BaseHttpController {
 
     constructor(@inject(SessionService) private sessionService: SessionService) {
         super();
     }
 
-    @httpGet('')
+    @httpGet(PENALTY_DETAILS_ENTRY_PREFIX)
     public getPenaltyDetailsView(): void {
 
         // Check session for stored penalty details
