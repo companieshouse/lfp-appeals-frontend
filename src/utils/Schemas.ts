@@ -5,24 +5,22 @@ export const penaltyDetailsSchema = Joi.object({
         .replace(' ', '')
         .insensitive()
         .uppercase()
-        .min(1).max(8)
-        .regex(/^(SC|NI)?[0-9]{6,8}/)
+        .regex(/^(((SC|NI)[0-9]{1,6})|([0-9]{1,8}))$/)
         .messages({
             'string.empty': 'You must enter a company number',
-            'string.min': 'You must enter your full eight character company number',
-            'string.max': 'You must enter your full eight character company number',
+            // 'string.min': 'You must enter your full eight character company number',
+            // 'string.max': 'You must enter your full eight character company number',
             'string.pattern.base': 'You must enter your full eight character company number'
         }),
     penaltyReference: Joi.string()
         .replace(' ', '')
         .insensitive()
         .uppercase()
-        .min(9).max(9)
         .regex(/([A-Z]{1}[0-9]{8})/)
         .messages({
             'string.empty': 'You must enter a penalty reference number',
-            'string.min': 'You must enter your reference number exactly as shown on your penalty notice',
-            'string.max': 'You must enter your reference number exactly as shown on your penalty notice',
+            // 'string.min': 'You must enter your reference number exactly as shown on your penalty notice',
+            // 'string.max': 'You must enter your reference number exactly as shown on your penalty notice',
             'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
         })
 });
