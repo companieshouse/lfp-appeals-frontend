@@ -2,8 +2,6 @@ $govuk-global-styles: true;
 
 @import 'govuk-frontend/govuk/all';
 
-// Patterns that aren't in govuk-frontend
-@import "patterns/related-items";
-
-// Patterns for input text boxes of custom size
 @import "patterns/text-input";
+@import 'patterns/related-items';
+@import 'other-reason/extra-styles'
