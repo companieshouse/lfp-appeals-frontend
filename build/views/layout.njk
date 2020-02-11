@@ -1,0 +1,76 @@
+{% extends "govuk/template.njk" %}
+
+{% from "govuk/components/footer/macro.njk"       import govukFooter %}
+{% from "govuk/components/header/macro.njk"       import govukHeader %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+
+{% set serviceName = "Appeal a late filing penalty" %}
+
+{% block head %}
+  <!--[if !IE 8]><!-->
+  <link href="{{ ROOT_URI }}/css/application.css" rel="stylesheet"/>
+  <!--<![endif]-->
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+          integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+          crossorigin="anonymous"></script>
+
+  {% block download %}{% endblock %}
+{% endblock %}
+
+{% block header %}
+  {{
+    govukHeader({
+      homepageUrl: ROOT_URI,
+      serviceName: serviceName,
+      serviceUrl: ROOT_URI,
+      containerClasses: "govuk-width-container"
+    })
+  }}
+{% endblock %}
+
+{% set mainClasses = mainClasses | default("govuk-main-wrapper--auto-spacing") %}
+
+{% block beforeContent %}
+  {{
+    govukPhaseBanner({
+      tag: {
+        text: "Beta"
+      }
+    })
+  }}
+  {% block backLink %}{% endblock %}
+{% endblock %}
+
+{% block footer %}
+  {{
+    govukFooter({
+      meta: {
+        items: [
+          {
+            href: "http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml",
+            text: "Policies"
+          },
+          {
+            href: "https://www.gov.uk/help/cookies",
+            text: "Cookies"
+          },
+          {
+            href: "https://www.gov.uk/contact",
+            text: "Contact us"
+          },
+          {
+            href: "https://developer.companieshouse.gov.uk/",
+            text: "Developers"
+          }
+        ]
+      }
+    })
+  }}
+{% endblock %}
+
+{% block bodyEnd %}
+  {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
+  <script src="{{ ROOT_URI }}/govuk/all.js"></script>
+  <script>window.GOVUKFrontend.initAll()</script>
+{% endblock %}
