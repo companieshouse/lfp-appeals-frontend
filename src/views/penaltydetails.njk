@@ -88,7 +88,10 @@
         {{ 
           govukButton({
             text: "Continue",
-            id: "submit"
+            attributes: {
+              "data-event-id": "continue-button",
+              id: "submit"
+            }
           }) 
         }}
       </form>
