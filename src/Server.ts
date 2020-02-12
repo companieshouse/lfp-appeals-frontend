@@ -1,13 +1,8 @@
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
-import * as express from 'express';
-import * as nunjucks from 'nunjucks';
 import 'reflect-metadata';
-import * as path from 'path';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/Index';
+import './controllers/index';
 import { createContainer } from './ContainerFactory';
-import { handler } from './middleware/ErrorHandler';
+import { getExpressAppConfig } from './utils/ConfigLoader';
 
 export class Server {
 
@@ -17,45 +12,13 @@ export class Server {
   constructor(port: number) {
     this.port = port;
     this.server = new InversifyExpressServer(createContainer());
-    this.server.setConfig((app) => {
-      app.set('port', port);
-      app.use(handler);
-      this.setupStaticFolders(app);
-      this.setupParsers(app);
-      this.setViewEngine(app);
-    });
+    this.server.setConfig(getExpressAppConfig(__dirname));
   }
 
   public start(): void {
     this.server.build().listen(this.port, () => {
       console.log(('  App is running at http://localhost:%d in %s mode'), this.port, process.env.NODE_ENV);
       console.log('  Press CTRL-C to stop\n');
-    });
-  }
-
-  private setupStaticFolders(app: express.Application): void {
-    app.use(express.static(path.join(__dirname, '/public')));
-    app.use(express.static(path.join(__dirname, '/node_modules/govuk-frontend')));
-    app.use(express.static(path.join(__dirname, '/node_modules/govuk-frontend/govuk/')));
-    app.use(express.static(path.join(__dirname, '/node_modules/govuk-frontend/govuk/assets')));
-
-  }
-
-  private setupParsers(app: express.Application): void {
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(cookieParser());
-  }
-
-  private setViewEngine(app: express.Application): void {
-    app.set('view engine', 'njk');
-    nunjucks.configure([
-      'src/views',
-      'node_modules/govuk-frontend',
-      'node_modules/govuk-frontend/components',
-    ], {
-      autoescape: true,
-      express: app,
     });
   }
 

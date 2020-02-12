@@ -3,12 +3,13 @@ import { RedisClient, createClient } from 'redis';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
 const createRedisClient = () => {
-    return createClient(
-        {
-            host: process.env.REDIS_HOST,
-            port: Number(process.env.REDIS_HOST)
-        }
-    ).on('error', (err) => { throw err; });
+
+    if (!process.env.CACHE_SERVER) {
+        throw Error('CACHE_SERVER variable not set.');
+    }
+    const redisUrl = `redis://${process.env.CACHE_SERVER}`;
+
+    return createClient(redisUrl).on('error', (err) => { throw err; });
 };
 
 const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
