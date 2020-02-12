@@ -4,7 +4,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 const createRedisClient = () => {
 
-    if (process.env.CACHE_SERVER) {
+    if (!process.env.CACHE_SERVER) {
         throw Error('CACHE_SERVER variable not set.');
     }
     const redisUrl = `redis://${process.env.CACHE_SERVER}`;
