@@ -21,7 +21,6 @@ export const penaltyDetailsSchema = Joi.object({
         })
 });
 
-
 export const padNumber = (companyNumber: string): string => {
     if (/^(SC|NI)/gm.test(companyNumber)) {
         const leadingLetters = companyNumber.substring(0, 2);

@@ -1,4 +1,3 @@
-import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { penaltyDetailsSchema, padNumber } from './Schemas';
 import Joi = require('@hapi/joi');
 import { ValidationResult } from '../models/ValidationResult';

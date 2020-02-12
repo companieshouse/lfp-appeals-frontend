@@ -3,7 +3,6 @@ import { controller, httpGet, httpPost, request, response } from 'inversify-expr
 import { inject} from 'inversify';
 import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
-import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { Validate } from '../utils/Validate'
 import { SessionService } from '../services/SessionService';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
@@ -40,8 +39,10 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
                 res.cookie(this.COOKIE_NAME, cookieId, {expires: new Date(Date.now())})
             }
             else{
-                const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
-                    data[this.COMPANY_NUMBER], data[this.PENALTY_REFERENCE]);
+                const body: PenaltyReferenceDetails = {
+                    companyNumber: data[this.COMPANY_NUMBER],
+                    penaltyReference: data[this.PENALTY_REFERENCE]
+                }
 
                 return this.render(this.PENALTY_TEMPLATE, { ...body});
             }
@@ -54,8 +55,10 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     @httpPost('')
     public async createPenaltyDetails(@request() req: Request, @response() res: Response): Promise<void> {
 
-        const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
-            req.body.companyNumber, req.body.penaltyReference);
+        const body: PenaltyReferenceDetails = {
+            companyNumber: req.body.companyNumber,
+            penaltyReference: req.body.penaltyReference
+        }
 
         const validationResult: ValidationResult = Validate.validate(body);
 

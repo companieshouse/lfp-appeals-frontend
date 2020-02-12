@@ -2,7 +2,6 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IMap } from 'src/models/types';
 import { RedisService } from './RedisService';
-import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 
 
 @provide(SessionService)

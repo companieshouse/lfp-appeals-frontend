@@ -1,11 +1,4 @@
-export class PenaltyReferenceDetails  {
+interface PenaltyReferenceDetails  {
   companyNumber: string;
   penaltyReference: string;
-
-  constructor (companyNumber: string, penaltyReference: string) {
-    this.companyNumber = companyNumber;
-    this.penaltyReference = penaltyReference;
-  }
-
-
 }
