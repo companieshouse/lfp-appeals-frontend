@@ -27,7 +27,7 @@ describe('PenaltyDetailsController', () => {
             .expect(OK);
     });
 
-    it('should return 200 when posting valid penalty detals', async () => {
+    it('should return 200 when posting valid penalty details', async () => {
         const penaltyDetails: PenaltyReferenceDetails = {
             penaltyReference: 'A12345678',
             companyNumber: 'SC123123'
