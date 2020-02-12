@@ -5,38 +5,38 @@ import { BAD_REQUEST, OK } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { Validate } from '../utils/Validate'
-import { RedisService } from '../services/RedisService';
 import { SessionService } from '../services/SessionService';
-import { IMap } from 'src/models/types';
-import session = require('express-session');
+import { SessionMiddleware } from '../middleware/SessionMiddleware';
+import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 @controller(PENALTY_DETAILS_PREFIX)
-export class PenaltyDetailsController extends BaseHttpController {
+export class PenaltyDetailsController extends BaseAsyncHttpController {
 
     constructor(@inject(SessionService) private readonly sessionService: SessionService) {
         super();
     }
 
-    @httpGet('')
-    public getPenaltyDetailsView(@request() req: Request, @response() res: Response): void {
- 
+    @httpGet('', SessionMiddleware)
+    public async getPenaltyDetailsView(@request() req: Request, @response() res: Response): Promise<string> {
+
         const cookieId = req.cookies['penalty-cookie']
 
-        if (cookieId){
+        if (cookieId) {
             console.log('Cookie found, loading session')
-            const data: IMap<any> = this.sessionService.getSession(cookieId)
+            const data = await this.sessionService.getSession(cookieId)
+            console.log(data)
             const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
                 data['companyNumber'], data['penaltyReference']);
 
             console.log(data['companyNumber'])
             console.log(data['penaltyReference'])
+            return this.render('penaltydetails', { ...body});
+        } else {
+            console.log('No cookie')
+        }
 
-            res.render('penaltydetails', {...body});
-        }
-        else{
-            console.log('No cookie found')
-            res.render('penaltydetails');
-        }
+        return this.render('penaltydetails');
+
     }
 
     @httpPost('')
@@ -50,12 +50,12 @@ export class PenaltyDetailsController extends BaseHttpController {
         if (validationResult.errors.length < 1) {
 
             const cookieId = req.cookies['penalty-cookie']
-            if (!cookieId){
+            if (!cookieId) {
                 console.log('No cookie found, creating new session...')
                 this.sessionService.createSession(body)
-                res.cookie('penalty-cookie', 'test-cookie-id')
+                res.cookie('penalty-cookie', '1')
             }
-            res.status(OK).render('penaltydetails') ;
+            res.status(OK).render('penaltydetails');
         } else {
             res.status(BAD_REQUEST).render('penaltydetails', { ...body, validationResult });
         }
