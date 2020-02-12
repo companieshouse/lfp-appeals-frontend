@@ -1,63 +1,88 @@
 import { Request, Response } from 'express';
-import { controller, httpGet, httpPost, BaseHttpController, request, response } from 'inversify-express-utils';
-import { inject, ContainerModule } from 'inversify';
-import { BAD_REQUEST, OK } from 'http-status-codes';
+import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
+import { inject} from 'inversify';
+import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { Validate } from '../utils/Validate'
 import { SessionService } from '../services/SessionService';
-import { SessionMiddleware } from '../middleware/SessionMiddleware';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { IMap } from 'src/models/types';
+import { ValidationResult } from 'src/models/ValidationResult';
 
 @controller(PENALTY_DETAILS_PREFIX)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
+
+    private COMPANY_NUMBER: string = 'companyNumber';
+    private PENALTY_REFERENCE: string = 'penaltyReference';
+    private COOKIE_NAME: string = 'penalty-cookie';
+    private COOKIE_ID: string = '1';
+    private PENALTY_TEMPLATE: string = 'penaltydetails';
 
     constructor(@inject(SessionService) private readonly sessionService: SessionService) {
         super();
     }
 
-    @httpGet('', SessionMiddleware)
+    @httpGet('')
     public async getPenaltyDetailsView(@request() req: Request, @response() res: Response): Promise<string> {
 
-        const cookieId = req.cookies['penalty-cookie']
+        const cookieId: string = req.cookies[this.COOKIE_NAME];
 
         if (cookieId) {
-            console.log('Cookie found, loading session')
-            const data = await this.sessionService.getSession(cookieId)
-            console.log(data)
-            const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
-                data['companyNumber'], data['penaltyReference']);
 
-            console.log(data['companyNumber'])
-            console.log(data['penaltyReference'])
-            return this.render('penaltydetails', { ...body});
-        } else {
-            console.log('No cookie')
+            console.log('Cookie found, loading session ...');
+
+
+            const data: IMap<any> = await this.sessionService.getSession(cookieId);
+
+            if(!data){
+                console.log('No data found')
+                res.cookie(this.COOKIE_NAME, cookieId, {expires: new Date(Date.now())})
+            }
+            else{
+                const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
+                    data[this.COMPANY_NUMBER], data[this.PENALTY_REFERENCE]);
+
+                return this.render(this.PENALTY_TEMPLATE, { ...body});
+            }
         }
 
-        return this.render('penaltydetails');
+        return this.render(this.PENALTY_TEMPLATE);
 
     }
 
     @httpPost('')
-    public createPenaltyDetails(@request() req: Request, @response() res: Response): void {
+    public async createPenaltyDetails(@request() req: Request, @response() res: Response): Promise<void> {
 
         const body: PenaltyReferenceDetails = new PenaltyReferenceDetails(
             req.body.companyNumber, req.body.penaltyReference);
 
-        const validationResult = Validate.validate(body);
+        const validationResult: ValidationResult = Validate.validate(body);
 
         if (validationResult.errors.length < 1) {
 
-            const cookieId = req.cookies['penalty-cookie']
-            if (!cookieId) {
-                console.log('No cookie found, creating new session...')
-                this.sessionService.createSession(body)
-                res.cookie('penalty-cookie', '1')
+            const cookieId: string = req.cookies[this.COOKIE_NAME];
+
+            const data: IMap<any> = {
+                penaltyReference: body.penaltyReference,
+                companyNumber: body.companyNumber
             }
-            res.status(OK).render('penaltydetails');
+
+            if (!cookieId) {
+                console.log('No cookie found, creating session ...');
+
+                await this.sessionService.createSession(data);
+                res.cookie(this.COOKIE_NAME, this.COOKIE_ID)
+                this.renderWithStatus(CREATED)(this.PENALTY_TEMPLATE);
+            }
+            else{
+                await this.sessionService.updateSession(data, cookieId)
+                console.log('Updated session')
+                this.renderWithStatus(NO_CONTENT)(this.PENALTY_TEMPLATE);
+            }
+
         } else {
-            res.status(BAD_REQUEST).render('penaltydetails', { ...body, validationResult });
+            this.renderWithStatus(BAD_REQUEST)(this.PENALTY_TEMPLATE, { ...body, validationResult });
         }
 
     }

@@ -12,5 +12,6 @@ export abstract class BaseAsyncHttpController extends BaseHttpController {
                     resolve(compiled);
                 })
             );
+
     public render: (template: string, options?: any) => Promise<string> = this.renderWithStatus(200);
 }
