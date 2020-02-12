@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
-import { inject} from 'inversify';
+import { inject } from 'inversify';
 import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { Validate } from '../utils/Validate'
@@ -8,6 +8,8 @@ import { SessionService } from '../services/SessionService';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { IMap } from 'src/models/types';
 import { ValidationResult } from 'src/models/ValidationResult';
+import { sanitize } from '../utils/CompanyNumberUtils';
+
 
 @controller(PENALTY_DETAILS_PREFIX)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
@@ -34,17 +36,17 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
             const data: IMap<any> = await this.sessionService.getSession(cookieId);
 
-            if(!data){
+            if (!data) {
                 console.log('No data found')
-                res.cookie(this.COOKIE_NAME, cookieId, {expires: new Date(Date.now())})
+                res.cookie(this.COOKIE_NAME, cookieId, { expires: new Date(Date.now()) })
             }
-            else{
+            else {
                 const body: PenaltyReferenceDetails = {
                     companyNumber: data[this.COMPANY_NUMBER],
                     penaltyReference: data[this.PENALTY_REFERENCE]
                 }
 
-                return this.render(this.PENALTY_TEMPLATE, { ...body});
+                return this.render(this.PENALTY_TEMPLATE, { ...body });
             }
         }
 
@@ -53,14 +55,16 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     }
 
     @httpPost('')
-    public async createPenaltyDetails(@request() req: Request, @response() res: Response): Promise<void> {
+    public async createPenaltyDetails(@request() req: Request, @response() res: Response): Promise<any> {
 
         const body: PenaltyReferenceDetails = {
-            companyNumber: req.body.companyNumber,
+            companyNumber: sanitize(req.body.companyNumber),
             penaltyReference: req.body.penaltyReference
         }
 
         const validationResult: ValidationResult = Validate.validate(body);
+
+        console.log(validationResult)
 
         if (validationResult.errors.length < 1) {
 
@@ -74,19 +78,25 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             if (!cookieId) {
                 console.log('No cookie found, creating session ...');
 
-                await this.sessionService.createSession(data);
-                res.cookie(this.COOKIE_NAME, this.COOKIE_ID)
-                this.renderWithStatus(CREATED)(this.PENALTY_TEMPLATE);
+                await this.sessionService.createSession(data).then(v => {
+                    res.cookie(this.COOKIE_NAME, this.COOKIE_ID);
+
+                });
+                return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
             }
-            else{
-                await this.sessionService.updateSession(data, cookieId)
-                console.log('Updated session')
-                this.renderWithStatus(NO_CONTENT)(this.PENALTY_TEMPLATE);
+            else {
+                await this.sessionService.updateSession(data, cookieId).then(v => {
+                    console.log('Updated session')
+                    console.log(validationResult)
+
+                });
+                return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
             }
 
         } else {
             console.log('Errors found')
-            res.status(BAD_REQUEST).render(this.PENALTY_TEMPLATE, { ...body, validationResult });
+            return await this.renderWithStatus(BAD_REQUEST)(
+                this.PENALTY_TEMPLATE, { cache: false, ...body, validationResult });
         }
 
     }

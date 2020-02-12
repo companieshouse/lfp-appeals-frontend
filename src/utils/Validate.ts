@@ -2,7 +2,7 @@ import { penaltyDetailsSchema } from './Schemas';
 import Joi = require('@hapi/joi');
 import { ValidationResult } from '../models/ValidationResult';
 import { ValidationError } from '../models/ValidationError';
-import { padNumber } from './CompanyNumberUtils';
+
 
 export class Validate{
 
@@ -10,7 +10,7 @@ export class Validate{
 
         const results: Joi.ValidationResult = penaltyDetailsSchema.validate(
             {
-                companyNumber: padNumber(data.companyNumber),
+                companyNumber: data.companyNumber,
                 penaltyReference: data.penaltyReference
             },
             {
@@ -28,6 +28,7 @@ export class Validate{
             result.errors.push(new ValidationError(path, item.message));
 
         });
+
         return result;
     }
 }
