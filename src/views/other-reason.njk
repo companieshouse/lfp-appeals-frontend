@@ -28,10 +28,10 @@
             label: {
               text: 'Short title for the reason'
             },
-            id: 'reason',
-            name: 'reason',
+            id: 'title',
+            name: 'title',
             value: reason | default(''),
-            errorMessage: validationResult.getErrorForField('reason') if validationResult,
+            errorMessage: validationResult.getErrorForField('title') if validationResult,
             autocomplete: 'off'
           })
         }}

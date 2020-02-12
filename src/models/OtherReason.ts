@@ -1,4 +1,4 @@
 interface OtherReason {
-  reason: string
+  title: string
   description: string
 }
