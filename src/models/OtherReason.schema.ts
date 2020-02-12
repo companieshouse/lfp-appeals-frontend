@@ -5,19 +5,21 @@ const descriptionErrorMessage = 'You must give us more information';
 
 export const schema = Joi.object({
     title: Joi.string()
-        .trim()
         .required()
+        .pattern(/\w+/)
         .messages({
             'any.required': titleErrorMessage,
             'string.base': titleErrorMessage,
-            'string.empty': titleErrorMessage
+            'string.empty': titleErrorMessage,
+            'string.pattern.base': titleErrorMessage
         }),
     description: Joi.string()
-        .trim()
         .required()
+        .pattern(/\w+/)
         .messages({
             'any.required': descriptionErrorMessage,
             'string.base': descriptionErrorMessage,
-            'string.empty': descriptionErrorMessage
+            'string.empty': descriptionErrorMessage,
+            'string.pattern.base': descriptionErrorMessage
         })
 });

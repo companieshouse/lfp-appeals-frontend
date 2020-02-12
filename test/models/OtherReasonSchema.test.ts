@@ -18,7 +18,7 @@ describe('OtherReason schema', () => {
 
     it('should reject undefined values', () => {
         const validationResult = validator.validate({
-            reason: undefined,
+            title: undefined,
             description: undefined
         });
         assertValidationErrors(validationResult, [
@@ -29,7 +29,7 @@ describe('OtherReason schema', () => {
 
     it('should reject null values', () => {
         const validationResult = validator.validate({
-            reason: null,
+            title: null,
             description: null
         });
         assertValidationErrors(validationResult, [
@@ -40,8 +40,19 @@ describe('OtherReason schema', () => {
 
     it('should reject empty values', () => {
         const validationResult = validator.validate({
-            reason: '',
+            title: '',
             description: ''
+        });
+        assertValidationErrors(validationResult, [
+            new ValidationError('title', 'You must give your reason a title'),
+            new ValidationError('description', 'You must give us more information')
+        ]);
+    });
+
+    it('should reject blank values', () => {
+        const validationResult = validator.validate({
+            title: ' ',
+            description: ' '
         });
         assertValidationErrors(validationResult, [
             new ValidationError('title', 'You must give your reason a title'),
@@ -51,8 +62,16 @@ describe('OtherReason schema', () => {
 
     it('should allow non empty values', () => {
         const validationResult = validator.validate({
-            reason: 'Some reason',
+            title: 'Some reason',
             description: 'Some description'
+        });
+        assertValidationErrors(validationResult, []);
+    });
+
+    it('should allow non empty values with leading / trailing spaces', () => {
+        const validationResult = validator.validate({
+            title: ' Some reason ',
+            description: ' Some description '
         });
         assertValidationErrors(validationResult, []);
     });
