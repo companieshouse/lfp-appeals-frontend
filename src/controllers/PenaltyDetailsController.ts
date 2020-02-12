@@ -85,7 +85,8 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             }
 
         } else {
-            this.renderWithStatus(BAD_REQUEST)(this.PENALTY_TEMPLATE, { ...body, validationResult });
+            console.log('Errors found')
+            res.status(BAD_REQUEST).render(this.PENALTY_TEMPLATE, { ...body, validationResult });
         }
 
     }

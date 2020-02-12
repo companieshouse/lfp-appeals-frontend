@@ -1,7 +1,8 @@
-import { penaltyDetailsSchema, padNumber } from './Schemas';
+import { penaltyDetailsSchema } from './Schemas';
 import Joi = require('@hapi/joi');
 import { ValidationResult } from '../models/ValidationResult';
 import { ValidationError } from '../models/ValidationError';
+import { padNumber } from './CompanyNumberUtils';
 
 export class Validate{
 
