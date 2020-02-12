@@ -4,11 +4,11 @@ import { inject } from 'inversify';
 import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { Validate } from '../utils/Validate'
-import { SessionService } from '../services/SessionService';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { IMap } from 'src/models/types';
-import { ValidationResult } from 'src/models/ValidationResult';
+import { IMap } from '../models/types';
+import { ValidationResult } from '../models/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberUtils';
+import { RedisService } from '../services/RedisService';
 
 
 @controller(PENALTY_DETAILS_PREFIX)
@@ -20,7 +20,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     private COOKIE_ID: string = '1';
     private PENALTY_TEMPLATE: string = 'penaltydetails';
 
-    constructor(@inject(SessionService) private readonly sessionService: SessionService) {
+    constructor(@inject(RedisService) private readonly redisService: RedisService) {
         super();
     }
 
@@ -33,14 +33,12 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
             console.log('Cookie found, loading session ...');
 
-
-            const data: IMap<any> = await this.sessionService.getSession(cookieId);
+            const data: IMap<any> = await this.redisService.getObject(cookieId);
 
             if (!data) {
                 console.log('No data found')
                 res.cookie(this.COOKIE_NAME, cookieId, { expires: new Date(Date.now()) })
-            }
-            else {
+            } else {
                 const body: PenaltyReferenceDetails = {
                     companyNumber: data[this.COMPANY_NUMBER],
                     penaltyReference: data[this.PENALTY_REFERENCE]
@@ -68,7 +66,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         if (validationResult.errors.length < 1) {
 
-            const cookieId: string = req.cookies[this.COOKIE_NAME];
+            let cookieId: string = req.cookies[this.COOKIE_NAME];
 
             const data: IMap<any> = {
                 penaltyReference: body.penaltyReference,
@@ -76,22 +74,18 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             }
 
             if (!cookieId) {
-                console.log('No cookie found, creating session ...');
 
-                await this.sessionService.createSession(data).then(v => {
-                    res.cookie(this.COOKIE_NAME, this.COOKIE_ID);
-
-                });
-                return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
+                cookieId = this.generateCookieId();
+                res.cookie(this.COOKIE_NAME, this.COOKIE_ID);
             }
-            else {
-                await this.sessionService.updateSession(data, cookieId).then(v => {
-                    console.log('Updated session')
-                    console.log(validationResult)
 
-                });
-                return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
-            }
+            await this.redisService.setObject(cookieId, data).then(v => {
+                console.log('Updated session')
+                console.log(validationResult)
+
+            });
+            return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
+
 
         } else {
             console.log('Errors found')
@@ -99,6 +93,10 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
                 this.PENALTY_TEMPLATE, { cache: false, ...body, validationResult });
         }
 
+    }
+
+    generateCookieId(): string {
+        return '1';
     }
 
 }
