@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
+import { BAD_REQUEST } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
-import { Validate } from '../utils/Validate'
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { IMap } from '../models/types';
-import { ValidationResult } from '../models/ValidationResult';
+import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberUtils';
 import { RedisService } from '../services/RedisService';
+import { SchemaValidator } from '../utils/validation/SchemaValidator';
+import { penaltyDetailsSchema } from '../utils/Schemas';
+import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 
 
 @controller(PENALTY_DETAILS_PREFIX)
@@ -60,7 +62,9 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             penaltyReference: req.body.penaltyReference
         }
 
-        const validationResult: ValidationResult = Validate.validate(body);
+        const validator = new SchemaValidator(penaltyDetailsSchema);
+
+        const validationResult: ValidationResult =   validator.validate(body);
 
         console.log(validationResult)
 

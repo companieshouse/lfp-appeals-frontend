@@ -5,8 +5,12 @@ import { createSubstituteOf } from '../SubstituteFactory';
 
 import '../../src/controllers/PenaltyDetailsController';
 import { RedisService } from '../../src/services/RedisService';
-import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
 import { BAD_REQUEST, OK } from 'http-status-codes';
+
+interface PenaltyReferenceDetails{
+    companyNumber: string;
+    penaltyReference: string;
+  }
 
 const app = createApplication(container => {
     container
