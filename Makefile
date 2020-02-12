@@ -22,6 +22,10 @@ build:	package-install lint
 lint:
 	npm run lint
 
+.PHONY: sonar
+sonar:
+#	npm run sonarqube
+
 .PHONY: test
 test: test-unit
 
