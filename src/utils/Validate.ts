@@ -1,7 +1,7 @@
 import { penaltyDetailsSchema } from './Schemas';
 import Joi = require('@hapi/joi');
-import { ValidationResult } from '../models/ValidationResult';
-import { ValidationError } from '../models/ValidationError';
+import { ValidationResult } from '../utils/validation/ValidationResult';
+import { ValidationError } from '../utils/validation/ValidationError';
 
 
 export class Validate{
