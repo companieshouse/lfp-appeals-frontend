@@ -12,7 +12,7 @@ clean:
 	rm -f ./build.log
 
 package-install:
-	npm i
+	npm install
 
 .PHONY: build
 build:	package-install lint
