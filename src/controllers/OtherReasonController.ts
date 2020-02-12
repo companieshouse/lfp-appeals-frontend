@@ -1,10 +1,11 @@
 import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils';
+import { OTHER_REASON_PAGE } from '../utils/Paths';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { OtherReason } from '../models/OtherReason';
 import { schema } from '../models/OtherReason.schema';
 
-@controller('/other-reason')
+@controller(OTHER_REASON_PAGE)
 export class OtherReasonController extends BaseHttpController {
 
     @httpGet('')
