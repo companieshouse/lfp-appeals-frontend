@@ -4,7 +4,7 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
-import { sanitize } from '../utils/CompanyNumberUtils';
+import { sanitize } from '../utils/PenaltyDetailsUtils';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
@@ -52,7 +52,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     public async createPenaltyDetails(): Promise<any> {
 
         const body: PenaltyReferenceDetails = {
-            companyNumber: sanitize(this.httpContext.request.body.companyNumber),
+            companyNumber: this.httpContext.request.body.companyNumber,
             penaltyReference: this.httpContext.request.body.penaltyReference
         };
 
@@ -71,7 +71,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             this.httpContext.response.cookie(this.COOKIE_NAME, cookieId);
         }
 
-        await this.redisService.setObject(cookieId, body);
+        await this.redisService.setObject(cookieId, sanitize(body));
 
         return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
     }
