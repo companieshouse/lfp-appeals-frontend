@@ -36,7 +36,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
 
   app.set('view engine', 'njk');
     nunjucks.configure([
-      'src/views',
+      'build/views',
       'node_modules/govuk-frontend',
       'node_modules/govuk-frontend/components',
     ], {
