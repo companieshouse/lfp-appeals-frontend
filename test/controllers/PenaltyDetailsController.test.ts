@@ -6,11 +6,7 @@ import { createSubstituteOf } from '../SubstituteFactory';
 import '../../src/controllers/PenaltyDetailsController';
 import { RedisService } from '../../src/services/RedisService';
 import { BAD_REQUEST, OK } from 'http-status-codes';
-
-interface PenaltyReferenceDetails{
-    companyNumber: string;
-    penaltyReference: string;
-  }
+import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
 
 const app = createApplication(container => {
     container
