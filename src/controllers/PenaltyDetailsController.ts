@@ -1,6 +1,6 @@
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BAD_REQUEST } from 'http-status-codes';
+import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { IMap } from '../models/types';
@@ -42,6 +42,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             if (!data) {
                 this.httpContext.response.cookie(this.COOKIE_NAME, cookieId, { expires: new Date(Date.now()) })
             } else {
+
                 body = {
                     companyNumber: data[this.COMPANY_NUMBER],
                     penaltyReference: data[this.PENALTY_REFERENCE]
@@ -65,11 +66,9 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
 
-        console.log(validationResult)
-
         if (validationResult.errors.length > 0) {
 
-            return await this.renderWithStatus(BAD_REQUEST)(
+            return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
                 this.PENALTY_TEMPLATE, { cache: false, ...body, validationResult });
         }
 
