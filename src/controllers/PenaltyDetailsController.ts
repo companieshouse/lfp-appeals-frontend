@@ -8,8 +8,8 @@ import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberUtils';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { penaltyDetailsSchema } from '../utils/Schemas';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
+import { schema } from '../models/PenaltyReferenceDetails.schema';
 
 
 @controller(PENALTY_DETAILS_PREFIX)
@@ -63,7 +63,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             penaltyReference: request.body.penaltyReference
         }
 
-        const validationResult: ValidationResult = new SchemaValidator(penaltyDetailsSchema).validate(body);
+        const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
 
         console.log(validationResult)
 
