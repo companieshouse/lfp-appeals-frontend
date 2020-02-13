@@ -11,9 +11,7 @@ import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetail
 
 const app = createApplication(container => {
     container
-        .bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-            service.ping().returns(true)
-        }));
+        .bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => { service }));
 });
 
 
@@ -30,7 +28,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 200 when trying to access the penalty-reference page with a session', async () => {
 
-            const penaltyDetails: PenaltyReferenceDetails = {
+            const penaltyDetails: Record<string, any> = {
                 penaltyReference: 'A12345678',
                 companyNumber: 'SC123123'
             };
@@ -52,7 +50,7 @@ describe('PenaltyDetailsController', () => {
     });
 
     describe('POST request', () => {
-        it('should return 200 when posting valid penalty details', async () => {
+        it('should return 302 when posting valid penalty details', async () => {
 
             const penaltyDetails: PenaltyReferenceDetails = {
                 penaltyReference: 'A12345678',
@@ -69,6 +67,7 @@ describe('PenaltyDetailsController', () => {
             await request(app).post('/penalty-reference')
                 .send(penaltyDetails)
                 .expect(response => {
+                    expect(response.get('Set-Cookie')).to.contain('penalty-cookie=1; Path=/')
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY)
                 });
 
@@ -82,8 +81,54 @@ describe('PenaltyDetailsController', () => {
             };
             await request(app).post('/penalty-reference')
                 .send(penaltyDetails)
-                .expect(UNPROCESSABLE_ENTITY);
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('You must enter a penalty reference number');
+                });
+
         });
 
+        it('should return 400 when posting invalid penalty reference', async () => {
+
+            const penaltyDetails: PenaltyReferenceDetails = {
+                penaltyReference: '12345678',
+                companyNumber: 'SC123123'
+            };
+            await request(app).post('/penalty-reference')
+                .send(penaltyDetails)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('You must enter your reference number exactly as shown on your penalty notice');
+                });
+
+        });
+
+        it('should return 400 when posting empty company number', async () => {
+
+            const penaltyDetails: PenaltyReferenceDetails = {
+                penaltyReference: 'A12345678',
+                companyNumber: ''
+            };
+            await request(app).post('/penalty-reference')
+                .send(penaltyDetails)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('You must enter a company number');
+                });
+        });
+
+        it('should return 400 when posting invalid company number', async () => {
+
+            const penaltyDetails: PenaltyReferenceDetails = {
+                penaltyReference: 'A12345678',
+                companyNumber: 'AB66666666'
+            };
+            await request(app).post('/penalty-reference')
+                .send(penaltyDetails)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('You must enter your full eight character company number');
+                });
+        });
     });
 });
