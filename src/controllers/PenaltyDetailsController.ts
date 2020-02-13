@@ -18,7 +18,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     private PENALTY_REFERENCE: string = 'penaltyReference';
     private COOKIE_NAME: string = 'penalty-cookie';
     private COOKIE_ID: string = '1';
-    private PENALTY_TEMPLATE: string = 'penaltydetails';
+    private PENALTY_TEMPLATE: string = 'penalty-details';
 
     constructor(@inject(RedisService) private readonly redisService: RedisService) {
         super();
