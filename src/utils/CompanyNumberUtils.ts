@@ -1,4 +1,4 @@
-const COMPANY_NUMBER_SIZE = 8
+const COMPANY_NUMBER_SIZE: number = 8
 
 export const sanitize = (companyNumber: string): string => {
     if (companyNumber.length === 0) return companyNumber;
