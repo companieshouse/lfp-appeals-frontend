@@ -29,5 +29,4 @@ describe('SchemaValidator', () => {
             expect(validationResult.errors).to.be.deep.equal([new ValidationError('city', '"city" is required')]);
         });
     });
-
 });

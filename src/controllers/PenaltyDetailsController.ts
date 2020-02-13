@@ -3,9 +3,8 @@ import { inject } from 'inversify';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { IMap } from '../models/types';
 import { ValidationResult } from '../utils/validation/ValidationResult';
-import { sanitize } from '../utils/CompanyNumberUtils';
+import { sanitize } from '../utils/PenaltyDetails';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
@@ -18,8 +17,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     private COMPANY_NUMBER: string = 'companyNumber';
     private PENALTY_REFERENCE: string = 'penaltyReference';
     private COOKIE_NAME: string = 'penalty-cookie';
-    private COOKIE_ID: string = '1';
-    private PENALTY_TEMPLATE: string = 'penaltydetails';
+    private PENALTY_TEMPLATE: string = 'penalty-details';
 
     constructor(@inject(RedisService) private readonly redisService: RedisService) {
         super();
@@ -33,16 +31,12 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         let body: PenaltyReferenceDetails = {
             companyNumber: '',
             penaltyReference: ''
-        }
+        };
 
         if (cookieId) {
+            const data: Record<string, any> = await this.redisService.getObject(cookieId);
 
-            const data: IMap<any> = await this.redisService.getObject(cookieId);
-
-            if (!data) {
-                this.httpContext.response.cookie(this.COOKIE_NAME, cookieId, { expires: new Date(Date.now()) })
-            } else {
-
+            if (data) {
                 body = {
                     companyNumber: data[this.COMPANY_NUMBER],
                     penaltyReference: data[this.PENALTY_REFERENCE]
@@ -57,42 +51,28 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     @httpPost('')
     public async createPenaltyDetails(): Promise<any> {
 
-        const request = this.httpContext.request;
-
         const body: PenaltyReferenceDetails = {
-            companyNumber: request.body.companyNumber,
-            penaltyReference: request.body.penaltyReference
-        }
+            companyNumber: this.httpContext.request.body.companyNumber,
+            penaltyReference: this.httpContext.request.body.penaltyReference
+        };
 
         const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
 
         if (validationResult.errors.length > 0) {
 
             return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                this.PENALTY_TEMPLATE, { cache: false, ...body, validationResult });
+                this.PENALTY_TEMPLATE, { ...body, validationResult });
         }
 
-        let cookieId: string = request.cookies[this.COOKIE_NAME];
+        let cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
 
         if (!cookieId) {
-
-            cookieId = this.generateCookieId();
-            this.httpContext.response.cookie(this.COOKIE_NAME, this.COOKIE_ID);
+            cookieId = '1';
+            this.httpContext.response.cookie(this.COOKIE_NAME, cookieId);
         }
 
-        const data: IMap<any> = {
-            companyNumber: sanitize(body.companyNumber),
-            penaltyReference: body.penaltyReference
-        }
-
-
-        await this.redisService.setObject(cookieId, data);
+        await this.redisService.setObject(cookieId, sanitize(body));
 
         return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
     }
-
-    generateCookieId(): string {
-        return '1';
-    }
-
 }
