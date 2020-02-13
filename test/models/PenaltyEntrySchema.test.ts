@@ -2,12 +2,12 @@
 import { expect } from 'chai';
 import { SchemaValidator } from '../../src/utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
-import { penaltyDetailsSchema } from '../../src/models/PenaltyEntry.schema';
+import { schema } from '../../src/models/PenaltyReferenceDetails.schema'
 
 
 describe('Penalty Details Schema Validation', () => {
 
-    const validator = new SchemaValidator(penaltyDetailsSchema);
+    const validator = new SchemaValidator(schema);
 
     it('should return no errors to two correct inputs', () => {
 
@@ -31,7 +31,7 @@ describe('Penalty Details Schema Validation', () => {
             errors:[
                 {field: 'companyNumber',text : 'You must enter a company number'},
                 {field: 'penaltyReference',text: 'You must enter a penalty reference number'}]
-    }
+        }
         expect(result).to.deep.equal(expectedResult)
     });
 
