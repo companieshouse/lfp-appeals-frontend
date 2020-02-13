@@ -60,7 +60,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const request = this.httpContext.request;
 
         const body: PenaltyReferenceDetails = {
-            companyNumber: sanitize(request.body.companyNumber),
+            companyNumber: request.body.companyNumber,
             penaltyReference: request.body.penaltyReference
         }
 
@@ -81,8 +81,8 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         }
 
         const data: IMap<any> = {
-            penaltyReference: body.penaltyReference,
-            companyNumber: body.companyNumber
+            companyNumber: sanitize(body.companyNumber),
+            penaltyReference: body.penaltyReference
         }
 
         await this.redisService.setObject(cookieId, data);
