@@ -1,8 +1,9 @@
 
 import { expect } from 'chai';
 import { SchemaValidator } from '../../src/utils/validation/SchemaValidator';
-import { penaltyDetailsSchema } from '../../src/utils/Schemas';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
+import { penaltyDetailsSchema } from '../../src/models/PenaltyEntry.schema';
+
 
 describe('Penalty Details Schema Validation', () => {
 
@@ -154,15 +155,67 @@ describe('Penalty Details Schema Validation', () => {
         expect(result).to.deep.equal(expectedResult)
     });
 
-    it('should return errors for company numbers with more than 8 total characters', () => {
+    it('should return errors for company numbers with only a spaces', () => {
 
         const penaltyDetails: PenaltyReferenceDetails = {
             penaltyReference: 'L12345678',
-            companyNumber: '123213123123'
+            companyNumber: ' '
         };
         const result = validator.validate(penaltyDetails)
         const expectedResult = {
                 errors:[{field: 'companyNumber', text : 'You must enter your full eight character company number'}]
+        }
+        expect(result).to.deep.equal(expectedResult)
+    });
+
+    it('should return errors for correct company numbers with spaces', () => {
+
+        const penaltyDetails: PenaltyReferenceDetails = {
+            penaltyReference: 'L12345678',
+            companyNumber: 'SC 12 34 56'
+        };
+        const result = validator.validate(penaltyDetails)
+        const expectedResult = {
+                errors:[{field: 'companyNumber', text : 'You must enter your full eight character company number'}]
+        }
+        expect(result).to.deep.equal(expectedResult)
+    });
+
+    it('should return errors for correct penalty references with spaces ', () => {
+
+        const penaltyDetails: PenaltyReferenceDetails = {
+            penaltyReference: 'L12 34 56 78',
+            companyNumber: '12312312'
+        };
+        const result = validator.validate(penaltyDetails)
+        const expectedResult = {
+                errors:[{field: 'penaltyReference', text: 'You must enter your reference number exactly as shown on your penalty notice'}]
+        }
+        expect(result).to.deep.equal(expectedResult)
+    });
+
+    it('should return errors for symbols in company number', () => {
+
+        const penaltyDetails: PenaltyReferenceDetails = {
+            penaltyReference: 'L12345678',
+            companyNumber: 'SC12$$56'
+        };
+        const result = validator.validate(penaltyDetails)
+        const expectedResult = {
+                errors:[{field: 'companyNumber', text : 'You must enter your full eight character company number'}]
+        }
+        expect(result).to.deep.equal(expectedResult)
+    });
+
+    it('should return errors for symbols in penaltyReference', () => {
+
+        const penaltyDetails: PenaltyReferenceDetails = {
+            penaltyReference: 'L12*45678',
+            companyNumber: '12345678'
+        };
+        const result = validator.validate(penaltyDetails)
+        const expectedResult = {
+                errors:[{field: 'penaltyReference', text: 'You must enter your reference number exactly as shown on your penalty notice'}]
         }
         expect(result).to.deep.equal(expectedResult)
     });

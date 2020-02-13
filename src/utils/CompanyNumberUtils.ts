@@ -1,7 +1,8 @@
 const COMPANY_NUMBER_SIZE = 8
 
 export const sanitize = (companyNumber: string): string => {
-    if (companyNumber.length === 0) return companyNumber
+    if (companyNumber.length === 0) return companyNumber;
+    if (!(/^[a-zA-Z0-9]+$/.test(companyNumber))) return companyNumber;
     return padNumber(companyNumber.toUpperCase())
 }
 

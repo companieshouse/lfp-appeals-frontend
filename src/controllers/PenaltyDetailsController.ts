@@ -8,8 +8,8 @@ import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberUtils';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { penaltyDetailsSchema } from '../utils/Schemas';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
+import { penaltyDetailsSchema } from '../models/PenaltyEntry.schema';
 
 
 @controller(PENALTY_DETAILS_PREFIX)
