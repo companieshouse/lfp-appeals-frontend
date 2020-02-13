@@ -1,0 +1,64 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}
+  Appealing for other reasons
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary({
+          titleText: 'There is a problem with the information you entered',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
+
+      <form method="post">
+        <h1 class="govuk-heading-xl">Tell us why you’re appealing this penalty</h1>
+        <p class="govuk-body-l">Anything you tell us to support your appeal will be kept confidential.</p>
+
+        {{
+          govukInput({
+            label: {
+              text: 'Short title for the reason'
+            },
+            id: 'title',
+            name: 'title',
+            value: title | default(''),
+            errorMessage: validationResult.getErrorForField('title') if validationResult,
+            autocomplete: 'off'
+          })
+        }}
+
+        {{
+          govukTextarea({
+            label: {
+              text: 'Detailed description of the reason'
+            },
+            id: 'description',
+            name: 'description',
+            value: description | default(''),
+            errorMessage: validationResult.getErrorForField('description') if validationResult,
+            rows: 8,
+            autocomplete: 'off'
+          })
+        }}
+
+        {{
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
