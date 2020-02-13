@@ -2,6 +2,6 @@ $govuk-global-styles: true;
 
 @import 'govuk-frontend/govuk/all';
 
-@import "patterns/text-input";
 @import 'patterns/related-items';
-@import 'other-reason/extra-styles';
+@import 'pages/penalty-details';
+@import 'pages/other-reason-disclaimer';
