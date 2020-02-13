@@ -4,7 +4,6 @@ import * as Joi from '@hapi/joi';
 import { SchemaValidator } from '../../../src/utils/validation/SchemaValidator';
 import { ValidationError } from '../../../src/utils/validation/ValidationError';
 
-
 describe('SchemaValidator', () => {
     describe('instance creation', () => {
         [undefined, null].forEach(invalidValue => {
@@ -14,7 +13,7 @@ describe('SchemaValidator', () => {
         });
     });
 
-    describe('demo validation', () => {
+    describe('validation', () => {
         const schema = Joi.object({
             city: Joi.string().required()
         });
