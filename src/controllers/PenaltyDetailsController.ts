@@ -4,7 +4,7 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
-import { sanitize } from '../utils/PenaltyDetails';
+import { sanitize } from '../utils/PenaltyDetailsUtils';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';

@@ -1,6 +1,5 @@
-import {sanitize} from '../../src/utils/PenaltyDetails'
+import {sanitize} from '../../src/utils/PenaltyDetailsUtils'
 import { expect } from 'chai'
-import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails'
 
 
 
