@@ -15,7 +15,7 @@
     "sass:watch": "gulp sass:watch",
     "lint": "./node_modules/.bin/tslint -c tslint.json -p tsconfig.json",
     "lint:scss": "sass-lint './src/public/sass/**/*.scss' --verbose --ignore 'node_modules/**/*.scss'",
-    "test": "mocha test/**/*.test.ts"
+    "test": "mocha 'test/**/*.test.ts'"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.0",
@@ -31,10 +31,11 @@
     "inversify-express-utils": "^6.3.2",
     "nunjucks": "^3.2.0",
     "redis": "^3.0.2",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@fluffy-spoon/substitute": "^1.107.0",
+    "@fluffy-spoon/substitute": "^1.109.0",
     "@types/body-parser": "^1.19.0",
     "@types/chai": "^4.2.9",
     "@types/cookie-parser": "^1.4.2",
