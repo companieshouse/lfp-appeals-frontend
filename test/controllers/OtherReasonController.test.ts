@@ -17,7 +17,9 @@ describe('OtherReasonController', () => {
     describe('GET request', () => {
         it('should return 200 response', async () => {
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>())
+                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
+                    service.get('session::other-reason').returns(Promise.resolve('{}'))
+                }))
             });
             await request(app).get(OTHER_REASON_PAGE)
                 .expect(response => {
@@ -49,7 +51,9 @@ describe('OtherReasonController', () => {
             const description = 'Some description';
 
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>())
+                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
+                    service.set('session::other-reason', JSON.stringify({ title, description })).returns(Promise.resolve())
+                }))
             });
             await request(app).post(OTHER_REASON_PAGE)
                 .send({ title, description })
