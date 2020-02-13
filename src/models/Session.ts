@@ -1,16 +1,13 @@
-import { IMap } from './types';
-
-
 interface ISession {
     cookieId: string
-    data: IMap<any>
+    data: Record<string, any>
 }
 
 export class Session{
     private _cookieId: string;
-    private _data: IMap<any>;
+    private _data: Record<string, any>;
 
-    constructor (cookieId: string, data: IMap<any>) {
+    constructor (cookieId: string, data: Record<string, any>) {
         this._data = data
         this._cookieId = cookieId;
 
@@ -24,11 +21,11 @@ export class Session{
         this._cookieId = cookieId;
       }
 
-      set data(data: IMap<any>) {
+      set data(data: Record<string, any>) {
         this._data = data;
       }
 
-      get data(): IMap<any> {
+      get data(): Record<string, any> {
         return this._data;
       }
 }

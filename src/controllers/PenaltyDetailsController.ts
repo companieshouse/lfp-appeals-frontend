@@ -3,7 +3,6 @@ import { inject } from 'inversify';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { IMap } from '../models/types';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberUtils';
 import { RedisService } from '../services/RedisService';
@@ -37,7 +36,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         if (cookieId) {
 
-            const data: IMap<any> = await this.redisService.getObject(cookieId);
+            const data: Record<string, any> = await this.redisService.getObject(cookieId);
 
             if (!data) {
                 this.httpContext.response.cookie(this.COOKIE_NAME, cookieId, { expires: new Date(Date.now()) })
@@ -80,7 +79,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             this.httpContext.response.cookie(this.COOKIE_NAME, this.COOKIE_ID);
         }
 
-        const data: IMap<any> = {
+        const data: Record<string, any> = {
             penaltyReference: body.penaltyReference,
             companyNumber: body.companyNumber
         }
