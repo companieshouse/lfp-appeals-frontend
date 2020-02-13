@@ -1,5 +1,4 @@
 import { PenaltyReferenceDetails } from 'src/models/PenaltyReferenceDetails';
-import { PenaltyDetailsController } from 'src/controllers/PenaltyDetailsController';
 
 const COMPANY_NUMBER_SIZE: number = 8
 
@@ -16,13 +15,12 @@ export const sanitize = (penaltyDetails: PenaltyReferenceDetails): PenaltyRefere
 const padNumber = (companyNumber: string): string => {
 
     if(/^([a-zA-Z]{2}?)/gm.test(companyNumber)){
-        const padFrom = 2
 
-        const leadingChars = companyNumber.substring(0,padFrom)
+        const leadingChars = companyNumber.substring(0,2)
 
         const trailingChars = companyNumber
-            .substring(padFrom, companyNumber.length)
-            .padStart(COMPANY_NUMBER_SIZE - padFrom, '0');
+            .substring(2, companyNumber.length)
+            .padStart(6, '0');
 
         return leadingChars + trailingChars
 
