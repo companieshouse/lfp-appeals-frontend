@@ -1,6 +1,7 @@
 import {sanitize} from '../../src/utils/CompanyNumberUtils'
 import { expect } from 'chai'
 
+
 describe('Sanitize function', () => {
     it('should pad after first 2 leading characters', () =>{
         const result = sanitize('SC123')
@@ -41,4 +42,5 @@ describe('Sanitize function', () => {
         const expectedResult = 'SC345678910'
         expect(result).to.be.deep.equal(expectedResult);
     })
+
 })

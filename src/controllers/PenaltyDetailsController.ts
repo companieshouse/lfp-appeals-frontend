@@ -66,8 +66,6 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         const validationResult: ValidationResult =   validator.validate(body);
 
-        console.log(validationResult)
-
         if (validationResult.errors.length < 1) {
 
             let cookieId: string = req.cookies[this.COOKIE_NAME];
@@ -85,7 +83,6 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
             await this.redisService.setObject(cookieId, data).then(v => {
                 console.log('Updated session')
-                console.log(validationResult)
 
             });
             return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
