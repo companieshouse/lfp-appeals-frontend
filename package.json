@@ -34,7 +34,7 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@fluffy-spoon/substitute": "^1.107.0",
+    "@fluffy-spoon/substitute": "^1.109.0",
     "@types/body-parser": "^1.19.0",
     "@types/chai": "^4.2.9",
     "@types/cookie-parser": "^1.4.2",
