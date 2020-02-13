@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import '../../src/controllers/OtherReasonDisclaimerController'
 import { createApplication } from '../ApplicationFactory';
-import { OTHER_REASON_PAGE_URL } from '../../src/utils/Paths';
+import { OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths';
 import * as request from 'supertest'
 import { RedisService } from '../../src/services/RedisService';
 import { createSubstituteOf } from '../SubstituteFactory';
@@ -13,6 +13,6 @@ describe('OtherReasonDisclaimerController', () => {
                 service.ping().returns(true)
             }));
         });
-        await request(app).get(OTHER_REASON_PAGE_URL).expect(200);
+        await request(app).get(OTHER_REASON_DISCLAIMER_PAGE_URI).expect(200);
     });
 });

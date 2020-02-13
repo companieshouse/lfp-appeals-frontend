@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { createApplication } from '../ApplicationFactory';
 
 import '../../src/controllers/OtherReasonController';
-import { OTHER_REASON_PAGE } from '../../src/utils/Paths';
+import { OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
 import { RedisService } from '../../src/services/RedisService';
 import { createSubstituteOf } from '../SubstituteFactory';
 
@@ -21,7 +21,7 @@ describe('OtherReasonController', () => {
                     service.get('session::other-reason').returns(Promise.resolve('{}'))
                 }))
             });
-            await request(app).get(OTHER_REASON_PAGE)
+            await request(app).get(OTHER_REASON_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(200);
                     expect(response.text).to.include(pageHeading)
@@ -35,7 +35,7 @@ describe('OtherReasonController', () => {
             const app = createApplication(container => {
                 container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>())
             });
-            await request(app).post(OTHER_REASON_PAGE)
+            await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({})
                 .expect(response => {
                     expect(response.status).to.be.equal(200);
@@ -55,7 +55,7 @@ describe('OtherReasonController', () => {
                     service.set('session::other-reason', JSON.stringify({ title, description })).returns(Promise.resolve())
                 }))
             });
-            await request(app).post(OTHER_REASON_PAGE)
+            await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({ title, description })
                 .expect(response => {
                     expect(response.status).to.be.equal(200);
