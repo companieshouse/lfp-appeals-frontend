@@ -85,6 +85,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             penaltyReference: body.penaltyReference
         }
 
+
         await this.redisService.setObject(cookieId, data);
 
         return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();

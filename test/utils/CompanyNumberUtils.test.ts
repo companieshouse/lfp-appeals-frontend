@@ -20,11 +20,6 @@ describe('Penalty Entry Sanitize function', () => {
         const expectedResult = 'SC000123'
         expect(result).to.be.deep.equal(expectedResult);
     })
-    it('should not pad empty inputs', () =>{
-        const result = sanitize('')
-        const expectedResult = ''
-        expect(result).to.be.deep.equal(expectedResult);
-    })
     it('should not pad 8 character inputs with only numbers', () =>{
         const result = sanitize('12345678')
         const expectedResult = '12345678'
@@ -42,23 +37,4 @@ describe('Penalty Entry Sanitize function', () => {
         const expectedResult = 'SC345678910'
         expect(result).to.be.deep.equal(expectedResult);
     })
-
-    it('should not modify non alphanumeric strings [spaces]', () =>{
-        const result = sanitize('SC345 678910')
-        const expectedResult = 'SC345 678910'
-        expect(result).to.be.deep.equal(expectedResult);
-    })
-
-    it('should not modify non alphanumeric strings [symbols]', () =>{
-        const result = sanitize('SC3£$')
-        const expectedResult = 'SC3£$'
-        expect(result).to.be.deep.equal(expectedResult);
-    })
-
-    it('should not modify non alphanumeric strings [spaces and symbols]', () =>{
-        const result = sanitize('S C3£ $45')
-        const expectedResult = 'S C3£ $45'
-        expect(result).to.be.deep.equal(expectedResult);
-    })
-
 })
