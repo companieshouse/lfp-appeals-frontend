@@ -14,6 +14,6 @@ export class OtherReasonDisclaimerController extends BaseHttpController {
 
     @httpPost('')
     public continue(): void {
-        this.httpContext.response.redirect('/other/reason-other');
+        this.httpContext.response.redirect(OTHER_REASON_PAGE_URI);
     }
 }
