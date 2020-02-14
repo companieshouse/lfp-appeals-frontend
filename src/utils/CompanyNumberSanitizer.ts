@@ -1,7 +1,17 @@
 const COMPANY_NUMBER_SIZE: number = 8;
 
 export const sanitize = (companyNumber: string): string => {
-    return padNumber(companyNumber.toUpperCase());
+    if (!companyNumber) {
+        throw new Error('Company number is required');
+    }
+
+    companyNumber = companyNumber.toUpperCase();
+    companyNumber = stripWhitespaces(companyNumber);
+    return padNumber(companyNumber);
+};
+
+const stripWhitespaces = (companyNumber: string): string => {
+    return companyNumber.replace(/\s/g, '')
 };
 
 const padNumber = (companyNumber: string): string => {

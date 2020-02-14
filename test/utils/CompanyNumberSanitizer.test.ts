@@ -2,6 +2,18 @@ import { expect } from 'chai'
 import { sanitize } from '../../src/utils/CompanyNumberSanitizer'
 
 describe('CompanyNumberSanitizer', () => {
+    it('should throw error when company number undefined or empty', () =>{
+        [undefined, null, ''].forEach(missingValue => {
+            expect(() => sanitize(missingValue as string)).to.throw('Company number is required')
+        })
+    });
+
+    it('should trim whitespaces', () => {
+        [' NI000123', 'NI000123 ', ' NI000123 ', 'NI 00 01 23'].forEach(valueWithWhitespaces => {
+            const result = sanitize(valueWithWhitespaces);
+            expect(result).to.be.equal('NI000123');
+        });
+    });
 
     it('should uppercase lowercase characters', () =>{
         const result = sanitize('ni000123');
