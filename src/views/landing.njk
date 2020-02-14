@@ -25,13 +25,14 @@
       <h1 class="govuk-heading-xl">{{ serviceName }}</h1>
       <p class="govuk-body-l">Use this service to appeal a penalty issued to a company for not filing its annual accounts on time.</p>
       <p>It may take up to 30 minutes to complete this application.</p>
-      {{ 
-        govukButton({
-          text: "Start now",
-          href: "/penalty-reference",
-          isStartButton: true
-        }) 
+      <form method="post">
+        {{ 
+          govukButton({
+            text: "Start now",
+            isStartButton: true
+          }) 
       }}
+      </form>
       <h2 class="govuk-heading-m">Before you start</h2>
       <p>
         <a href="https://www.gov.uk/government/publications/late-filing-penalties/late-filing-penalties#appealing" target="_blank">Read the guidance on appealing a penalty.</a>
