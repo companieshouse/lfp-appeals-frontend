@@ -69,9 +69,9 @@ describe('PenaltyDetailsController', () => {
             await request(app).post(PENALTY_DETAILS_PREFIX)
                 .send(penaltyDetails)
                 .expect(response => {
-                    expect(response.get('Set-Cookie')).to.contain('penalty-cookie=1; Path=/');
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect('Location', OTHER_REASON_DISCLAIMER_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
+                    expect(response.get('Set-Cookie')).to.contain('penalty-cookie=1; Path=/');
                 });
         });
 
