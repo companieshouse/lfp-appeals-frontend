@@ -38,15 +38,13 @@
           <li>the directors live or were travelling overseas</li>
           <li>another director is responsible for preparing the accounts</li>
         </ul>
-        {{ 
-          govukButton({
-            text: "Continue with appeal",
-            href: "#",
-            classes: "govuk-link govuk-!-margin-top-5 govuk-link--interrupt"
-          }) 
-        }}
-        <p>
-          <a href="#" class="govuk-link">Save and sign out</a>
-        </p>
+        <form method="post">
+          {{ 
+            govukButton({
+              text: "Continue with appeal",
+              classes: "govuk-link govuk-!-margin-top-5 govuk-link--interrupt"
+            }) 
+          }}
+        </form>
   </div>
 {% endblock %}
