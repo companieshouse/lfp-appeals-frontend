@@ -1,7 +1,7 @@
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { PENALTY_DETAILS_PREFIX } from '../utils/Paths';
+import { PENALTY_DETAILS_PREFIX, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberSanitizer';
@@ -73,6 +73,6 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         await this.redisService.setObject(cookieId, { ...body, companyNumber: sanitize(body.companyNumber) });
 
-        return this.redirect(PENALTY_DETAILS_PREFIX).executeAsync();
+        return this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
     }
 }
