@@ -27,7 +27,7 @@ describe('OtherReasonDisclaimerController', () => {
             await request(app).post(OTHER_REASON_DISCLAIMER_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect('Location', OTHER_REASON_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(OTHER_REASON_PAGE_URI);
                 })
         });
     });
