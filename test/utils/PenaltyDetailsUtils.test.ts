@@ -4,12 +4,6 @@ import { expect } from 'chai'
 
 
 describe('Penalty Entry Sanitize function', () => {
-    it('should pad after first 2 leading characters', () =>{
-        const result = sanitize(({companyNumber: 'SC123', penaltyReference: ''}))
-        const expectedResult = sanitize(({companyNumber: 'SC000123', penaltyReference: ''}))
-        expect(result).to.be.deep.equal(expectedResult);
-    })
-
 
     it('should uppercase lowercase characters', () =>{
         const result = sanitize(({companyNumber: 'ni123', penaltyReference: ''}))
@@ -17,13 +11,13 @@ describe('Penalty Entry Sanitize function', () => {
         expect(result).to.be.deep.equal(expectedResult);
     })
 
-    it('should not pad 8 character inputs with only numbers', () =>{
+    it('should not pad full 8 digit numbers', () =>{
         const result = sanitize(({companyNumber: '12345678', penaltyReference: ''}))
         const expectedResult = sanitize(({companyNumber: '12345678', penaltyReference: ''}))
         expect(result).to.be.deep.equal(expectedResult);
     })
 
-    it('should not pad 8 character inputs with some letters', () =>{
+    it('should not pad full 2 letters and 6 digit numbers', () =>{
         const result = sanitize(({companyNumber: 'NI345678', penaltyReference: ''}))
         const expectedResult = sanitize(({companyNumber: 'NI345678', penaltyReference: ''}))
         expect(result).to.be.deep.equal(expectedResult);
@@ -32,6 +26,24 @@ describe('Penalty Entry Sanitize function', () => {
     it('should not pad inputs with more than 8 characters', () =>{
         const result = sanitize(({companyNumber: 'NI345678213', penaltyReference: ''}))
         const expectedResult = sanitize(({companyNumber: 'NI345678213', penaltyReference: ''}))
+        expect(result).to.be.deep.equal(expectedResult);
+    })
+
+    it('should pad 4 digits to 8 characters', () =>{
+        const result = sanitize(({companyNumber: '1234', penaltyReference: ''}))
+        const expectedResult = sanitize(({companyNumber: '00001234', penaltyReference: ''}))
+        expect(result).to.be.deep.equal(expectedResult);
+    })
+
+    it('should pad only digits when SC is leading number', () =>{
+        const result = sanitize(({companyNumber: 'SC1234', penaltyReference: ''}))
+        const expectedResult = sanitize(({companyNumber: 'SC001234', penaltyReference: ''}))
+        expect(result).to.be.deep.equal(expectedResult);
+    })
+
+    it('should pad only digits when NI is leading number', () =>{
+        const result = sanitize(({companyNumber: 'NI1234', penaltyReference: ''}))
+        const expectedResult = sanitize(({companyNumber: 'NI001234', penaltyReference: ''}))
         expect(result).to.be.deep.equal(expectedResult);
     })
 })
