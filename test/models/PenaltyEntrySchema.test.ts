@@ -111,8 +111,13 @@ describe('Penalty Details Schema Validation', () => {
         }
 
         describe('Happy path', () => {
-            it('should accept leading character', () => {
+            it('should accept uppercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('Z12345678'));
+                expect(result).to.deep.equal({errors: []})
+            });
+
+            it('should accept lowercase leading character', () => {
+                const result = validator.validate(createModelWithPenaltyReference('z12345678'));
                 expect(result).to.deep.equal({errors: []})
             });
         });
@@ -124,16 +129,6 @@ describe('Penalty Details Schema Validation', () => {
                     errors: [{
                         field: 'penaltyReference',
                         text: 'You must enter a penalty reference number'
-                    }]
-                })
-            });
-
-            it('should reject correct penalty reference in lowercase', () => {
-                const result = validator.validate(createModelWithPenaltyReference('b12345678'));
-                expect(result).to.deep.equal({
-                    errors: [{
-                        field: 'penaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 })
             });

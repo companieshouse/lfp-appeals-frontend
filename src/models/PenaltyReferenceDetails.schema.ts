@@ -10,7 +10,7 @@ export const schema= Joi.object({
         }),
     penaltyReference: Joi.string()
         .required()
-        .regex(/([A-Z]{1}[0-9]{8})$/)
+        .regex(/^([A-Z]{1}[0-9]{8})$/i)
         .messages({
             'string.empty': 'You must enter a penalty reference number',
             'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
