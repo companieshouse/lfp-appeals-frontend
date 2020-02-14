@@ -1,4 +1,4 @@
-export const ROOT = 'appeal-a-penalty';
+export const ROOT = '/appeal-a-penalty';
 
 export const OTHER_REASON_CATEGORY_PREFIX = `${ROOT}/other`;
 
