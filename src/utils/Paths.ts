@@ -1,5 +1,7 @@
 export const ROOT = '';
 
+export const PENALTY_DETAILS_PREFIX=`${ROOT}/penalty-reference`;
+
 export const OTHER_REASON_CATEGORY_PREFIX = `${ROOT}/other`;
 
 export const OTHER_REASON_DISCLAIMER_PAGE_PREFIX = '/other-reason-entry';
