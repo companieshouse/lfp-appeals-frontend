@@ -18,8 +18,18 @@ describe('ValidationError', () => {
     });
 
     describe('link building', () => {
-        it(`should prepend field name with '#' and append '-error' to field name`, () => {
+        it('should prepend field name with "#" and append "-error" to field name', () => {
             expect(new ValidationError('field', 'Unexpected error').href).to.be.equal('#field-error');
         });
+
+        it('should hyphenise field name when it is camel cased', () => {
+            expect(new ValidationError('longerField', 'Unexpected error').href).to.be.equal('#longer-field-error');
+            expect(new ValidationError('evenLongerField', 'Unexpected error').href).to.be.equal('#even-longer-field-error');
+            expect(new ValidationError('TheLongestField', 'Unexpected error').href).to.be.equal('#the-longest-field-error');
+        });
+
+        it('should not hyphenise field name when it is already hyphenised', () => {
+            expect(new ValidationError('longer-field', 'Unexpected error').href).to.be.equal('#longer-field-error');
+        })
     });
 });

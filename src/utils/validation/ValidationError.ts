@@ -1,3 +1,10 @@
+const hyphenise = (value: string): string => {
+    return value
+        .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
+        .toLowerCase();
+};
+
 export class ValidationError {
     constructor (public readonly field: string, public readonly text: string) {
         if (!field) {
@@ -9,6 +16,6 @@ export class ValidationError {
     }
 
     get href(): string {
-        return `#${this.field}-error`;
+        return `#${hyphenise(this.field)}-error`;
     }
 }
