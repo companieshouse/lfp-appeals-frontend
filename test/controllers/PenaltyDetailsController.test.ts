@@ -8,7 +8,7 @@ import { RedisService } from '../../src/services/RedisService';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { expect } from 'chai';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
-import { PENALTY_DETAILS_PREFIX } from '../../src/utils/Paths'
+import { PENALTY_DETAILS_PREFIX, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths'
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -54,7 +54,7 @@ describe('PenaltyDetailsController', () => {
     });
 
     describe('POST request', () => {
-        it('should return 302 when posting valid penalty details', async () => {
+        it('should return 302 and redirect to disclaimer page when posting valid penalty details', async () => {
             const penaltyDetails: PenaltyReferenceDetails = {
                 penaltyReference: 'A12345678',
                 companyNumber: 'SC123123'
@@ -69,8 +69,9 @@ describe('PenaltyDetailsController', () => {
             await request(app).post(PENALTY_DETAILS_PREFIX)
                 .send(penaltyDetails)
                 .expect(response => {
-                    expect(response.get('Set-Cookie')).to.contain('penalty-cookie=1; Path=/');
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
+                    expect(response.get('Set-Cookie')).to.contain('penalty-cookie=1; Path=/');
                 });
         });
 
