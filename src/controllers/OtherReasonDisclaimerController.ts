@@ -1,7 +1,7 @@
 import { controller, BaseHttpController, httpGet, httpPost } from 'inversify-express-utils';
-import { OTHER_REASON_PAGE_URI } from '../utils/Paths';
+import { OTHER_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 
-@controller(OTHER_REASON_PAGE_URI)
+@controller(OTHER_REASON_DISCLAIMER_PAGE_URI)
 export class OtherReasonDisclaimerController extends BaseHttpController {
     constructor() {
         super();
