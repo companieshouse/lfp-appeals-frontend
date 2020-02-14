@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
-import { ENTRY_PAGE_URI } from '../utils/Paths';
+import { LANDING_PAGE_URI, ENTRY_PAGE_URI } from '../utils/Paths';
 
-@controller('/')
+@controller(LANDING_PAGE_URI)
 export class LandingController extends BaseHttpController {
 
     @httpGet('')

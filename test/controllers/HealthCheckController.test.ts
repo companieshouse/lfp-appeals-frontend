@@ -6,6 +6,7 @@ import { createSubstituteOf } from '../SubstituteFactory';
 
 import '../../src/controllers/HealthCheckController'
 import { RedisService } from '../../src/services/RedisService';
+import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
 
 describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {
@@ -30,6 +31,6 @@ describe('HealthCheckController', () => {
 
     function makeHealthCheckRequest(app: Application): request.Test {
         return request(app)
-            .get('/healthcheck');
+            .get(HEALTH_CHECK_URI);
     }
 });
