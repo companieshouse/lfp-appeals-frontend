@@ -1,5 +1,7 @@
 export const ROOT = '';
 
+export const ENTRY_PREFIX = `${ROOT}/start`;
+
 export const PENALTY_DETAILS_PREFIX=`${ROOT}/penalty-reference`;
 
 export const OTHER_REASON_CATEGORY_PREFIX = `${ROOT}/other`;
