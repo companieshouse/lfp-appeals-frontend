@@ -82,6 +82,16 @@ describe('Penalty Details Schema Validation', () => {
                 })
             });
 
+            it('should reject company numbers with leading and trailing spaces', () => {
+                const result = validator.validate(createModelWithCompanyNumber(' SC123456 '));
+                expect(result).to.deep.equal({
+                    errors: [{
+                        field: 'companyNumber',
+                        text: 'You must enter your full eight character company number'
+                    }]
+                })
+            });
+
             it('should reject company numbers with spaces', () => {
                 const result = validator.validate(createModelWithCompanyNumber('SC 12 34 56'));
                 expect(result).to.deep.equal({
@@ -145,6 +155,16 @@ describe('Penalty Details Schema Validation', () => {
 
             it('should reject penalty references with less than 9 total characters', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L123456'));
+                expect(result).to.deep.equal({
+                    errors: [{
+                        field: 'penaltyReference',
+                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                    }]
+                })
+            });
+
+            it('should reject penalty references with leading and trailing spaces', () => {
+                const result = validator.validate(createModelWithPenaltyReference(' L12345678 '));
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'penaltyReference',
