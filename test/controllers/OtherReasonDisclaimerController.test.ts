@@ -13,9 +13,7 @@ describe('OtherReasonDisclaimerController', () => {
     describe('GET request', () => {
         it('should return 200 when trying to access the other-reason-entry page', async () => {
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-                    service.ping().returns(true)
-                }));
+                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
             });
             await request(app).get(OTHER_REASON_DISCLAIMER_PAGE_URI).expect(OK);
         });
@@ -24,9 +22,7 @@ describe('OtherReasonDisclaimerController', () => {
     describe('POST request', () => {
         it('should return 302 and redirect to reason-other page', async () => {
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-                    service.ping().returns(true)
-                }));
+                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
             });
             await request(app).post(OTHER_REASON_DISCLAIMER_PAGE_URI)
                 .expect(response => {
