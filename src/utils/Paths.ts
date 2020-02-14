@@ -1,6 +1,6 @@
 export const ROOT = '';
 
-export const ENTRY_PREFIX = `${ROOT}/start`;
+export const ENTRY_URI = `${ROOT}/start`;
 
 export const PENALTY_DETAILS_PREFIX=`${ROOT}/penalty-reference`;
 
