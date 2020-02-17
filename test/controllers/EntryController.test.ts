@@ -5,7 +5,7 @@ import * as request from 'supertest'
 import { RedisService } from '../../src/services/RedisService';
 import { createSubstituteOf } from '../SubstituteFactory';
 import { MOVED_TEMPORARILY  } from 'http-status-codes';
-import { ENTRY_URI, PENALTY_DETAILS_PREFIX} from '../../src/utils/Paths';
+import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from '../../src/utils/Paths';
 import { expect } from 'chai';
 
 describe('EntryController', () => {
@@ -15,9 +15,9 @@ describe('EntryController', () => {
             const app = createApplication(container => {
                 container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
             });
-            await request(app).get(ENTRY_URI).expect(response => {
+            await request(app).get(ENTRY_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                expect(response.get('Location')).to.be.equal(PENALTY_DETAILS_PREFIX);
+                expect(response.get('Location')).to.be.equal(PENALTY_DETAILS_PAGE_URI);
             });
         });
     });

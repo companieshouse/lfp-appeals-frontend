@@ -5,6 +5,7 @@ import * as nunjucks from 'nunjucks';
 import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
+import { ROOT_URI } from './Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -22,11 +23,10 @@ export const loadEnvironmentVariablesFromFiles = () => {
 };
 
 export const getExpressAppConfig = (directory: string) => (app: express.Application): void => {
-
-  app.use(express.static(path.join(directory, '/public')));
-  app.use(express.static(path.join(directory, '/node_modules/govuk-frontend')));
-  app.use(express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
-  app.use(express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
+  app.use(ROOT_URI, express.static(path.join(directory, '/public')));
+  app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
+  app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
+  app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
   app.use(handler);
 
@@ -43,5 +43,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
       autoescape: true,
       express: app,
     });
+
+    app.locals.ROOT_URI = ROOT_URI;
 };
 

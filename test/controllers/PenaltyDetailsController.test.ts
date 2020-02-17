@@ -8,7 +8,7 @@ import { RedisService } from '../../src/services/RedisService';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { expect } from 'chai';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
-import { PENALTY_DETAILS_PREFIX, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths'
+import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths'
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -21,7 +21,7 @@ describe('PenaltyDetailsController', () => {
     describe('GET request', () => {
 
         it('should return 200 when trying to access page without a session', async () => {
-            await request(app).get(PENALTY_DETAILS_PREFIX)
+            await request(app).get(PENALTY_DETAILS_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.contain(pageHeading)
@@ -41,7 +41,7 @@ describe('PenaltyDetailsController', () => {
                 }));
             });
 
-            await request(app).get(PENALTY_DETAILS_PREFIX)
+            await request(app).get(PENALTY_DETAILS_PAGE_URI)
                 .set('Cookie', ['penalty-cookie=1'])
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
@@ -66,7 +66,7 @@ describe('PenaltyDetailsController', () => {
                 }));
             });
 
-            await request(app).post(PENALTY_DETAILS_PREFIX)
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyDetails)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -81,7 +81,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            await request(app).post(PENALTY_DETAILS_PREFIX)
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyDetails)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -96,7 +96,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            await request(app).post(PENALTY_DETAILS_PREFIX)
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyDetails)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -111,7 +111,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: ''
             };
 
-            await request(app).post(PENALTY_DETAILS_PREFIX)
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyDetails)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -126,7 +126,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'AB66666666'
             };
 
-            await request(app).post(PENALTY_DETAILS_PREFIX)
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyDetails)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);

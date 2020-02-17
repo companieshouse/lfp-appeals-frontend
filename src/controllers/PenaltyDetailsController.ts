@@ -1,7 +1,7 @@
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { PENALTY_DETAILS_PREFIX, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberSanitizer';
@@ -11,7 +11,7 @@ import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { schema } from '../models/PenaltyReferenceDetails.schema';
 
 
-@controller(PENALTY_DETAILS_PREFIX)
+@controller(PENALTY_DETAILS_PAGE_URI)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
 
     private COMPANY_NUMBER: string = 'companyNumber';

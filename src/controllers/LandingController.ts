@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
-import { PENALTY_DETAILS_PREFIX, ENTRY_URI } from '../utils/Paths';
+import { ROOT_URI, ENTRY_PAGE_URI } from '../utils/Paths';
 
-@controller('/')
+@controller(ROOT_URI)
 export class LandingController extends BaseHttpController {
 
     @httpGet('')
@@ -12,6 +12,6 @@ export class LandingController extends BaseHttpController {
 
     @httpPost('')
     public continue(): void {
-        this.httpContext.response.redirect(ENTRY_URI);
+        this.httpContext.response.redirect(ENTRY_PAGE_URI);
     }
 }
