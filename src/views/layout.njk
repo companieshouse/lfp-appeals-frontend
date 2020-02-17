@@ -8,7 +8,7 @@
 
 {% block head %}
   <!--[if !IE 8]><!-->
-  <link href="/css/application.css" rel="stylesheet"/>
+  <link href="{{ ROOT_URI }}/css/application.css" rel="stylesheet"/>
   <!--<![endif]-->
 
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"
@@ -21,9 +21,9 @@
 {% block header %}
   {{
     govukHeader({
-      homepageUrl: "/appeals",
+      homepageUrl: ROOT_URI,
       serviceName: serviceName,
-      serviceUrl: "/appeals",
+      serviceUrl: ROOT_URI,
       containerClasses: "govuk-width-container"
     })
   }}
@@ -71,6 +71,6 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="/govuk/all.js"></script>
+  <script src="{{ ROOT_URI }}/govuk/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
 {% endblock %}
