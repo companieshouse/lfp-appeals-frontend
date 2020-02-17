@@ -10,8 +10,8 @@
 {% endblock %}
 
 {% block content %}
-  <div class='govuk-grid-row'>
-    <div class='govuk-grid-column-two-thirds'>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       {{
         govukErrorSummary({
           titleText: 'There is a problem with the information you entered',
@@ -19,9 +19,9 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      <form method='post'>
-        <h1 class='govuk-heading-xl'>Tell us why you’re appealing this penalty</h1>
-        <p class='govuk-body-l'>Anything you tell us to support your appeal will be kept confidential.</p>
+      <form method="post">
+        <h1 class="govuk-heading-xl">Tell us why you’re appealing this penalty</h1>
+        <p class="govuk-body-l">Anything you tell us to support your appeal will be kept confidential.</p>
 
         {{
           govukInput({

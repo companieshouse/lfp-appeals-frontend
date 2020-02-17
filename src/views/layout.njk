@@ -8,12 +8,12 @@
 
 {% block head %}
   <!--[if !IE 8]><!-->
-  <link href='{{ ROOT_URI }}/css/application.css' rel='stylesheet'/>
+  <link href="{{ ROOT_URI }}/css/application.css" rel="stylesheet"/>
   <!--<![endif]-->
 
-  <script src='https://code.jquery.com/jquery-1.12.4.min.js'
-          integrity='sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ='
-          crossorigin='anonymous'></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+          integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+          crossorigin="anonymous"></script>
 
   {% block download %}{% endblock %}
 {% endblock %}
@@ -71,6 +71,6 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src='{{ ROOT_URI }}/govuk/all.js'></script>
+  <script src="{{ ROOT_URI }}/govuk/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
 {% endblock %}
