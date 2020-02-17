@@ -1,8 +1,8 @@
-{% extends "layout.njk" %}
+{% extends 'layout.njk' %}
 
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/input/macro.njk"      import govukInput %}
-{% from "govuk/components/button/macro.njk"     import govukButton %}
+{% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
+{% from 'govuk/components/input/macro.njk'      import govukInput %}
+{% from 'govuk/components/button/macro.njk'     import govukButton %}
 
 
 {% block pageTitle %}
@@ -10,55 +10,55 @@
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+  <div class='govuk-grid-row'>
+    <div class='govuk-grid-column-two-thirds'>
         {{ 
           govukErrorSummary ({
-            titleText: "There is a problem with the details you gave us",
+            titleText: 'There is a problem with the details you gave us',
             errorList: validationResult.errors
           }) if validationResult and validationResult.errors.length > 0 
         }}
-      <h1 class="govuk-heading-xl">
+      <h1 class='govuk-heading-xl'>
         What are the penalty details?
       </h1>
-      <form method="post" action="">
+      <form method='post' action=''>
         {{ 
           govukInput({
             label: {
-              text: "Company number"
+              text: 'Company number'
             },
             hint: {
-              text: "This is the 8-character reference issued by Companies House when the company was set up."
+              text: 'This is the 8-character reference issued by Companies House when the company was set up.'
             },
-            errorMessage: validationResult.getErrorForField("companyNumber") if validationResult,
-            classes: "govuk-input--company-number",
-            id: "company-number",
-            name: "companyNumber",
+            errorMessage: validationResult.getErrorForField('companyNumber') if validationResult,
+            classes: 'govuk-input--company-number',
+            id: 'company-number',
+            name: 'companyNumber',
             value: companyNumber,
-            autocomplete: "off"
+            autocomplete: 'off'
           }) 
         }}
         {{ 
           govukInput({
             label: {
-              text: "Reference number"
+              text: 'Reference number'
             },
             hint: {
-              text: "This is the 9-character reference shown on the penalty notice."
+              text: 'This is the 9-character reference shown on the penalty notice.'
             },
-            errorMessage: validationResult.getErrorForField("penaltyReference") if validationResult,
-            classes: "govuk-input--penalty-reference",
-            id: "penalty-reference",
-            name: "penaltyReference",
+            errorMessage: validationResult.getErrorForField('penaltyReference') if validationResult,
+            classes: 'govuk-input--penalty-reference',
+            id: 'penalty-reference',
+            name: 'penaltyReference',
             value: penaltyReference,
-            autocomplete: "off"
+            autocomplete: 'off'
           }) 
         }}
         {{ 
           govukButton({
-            text: "Continue",
+            text: 'Continue',
             attributes: {
-              id: "submit"
+              id: 'submit'
             }
           }) 
         }}
