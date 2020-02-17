@@ -1,10 +1,10 @@
-{% extends 'govuk/template.njk' %}
+{% extends "govuk/template.njk" %}
 
-{% from 'govuk/components/footer/macro.njk'       import govukFooter %}
-{% from 'govuk/components/header/macro.njk'       import govukHeader %}
-{% from 'govuk/components/phase-banner/macro.njk' import govukPhaseBanner %}
+{% from "govuk/components/footer/macro.njk"       import govukFooter %}
+{% from "govuk/components/header/macro.njk"       import govukHeader %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
-{% set serviceName = 'Appeal a late filing penalty' %}
+{% set serviceName = "Appeal a late filing penalty" %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -24,19 +24,20 @@
       homepageUrl: ROOT_URI,
       serviceName: serviceName,
       serviceUrl: ROOT_URI,
-      containerClasses: 'govuk-width-container'
+      containerClasses: "govuk-width-container"
     })
   }}
 {% endblock %}
 
-{% set mainClasses = mainClasses | default('govuk-main-wrapper--auto-spacing') %}
+{% set mainClasses = mainClasses | default("govuk-main-wrapper--auto-spacing") %}
 
 {% block beforeContent %}
   {{
     govukPhaseBanner({
       tag: {
-        text: 'Beta'
-      }
+        text: "Beta"
+      },
+      html: 'This is a new service – your <a class="govuk-link" href="https://www.research.net/r/alfp-feedback" target="_blank">feedback</a> will help us to improve it.'
     })
   }}
   {% block backLink %}{% endblock %}
@@ -48,20 +49,20 @@
       meta: {
         items: [
           {
-            href: 'http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml',
-            text: 'Policies'
+            href: "http://resources.companieshouse.gov.uk/legal/termsAndConditions.shtml",
+            text: "Policies"
           },
           {
-            href: 'https://www.gov.uk/help/cookies',
-            text: 'Cookies'
+            href: "https://www.gov.uk/help/cookies",
+            text: "Cookies"
           },
           {
-            href: 'https://www.gov.uk/contact',
-            text: 'Contact us'
+            href: "https://www.gov.uk/contact",
+            text: "Contact us"
           },
           {
-            href: 'https://developer.companieshouse.gov.uk/',
-            text: 'Developers'
+            href: "https://developer.companieshouse.gov.uk/",
+            text: "Developers"
           }
         ]
       }
