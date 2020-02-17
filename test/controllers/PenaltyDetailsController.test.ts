@@ -1,20 +1,37 @@
 import 'reflect-metadata'
-import { createApplication } from '../ApplicationFactory';
+import '../global'
+
+import { createApplication, setupFakeAuth } from '../ApplicationFactory';
 import * as request from 'supertest'
 import { createSubstituteOf } from '../SubstituteFactory';
 
 import '../../src/controllers/PenaltyDetailsController';
-import { RedisService } from '../../src/services/RedisService';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { expect } from 'chai';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths'
+import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
+import Substitute, { Arg } from '@fluffy-spoon/substitute';
+import { wrapValue } from 'ch-node-session/lib/utils/EitherAsyncUtils';
+import { Redis } from 'ioredis';
+import { RequestHandler } from 'express';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 
+const config: CookieConfig = {
+    cookieName: '__SID',
+    cookieSecret: 'S+CmgW/ivLEaiFTzm87a1cyH+ZbD81yukx8n7e/efzQ='
+};
 const app = createApplication(container => {
-    container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
+
+    const redis = Substitute.for<Redis>();
+    const sessionStore = new SessionStore(redis);
+    const sessionHandler = SessionMiddleware(config, sessionStore);
+    setupFakeAuth(container);
+    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
+    container.bind(SessionStore).toConstantValue(sessionStore);
+
 });
 
 describe('PenaltyDetailsController', () => {
@@ -36,8 +53,8 @@ describe('PenaltyDetailsController', () => {
             };
 
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-                    service.getObject('1').returns(Promise.resolve(penaltyDetails))
+                container.bind(SessionStore).toConstantValue(createSubstituteOf<SessionStore>(service => {
+                    service.load(Arg.any()).returns(wrapValue(penaltyDetails))
                 }));
             });
 
@@ -61,9 +78,14 @@ describe('PenaltyDetailsController', () => {
             };
 
             const app = createApplication(container => {
-                container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-                    service.setObject('1', penaltyDetails).returns(Promise.resolve())
-                }));
+
+                const redis = Substitute.for<Redis>();
+                const sessionStore = new SessionStore(redis);
+                const sessionHandler = SessionMiddleware(config, sessionStore);
+                setupFakeAuth(container);
+                container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
+                container.bind(SessionStore).toConstantValue(sessionStore);
+
             });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)

@@ -6,7 +6,6 @@ import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
 import { ROOT_URI } from './Paths';
-import IConfig from './IConfig';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -14,8 +13,6 @@ const checkFileExists = (config: dotenv.DotenvConfigOutput) => {
     if (config.error) throw config.error;
     else return config;
 };
-
-export let ENV: IConfig;
 
 export const loadEnvironmentVariablesFromFiles = () => {
     dotenv.config({ path: DEFAULT_ENV_FILE });
@@ -50,7 +47,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.locals.ROOT_URI = ROOT_URI;
 };
 
-function checkIfVariableExists(name: string, defaultVal?: string): string {
+export function returnEnvVarible(name: string, defaultVal?: string): string {
 
   const variable = process.env[name];
 
@@ -64,25 +61,4 @@ function checkIfVariableExists(name: string, defaultVal?: string): string {
   return variable;
 }
 
-class Config implements IConfig {
-  public readonly CACHE_SERVER: string;
-  public readonly ERIC_PORT: number;
-  public readonly CACHE_DB: number;
-  public readonly CACHE_PASSWORD: string;
-  public readonly COOKIE_NAME: string;
-  public readonly COOKIE_SECRET: string;
-  public readonly DEFAULT_SESSION_EXPIRATION: number;
-
-  public constructor() {
-    this.ERIC_PORT = Number(checkIfVariableExists('ERIC_PORT'));
-    this.CACHE_SERVER = checkIfVariableExists('CACHE_SERVER');
-    this.CACHE_DB = Number(checkIfVariableExists('CACHE_DB'));
-    this.CACHE_PASSWORD = checkIfVariableExists('CACHE_PASSWORD', '');
-    this.COOKIE_NAME = checkIfVariableExists('COOKIE_NAME');
-    this.COOKIE_SECRET = checkIfVariableExists('COOKIE_SECRET');
-    this.DEFAULT_SESSION_EXPIRATION = Number(checkIfVariableExists('DEFAULT_SESSION_EXPIRATION'));
-  }
-
-
-}
 

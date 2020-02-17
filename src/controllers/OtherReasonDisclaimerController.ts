@@ -1,19 +1,22 @@
 import { controller, BaseHttpController, httpGet, httpPost } from 'inversify-express-utils';
 import { OTHER_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
+import { SessionMiddleware } from 'ch-node-session';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
-@controller(OTHER_REASON_DISCLAIMER_PAGE_URI)
-export class OtherReasonDisclaimerController extends BaseHttpController {
+@controller(OTHER_REASON_DISCLAIMER_PAGE_URI, SessionMiddleware, AuthMiddleware)
+export class OtherReasonDisclaimerController extends BaseAsyncHttpController {
     constructor() {
         super();
     }
 
     @httpGet('')
-    public showDisclaimer(): void {
-        this.httpContext.response.render('other-reason-disclaimer');
+    public async showDisclaimer(): Promise<string> {
+        return await this.render('other-reason-disclaimer');
     }
 
     @httpPost('')
-    public continue(): void {
-        this.httpContext.response.redirect(OTHER_REASON_PAGE_URI);
+    public async continue(): Promise<any> {
+        return await this.redirect(OTHER_REASON_PAGE_URI).executeAsync();
     }
 }

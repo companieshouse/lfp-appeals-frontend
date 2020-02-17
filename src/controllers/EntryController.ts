@@ -5,7 +5,8 @@ import { PENALTY_DETAILS_PAGE_URI, ENTRY_PAGE_URI } from '../utils/Paths';
 export class EntryController extends BaseHttpController {
 
     @httpGet('')
-    public redirectView(): void {
-        this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
+    public async redirectView(): Promise<any> {
+        return this.redirect(PENALTY_DETAILS_PAGE_URI).executeAsync();
     }
+
 }
