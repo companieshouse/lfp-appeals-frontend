@@ -1,7 +1,7 @@
-{% extends "layout.njk" %}
+{% extends 'layout.njk' %}
 
-{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-{% from "govuk/components/button/macro.njk"      import govukButton %}
+{% from 'govuk/components/breadcrumbs/macro.njk' import govukBreadcrumbs %}
+{% from 'govuk/components/button/macro.njk'      import govukButton %}
 
 {% block pageTitle %}
   {{ serviceName }}
@@ -28,10 +28,10 @@
       <form method="post">
         {{ 
           govukButton({
-            text: "Start now",
+            text: 'Start now',
             isStartButton: true,
             attributes: {
-              id: "submit"
+              id: 'submit'
             }
           }) 
         }}
