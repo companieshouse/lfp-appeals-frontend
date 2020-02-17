@@ -29,7 +29,10 @@
         {{ 
           govukButton({
             text: "Start now",
-            isStartButton: true
+            isStartButton: true,
+            attributes: {
+              id: "submit"
+            }
           }) 
         }}
       </form>
