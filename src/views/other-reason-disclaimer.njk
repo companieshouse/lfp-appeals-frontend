@@ -1,6 +1,6 @@
-{% extends 'layout.njk' %}
+{% extends "layout.njk" %}
 
-{% from 'govuk/components/button/macro.njk' import govukButton %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block pageTitle %}
   Unlikely appeal examples
@@ -25,10 +25,10 @@
         <form method="post">
           {{ 
             govukButton({
-              text: 'Continue with appeal',
-              classes: 'govuk-link govuk-!-margin-top-5 govuk-link--interrupt',
+              text: "Continue with appeal",
+              classes: "govuk-link govuk-!-margin-top-5 govuk-link--interrupt",
               attributes: {
-                id: 'submit'
+                id: "submit"
               }
             }) 
           }}
