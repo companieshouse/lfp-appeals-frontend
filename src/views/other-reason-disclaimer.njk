@@ -42,7 +42,10 @@
           {{ 
             govukButton({
               text: "Continue with appeal",
-              classes: "govuk-link govuk-!-margin-top-5 govuk-link--interrupt"
+              classes: "govuk-link govuk-!-margin-top-5 govuk-link--interrupt",
+              attributes: {
+                id: "submit"
+              }
             }) 
           }}
         </form>
