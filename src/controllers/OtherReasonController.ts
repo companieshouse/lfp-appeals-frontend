@@ -5,33 +5,43 @@ import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { OtherReason } from '../models/OtherReason';
 import { schema } from '../models/OtherReason.schema';
-import { RedisService } from '../services/RedisService';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { Request } from 'express';
+import { Cookie } from 'ch-node-session/lib/session/model/Cookie';
+import { EitherUtils, SessionMiddleware, SessionStore } from 'ch-node-session';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 const sessionKey = 'session::other-reason';
 
-@controller(OTHER_REASON_PAGE_URI)
+@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {
-    constructor(@inject(RedisService) private readonly redisService: RedisService) {
+    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {
         super();
     }
 
     @httpGet('')
-    public async renderForm(): Promise<void> {
-        const session = await this.redisService.get(sessionKey);
+    public async renderForm(req: Request): Promise<void> {
 
-        return this.render(OK,session ? JSON.parse(session) : {})
+        const data = req.session
+            .chain(session => session.getExtraData())
+            .map(extraData => extraData[sessionKey]);
+
+        return await this.render(OK, data.isJust() ? data.__value : {});
+
     }
 
     @httpPost('')
-    public async handleFormSubmission(): Promise<void> {
-        const body: OtherReason = this.httpContext.request.body;
+    public async handleFormSubmission(req: Request): Promise<void> {
+        const body: OtherReason = req.body;
 
         const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
         const valid = validationResult.errors.length === 0;
 
         if (valid) {
-            await this.redisService.set(sessionKey, JSON.stringify(body))
+            req.session.map(async session => {
+                session.saveExtraData(sessionKey, body);
+                await this.sessionStore.store(Cookie.asCookie(session), session.data).run();
+            });
         }
 
         return this.render(valid ? OK : UNPROCESSABLE_ENTITY, {...body, validationResult});
@@ -44,7 +54,7 @@ export class OtherReasonController extends BaseHttpController {
                     reject(err);
                 }
                 resolve(compiled as any);
-            })
+            });
         });
     }
 }

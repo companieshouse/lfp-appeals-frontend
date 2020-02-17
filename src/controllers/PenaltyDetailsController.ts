@@ -4,14 +4,17 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
-import { sanitize } from '../utils/CompanyNumberSanitizer';
-import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
-import { schema } from '../models/PenaltyIdentifier.schema';
+import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
+import { schema } from '../models/PenaltyReferenceDetails.schema';
+import { Request, Response, NextFunction } from 'express';
+import { Cookie } from 'ch-node-session/lib/session/model/Cookie';
+import { VerifiedSession } from 'ch-node-session/lib/session/model/Session';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { SessionMiddleware, SessionStore } from 'ch-node-session';
 
 
-@controller(PENALTY_DETAILS_PAGE_URI)
+@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
 
     private COMPANY_NUMBER: string = 'companyNumber';
@@ -19,37 +22,32 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     private COOKIE_NAME: string = 'penalty-cookie';
     private PENALTY_TEMPLATE: string = 'penalty-details';
 
-    constructor(@inject(RedisService) private readonly redisService: RedisService) {
+    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {
         super();
     }
 
     @httpGet('')
-    public async getPenaltyDetailsView(): Promise<string> {
+    public async getPenaltyDetailsView(req: Request, res: Response): Promise<string> {
 
-        const cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
-
-        let body: PenaltyIdentifier = {
+        const body: PenaltyReferenceDetails = {
             companyNumber: '',
             penaltyReference: ''
         };
 
-        if (cookieId) {
-            const data: Record<string, any> = await this.redisService.getObject(cookieId);
+        const sessionData = req.session
+            .chain(session => session.getExtraData())
+            .map(data => data[this.COOKIE_NAME]);
 
-            if (data) {
-                body = {
-                    companyNumber: data[this.COMPANY_NUMBER],
-                    penaltyReference: data[this.PENALTY_REFERENCE]
-                }
-            }
+        if (sessionData.isJust()) {
+            return await this.render(this.PENALTY_TEMPLATE, { ...sessionData.__value });
+        } else {
+            return await this.render(this.PENALTY_TEMPLATE, { ...body });
         }
-
-        return this.render(this.PENALTY_TEMPLATE, { ...body });
 
     }
 
     @httpPost('')
-    public async createPenaltyDetails(): Promise<any> {
+    public async createPenaltyDetails(req: Request, res: Response, next: NextFunction): Promise<any> {
 
         const body: PenaltyIdentifier = {
             companyNumber: this.httpContext.request.body.companyNumber,
@@ -64,15 +62,11 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
                 this.PENALTY_TEMPLATE, { ...body, validationResult });
         }
 
-        let cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
+        req.session.map(async (session: VerifiedSession) => {
+            session.saveExtraData(this.COOKIE_NAME, body);
+            await this.sessionStore.store(Cookie.asCookie(session), session.data).run();
+        });
 
-        if (!cookieId) {
-            cookieId = '1';
-            this.httpContext.response.cookie(this.COOKIE_NAME, cookieId);
-        }
-
-        await this.redisService.setObject(cookieId, { ...body, companyNumber: sanitize(body.companyNumber) });
-
-        return this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
+        return await this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
     }
 }
