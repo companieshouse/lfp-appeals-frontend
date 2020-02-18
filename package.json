@@ -2,13 +2,13 @@
   "name": "lfp-appeals-frontend",
   "version": "0.0.1",
   "description": "This is a web application allowing users to appeal penalties received due to the late filling of their companies' accounts.",
-  "main": "build/App.js",
+  "main": "dist/App.js",
   "repository": {
     "url": "https://github.com/companieshouse/lfp-appeals-frontend"
   },
   "license": "MIT",
   "scripts": {
-    "start": "npm run build && NODE_ENV=local node build/App.js",
+    "start": "npm run build && NODE_ENV=local node dist/App.js",
     "build": "gulp build",
     "watch": "npm run build:clean && gulp start:watch",
     "build:clean": "gulp build:clean",

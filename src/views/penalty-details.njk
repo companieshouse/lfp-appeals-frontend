@@ -3,6 +3,7 @@
 {% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from 'govuk/components/input/macro.njk'         import govukInput %}
 {% from 'govuk/components/button/macro.njk'        import govukButton %}
+{% from 'govuk/components/details/macro.njk'       import govukDetails %}
 
 
 {% block pageTitle %}
@@ -54,7 +55,22 @@
             autocomplete: 'off'
           }) 
         }}
-        {{ 
+        <div class="govuk-form-group">
+          {% set detailsHTML %}
+          <p>
+            Your company number and reference number are shown at the bottom of your penalty notice.
+          </p>
+          <img src="{{ ROOT_URI }}/images/penalty-notice.png" class="call-out-image" alt=""/>
+          {% endset -%}
+
+          {{
+            govukDetails({
+              summaryText: 'Help with company number and penalty reference number',
+              html: detailsHTML
+            })
+          }}
+        </div>
+        {{
           govukButton({
             text: 'Continue',
             attributes: {
