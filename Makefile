@@ -22,10 +22,6 @@ build:	package-install lint
 lint:
 	npm run lint
 
-.PHONY: sonar
-sonar:
-#	npm run sonarqube
-
 .PHONY: test
 test: test-unit
 
@@ -49,4 +45,8 @@ endif
 	rm $(tmpdir)/package.json $(tmpdir)/package-lock.json
 	cd $(tmpdir) && zip -r ../$(artifact_name)-$(version).zip .
 	rm -rf $(tmpdir)
+
+.PHONY: sonar
+sonar:
+#	npm run sonarqube
 
