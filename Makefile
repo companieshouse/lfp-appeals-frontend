@@ -7,8 +7,8 @@ all: build
 .PHONY: clean
 clean:
 	rm -f ./$(artifact_name)-*.zip
-	rm -rf ./build
-	rm -rf ./temp-*
+	rm -rf ./dist
+	rm -rf ./build-*
 	rm -f ./build.log
 
 package-install:
@@ -39,8 +39,8 @@ ifndef version
 	$(error No version given. Aborting)
 endif
 	$(info Packaging version: $(version))
-	$(eval tmpdir := $(shell mktemp -d temp-XXXXXXXXXX))
-	cp -r ./build $(tmpdir)
+	$(eval tmpdir := $(shell mktemp -d build-XXXXXXXXXX))
+	cp -r ./dist $(tmpdir)
 	cp -r ./package.json $(tmpdir)
 	cp -r ./package-lock.json $(tmpdir)
 	cp ./start.sh $(tmpdir)
