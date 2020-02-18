@@ -6,7 +6,7 @@ sass.compiler = require('node-sass');
 nodemon = require('gulp-nodemon');
 const tsProject = ts.createProject('tsconfig.json');
 const paths = {
-    build: ['build'],
+    build: ['dist'],
     pages: ['src/views'],
     public: ['src/public'],
     sassSrc: ['src/public/sass'],
@@ -27,7 +27,7 @@ gulp.task('build-sass', function () {
 });
 
 gulp.task('start:watch', async () => nodemon({
-    script: 'build/app.js',
+    script: 'dist/app.js',
     watch: paths.src,
     ext: 'ts, scss, css, njk',
     tasks: ['compile-project', 'copy-assets', 'copy-views', 'build-sass'],
@@ -49,7 +49,7 @@ gulp.task('copy-govukfrontend', function () {
 gulp.task('compile-project', function () {
     return tsProject.src()
         .pipe(tsProject())
-        .js.pipe(gulp.dest('build'));
+        .js.pipe(gulp.dest('dist'));
 });
 
 gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-assets', 'copy-views', 'copy-govukfrontend', 'build-sass')));
