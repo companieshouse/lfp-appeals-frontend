@@ -15,7 +15,7 @@ describe('SubmissionSummaryController', () => {
         it('should return 200 when trying to access the submission summary', async () => {
 
 
-            const session = {
+            const session: Record<string, any> = {
                 companyNumber: '00345567',
                 penaltyReference: 'A00000001',
                 email: 'joe@bloggs.mail',
