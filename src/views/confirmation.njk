@@ -3,20 +3,20 @@
 {% from 'govuk/components/panel/macro.njk' import govukPanel %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            {{
-                govukPanel({
-                    titleText: 'Appeal submitted',
-                    html: 'Your reference number is your company number <br><strong>' + companyNumber + '</strong>'
-                })
-            }}
+      {{
+        govukPanel({
+          titleText: 'Appeal submitted',
+          html: 'Your reference number is your company number <br><strong>' + companyNumber + '</strong>'
+        })
+      }}
 
-            <h2 class="govuk-heading-m">What happens next</h2>
-            <p class="govuk-body">We'll review the appeal and email you with a decision within 20 working days.
-                We'll pause recovery action during this time.</p>
-            <p class="govuk-body">We may contact you during the review process if we need more information.</p>
-        </div>
+      <h2 class="govuk-heading-m">What happens next</h2>
+      <p class="govuk-body">We'll review the appeal and email you with a decision within 20 working days.
+        We'll pause recovery action during this time.</p>
+      <p class="govuk-body">We may contact you during the review process if we need more information.</p>
     </div>
+  </div>
 {% endblock %}
