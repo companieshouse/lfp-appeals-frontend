@@ -1,8 +1,8 @@
-import {NextFunction, Response, Request} from "express";
+import { NextFunction, Response, Request } from "express";
 
 
 export function mocker (req:Request, res:Response, next:NextFunction): void {
-    const session = {
+    const session: Record<string, any> = {
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
         email: 'joe@bloggs.mail',
