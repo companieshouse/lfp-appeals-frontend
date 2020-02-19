@@ -6,6 +6,7 @@ import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
 import { ROOT_URI } from './Paths';
+import {mocker} from "../middleware/sessionMocker";
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -29,6 +30,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
   app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
   app.use(handler);
+  app.use('/appeal-a-penalty/check-your-answers', mocker);
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
