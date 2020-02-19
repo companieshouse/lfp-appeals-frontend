@@ -8,9 +8,7 @@ import {SUBMISSION_SUMMARY_PAGE_URI} from "../../src/utils/Paths";
 import {OK} from "http-status-codes";
 import {expect} from 'chai';
 
-const app = createApplication(container => {
-    container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
-});
+const app = createApplication();
 
 describe('SubmissionSummaryController', () => {
     describe('GET request', () => {
