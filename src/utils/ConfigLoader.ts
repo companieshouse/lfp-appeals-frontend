@@ -5,8 +5,8 @@ import * as nunjucks from 'nunjucks';
 import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
-import {ROOT_URI, SUBMISSION_SUMMARY_PAGE_URI} from './Paths';
-import { mocker } from "../middleware/SessionMocker";
+import { mocker } from '../middleware/SessionMocker';
+import {ROOT_URI, SUBMISSION_SUMMARY_PAGE_URI } from './Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 

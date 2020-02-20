@@ -1,4 +1,4 @@
-import { controller, BaseHttpController, httpGet} from 'inversify-express-utils';
+import { controller, BaseHttpController, httpGet } from 'inversify-express-utils';
 import { SUBMISSION_SUMMARY_PAGE_URI } from '../utils/Paths';
 
 @controller(SUBMISSION_SUMMARY_PAGE_URI)
