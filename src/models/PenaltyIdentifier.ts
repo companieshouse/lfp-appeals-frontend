@@ -1,4 +1,6 @@
-export interface PenaltyReferenceDetails{
+export interface PenaltyIdentifier {
+  
   companyNumber: string;
   penaltyReference: string;
+  
 }

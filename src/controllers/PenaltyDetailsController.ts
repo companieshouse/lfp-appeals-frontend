@@ -7,8 +7,8 @@ import { ValidationResult } from '../utils/validation/ValidationResult';
 import { sanitize } from '../utils/CompanyNumberSanitizer';
 import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
-import { schema } from '../models/PenaltyReferenceDetails.schema';
+import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
+import { schema } from '../models/PenaltyIdentifier.schema';
 
 
 @controller(PENALTY_DETAILS_PAGE_URI)
@@ -28,7 +28,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         const cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
 
-        let body: PenaltyReferenceDetails = {
+        let body: PenaltyIdentifier = {
             companyNumber: '',
             penaltyReference: ''
         };
@@ -51,7 +51,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     @httpPost('')
     public async createPenaltyDetails(): Promise<any> {
 
-        const body: PenaltyReferenceDetails = {
+        const body: PenaltyIdentifier = {
             companyNumber: this.httpContext.request.body.companyNumber,
             penaltyReference: this.httpContext.request.body.penaltyReference
         };
