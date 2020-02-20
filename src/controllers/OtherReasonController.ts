@@ -20,7 +20,7 @@ export class OtherReasonController extends BaseHttpController {
     public async renderForm(): Promise<void> {
         const session = await this.redisService.get(sessionKey);
 
-        return this.render(OK,session ? JSON.parse(session) : {})
+        return this.render(OK, session ? JSON.parse(session) : {})
     }
 
     @httpPost('')
@@ -34,7 +34,7 @@ export class OtherReasonController extends BaseHttpController {
             await this.redisService.set(sessionKey, JSON.stringify(body))
         }
 
-        return this.render(valid ? OK : UNPROCESSABLE_ENTITY, {...body, validationResult});
+        return this.render(valid ? OK : UNPROCESSABLE_ENTITY, { ...body, validationResult });
     }
 
     private async render(status: number, data: object): Promise<void> {

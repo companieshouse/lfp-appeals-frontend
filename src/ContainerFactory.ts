@@ -9,7 +9,9 @@ const createRedisClient = () => {
     }
     const redisUrl = `redis://${process.env.CACHE_SERVER}`;
 
-    return createClient(redisUrl).on('error', (err) => { throw err; });
+    return createClient(redisUrl).on('error', (err) => {
+        throw err;
+    });
 };
 
 const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
