@@ -29,7 +29,7 @@ describe('HealthCheckController', () => {
         await makeHealthCheckRequest(app).expect(500, 'Redis healthy: false');
     });
 
-    function makeHealthCheckRequest(app: Application): request.Test {
+    function makeHealthCheckRequest (app: Application): request.Test {
         return request(app)
             .get(HEALTH_CHECK_URI);
     }

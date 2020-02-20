@@ -9,7 +9,7 @@ describe('Penalty Details Schema Validation', () => {
     const validator = new SchemaValidator(schema);
 
     describe('Company Number', () => {
-        function createModelWithCompanyNumber(companyNumber: string): PenaltyReferenceDetails {
+        function createModelWithCompanyNumber (companyNumber: string): PenaltyReferenceDetails {
             const validPenaltyReference = 'A12345678';
             return { companyNumber, penaltyReference: validPenaltyReference }
         }
@@ -17,27 +17,27 @@ describe('Penalty Details Schema Validation', () => {
         describe('Happy path', () => {
             it('should accept SC leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('SC123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
 
             it('should accept NI leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('NI123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
 
             it('should accept no leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('12123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
 
             it('should accept leading characters in lowercase', () => {
                 const result = validator.validate(createModelWithCompanyNumber('sc123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
 
             it('should accept company numbers with less than 8 total characters', () => {
                 const result = validator.validate(createModelWithCompanyNumber('123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
         });
 
@@ -115,7 +115,7 @@ describe('Penalty Details Schema Validation', () => {
     });
 
     describe('Penalty Reference', () => {
-        function createModelWithPenaltyReference(penaltyReference: string): PenaltyReferenceDetails {
+        function createModelWithPenaltyReference (penaltyReference: string): PenaltyReferenceDetails {
             const validCompanyNumber = 'SC123123';
             return { penaltyReference, companyNumber: validCompanyNumber }
         }
@@ -123,12 +123,12 @@ describe('Penalty Details Schema Validation', () => {
         describe('Happy path', () => {
             it('should accept uppercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('Z12345678'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
 
             it('should accept lowercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('z12345678'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({ errors: [] })
             });
         });
 
