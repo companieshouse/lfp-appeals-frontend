@@ -1,4 +1,6 @@
 export interface OtherReason {
-  title: string
-  description: string
+    
+    title: string
+    description: string
+    
 }
