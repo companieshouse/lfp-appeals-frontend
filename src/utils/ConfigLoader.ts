@@ -5,7 +5,8 @@ import * as nunjucks from 'nunjucks';
 import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
-import { ROOT_URI } from './Paths';
+import { sessionMocker } from '../middleware/SessionMocker';
+import { ROOT_URI, CONFIRMATION_PAGE_URI } from './Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -27,8 +28,9 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
-
+    
     app.use(handler);
+    app.use(CONFIRMATION_PAGE_URI, sessionMocker);
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -46,10 +48,5 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
 
   app.locals.ROOT_URI = ROOT_URI;
 
-  const session: Record<string, any> = {
-    companyNumber: '00345567'
-  };
-
-  app.locals.session = session;
 };
 

@@ -30,7 +30,7 @@ describe('PenaltyDetailsController', () => {
         });
 
         it('should return 200 when trying to access page with a session', async () => {
-            const penaltyIdentifier: Record<string, any> = {
+            const penaltyIdentifier: PenaltyIdentifier = {
                 penaltyReference: 'A12345678',
                 companyNumber: 'SC123123'
             };
