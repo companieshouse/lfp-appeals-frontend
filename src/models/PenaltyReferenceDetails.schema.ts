@@ -1,6 +1,6 @@
 import * as Joi from '@hapi/joi';
 
-export const schema = Joi.object({
+export const schema= Joi.object({
     companyNumber: Joi.string()
         .required()
         .regex(/^(((SC|NI)[0-9]{1,6})|([0-9]{1,8}))$/i)

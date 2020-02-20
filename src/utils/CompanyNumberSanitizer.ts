@@ -15,9 +15,9 @@ const stripWhitespaces = (companyNumber: string): string => {
 };
 
 const padNumber = (companyNumber: string): string => {
-    if (/^([a-zA-Z]{2}?)/gm.test(companyNumber)) {
+    if(/^([a-zA-Z]{2}?)/gm.test(companyNumber)){
 
-        const leadingChars = companyNumber.substring(0, 2);
+        const leadingChars = companyNumber.substring(0,2);
 
         const trailingChars = companyNumber
             .substring(2, companyNumber.length)
