@@ -30,6 +30,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
   app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
   app.use(handler);
+  app.use(SUBMISSION_SUMMARY_PAGE_URI, mocker)
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
