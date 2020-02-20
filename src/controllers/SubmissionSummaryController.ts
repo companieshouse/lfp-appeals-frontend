@@ -7,13 +7,8 @@ export class SubmissionSummaryController extends BaseHttpController {
     @httpGet('')
     public renderView(): void {
 
-        const sessionRecord: Record<string, any> = this.httpContext.request.app.locals.session
+        const session = this.httpContext.request.session;
 
-        this.httpContext.response.render('submission-summary', {
-            companyNumber: sessionRecord.companyNumber,
-            penaltyReference: sessionRecord.penaltyReference,
-            userEmail: sessionRecord.email,
-            reason: sessionRecord.reason
-        });
+        this.httpContext.response.render('submission-summary', {session});
     }
 }

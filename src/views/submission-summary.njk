@@ -13,14 +13,13 @@
             </h1>
 
             <h2 class="govuk-heading-m">Penalty details</h2>
-
             <dl class="app-check-your-answers app-check-your-answers--short govuk-!-margin-bottom-8">
                 <div class="app-check-your-answers__contents">
                     <dt class="app-check-your-answers__question">
                         Company Number
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        {{ companyNumber }}
+                        {{ session.getExtraData('appeals').penaltyIdentifier.companyNumber }}
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
@@ -29,7 +28,7 @@
                         Type
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        Late Filing Penalty ({{ penaltyReference }})
+                        Late Filing Penalty ({{ session.getExtraData('appeals').penaltyIdentifier.penaltyReference }})
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
@@ -38,14 +37,13 @@
                         Contact email
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        {{ userEmail }}
+                        {{ session.getValue('signin_info').user_profile.email }}
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
             </dl>
 
             <h2 class="govuk-heading-l">Reason for appeal</h2>
-
             <div class="reason-container">
                 <dl class="app-check-your-answers app-check-your-answers--long">
                     <div class="app-check-your-answers__contents">
@@ -53,10 +51,7 @@
                             Reason
                         </dt>
                         <dd class="app-check-your-answers__answer">
-                            {{ reason.otherReason }}
-                        </dd>
-                        <dd class="app-check-your-answers__change">
-                            <a href="">Change</a>
+                            {{ session.getExtraData('appeals').reasons.other.title }}
                         </dd>
                     </div>
 
@@ -65,10 +60,7 @@
                             Further information
                         </dt>
                         <dd class="app-check-your-answers__answer">
-                            {{ reason.otherInformation }}
-                        </dd>
-                        <dd class="app-check-your-answers__change">
-                            <a href="">Change</a>
+                            {{ session.getExtraData('appeals').reasons.other.description }}
                         </dd>
                     </div>
                 </dl>
