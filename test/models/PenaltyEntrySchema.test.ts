@@ -9,7 +9,7 @@ describe('Penalty Details Schema Validation', () => {
     const validator = new SchemaValidator(schema);
 
     describe('Company Number', () => {
-        function createModelWithCompanyNumber (companyNumber: string): PenaltyReferenceDetails {
+        function createModelWithCompanyNumber(companyNumber: string): PenaltyReferenceDetails {
             const validPenaltyReference = 'A12345678';
             return { companyNumber, penaltyReference: validPenaltyReference }
         }
@@ -115,7 +115,7 @@ describe('Penalty Details Schema Validation', () => {
     });
 
     describe('Penalty Reference', () => {
-        function createModelWithPenaltyReference (penaltyReference: string): PenaltyReferenceDetails {
+        function createModelWithPenaltyReference(penaltyReference: string): PenaltyReferenceDetails {
             const validCompanyNumber = 'SC123123';
             return { penaltyReference, companyNumber: validCompanyNumber }
         }

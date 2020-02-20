@@ -16,7 +16,7 @@ const createRedisClient = () => {
 
 const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
 
-export function createContainer (): Container {
+export function createContainer(): Container {
     const container = new Container();
     container.bind<RedisClient>(RedisClient).toConstantValue(createRedisClient());
     container.load(buildProviderModule());
