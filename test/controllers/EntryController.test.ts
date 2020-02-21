@@ -4,7 +4,7 @@ import { createApplication } from '../ApplicationFactory';
 import * as request from 'supertest'
 import { RedisService } from '../../src/services/RedisService';
 import { createSubstituteOf } from '../SubstituteFactory';
-import { MOVED_TEMPORARILY  } from 'http-status-codes';
+import { MOVED_TEMPORARILY } from 'http-status-codes';
 import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from '../../src/utils/Paths';
 import { expect } from 'chai';
 
