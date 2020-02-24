@@ -1,0 +1,6 @@
+app_name: lfp-appeals-frontend
+group: web
+weight: 900
+routes:
+  1: /appeal-a-penalty 
+  2: /appeal-a-penalty/.*
