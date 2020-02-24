@@ -19,7 +19,7 @@
                         Company Number
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        {{ session.getExtraData('appeals').penaltyIdentifier.companyNumber }}
+                        {{ penaltyIdentifier.companyNumber }}
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
@@ -28,7 +28,7 @@
                         Type
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        Late Filing Penalty ({{ session.getExtraData('appeals').penaltyIdentifier.penaltyReference }})
+                        Late Filing Penalty ({{ penaltyIdentifier.penaltyReference }})
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
@@ -37,7 +37,7 @@
                         Contact email
                     </dt>
                     <dd class="app-check-your-answers__answer">
-                        {{ session.getValue('signin_info').user_profile.email }}
+                        {{ userProfile.email }}
                     </dd>
                     <dd class="app-check-your-answers__change"></dd>
                 </div>
@@ -51,7 +51,7 @@
                             Reason
                         </dt>
                         <dd class="app-check-your-answers__answer">
-                            {{ session.getExtraData('appeals').reasons.other.title }}
+                            {{ reasons.other.title }}
                         </dd>
                     </div>
 
@@ -60,7 +60,7 @@
                             Further information
                         </dt>
                         <dd class="app-check-your-answers__answer">
-                            {{ session.getExtraData('appeals').reasons.other.description }}
+                            {{ reasons.other.description }}
                         </dd>
                     </div>
                 </dl>

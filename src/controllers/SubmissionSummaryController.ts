@@ -8,7 +8,17 @@ export class SubmissionSummaryController extends BaseHttpController {
     public renderView(): void {
 
         const session = this.httpContext.request.session;
+        let userProfile = ''
+        let reasons = ''
+        let penaltyIdentifier = ''
 
-        this.httpContext.response.render('submission-summary', {session});
+
+        if(session){
+            penaltyIdentifier = session.getExtraData('appeals').penaltyIdentifier;
+            reasons = session.getExtraData('appeals').reasons;
+            userProfile = session.getValue('signin_info').user_profile
+        }
+
+        this.httpContext.response.render('submission-summary', {reasons, penaltyIdentifier, userProfile});
     }
 }
