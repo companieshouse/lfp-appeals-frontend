@@ -63,22 +63,21 @@ describe('Authentication Middleware', () => {
             const session = Maybe.of(
                 createFakeSession(
                     [{
-
-                        [SessionKey.Id]: id,
-                        [SessionKey.ClientSig]: sig,
-
+                        [SessionKey.Id]: id
+                    }, {
+                        [SessionKey.ClientSig]: sig
                     }], true));
 
             // @ts-ignore
             req.session.returns(session);
             const realAuthMiddleware = new AuthMiddleware();
-            res.redirect(Arg.any(), 302).mimicks((url, status) => url)
+            res.redirect(Arg.any(), 302).mimicks((url, status) => url);
 
             realAuthMiddleware.handler(req, res, next);
             // @ts-ignore
             res.received(1).redirect(Arg.any());
 
-            next.received()
+            next.received();
 
         });
 
@@ -112,20 +111,18 @@ describe('Authentication Middleware', () => {
             const session = Maybe.of(
                 createFakeSession(
                     [{
-
-                        [SessionKey.Id]: id,
-                        [SessionKey.ClientSig]: sig,
-
+                        [SessionKey.Id]: id
+                    }, {
+                        [SessionKey.ClientSig]: sig
                     }], false));
-
             // @ts-ignore
             req.session.returns(session);
             const realAuthMiddleware = new AuthMiddleware();
-            res.redirect(Arg.any(), 302).mimicks((url, status) => true)
+            res.redirect(Arg.any(), 302).mimicks((url, status) => true);
 
             realAuthMiddleware.handler(req, res, next);
             res.didNotReceive().redirect(Arg.any(), 302);
-            next.received()
+            next.received();
 
         });
 

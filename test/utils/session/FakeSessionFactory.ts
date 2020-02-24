@@ -1,6 +1,6 @@
 import { VerifiedSession, Session } from 'ch-node-session/lib/session/model/Session';
 
-export function createFakeSession(entries: Record<string, any>[], signedIn?: boolean): VerifiedSession {
+export function createFakeSession(entries: Record<string, string>[], signedIn?: boolean): VerifiedSession {
   const sessionData: any = {
     data: {
       '.id': 'O/YYy/K3ey05lRzUJGdMDu25vWGQ',
