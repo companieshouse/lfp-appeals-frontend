@@ -1,11 +1,11 @@
 import { Container } from 'inversify';
 import { Application, NextFunction, RequestHandler, Request, Response } from 'express';
 import { InversifyExpressServer, BaseMiddleware } from 'inversify-express-utils';
-import {getExpressAppConfig, loadEnvironmentVariablesFromFiles} from '../src/utils/ConfigLoader'
+import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from '../src/utils/ConfigLoader';
 import { AuthMiddleware } from '../src/middleware/AuthMiddleware';
 
-export const createApplication = (configureContainerBindings: (container: Container) => void = () => {}): Application => {
-    process.env.NODE_ENV = 'test';
+export const createApplication = (configureContainerBindings: (container: Container) => void = () => { }): Application => {
+
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
     configureContainerBindings(container);
@@ -23,4 +23,4 @@ export const setupFakeAuth = (container: Container) => {
 
     const newFakeMiddleware = new FakeMiddleware()
     container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(newFakeMiddleware);
-}
+};
