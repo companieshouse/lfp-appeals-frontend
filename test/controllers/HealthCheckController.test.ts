@@ -7,7 +7,7 @@ import '../../src/controllers/HealthCheckController';
 import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
 import {CookieConfig, SessionMiddleware, SessionStore} from 'ch-node-session';
 import { Redis } from 'ioredis';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { returnEnvVarible } from '../../src/utils/ConfigLoader';
 
 
 describe('HealthCheckController', () => {

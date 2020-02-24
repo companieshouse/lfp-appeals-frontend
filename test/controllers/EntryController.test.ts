@@ -10,7 +10,7 @@ import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session';
 import { Redis } from 'ioredis';
 import Substitute from '@fluffy-spoon/substitute';
 import { RequestHandler } from 'express';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { returnEnvVarible } from '../../src/utils/ConfigLoader';
 
 
 describe('EntryController', () => {
