@@ -40,7 +40,7 @@ export class OtherReasonController extends BaseHttpController {
         if (valid) {
             req.session.map(async session => {
                 session.saveExtraData(sessionKey, body);
-                await this.sessionStore.store(Cookie.asCookie(session), session.data).run();
+                await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
             });
         }
 

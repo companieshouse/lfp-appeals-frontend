@@ -62,7 +62,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         req.session.map(async (session: VerifiedSession) => {
             session.saveExtraData(this.COOKIE_NAME, body);
-            await this.sessionStore.store(Cookie.asCookie(session), session.data).run();
+            await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
         });
 
         return await this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
