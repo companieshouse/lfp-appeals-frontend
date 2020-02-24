@@ -2,12 +2,14 @@
 
 {% from 'govuk/components/panel/macro.njk' import govukPanel %}
 
+{% block beforeContent %}{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      {{
-        govukPanel({
+      {{ govukPanel
+        ({
           titleText: 'Appeal submitted',
           html: 'Your reference number is your company number <br><strong>' + companyNumber + '</strong>'
         })
