@@ -38,16 +38,14 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .chain(session => session.getExtraData())
             .map(data => data[this.COOKIE_NAME]);
 
-        if (sessionData.isJust()) {
-            return await this.render(this.PENALTY_TEMPLATE, { ...sessionData.__value });
-        } else {
-            return await this.render(this.PENALTY_TEMPLATE, { ...body });
-        }
+        return await this.render(this.PENALTY_TEMPLATE,
+            sessionData.isJust() ? { ...sessionData.__value } : { ...body });
+
 
     }
 
     @httpPost('')
-    public async createPenaltyDetails(req: Request, res: Response, next: NextFunction): Promise<any> {
+    public async createPenaltyDetails(req: Request): Promise<any> {
 
         const body: PenaltyIdentifier = {
             companyNumber: this.httpContext.request.body.companyNumber,

@@ -15,7 +15,7 @@ export const setupFakeAuth = (container: Container) => {
         return next();
     };
 
-    class FakeMiddleware extends BaseMiddleware {
+    class FakeMiddleware extends AuthMiddleware {
         handler: RequestHandler = fakeHandler;
     }
 
