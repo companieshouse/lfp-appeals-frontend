@@ -12,35 +12,37 @@ import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
 import { Redis } from 'ioredis';
 import Substitute from '@fluffy-spoon/substitute';
 import { RequestHandler } from 'express';
-import * as CookieUtil from 'ch-node-session/lib/utils/CookieUtils';
+import { returnEnvVarible } from '../../src/utils/ConfigLoader';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
 
 
-const config: CookieConfig = {
-    cookieName: '__SID',
-    cookieSecret: 'S+CmgW/ivLEaiFTzm87a1cyH+ZbD81yukx8n7e/efzQ='
-};
-
 describe('OtherReasonController', () => {
+
+    const app = createApplication(container => {
+
+        const redis = {
+            ping: () => Promise.resolve('OK')
+        } as Redis;
+
+        const config: CookieConfig = {
+            cookieName: returnEnvVarible('COOKIE_NAME'),
+            cookieSecret: returnEnvVarible('COOKIE_SECRET')
+        };
+
+        const sessionStore = new SessionStore(redis);
+        const sessionHandler = SessionMiddleware(config, sessionStore);
+        setupFakeAuth(container);
+        container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
+        container.bind(SessionStore).toConstantValue(new SessionStore(redis));
+
+    });
+
 
     describe('GET request', () => {
         it('should return 200 response', async () => {
-            const app = createApplication(container => {
-
-                const redis = {
-                    get: (s: string) => Promise.resolve('OK')
-                } as Redis;
-
-                const sessionStore = new SessionStore(redis);
-                const sessionHandler = SessionMiddleware(config, sessionStore);
-                setupFakeAuth(container);
-                container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-                container.bind(SessionStore).toConstantValue(sessionStore);
-
-            });
 
             await request(app).get(OTHER_REASON_PAGE_URI)
                 .expect(response => {
@@ -53,19 +55,6 @@ describe('OtherReasonController', () => {
 
     describe('POST request', () => {
         it('should return 422 response with rendered error messages when invalid data was submitted', async () => {
-            const app = createApplication(container => {
-
-                const redis = {
-                    get: (s: string) => Promise.resolve('OK')
-                } as Redis;
-
-                const sessionStore = new SessionStore(redis);
-                const sessionHandler = SessionMiddleware(config, sessionStore);
-                setupFakeAuth(container);
-                container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-                container.bind(SessionStore).toConstantValue(sessionStore);
-
-            });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({})
@@ -83,6 +72,11 @@ describe('OtherReasonController', () => {
             const description = 'Some description';
 
             const app = createApplication(container => {
+
+                const config: CookieConfig = {
+                    cookieName: returnEnvVarible('COOKIE_NAME'),
+                    cookieSecret: returnEnvVarible('COOKIE_SECRET')
+                };
 
                 const redis = Substitute.for<Redis>();
                 redis.get('session::other-reason').returns(Promise.resolve(JSON.stringify({ title, description })));
