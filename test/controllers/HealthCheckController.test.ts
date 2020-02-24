@@ -1,16 +1,18 @@
 import 'reflect-metadata';
 import '../global';
-import { Application } from 'express';
+import {Application, RequestHandler} from 'express';
 import * as request from 'supertest';
-import { createApplication } from '../ApplicationFactory';
+import {createApplication, setupFakeAuth} from '../ApplicationFactory';
 import '../../src/controllers/HealthCheckController';
 import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
-import { SessionStore } from 'ch-node-session';
+import {CookieConfig, SessionMiddleware, SessionStore} from 'ch-node-session';
 import { Redis } from 'ioredis';
-import { buildProviderModule } from 'inversify-binding-decorators';
+import { returnEnvVarible } from "../../src/utils/ConfigLoader";
 
 
 describe('HealthCheckController', () => {
+
+
     it('should return 200 with status when redis database is up', async () => {
         const app = createApplication(container => {
 
@@ -18,6 +20,15 @@ describe('HealthCheckController', () => {
                 ping: () => Promise.resolve('OK')
             } as Redis;
 
+            const config: CookieConfig = {
+                cookieName: returnEnvVarible('COOKIE_NAME'),
+                cookieSecret: returnEnvVarible('COOKIE_SECRET')
+            };
+
+            const sessionStore = new SessionStore(redis);
+            const sessionHandler = SessionMiddleware(config, sessionStore);
+            setupFakeAuth(container);
+            container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
             container.bind(SessionStore).toConstantValue(new SessionStore(redis));
 
         });
@@ -28,11 +39,21 @@ describe('HealthCheckController', () => {
     it('should return 500 with status when redis database is down', async () => {
         const app = createApplication(container => {
             const redis = {
-                ping: async () => new Promise((res, rej) => {
+                ping: async () => new Promise(() => {
                     throw Error();
                 })
 
             } as Redis;
+
+            const config: CookieConfig = {
+                cookieName: returnEnvVarible('COOKIE_NAME'),
+                cookieSecret: returnEnvVarible('COOKIE_SECRET')
+            };
+
+            const sessionStore = new SessionStore(redis);
+            const sessionHandler = SessionMiddleware(config, sessionStore);
+            setupFakeAuth(container);
+            container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
             container.bind(SessionStore).toConstantValue(new SessionStore(redis));
         });
 
