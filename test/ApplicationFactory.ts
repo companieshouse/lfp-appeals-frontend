@@ -1,10 +1,12 @@
 import { Container } from 'inversify';
 import { Application, NextFunction, RequestHandler, Request, Response } from 'express';
 import { InversifyExpressServer, BaseMiddleware } from 'inversify-express-utils';
-import { getExpressAppConfig } from '../src/utils/ConfigLoader'
+import {getExpressAppConfig, loadEnvironmentVariablesFromFiles} from '../src/utils/ConfigLoader'
 import { AuthMiddleware } from '../src/middleware/AuthMiddleware';
 
 export const createApplication = (configureContainerBindings: (container: Container) => void = () => {}): Application => {
+    process.env.NODE_ENV = 'test';
+    loadEnvironmentVariablesFromFiles();
     const container = new Container();
     configureContainerBindings(container);
     return new InversifyExpressServer(container).setConfig(getExpressAppConfig('../../')).build();
