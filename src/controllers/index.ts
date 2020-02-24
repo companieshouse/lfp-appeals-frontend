@@ -4,4 +4,4 @@ import './PenaltyDetailsController';
 import './OtherReasonController';
 import './LandingController';
 import './OtherReasonDisclaimerController';
-import './SubmissionSummaryController';
+import './CheckYourAppealController';

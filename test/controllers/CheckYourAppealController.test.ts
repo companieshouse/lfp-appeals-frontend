@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import '../../src/controllers/SubmissionSummaryController'
+import '../../src/controllers/CheckYourAppealController'
 import { createApplication } from "../ApplicationFactory";
 import { RedisService } from "../../src/services/RedisService";
 import { createSubstituteOf } from "../SubstituteFactory";
@@ -12,7 +12,7 @@ const app = createApplication(container => {
     container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
 });
 
-describe('SubmissionSummaryController', () => {
+describe('CheckYourAppealController', () => {
     describe('GET request', () => {
         it('should return 200 when trying to access the submission summary', async () => {
             request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
@@ -20,7 +20,7 @@ describe('SubmissionSummaryController', () => {
 
         it('session data should be populated', async () => {
 
-            const session = {
+            const session: Record<string, any> = {
                 companyNumber: '00345567',
                 penaltyReference: 'A00000001',
                 email: 'joe@bloggs.mail',
