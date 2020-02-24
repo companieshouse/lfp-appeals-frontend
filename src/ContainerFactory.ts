@@ -5,6 +5,7 @@ import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session';
 import IORedis = require('ioredis');
 import { RequestHandler } from 'express';
 import { returnEnvVarible } from './utils/ConfigLoader';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
 const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
 
 export function createContainer(): Container {
@@ -20,8 +21,11 @@ export function createContainer(): Container {
     }));
     const sessionHandler = SessionMiddleware(config, sessionStore);
 
+    const authMiddleware = new AuthMiddleware();
+
     container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
     container.bind<SessionStore>(SessionStore).toConstantValue(sessionStore);
+    container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(authMiddleware);
     container.load(buildProviderModule());
     return container;
 }
