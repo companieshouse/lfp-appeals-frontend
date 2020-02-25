@@ -1,5 +1,4 @@
 artifact_name       := lfp-appeals-frontend
-version             := "unversioned"
 
 .PHONY: all
 all: build
