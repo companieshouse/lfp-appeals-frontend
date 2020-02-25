@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 
 const sessionKey = 'session::other-reason';
 
@@ -21,12 +22,11 @@ export class OtherReasonController extends BaseHttpController {
 
     @httpGet('')
     public async renderForm(req: Request): Promise<void> {
-
         const data = req.session
             .chain(session => session.getExtraData())
             .map(extraData => extraData[sessionKey]);
 
-        return await this.render(OK, data.isJust() ? data.extract() : {});
+        return await this.render(OK, data.orDefault({}));
 
     }
 
@@ -38,7 +38,7 @@ export class OtherReasonController extends BaseHttpController {
         const valid = validationResult.errors.length === 0;
 
         if (valid) {
-            req.session.map(async session => {
+            req.session.map(async (session: VerifiedSession) => {
                 session.saveExtraData(sessionKey, body);
                 await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
             });
