@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { SchemaValidator } from '../../src/utils/validation/SchemaValidator';
-import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
-import { schema } from '../../src/models/PenaltyReferenceDetails.schema'
+import { PenaltyIdentifier } from '../../src/models/PenaltyIdentifier';
+import { schema } from '../../src/models/PenaltyIdentifier.schema'
 
 
 describe('Penalty Details Schema Validation', () => {
@@ -9,7 +9,7 @@ describe('Penalty Details Schema Validation', () => {
     const validator = new SchemaValidator(schema);
 
     describe('Company Number', () => {
-        function createModelWithCompanyNumber(companyNumber: string): PenaltyReferenceDetails {
+        function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
             const validPenaltyReference = 'A12345678';
             return { companyNumber, penaltyReference: validPenaltyReference }
         }
@@ -115,7 +115,7 @@ describe('Penalty Details Schema Validation', () => {
     });
 
     describe('Penalty Reference', () => {
-        function createModelWithPenaltyReference(penaltyReference: string): PenaltyReferenceDetails {
+        function createModelWithPenaltyReference(penaltyReference: string): PenaltyIdentifier {
             const validCompanyNumber = 'SC123123';
             return { penaltyReference, companyNumber: validCompanyNumber }
         }

@@ -5,3 +5,4 @@ import './OtherReasonController';
 import './LandingController';
 import './OtherReasonDisclaimerController';
 import './CheckYourAppealController';
+import './ConfirmationController';

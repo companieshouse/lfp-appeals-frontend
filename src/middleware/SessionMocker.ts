@@ -1,11 +1,10 @@
 import { NextFunction, Response, Request } from 'express';
-import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
+import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
 import { OtherReason } from '../models/OtherReason';
 
+export function sessionMocker(req: Request, res: Response, next: NextFunction): void {
 
-export function mocker(req: Request, res: Response, next: NextFunction): void {
-
-    const penaltyIdentifier: PenaltyReferenceDetails = {
+    const penaltyIdentifier: PenaltyIdentifier = {
         companyNumber: '00345567',
         penaltyReference: 'A00000001'
     };
@@ -16,14 +15,14 @@ export function mocker(req: Request, res: Response, next: NextFunction): void {
     };
 
     req.session = {
-        getValue(key: string): Record<string,any> {
+        getValue(key: string): Record<string, any> {
             return {
                 user_profile: {
                     email: 'joe@bloggs.mail'
                 }
             }
         },
-        getExtraData(key: string): Record<string,any> {
+        getExtraData(key: string): Record<string, any> {
             return {
                 penaltyIdentifier,
                 reasons: {

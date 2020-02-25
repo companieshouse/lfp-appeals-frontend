@@ -13,3 +13,4 @@ export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const OTHER_REASON_DISCLAIMER_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/other-reason-entry`;
 export const OTHER_REASON_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/reason-other`;
 export const SUBMISSION_SUMMARY_PAGE_URI = `${ROOT_URI}/check-your-answers`;
+export const CONFIRMATION_PAGE_URI = `${ROOT_URI}/confirmation`;
