@@ -16,14 +16,14 @@ export function mocker(req: Request, res: Response, next: NextFunction): void {
     };
 
     req.session = {
-        getValue(key: string) {
+        getValue(key: string): Record<string,any> {
             return {
                 user_profile: {
                     email: 'joe@bloggs.mail'
                 }
             }
         },
-        getExtraData(key: string) {
+        getExtraData(key: string): Record<string,any> {
             return {
                 penaltyIdentifier,
                 reasons: {
