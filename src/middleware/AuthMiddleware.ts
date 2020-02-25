@@ -6,6 +6,7 @@ import { SessionKey } from 'ch-node-session/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
 import { ROOT_URI } from '../utils/Paths';
+import { VerifiedSession } from 'ch-node-session/lib/session/model/Session';
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
@@ -17,18 +18,21 @@ export class AuthMiddleware extends BaseMiddleware {
 
         const returnURL = this.popReturnURL();
 
-        if (req.cookies.__SID) {
-            const signInInfo = req.session.chain(session => session.getValue<ISignInInfo>(SessionKey.SignInInfo));
-            signInInfo.map(info => {
-                if (info[SignInInfoKeys.SignedIn] !== 1) {
-                    res.redirect(`${returnEnvVarible('REDIRECT_URL')}?returnTo=${returnURL}`);
-                }
+        if (!req.cookies.__SID) {
+
+            res.redirect(`${returnEnvVarible('REDIRECT_URL')}?returnTo=${returnURL}`);
+            return next();
+        }
+
+        req.session
+            .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .filter((siginInInfo: ISignInInfo) => siginInInfo[SignInInfoKeys.SignedIn] === 1)
+            .ifNothing(() => {
+                res.redirect(`${returnEnvVarible('REDIRECT_URL')}?returnTo=${returnURL}`);
             });
 
-        } else {
-            res.redirect(`${returnEnvVarible('REDIRECT_URL')}?returnTo=${returnURL}`);
-        }
         return next();
+
     };
 
     public setReturnURL(url: string): void {
