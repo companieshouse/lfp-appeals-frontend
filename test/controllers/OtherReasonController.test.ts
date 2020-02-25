@@ -53,10 +53,7 @@ describe('OtherReasonController', () => {
 
             const app = createApplication(container => {
                 container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>(service => {
-                    service.set('session::other-reason', JSON.stringify({
-                        title,
-                        description
-                    })).returns(Promise.resolve())
+                    service.set('session::other-reason', JSON.stringify({ title, description })).returns(Promise.resolve())
                 }))
             });
             await request(app).post(OTHER_REASON_PAGE_URI)

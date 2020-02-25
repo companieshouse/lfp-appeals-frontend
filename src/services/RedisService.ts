@@ -85,10 +85,11 @@ const getObjectAsync = (client: RedisClient) =>
  * Implementation of redis setting an object async.
  */
 const setObjectAsync = (client: RedisClient) => standardAction(() => client.connected)
-(async <T>(key: string, values: T) =>
-    new Promise((resolve, reject) => {
-        client.hmset(key, values as any, (err: any, reply: any) => {
-            if (err) return reject(err);
-            return resolve(reply);
-        });
-    }));
+    (async <T>(key: string, values: T) =>
+        new Promise((resolve, reject) => {
+            client.hmset(key, values as any, (err: any, reply: any) => {
+                if (err) return reject(err);
+                return resolve(reply);
+            });
+        }));
+

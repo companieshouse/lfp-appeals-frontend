@@ -19,21 +19,21 @@
   }}
 {% endblock %}
 
-{% block content %}
+{% block content%}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ serviceName }}</h1>
       <p class="govuk-body-l">Use this service to appeal a penalty issued to a company for not filing its annual accounts on time.</p>
       <p>It may take up to 30 minutes to complete this application.</p>
       <form method="post">
-        {{
+        {{ 
           govukButton({
             text: 'Start now',
             isStartButton: true,
             attributes: {
               id: 'submit'
             }
-          })
+          }) 
         }}
       </form>
       <h2 class="govuk-heading-m">Before you start</h2>

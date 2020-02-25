@@ -6,7 +6,7 @@ import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
 import { handler } from '../middleware/ErrorHandler';
 import { sessionMocker } from '../middleware/SessionMocker';
-import { ROOT_URI, CONFIRMATION_PAGE_URI } from './Paths';
+import { ROOT_URI, SUBMISSION_SUMMARY_PAGE_URI, CONFIRMATION_PAGE_URI } from './Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -28,8 +28,9 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
-    
+
     app.use(handler);
+    app.use(SUBMISSION_SUMMARY_PAGE_URI, sessionMocker)
     app.use(CONFIRMATION_PAGE_URI, sessionMocker);
 
     app.use(bodyParser.json());
@@ -46,7 +47,6 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
         express: app,
     });
 
-  app.locals.ROOT_URI = ROOT_URI;
-
+    app.locals.ROOT_URI = ROOT_URI;
 };
 
