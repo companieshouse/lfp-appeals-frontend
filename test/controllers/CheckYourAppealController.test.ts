@@ -4,7 +4,7 @@ import { createApplication } from "../ApplicationFactory";
 import { RedisService } from "../../src/services/RedisService";
 import { createSubstituteOf } from "../SubstituteFactory";
 import * as request from "supertest";
-import { SUBMISSION_SUMMARY_PAGE_URI } from "../../src/utils/Paths";
+import { CHECK_YOUR_APPEAL_PAGE_URI } from "../../src/utils/Paths";
 import { OK } from "http-status-codes";
 import { expect } from 'chai';
 
@@ -16,7 +16,7 @@ describe('CheckYourAppealController', () => {
     describe('GET request', () => {
         it('should return 200 when trying to access the submission summary', async () => {
 
-            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
+            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI).expect(OK);
         });
 
         it('session data should be populated', async () => {
@@ -31,7 +31,7 @@ describe('CheckYourAppealController', () => {
                 }
             };
 
-            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
+            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
                     expect(response.text)
                         .to.contain(session.companyNumber).and

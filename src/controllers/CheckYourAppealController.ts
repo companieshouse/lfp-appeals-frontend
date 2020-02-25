@@ -1,7 +1,7 @@
 import { controller, BaseHttpController, httpGet } from 'inversify-express-utils';
-import { SUBMISSION_SUMMARY_PAGE_URI } from '../utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI } from '../utils/Paths';
 
-@controller(SUBMISSION_SUMMARY_PAGE_URI)
+@controller(CHECK_YOUR_APPEAL_PAGE_URI)
 export class CheckYourAppealController extends BaseHttpController {
 
     @httpGet('')
