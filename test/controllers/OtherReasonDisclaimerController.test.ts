@@ -8,7 +8,7 @@ import * as request from 'supertest'
 import { createSubstituteOf } from '../SubstituteFactory';
 import { expect } from 'chai';
 import { OK, MOVED_TEMPORARILY } from 'http-status-codes';
-import { CookieConfig, SessionStore, SessionMiddleware } from 'ch-node-session';
+import { CookieConfig, SessionStore, SessionMiddleware } from 'ch-node-session-handler';
 import { Redis } from 'ioredis';
 import { RequestHandler } from 'express';
 import { returnEnvVarible } from '../../src/utils/ConfigLoader';

@@ -2,9 +2,9 @@ import 'reflect-metadata';
 import '../../src/controllers/index';
 import '../global';
 
-import { SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session';
-import { SessionKey } from 'ch-node-session/lib/session/keys/SessionKey';
-import { generateSessionId, generateSignature } from 'ch-node-session/lib/utils/CookieUtils';
+import { SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 import { createApplication } from '../ApplicationFactory';
 import { Substitute } from '@fluffy-spoon/substitute';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
@@ -13,7 +13,7 @@ import * as request from 'supertest';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
 import { AuthMiddleware } from '../../src/middleware/AuthMiddleware';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { Cookie } from 'ch-node-session/lib/session/model/Cookie';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
 
 

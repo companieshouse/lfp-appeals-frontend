@@ -10,9 +10,9 @@ import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { expect } from 'chai';
 import { PenaltyReferenceDetails } from '../../src/models/PenaltyReferenceDetails';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths'
-import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
+import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session-handler';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { wrapValue } from 'ch-node-session/lib/utils/EitherAsyncUtils';
+import { wrapValue } from 'ch-node-session-handler/lib/utils/EitherAsyncUtils';
 import { Redis } from 'ioredis';
 import { RequestHandler } from 'express';
 
