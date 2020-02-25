@@ -19,7 +19,7 @@ export function createFakeSession(entries: Record<string, string>[], signedIn?: 
           token_type: 'Bearer'
         },
         admin_permissions: '0',
-        signed_in: signedIn ? signedIn : 1,
+        signed_in: signedIn ? 1 : 0,
         user_profile: {
           email: 'test',
           forename: 'tester',
