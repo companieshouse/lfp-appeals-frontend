@@ -8,10 +8,10 @@ import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { schema } from '../models/PenaltyReferenceDetails.schema';
 import { Request, Response, NextFunction } from 'express';
-import { Cookie } from 'ch-node-session/lib/session/model/Cookie';
-import { VerifiedSession } from 'ch-node-session/lib/session/model/Session';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { SessionMiddleware, SessionStore } from 'ch-node-session';
+import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)

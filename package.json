@@ -20,7 +20,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "body-parser": "^1.18.2",
-    "ch-node-session": "git+ssh://git@github.com/companieshouse/poc-node-session-handler.git#develop",
+    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/poc-node-session-handler.git#f5d34b7",
     "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
     "express": "^4.15.5",

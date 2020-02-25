@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { RedisClient } from 'redis';
 import { buildProviderModule } from 'inversify-binding-decorators';
-import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session';
+import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import IORedis = require('ioredis');
 import { RequestHandler } from 'express';
 import { returnEnvVarible } from './utils/EnvironmentUtils';

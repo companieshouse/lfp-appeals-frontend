@@ -12,14 +12,8 @@ import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
 import { Redis } from 'ioredis';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { RequestHandler } from 'express';
-<<<<<<< HEAD
-import * as CookieUtil from 'ch-node-session/lib/utils/CookieUtils';
 import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
-import { Session } from 'ch-node-session/lib/session/model/Session';
-import { wrapValue } from 'ch-node-session/lib/utils/EitherAsyncUtils';
-=======
-import { returnEnvVarible } from '../../src/utils/ConfigLoader';
->>>>>>> refactor: clean up test code
+import { wrapValue } from 'ch-node-session-handler/lib/utils/EitherAsyncUtils';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';

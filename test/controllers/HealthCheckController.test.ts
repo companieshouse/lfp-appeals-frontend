@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import {createApplication, setupFakeAuth} from '../ApplicationFactory';
 import '../../src/controllers/HealthCheckController';
 import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
-import {CookieConfig, SessionMiddleware, SessionStore} from 'ch-node-session';
+import {CookieConfig, SessionMiddleware, SessionStore} from 'ch-node-session-handler';
 import { Redis } from 'ioredis';
 import { returnEnvVarible } from '../../src/utils/ConfigLoader';
 

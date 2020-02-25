@@ -1,12 +1,12 @@
 import { BaseMiddleware } from 'inversify-express-utils';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { returnEnvVarible } from "../utils/EnvironmentUtils";
-import { ISignInInfo } from 'ch-node-session/lib/session/model/SessionInterfaces';
-import { SessionKey } from 'ch-node-session/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session/lib/session/keys/SignInInfoKeys';
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
 import { ROOT_URI, PENALTY_DETAILS_PAGE_URI } from '../utils/Paths';
-import { VerifiedSession } from 'ch-node-session/lib/session/model/Session';
+import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
