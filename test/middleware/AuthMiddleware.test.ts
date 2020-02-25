@@ -34,17 +34,17 @@ const createApp = (withSession: boolean, withCookie: boolean) => createApplicati
                 [SessionKey.ClientSig]: sig
             }], true));
 
-    const cookie = Cookie.createFrom(session.__value);
+    const cookie = Cookie.createFrom(session.unsafeCoerce());
 
     const sessionStore = Substitute.for<SessionStore>();
-    sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.__value.data));
+    sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.unsafeCoerce().data));
 
     const realMiddleware = SessionMiddleware(config, sessionStore);
     const sessionHandler = (req: Request, res: Response, next: NextFunction) => {
         req.session = withSession ? session : Maybe.empty();
 
         if (withCookie) {
-            req.cookies[config.cookieName] = Cookie.createFrom(session.__value).value;
+            req.cookies[config.cookieName] = Cookie.createFrom(session.unsafeCoerce()).value;
         }
         realMiddleware(req, res, next);
     };
