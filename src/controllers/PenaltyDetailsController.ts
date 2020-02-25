@@ -7,7 +7,7 @@ import { ValidationResult } from '../utils/validation/ValidationResult';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { PenaltyReferenceDetails } from '../models/PenaltyReferenceDetails';
 import { schema } from '../models/PenaltyReferenceDetails.schema';
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';

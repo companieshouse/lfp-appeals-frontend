@@ -8,5 +8,4 @@ export class EntryController extends BaseHttpController {
     public redirectView(): void {
         this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
     }
-
 }

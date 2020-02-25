@@ -1,4 +1,4 @@
-import { controller, BaseHttpController, httpGet, httpPost } from 'inversify-express-utils';
+import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { OTHER_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
