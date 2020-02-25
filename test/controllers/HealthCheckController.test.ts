@@ -7,7 +7,7 @@ import '../../src/controllers/HealthCheckController';
 import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
 import {CookieConfig, SessionMiddleware, SessionStore} from 'ch-node-session-handler';
 import { Redis } from 'ioredis';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 
 
 describe('HealthCheckController', () => {
@@ -21,8 +21,8 @@ describe('HealthCheckController', () => {
             } as Redis;
 
             const config: CookieConfig = {
-                cookieName: returnEnvVarible('COOKIE_NAME'),
-                cookieSecret: returnEnvVarible('COOKIE_SECRET')
+                cookieName: getEnvOrDefault('COOKIE_NAME'),
+                cookieSecret: getEnvOrDefault('COOKIE_SECRET')
             };
 
             const sessionStore = new SessionStore(redis);
@@ -46,8 +46,8 @@ describe('HealthCheckController', () => {
             } as Redis;
 
             const config: CookieConfig = {
-                cookieName: returnEnvVarible('COOKIE_NAME'),
-                cookieSecret: returnEnvVarible('COOKIE_SECRET')
+                cookieName: getEnvOrDefault('COOKIE_NAME'),
+                cookieSecret: getEnvOrDefault('COOKIE_SECRET')
             };
 
             const sessionStore = new SessionStore(redis);

@@ -10,7 +10,7 @@ import { OK, MOVED_TEMPORARILY } from 'http-status-codes';
 import { CookieConfig, SessionStore, SessionMiddleware } from 'ch-node-session-handler';
 import { Redis } from 'ioredis';
 import { RequestHandler } from 'express';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 
 
 describe('OtherReasonDisclaimerController', () => {
@@ -22,8 +22,8 @@ describe('OtherReasonDisclaimerController', () => {
         } as Redis;
 
         const config: CookieConfig = {
-            cookieName: returnEnvVarible('COOKIE_NAME'),
-            cookieSecret: returnEnvVarible('COOKIE_SECRET')
+            cookieName: getEnvOrDefault('COOKIE_NAME'),
+            cookieSecret: getEnvOrDefault('COOKIE_SECRET')
         };
 
         const sessionStore = new SessionStore(redis);

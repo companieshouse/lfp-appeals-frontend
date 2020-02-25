@@ -14,14 +14,14 @@ import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASO
 import { AuthMiddleware } from '../../src/middleware/AuthMiddleware';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 
 
 const createApp = (withSession: boolean, withCookie: boolean) => createApplication(container => {
 
     const config = {
-        cookieName: returnEnvVarible('COOKIE_NAME'),
-        cookieSecret: returnEnvVarible('COOKIE_SECRET')
+        cookieName: getEnvOrDefault('COOKIE_NAME'),
+        cookieSecret: getEnvOrDefault('COOKIE_SECRET')
     };
 
     const id = generateSessionId();

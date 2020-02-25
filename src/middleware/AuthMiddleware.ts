@@ -1,6 +1,6 @@
 import { BaseMiddleware } from 'inversify-express-utils';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { returnEnvVarible } from '../utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../utils/EnvironmentUtils';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
@@ -17,7 +17,7 @@ export class AuthMiddleware extends BaseMiddleware {
             .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .filter((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
             .ifNothing(() => {
-                res.redirect(`${returnEnvVarible('ACCOUNT_URL', '')}/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
+                res.redirect(`${getEnvOrDefault('ACCOUNT_URL', '')}/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
             });
 
         return next();
