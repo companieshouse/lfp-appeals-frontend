@@ -27,7 +27,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
     }
 
     @httpGet('')
-    public async getPenaltyDetailsView(req: Request, res: Response): Promise<string> {
+    public async getPenaltyDetailsView(req: Request): Promise<string> {
 
         const body: PenaltyReferenceDetails = {
             companyNumber: '',
