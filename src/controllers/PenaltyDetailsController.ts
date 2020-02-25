@@ -13,13 +13,11 @@ import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Sessi
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 
+const sessionKey = 'session::penalty-details';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
 
-    private COMPANY_NUMBER: string = 'companyNumber';
-    private PENALTY_REFERENCE: string = 'penaltyReference';
-    private COOKIE_NAME: string = 'penalty-cookie';
     private PENALTY_TEMPLATE: string = 'penalty-details';
 
     constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {
@@ -28,29 +26,16 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
     @httpGet('')
     public async getPenaltyDetailsView(req: Request): Promise<string> {
-
-        const body: PenaltyReferenceDetails = {
-            companyNumber: '',
-            penaltyReference: ''
-        };
-
-        const sessionData = req.session
+        const data = req.session
             .chain(session => session.getExtraData())
-            .map(data => data[this.COOKIE_NAME]);
+            .map(extraData => extraData[sessionKey]);
 
-        return await this.render(this.PENALTY_TEMPLATE,
-            sessionData.isJust() ? { ...sessionData.extract() } : { ...body });
-
-
+        return await this.render(this.PENALTY_TEMPLATE, data.orDefault({}));
     }
 
     @httpPost('')
     public async createPenaltyDetails(req: Request): Promise<any> {
-
-        const body: PenaltyReferenceDetails = {
-            companyNumber: this.httpContext.request.body.companyNumber,
-            penaltyReference: this.httpContext.request.body.penaltyReference
-        };
+        const body: PenaltyReferenceDetails = req.body;
 
         const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
 
@@ -61,7 +46,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         }
 
         req.session.map(async (session: VerifiedSession) => {
-            session.saveExtraData(this.COOKIE_NAME, body);
+            session.saveExtraData(sessionKey, body);
             await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
         });
 
