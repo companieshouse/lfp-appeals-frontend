@@ -1,5 +1,4 @@
 import 'reflect-metadata'
-import '../global'
 
 import '../../src/controllers/OtherReasonDisclaimerController'
 import { createApplication, setupFakeAuth } from '../ApplicationFactory';

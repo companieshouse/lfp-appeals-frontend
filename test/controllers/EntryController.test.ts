@@ -1,4 +1,3 @@
-import '../global';
 import 'reflect-metadata'
 import '../../src/controllers/EntryController'
 import { createApplication } from '../ApplicationFactory';

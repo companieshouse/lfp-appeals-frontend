@@ -1,5 +1,4 @@
 import 'reflect-metadata'
-import '../global'
 
 import { createApplication, setupFakeAuth } from '../ApplicationFactory';
 import * as request from 'supertest'

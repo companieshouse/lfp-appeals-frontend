@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import '../global';
 
 import * as request from 'supertest';
 import { expect } from 'chai';

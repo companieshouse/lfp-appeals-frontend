@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import '../../src/controllers/index';
-import '../global';
 
 import { SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
