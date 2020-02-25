@@ -15,7 +15,8 @@ const app = createApplication(container => {
 describe('CheckYourAppealController', () => {
     describe('GET request', () => {
         it('should return 200 when trying to access the submission summary', async () => {
-            request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
+
+            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
         });
 
         it('session data should be populated', async () => {
