@@ -4,7 +4,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session';
 import IORedis = require('ioredis');
 import { RequestHandler } from 'express';
-import { returnEnvVarible } from './utils/ConfigLoader';
+import { returnEnvVarible } from './utils/EnvironmentUtils';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
 const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
 

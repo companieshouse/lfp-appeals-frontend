@@ -7,10 +7,10 @@ import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from '../../src/utils/Paths'
 import { expect } from 'chai';
 import '../global';
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session';
-import { Redis } from "ioredis";
-import Substitute from "@fluffy-spoon/substitute";
-import { RequestHandler } from "express";
-import { returnEnvVarible } from "../../src/utils/ConfigLoader";
+import { Redis } from 'ioredis';
+import Substitute from '@fluffy-spoon/substitute';
+import { RequestHandler } from 'express';
+import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
 
 
 describe('EntryController', () => {

@@ -2,21 +2,19 @@ import 'reflect-metadata';
 import '../../src/controllers/index';
 import '../global';
 
-import { CookieConfig, SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session';
+import { SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session';
 import { SessionKey } from 'ch-node-session/lib/session/keys/SessionKey';
-import { Encoding } from 'ch-node-session/lib/encoding/Encoding';
 import { generateSessionId, generateSignature } from 'ch-node-session/lib/utils/CookieUtils';
 import { createApplication } from '../ApplicationFactory';
-import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { Redis } from 'ioredis';
+import { Substitute } from '@fluffy-spoon/substitute';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { expect, assert } from 'chai';
 import * as request from 'supertest';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
-import { returnEnvVarible } from '../../src/utils/ConfigLoader';
 import { AuthMiddleware } from '../../src/middleware/AuthMiddleware';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
 import { Cookie } from 'ch-node-session/lib/session/model/Cookie';
+import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
 
 
 const createApp = (withSession: boolean, withCookie: boolean) => createApplication(container => {
