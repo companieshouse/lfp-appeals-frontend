@@ -8,7 +8,7 @@ import { schema } from '../models/OtherReason.schema';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { EitherUtils, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 const sessionKey = 'session::other-reason';
