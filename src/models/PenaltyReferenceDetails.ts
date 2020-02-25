@@ -1,4 +1,4 @@
-export interface PenaltyReferenceDetails {
-    companyNumber: string;
-    penaltyReference: string;
+export interface PenaltyReferenceDetails{
+  companyNumber: string;
+  penaltyReference: string;
 }

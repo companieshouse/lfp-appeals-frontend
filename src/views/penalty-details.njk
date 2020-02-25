@@ -5,6 +5,7 @@
 {% from 'govuk/components/button/macro.njk'        import govukButton %}
 {% from 'govuk/components/details/macro.njk'       import govukDetails %}
 
+
 {% block pageTitle %}
   Tell us the penalty details
 {% endblock %}
@@ -12,17 +13,17 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{
-        govukErrorSummary ({
-          titleText: 'There is a problem with the details you gave us',
-          errorList: validationResult.errors
-        }) if validationResult and validationResult.errors.length > 0
-      }}
+        {{ 
+          govukErrorSummary ({
+            titleText: 'There is a problem with the details you gave us',
+            errorList: validationResult.errors
+          }) if validationResult and validationResult.errors.length > 0 
+        }}
       <h1 class="govuk-heading-xl">
         What are the penalty details?
       </h1>
       <form method="post" action="">
-        {{
+        {{ 
           govukInput({
             label: {
               text: 'Company number'
@@ -36,9 +37,9 @@
             name: 'companyNumber',
             value: companyNumber,
             autocomplete: 'off'
-          })
+          }) 
         }}
-        {{
+        {{ 
           govukInput({
             label: {
               text: 'Reference number'
@@ -52,14 +53,14 @@
             name: 'penaltyReference',
             value: penaltyReference,
             autocomplete: 'off'
-          })
+          }) 
         }}
         <div class="govuk-form-group">
           {% set detailsHTML %}
-            <p>
-              Your company number and reference number are shown at the bottom of your penalty notice.
-            </p>
-            <img src="{{ ROOT_URI }}/images/penalty-notice.png" class="call-out-image" alt=""/>
+          <p>
+            Your company number and reference number are shown at the bottom of your penalty notice.
+          </p>
+          <img src="{{ ROOT_URI }}/images/penalty-notice.png" class="call-out-image" alt=""/>
           {% endset -%}
 
           {{
@@ -75,7 +76,7 @@
             attributes: {
               id: 'submit'
             }
-          })
+          }) 
         }}
       </form>
     </div>

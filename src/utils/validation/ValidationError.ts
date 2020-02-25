@@ -6,7 +6,7 @@ const hyphenise = (value: string): string => {
 };
 
 export class ValidationError {
-    constructor(public readonly field: string, public readonly text: string) {
+    constructor (public readonly field: string, public readonly text: string) {
         if (!field) {
             throw new Error('Field name is required')
         }
