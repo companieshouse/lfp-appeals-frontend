@@ -5,15 +5,15 @@ import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../u
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { schema } from '../models/PenaltyReferenceDetails.schema';
 import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { PenaltyIdentifier } from 'src/models/PenaltyIdentifier';
 import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { schema } from '../models/PenaltyIdentifier.schema';
 
-const sessionKey = 'session::penalty-details';
+export const sessionKey = 'session::penalty-details';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {

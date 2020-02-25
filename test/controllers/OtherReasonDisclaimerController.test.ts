@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 import '../../src/controllers/OtherReasonDisclaimerController'
-import { createApplication, setupFakeAuth } from '../ApplicationFactory';
+import { createAppConfigurable, setupFakeAuth } from '../ApplicationFactory';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
 import * as request from 'supertest'
 import { expect } from 'chai';
@@ -14,7 +14,7 @@ import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 
 describe('OtherReasonDisclaimerController', () => {
 
-    const app = createApplication(container => {
+    const app = createAppConfigurable(container => {
 
         const redis = {
             ping: () => Promise.resolve('OK')

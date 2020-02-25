@@ -1,27 +1,25 @@
-import 'reflect-metadata'
-import '../../src/controllers/CheckYourAppealController'
-import { createApplication } from "../ApplicationFactory";
-import { RedisService } from "../../src/services/RedisService";
-import { createSubstituteOf } from "../SubstituteFactory";
-import * as request from "supertest";
-import { SUBMISSION_SUMMARY_PAGE_URI } from "../../src/utils/Paths";
-import { OK } from "http-status-codes";
+import 'reflect-metadata';
+import '../../src/controllers/CheckYourAppealController';
+import * as request from 'supertest';
+import { SUBMISSION_SUMMARY_PAGE_URI } from '../../src/utils/Paths';
+import { OK } from 'http-status-codes';
 import { expect } from 'chai';
+import { createApp, getDefaultConfig } from '../ApplicationFactory';
+import { createFakeSession } from '../utils/session/FakeSessionFactory';
 
-const app = createApplication(container => {
-    container.bind(RedisService).toConstantValue(createSubstituteOf<RedisService>());
-});
+const config = getDefaultConfig();
 
 describe('CheckYourAppealController', () => {
     describe('GET request', () => {
-        it('should return 200 when trying to access the submission summary', async () => {
-
+        it('should return 200 when trying to access the submission summary with a session ', async () => {
+            const session = createFakeSession([], config.cookieSecret, true);
+            const app = createApp(session);
             await request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
         });
 
         it('session data should be populated', async () => {
 
-            const session: Record<string, any> = {
+            const details: Record<string, any> = {
                 companyNumber: '00345567',
                 penaltyReference: 'A00000001',
                 email: 'joe@bloggs.mail',
@@ -31,15 +29,20 @@ describe('CheckYourAppealController', () => {
                 }
             };
 
+
+            let session = createFakeSession([], config.cookieSecret, true);
+            session = session.saveExtraData('appeals', details);
+            const app = createApp(session);
+
             await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
                 .expect(response => {
                     expect(response.text)
-                        .to.contain(session.companyNumber).and
-                        .to.contain(session.penaltyReference).and
-                        .to.contain(session.email).and
-                        .to.contain(session.reason.otherReason).and
-                        .to.contain(session.reason.otherInformation);
-                })
+                        .to.contain(details.companyNumber).and
+                        .to.contain(details.penaltyReference).and
+                        .to.contain(details.email).and
+                        .to.contain(details.reason.otherReason).and
+                        .to.contain(details.reason.otherInformation);
+                });
         });
     });
 });

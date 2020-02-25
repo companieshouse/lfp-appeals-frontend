@@ -1,62 +1,26 @@
 import 'reflect-metadata';
 import '../../src/controllers/index';
-
-import { SessionStore, SessionMiddleware, Maybe, EitherUtils } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
-import { createApplication } from '../ApplicationFactory';
-import { Substitute } from '@fluffy-spoon/substitute';
-import { RequestHandler, Request, Response, NextFunction } from 'express';
 import { expect, assert } from 'chai';
 import * as request from 'supertest';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
-import { AuthMiddleware } from '../../src/middleware/AuthMiddleware';
+import { createApp, getDefaultConfig } from '../ApplicationFactory';
+import { Maybe, VerifiedSession } from 'ch-node-session-handler';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 
+const config = getDefaultConfig();
+const id = generateSessionId();
+const sig = generateSignature(id, config.cookieSecret);
 
-const createApp = (withSession: boolean, withCookie: boolean) => createApplication(container => {
+const session = createFakeSession(
+    [{
+        [SessionKey.Id]: id
+    }, {
+        [SessionKey.ClientSig]: sig
+    }], config.cookieSecret, true);
 
-    const config = {
-        cookieName: getEnvOrDefault('COOKIE_NAME'),
-        cookieSecret: getEnvOrDefault('COOKIE_SECRET')
-    };
-
-    const id = generateSessionId();
-    const sig = generateSignature(id, config.cookieSecret);
-
-    const session = Maybe.of(
-        createFakeSession(
-            [{
-                [SessionKey.Id]: id
-            }, {
-                [SessionKey.ClientSig]: sig
-            }], true));
-
-    const cookie = Cookie.createFrom(session.unsafeCoerce());
-
-    const sessionStore = Substitute.for<SessionStore>();
-    sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.unsafeCoerce().data));
-
-    const realMiddleware = SessionMiddleware(config, sessionStore);
-    const sessionHandler = (req: Request, res: Response, next: NextFunction) => {
-        req.session = withSession ? session : Maybe.empty();
-
-        if (withCookie) {
-            req.cookies[config.cookieName] = Cookie.createFrom(session.unsafeCoerce()).value;
-        }
-        realMiddleware(req, res, next);
-    };
-
-
-    container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(new AuthMiddleware());
-    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-    container.bind(SessionStore).toConstantValue(sessionStore);
-
-});
-
-const authedApp = createApp(true, true);
+const authedApp = createApp(session);
 
 const protectedPages = [
     PENALTY_DETAILS_PAGE_URI,
@@ -78,7 +42,7 @@ describe('Authentication Middleware', () => {
                 companyNumber: 'SC123123'
             };
 
-            await request(createApp(false, false))
+            await request(createApp())
                 .get(PENALTY_DETAILS_PAGE_URI)
                 .catch(err => assert.fail(err));
 
@@ -112,14 +76,14 @@ describe('Authentication Middleware', () => {
     });
     describe('Unauthed path', () => {
 
-        const appWithoutCookie = { label: 'App without Cookie', app: createApp(true, false) };
-        const unAuthedApp = { label: 'App without Cookie and Session', app: createApp(false, false) };
+        const appWithoutCookie = { label: 'App without Cookie', app: createApp(session, false) };
+        const unAuthedApp = { label: 'App without Cookie and Session', app: createApp() };
 
         const unAuthedAppStateVariations = [appWithoutCookie, unAuthedApp];
 
         before('sign in server should be running', async () => {
 
-            await request(createApp(false, false))
+            await request(createApp())
                 .get(PENALTY_DETAILS_PAGE_URI)
                 .catch(err => assert.fail(err));
         });
@@ -140,11 +104,11 @@ describe('Authentication Middleware', () => {
 
     describe('Auth Edge case', () => {
 
-        const appWithoutSessionObject = createApp(false, true);
+        const appWithoutSessionObject = createApp(createFakeSession([], config.cookieSecret), true);
 
         before('sign in server should be running', async () => {
 
-            await request(createApp(false, false))
+            await request(createApp())
                 .get(PENALTY_DETAILS_PAGE_URI)
                 .catch(err => assert.fail(err));
         });

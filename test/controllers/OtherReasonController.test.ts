@@ -2,43 +2,31 @@ import 'reflect-metadata';
 
 import * as request from 'supertest';
 import { expect } from 'chai';
-import { createApplication, setupFakeAuth } from '../ApplicationFactory';
-
+import { createApp, getDefaultConfig } from '../ApplicationFactory';
 import '../../src/controllers/OtherReasonController';
 import { OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
-import { OK, UNPROCESSABLE_ENTITY, MOVED_TEMPORARILY } from 'http-status-codes';
-import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
-import { Redis } from 'ioredis';
+import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { RequestHandler } from 'express';
-import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 import { wrapValue } from 'ch-node-session-handler/lib/utils/EitherAsyncUtils';
+import { SessionStore } from 'ch-node-session-handler';
+import { createFakeSession } from '../utils/session/FakeSessionFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
 
 
-const app = (sessionStore: SessionStore) => createApplication(container => {
-
-    const config: CookieConfig = {
-        cookieName: getEnvOrDefault('COOKIE_NAME'),
-        cookieSecret: getEnvOrDefault('COOKIE_SECRET')
-    };
-
-    const sessionHandler = SessionMiddleware(config, sessionStore);
-    setupFakeAuth(container);
-    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-    container.bind(SessionStore).toConstantValue(sessionStore);
-
-});
+const config = getDefaultConfig();
 
 describe('OtherReasonController', () => {
 
     describe('GET request', () => {
         it('should return 200 response', async () => {
 
-            await request(app(Substitute.for<SessionStore>())).get(OTHER_REASON_PAGE_URI)
+            const session = createFakeSession([], config.cookieSecret, true);
+            const app = createApp(session);
+
+            await request(app).get(OTHER_REASON_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.include(pageHeading)
@@ -50,7 +38,10 @@ describe('OtherReasonController', () => {
     describe('POST request', () => {
         it('should return 422 response with rendered error messages when invalid data was submitted', async () => {
 
-            await request(app(Substitute.for<SessionStore>())).post(OTHER_REASON_PAGE_URI)
+            const session = createFakeSession([], config.cookieSecret, true);
+            const app = createApp(session);
+
+            await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({})
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -68,7 +59,10 @@ describe('OtherReasonController', () => {
             const sessionStore = Substitute.for<SessionStore>();
             sessionStore.load(Arg.any()).returns(wrapValue({ title, description }));
 
-            await request(app(sessionStore)).post(OTHER_REASON_PAGE_URI)
+            const session = createFakeSession([], config.cookieSecret, true);
+            const app = createApp(session);
+
+            await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({ title, description })
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);

@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { Application } from 'express'
 import * as request from 'supertest'
-import { createApplication } from '../ApplicationFactory';
+import { createAppConfigurable } from '../ApplicationFactory';
 import { createSubstituteOf } from '../SubstituteFactory';
 
 import '../../src/controllers/HealthCheckController'
@@ -11,7 +11,7 @@ import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
 
 describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {
-        const app = createApplication(container => {
+        const app = createAppConfigurable(container => {
             const redis = createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.resolve('OK'))
             });
@@ -22,7 +22,7 @@ describe('HealthCheckController', () => {
     });
 
     it('should return 500 with status when redis database is down', async () => {
-        const app = createApplication(container => {
+        const app = createAppConfigurable(container => {
             const redis = createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.reject('ERROR'))
             });
