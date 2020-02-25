@@ -11,7 +11,7 @@ import { OK, MOVED_TEMPORARILY } from 'http-status-codes';
 import { CookieConfig, SessionStore, SessionMiddleware } from 'ch-node-session-handler';
 import { Redis } from 'ioredis';
 import { RequestHandler } from 'express';
-import { returnEnvVarible } from '../../src/utils/ConfigLoader';
+import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
 import Substitute from '@fluffy-spoon/substitute';
 
 
