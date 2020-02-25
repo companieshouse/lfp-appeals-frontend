@@ -26,7 +26,7 @@ export class OtherReasonController extends BaseHttpController {
             .chain(session => session.getExtraData())
             .map(extraData => extraData[sessionKey]);
 
-        return await this.render(OK, data.isJust() ? data.__value : {});
+        return await this.render(OK, data.isJust() ? data.extract() : {});
 
     }
 

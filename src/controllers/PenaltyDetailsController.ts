@@ -39,7 +39,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .map(data => data[this.COOKIE_NAME]);
 
         return await this.render(this.PENALTY_TEMPLATE,
-            sessionData.isJust() ? { ...sessionData.__value } : { ...body });
+            sessionData.isJust() ? { ...sessionData.extract() } : { ...body });
 
 
     }
