@@ -12,7 +12,7 @@ import { SessionStore, SessionMiddleware, CookieConfig } from 'ch-node-session';
 import { Redis } from 'ioredis';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { RequestHandler } from 'express';
-import { returnEnvVarible } from '../../src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../../src/utils/EnvironmentUtils';
 import { wrapValue } from 'ch-node-session-handler/lib/utils/EitherAsyncUtils';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -23,8 +23,8 @@ const invalidDescriptionErrorMessage = 'You must give us more information';
 const app = (sessionStore: SessionStore) => createApplication(container => {
 
     const config: CookieConfig = {
-        cookieName: returnEnvVarible('COOKIE_NAME'),
-        cookieSecret: returnEnvVarible('COOKIE_SECRET')
+        cookieName: getEnvOrDefault('COOKIE_NAME'),
+        cookieSecret: getEnvOrDefault('COOKIE_SECRET')
     };
 
     const sessionHandler = SessionMiddleware(config, sessionStore);

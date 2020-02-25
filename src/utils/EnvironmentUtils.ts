@@ -1,10 +1,10 @@
-export function returnEnvVarible(name: string, defaultVal?: string): string {
-  const variable = process.env[name];
-  if (!variable) {
+export function getEnvOrDefault(name: string, defaultVal?: string): string {
+  const value = process.env[name];
+  if (!value) {
     if (defaultVal !== undefined) {
       return defaultVal;
     }
-    throw Error(`Variable ${name} was not found on env files.`);
+    throw Error(`Variable ${name} was not found`);
   }
-  return variable;
+  return value;
 }
