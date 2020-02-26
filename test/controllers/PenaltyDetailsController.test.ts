@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { PenaltyIdentifier } from '../../src/models/PenaltyIdentifier';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { sessionKey } from '../../src/controllers/PenaltyDetailsController';
+import { AppealKeys } from '../../src/models/keys/AppealKeys';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -28,7 +28,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
             let session = createFakeSession([], config.cookieSecret, true);
-            session = session.saveExtraData(sessionKey, penaltyIdentifier);
+            session = session.saveExtraData(AppealKeys.APPEALS_KEY, penaltyIdentifier);
             const app = createApp(session);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
@@ -57,7 +57,7 @@ describe('PenaltyDetailsController', () => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
                 })
-                .then(_ => expect(session.getExtraData().unsafeCoerce()[sessionKey]).to.deep.equal(penaltyIdentifier));
+                .then(_ => expect(session.getExtraData().unsafeCoerce()[AppealKeys.APPEALS_KEY]).to.deep.equal(penaltyIdentifier));
 
         });
 

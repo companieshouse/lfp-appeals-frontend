@@ -6,42 +6,54 @@ import { OK } from 'http-status-codes';
 import { expect } from 'chai';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
+import { Appeal } from '../../src/models/Appeal';
 
 const config = getDefaultConfig();
 
 describe('CheckYourAppealController', () => {
     describe('GET request', () => {
-        it('should return 200 when trying to access the submission summary with a session ', async () => {
-            const session = createFakeSession([], config.cookieSecret, true);
-            const app = createApp(session);
-            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI).expect(OK);
-        });
 
-        it('session data should be populated', async () => {
+        it('should return 200 with populated session data', async () => {
 
-            const details: Record<string, any> = {
-                companyNumber: '00345567',
-                penaltyReference: 'A00000001',
-                email: 'joe@bloggs.mail',
-                reason: {
-                    otherReason: 'I have reasons',
-                    otherInformation: 'They are legit'
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: '00345567',
+                    penaltyReference: 'A00000001',
+                },
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    }
                 }
-            };
+            } as Appeal
 
 
             let session = createFakeSession([], config.cookieSecret, true);
-            session = session.saveExtraData('appeals', details);
+            session = session.saveExtraData('appeals', appeal);
             const app = createApp(session);
 
             await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
                 .expect(response => {
+                    expect(response.status).to.be.equal(OK)
                     expect(response.text)
-                        .to.contain(details.companyNumber).and
-                        .to.contain(details.penaltyReference).and
-                        .to.contain(details.email).and
-                        .to.contain(details.reason.otherReason).and
-                        .to.contain(details.reason.otherInformation);
+                        .to.contain(appeal.penaltyIdentifier.companyNumber).and
+                        .to.contain(appeal.penaltyIdentifier.penaltyReference).and
+                        .to.contain('test').and
+                        .to.contain(appeal.reasons.other.title).and
+                        .to.contain(appeal.reasons.other.description)
+
+                });
+        });
+
+        it('should return 200 with no populated session data', async () => {
+
+            const session = createFakeSession([], config.cookieSecret, true);
+            const app = createApp(session);
+
+            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK)
                 });
         });
     });
