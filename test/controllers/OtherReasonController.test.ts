@@ -10,6 +10,7 @@ import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { wrapValue } from 'ch-node-session-handler/lib/utils/EitherAsyncUtils';
 import { SessionStore } from 'ch-node-session-handler';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
+import { Appeal } from '../../src/models/Appeal';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
@@ -53,22 +54,27 @@ describe('OtherReasonController', () => {
         });
 
         it('should return 200 response with rendered data when valid data was submitted', async () => {
-            const title = 'Some title';
-            const description = 'Some description';
 
-            const sessionStore = Substitute.for<SessionStore>();
-            sessionStore.load(Arg.any()).returns(wrapValue({ title, description }));
+            const appeal = {
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    }
+                }
+            } as Appeal
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            let session = createFakeSession([], config.cookieSecret, true);
+            session = session.saveExtraData('appeals', appeal);
             const app = createApp(session);
 
             await request(app).post(OTHER_REASON_PAGE_URI)
-                .send({ title, description })
+                .send(appeal.reasons.other)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.include(pageHeading)
-                        .and.to.include(title)
-                        .and.to.include(description)
+                        .and.to.include(appeal.reasons.other.title)
+                        .and.to.include(appeal.reasons.other.description)
                         .and.to.not.include(errorSummaryHeading)
                         .and.to.not.include(invalidTitleErrorMessage)
                         .and.to.not.include(invalidDescriptionErrorMessage);
