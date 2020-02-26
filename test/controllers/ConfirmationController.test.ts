@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import * as request from 'supertest';
-import { createSubstituteOf } from '../SubstituteFactory';
 import { expect } from 'chai';
 
 import '../../src/controllers/ConfirmationController';

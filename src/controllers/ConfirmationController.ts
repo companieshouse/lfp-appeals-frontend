@@ -1,4 +1,4 @@
-import { controller, httpGet, BaseHttpController } from 'inversify-express-utils';
+import { controller, httpGet } from 'inversify-express-utils';
 import { CONFIRMATION_PAGE_URI } from '../utils/Paths';
 import { Request } from 'express';
 import { SessionMiddleware, Maybe } from 'ch-node-session-handler';

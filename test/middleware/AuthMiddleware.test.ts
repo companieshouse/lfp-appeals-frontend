@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import '../../src/controllers/index';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import * as request from 'supertest';
 import {
     OTHER_REASON_DISCLAIMER_PAGE_URI,
