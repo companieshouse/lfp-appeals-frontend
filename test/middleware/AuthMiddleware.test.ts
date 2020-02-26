@@ -1,10 +1,13 @@
 import 'reflect-metadata';
 import '../../src/controllers/index';
-import { expect, assert } from 'chai';
+import { assert, expect } from 'chai';
 import * as request from 'supertest';
-import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
+import {
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    OTHER_REASON_PAGE_URI,
+    PENALTY_DETAILS_PAGE_URI
+} from '../../src/utils/Paths';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
-import { Maybe, VerifiedSession } from 'ch-node-session-handler';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
@@ -56,16 +59,14 @@ describe('Authentication Middleware', () => {
 
         });
     });
-    describe('Unauthed path', () => {
-
+    describe('no session scenario', () => {
         it('should redirect the user to sign in screen when trying to access protected pages', async () => {
-
-            const unAuthedApp = createApp()
+            const appWithoutSession = createApp()
 
             for (const page of protectedPages) {
-                await request(unAuthedApp).get(page)
+                await request(appWithoutSession).get(page)
                     .expect(302).then(res => expect(res.header.location).to.include('/signin'));
-                }
+            }
         });
 
     });
