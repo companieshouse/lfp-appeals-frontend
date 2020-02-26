@@ -8,11 +8,11 @@ import { schema } from '../models/OtherReason.schema';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
-
-const sessionKey = 'session::other-reason';
+import { AppealKeys } from '../models/keys/AppealKeys';
+import { ReasonsKeys } from '../models/keys/ReasonsKeys';
+import { Appeal } from '../models/Appeal';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {
@@ -24,7 +24,9 @@ export class OtherReasonController extends BaseHttpController {
     public async renderForm(req: Request): Promise<void> {
         const data = req.session
             .chain(session => session.getExtraData())
-            .map(extraData => extraData[sessionKey]);
+            .chainNullable(extraData => extraData[AppealKeys.APPEALS_KEY])
+            .chainNullable(appeals => appeals[AppealKeys.REASONS])
+            .chainNullable(reasons => reasons[ReasonsKeys.OTHER]);
 
         return await this.render(OK, data.orDefault({}));
 
@@ -38,13 +40,36 @@ export class OtherReasonController extends BaseHttpController {
         const valid = validationResult.errors.length === 0;
 
         if (valid) {
-            req.session.map(async (session: VerifiedSession) => {
-                session.saveExtraData(sessionKey, body);
-                await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
-            });
+
+            const session = req.session.unsafeCoerce();
+            const extraData = session.getExtraData();
+
+            const checkAppealsKey = (data: any) => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY])
+                .mapOrDefault<Appeal>(
+                    appeal => {
+                        if (!appeal[AppealKeys.REASONS]) {
+                            appeal[AppealKeys.REASONS] = {};
+                        }
+                        return appeal;
+                    },
+                    {
+                        [AppealKeys.REASONS]: {}
+                    } as Appeal
+                );
+
+            const appealsObj = extraData
+                .chainNullable<Appeal>(checkAppealsKey)
+                .mapOrDefault(appeals => {
+                    appeals[AppealKeys.REASONS][ReasonsKeys.OTHER] = body;
+                    return appeals;
+                }, {} as Appeal);
+
+            session.saveExtraData(AppealKeys.APPEALS_KEY, appealsObj);
+
+            await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
         }
 
-        return this.render(valid ? OK : UNPROCESSABLE_ENTITY, {...body, validationResult});
+        return this.render(valid ? OK : UNPROCESSABLE_ENTITY, { ...body, validationResult });
     }
 
     private async render(status: number, data: object): Promise<void> {

@@ -5,32 +5,29 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
+import { Appeal } from '../models/Appeal';
+import { AppealKeys } from '../models/keys/AppealKeys';
+import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 @controller(SUBMISSION_SUMMARY_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class CheckYourAppealController extends BaseHttpController {
+export class CheckYourAppealController extends BaseAsyncHttpController {
 
     @httpGet('')
-    public renderView(req: Request): void {
+    public async renderView(req: Request): Promise<string> {
 
         const userProfile = req.session
             .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map(info => info[SignInInfoKeys.UserProfile]);
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .orDefault({});
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .map(data => {
-                return {
-                    penaltyIdentifier: data.appeals.penaltyIdentifier,
-                    reasons: data.appeals.reasons
-                };
-            });
+            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .orDefault({});
 
-        userProfile
-            .map(profile => appealsData.map(pen => {
-                this.httpContext.response.render('check-your-appeal', { ...pen, profile });
-            }))
-            .ifNothing(() => this.httpContext.response.render('check-your-appeal', {}));
+        return this.render('check-your-appeal', { ...appealsData, userProfile });
+
 
     }
 }

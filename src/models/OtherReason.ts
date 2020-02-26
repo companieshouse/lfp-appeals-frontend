@@ -1,4 +1,7 @@
+import { OtherReasonKeys } from './keys/OtherReasonKeys';
+
 export interface OtherReason {
-    title: string
-    description: string
+    [OtherReasonKeys.TITLE]: string
+    [OtherReasonKeys.DESCRIPTION]: string
 }
+
