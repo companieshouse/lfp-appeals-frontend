@@ -1,12 +1,10 @@
 import { Container } from 'inversify';
-import { RedisClient } from 'redis';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import IORedis = require('ioredis');
 import { RequestHandler } from 'express';
 import { getEnvOrDefault } from './utils/EnvironmentUtils';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
-const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
 
 export function createContainer(): Container {
     const container = new Container();
