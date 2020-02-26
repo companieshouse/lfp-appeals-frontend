@@ -8,17 +8,21 @@ import { CONFIRMATION_PAGE_URI } from '../../src/utils/Paths';
 import { OK } from 'http-status-codes';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
 import { getDefaultConfig, createApp } from '../ApplicationFactory';
+import { Appeal } from '../../src/models/Appeal';
 
 const config = getDefaultConfig();
 
 describe('ConfirmationController', () => {
   describe('GET request', () => {
 
-    const info: Record<string, any> = {
-      companyNumber: '00345567'
-    };
+    const appeal = {
+      penaltyIdentifier: {
+          companyNumber: '00345567',
+      },
+  } as Appeal
+
     let session = createFakeSession([], config.cookieSecret, true);
-    session = session.saveExtraData('appeals', info);
+    session = session.saveExtraData('appeals', appeal);
     const app = createApp(session);
 
     it('should return 200 when trying to access page', async () => {
@@ -26,7 +30,7 @@ describe('ConfirmationController', () => {
         .expect(response => {
 
           expect(response.text).to.contain('Appeal submitted')
-            .and.to.contain(info.companyNumber);
+            .and.to.contain(appeal.penaltyIdentifier.companyNumber);
 
           expect(response.status).to.be.equal(OK);
         });
