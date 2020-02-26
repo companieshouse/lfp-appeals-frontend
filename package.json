@@ -55,7 +55,7 @@
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-watch-sass": "^1.4.1",
-    "mocha": "^7.0.1",
+    "mocha": "^7.1.0",
     "node-sass": "^4.13.1",
     "sass-lint": "^1.13.1",
     "supertest": "^4.0.2",
