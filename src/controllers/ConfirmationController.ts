@@ -3,9 +3,9 @@ import { CONFIRMATION_PAGE_URI } from '../utils/Paths';
 import { Request } from 'express';
 import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { AppealKeys } from '../models/keys/AppealKeys';
-import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { Appeal } from '../models/Appeal';
+import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends BaseAsyncHttpController {
@@ -15,10 +15,10 @@ export class ConfirmationController extends BaseAsyncHttpController {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
-            .chainNullable(data => data[AppealKeys.APPEALS_KEY])
-            .chainNullable(appeals => appeals[AppealKeys.PENALTY_IDENTIFIER])
-            .map(penaltyIdentifier => penaltyIdentifier[PenaltyIdentifierKeys.COMPANY_NUMBER])
-            .orDefault({});
+            .chainNullable(data => data.appeals as Appeal)
+            .chainNullable(appeals => appeals.penaltyIdentifier as PenaltyIdentifier)
+            .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
+            .orDefault('');
 
         return this.render('confirmation', { companyNumber });
 

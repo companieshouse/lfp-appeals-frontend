@@ -6,7 +6,6 @@ import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionIn
 import { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
-import { AppealKeys } from '../models/keys/AppealKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
@@ -22,7 +21,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .chain(data => Maybe.fromNullable(data.appeals))
             .orDefault({});
 
         return this.render('check-your-appeal', { ...appealsData, userProfile });
