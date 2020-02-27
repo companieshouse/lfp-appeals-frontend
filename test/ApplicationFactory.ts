@@ -4,7 +4,7 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from '../src/utils/ConfigLoader';
 import { AuthMiddleware } from '../src/middleware/AuthMiddleware';
 import { getEnvOrDefault } from '../src/utils/EnvironmentUtils';
-import { SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
+import { Maybe, SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import Substitute from '@fluffy-spoon/substitute';
 
