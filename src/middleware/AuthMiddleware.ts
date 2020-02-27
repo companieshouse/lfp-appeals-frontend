@@ -18,7 +18,7 @@ export class AuthMiddleware extends BaseMiddleware {
             console.log(`${req.url}: Session object Present!\n`);
             console.log(`Session Content:\n`);
             console.log(session.data);
-            
+
         });
 
         const signedIn: Maybe<boolean> = req.session
