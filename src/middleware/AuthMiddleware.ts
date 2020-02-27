@@ -18,9 +18,8 @@ export class AuthMiddleware extends BaseMiddleware {
 
         if (!signedIn.orDefault(false)) {
             res.redirect('/signin?return_to=' + req.originalUrl);
-        } else {
-            next();
         }
+        next();
     }
 
 }
