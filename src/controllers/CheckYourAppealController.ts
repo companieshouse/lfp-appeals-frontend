@@ -1,5 +1,5 @@
 import { controller, BaseHttpController, httpGet } from 'inversify-express-utils';
-import { SUBMISSION_SUMMARY_PAGE_URI } from '../utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI } from '../utils/Paths';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -9,7 +9,7 @@ import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
-@controller(SUBMISSION_SUMMARY_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
 
     @httpGet('')

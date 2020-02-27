@@ -7,7 +7,7 @@ import {
     OTHER_REASON_PAGE_URI,
     PENALTY_DETAILS_PAGE_URI,
     CONFIRMATION_PAGE_URI,
-    SUBMISSION_SUMMARY_PAGE_URI
+    CHECK_YOUR_APPEAL_PAGE_URI
 } from '../../src/utils/Paths';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
@@ -35,7 +35,7 @@ const protectedPages = [
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     OTHER_REASON_PAGE_URI,
     CONFIRMATION_PAGE_URI,
-    SUBMISSION_SUMMARY_PAGE_URI
+    CHECK_YOUR_APPEAL_PAGE_URI
 ];
 
 describe('Authentication Middleware', () => {

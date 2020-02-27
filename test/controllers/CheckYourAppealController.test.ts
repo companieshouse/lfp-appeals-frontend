@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import '../../src/controllers/CheckYourAppealController';
 import * as request from 'supertest';
-import { SUBMISSION_SUMMARY_PAGE_URI } from '../../src/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI } from '../../src/utils/Paths';
 import { OK } from 'http-status-codes';
 import { expect } from 'chai';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
@@ -33,7 +33,7 @@ describe('CheckYourAppealController', () => {
             session = session.saveExtraData('appeals', appeal);
             const app = createApp(session);
 
-            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
+            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK)
                     expect(response.text)
@@ -51,7 +51,7 @@ describe('CheckYourAppealController', () => {
             const session = createFakeSession([], config.cookieSecret, true);
             const app = createApp(session);
 
-            await request(app).get(SUBMISSION_SUMMARY_PAGE_URI)
+            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK)
                 });
