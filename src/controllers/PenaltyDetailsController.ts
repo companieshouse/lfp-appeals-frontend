@@ -8,11 +8,11 @@ import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { PenaltyIdentifier } from 'src/models/PenaltyIdentifier';
+import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
 import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
-import { Appeal } from 'src/models/Appeal';
+import { Appeal } from '../models/Appeal';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {

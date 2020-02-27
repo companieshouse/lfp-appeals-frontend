@@ -38,8 +38,6 @@ export const createApp = (session?: Session) => createAppConfigurable(container 
 
     const realMiddleware = SessionMiddleware(config, sessionStore);
     const sessionHandler = (req: Request, res: Response, next: NextFunction) => {
-        req.session = session ? Maybe.of(session) : Maybe.empty();
-
         if (session && cookie) {
             req.cookies[config.cookieName] = cookie.value;
         }

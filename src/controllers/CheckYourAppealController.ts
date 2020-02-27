@@ -6,7 +6,6 @@ import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionIn
 import { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
-import { Appeal } from '../models/Appeal';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
