@@ -13,7 +13,7 @@ export class HealthCheckController extends BaseHttpController {
 
     @httpGet('')
     public async healthCheckRedis(): Promise<void> {
-        const status: number = await this.store.redis.ping().then(_ => OK).catch(err => INTERNAL_SERVER_ERROR);
+        const status: number = await this.store.redis.ping().then(_ => OK).catch(() => INTERNAL_SERVER_ERROR);
         this.httpContext.response.status(status).send(`Redis status: ${status}`);
     }
 
