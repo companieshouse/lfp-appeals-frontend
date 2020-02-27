@@ -1,6 +1,6 @@
 import { inject } from 'inversify';
 import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils';
-import { OTHER_REASON_PAGE_URI } from '../utils/Paths';
+import { OTHER_REASON_PAGE_URI, CHECK_YOUR_APPEAL_PAGE_URI } from '../utils/Paths';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
 import { ValidationResult } from '../utils/validation/ValidationResult';
 import { OtherReason } from '../models/OtherReason';
@@ -33,7 +33,7 @@ export class OtherReasonController extends BaseHttpController {
     }
 
     @httpPost('')
-    public async handleFormSubmission(req: Request): Promise<void> {
+    public async handleFormSubmission(req: Request): Promise<any> {
         const body: OtherReason = req.body;
 
         const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
@@ -69,7 +69,11 @@ export class OtherReasonController extends BaseHttpController {
             await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
         }
 
-        return this.render(valid ? OK : UNPROCESSABLE_ENTITY, { ...body, validationResult });
+        if (valid) {
+            return this.redirect(CHECK_YOUR_APPEAL_PAGE_URI).executeAsync();
+        }
+
+        return this.render(UNPROCESSABLE_ENTITY, { ...body, validationResult });
     }
 
     private async render(status: number, data: object): Promise<void> {
