@@ -4,8 +4,8 @@ import * as request from 'supertest';
 import { expect } from 'chai';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
 import '../../src/controllers/OtherReasonController';
-import { OTHER_REASON_PAGE_URI } from '../../src/utils/Paths';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { OTHER_REASON_PAGE_URI, CHECK_YOUR_APPEAL_PAGE_URI } from '../../src/utils/Paths';
+import { OK, UNPROCESSABLE_ENTITY, MOVED_TEMPORARILY } from 'http-status-codes';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
 import { Appeal } from '../../src/models/Appeal';
 const pageHeading = 'Tell us why you’re appealing this penalty';
@@ -50,7 +50,7 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it('should return 200 response with rendered data when valid data was submitted', async () => {
+        it('should return 302 response and redirect user to check your appeal page', async () => {
 
             const appeal = {
                 reasons: {
@@ -59,7 +59,7 @@ describe('OtherReasonController', () => {
                         description: 'they are legit'
                     }
                 }
-            } as Appeal
+            } as Appeal;
 
             let session = createFakeSession([], config.cookieSecret, true);
             session = session.saveExtraData('appeals', appeal);
@@ -68,13 +68,8 @@ describe('OtherReasonController', () => {
             await request(app).post(OTHER_REASON_PAGE_URI)
                 .send(appeal.reasons.other)
                 .expect(response => {
-                    expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.include(pageHeading)
-                        .and.to.include(appeal.reasons.other.title)
-                        .and.to.include(appeal.reasons.other.description)
-                        .and.to.not.include(errorSummaryHeading)
-                        .and.to.not.include(invalidTitleErrorMessage)
-                        .and.to.not.include(invalidDescriptionErrorMessage);
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(CHECK_YOUR_APPEAL_PAGE_URI);
                 });
         });
     });
