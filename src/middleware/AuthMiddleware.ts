@@ -12,14 +12,25 @@ export class AuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
 
+        req.session.ifNothing(() => console.log(`${req.url}: Session object is missing!`));
+
+        req.session.map((session: VerifiedSession) => {
+            console.log(`${req.url}: Session object Present!\n`);
+            console.log(`Session Content:\n`);
+            console.log(session.data);
+
+        });
+
         const signedIn: Maybe<boolean> = req.session
             .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1);
 
         if (!signedIn.orDefault(false)) {
+            console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
             return res.redirect('/signin?return_to=' + req.originalUrl);
         }
+        console.log('Going to controller...');
         next();
-    }
+    };
 
 }
