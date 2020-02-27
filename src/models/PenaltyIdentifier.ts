@@ -1,4 +1,7 @@
+import { PenaltyIdentifierKeys } from './keys/PenaltyIdentifierKeys';
+
 export interface PenaltyIdentifier {
-    companyNumber: string;
-    penaltyReference: string;
+    [PenaltyIdentifierKeys.COMPANY_NUMBER]: string;
+    [PenaltyIdentifierKeys.PENALTY_REFERENCE]: string;
 }
+

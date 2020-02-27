@@ -1,24 +1,32 @@
 import { controller, BaseHttpController, httpGet } from 'inversify-express-utils';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from '../utils/Paths';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { Request } from 'express';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
+import { AppealKeys } from '../models/keys/AppealKeys';
+import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
-@controller(CHECK_YOUR_APPEAL_PAGE_URI)
-export class CheckYourAppealController extends BaseHttpController {
+@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
+export class CheckYourAppealController extends BaseAsyncHttpController {
 
     @httpGet('')
-    public renderView(): void {
+    public async renderView(req: Request): Promise<string> {
 
-        const session = this.httpContext.request.session;
-        let userProfile = '';
-        let reasons = '';
-        let penaltyIdentifier = '';
+        const userProfile = req.session
+            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .orDefault({});
+
+        const appealsData = req.session
+            .chain(_ => _.getExtraData())
+            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .orDefault({});
+
+        return this.render('check-your-appeal', { ...appealsData, userProfile });
 
 
-        if(session){
-            penaltyIdentifier = session.getExtraData('appeals').penaltyIdentifier;
-            reasons = session.getExtraData('appeals').reasons;
-            userProfile = session.getValue('signin_info').user_profile;
-        }
-
-        this.httpContext.response.render('check-your-appeal', {reasons, penaltyIdentifier, userProfile});
     }
 }

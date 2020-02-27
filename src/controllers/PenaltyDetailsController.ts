@@ -4,52 +4,39 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { ValidationResult } from '../utils/validation/ValidationResult';
-import { sanitize } from '../utils/CompanyNumberSanitizer';
-import { RedisService } from '../services/RedisService';
 import { SchemaValidator } from '../utils/validation/SchemaValidator';
+import { Request } from 'express';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
+import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { schema } from '../models/PenaltyIdentifier.schema';
+import { AppealKeys } from '../models/keys/AppealKeys';
+import { Appeal } from '../models/Appeal';
 
-
-@controller(PENALTY_DETAILS_PAGE_URI)
+@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
 
-    private COMPANY_NUMBER: string = 'companyNumber';
-    private PENALTY_REFERENCE: string = 'penaltyReference';
-    private COOKIE_NAME: string = 'penalty-cookie';
     private PENALTY_TEMPLATE: string = 'penalty-details';
 
-    constructor(@inject(RedisService) private readonly redisService: RedisService) {
+    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {
         super();
     }
 
     @httpGet('')
-    public async getPenaltyDetailsView(): Promise<string> {
+    public async getPenaltyDetailsView(req: Request): Promise<string> {
+        const session = req.session.unsafeCoerce();
 
-        const cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
+        const penIdentifier = session
+            .getExtraData()
+            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .mapOrDefault(appeals => appeals[AppealKeys.PENALTY_IDENTIFIER], {});
 
-        let body: PenaltyIdentifier = {
-            companyNumber: '',
-            penaltyReference: ''
-        };
-
-        if (cookieId) {
-            const data: Record<string, any> = await this.redisService.getObject(cookieId);
-
-            if (data) {
-                body = {
-                    companyNumber: data[this.COMPANY_NUMBER],
-                    penaltyReference: data[this.PENALTY_REFERENCE]
-                }
-            }
-        }
-
-        return this.render(this.PENALTY_TEMPLATE, { ...body });
-
+        return await this.render(this.PENALTY_TEMPLATE, penIdentifier);
     }
 
     @httpPost('')
-    public async createPenaltyDetails(): Promise<any> {
+    public async createPenaltyDetails(req: Request): Promise<any> {
 
         const body: PenaltyIdentifier = {
             companyNumber: this.httpContext.request.body.companyNumber,
@@ -62,17 +49,27 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
             return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
                 this.PENALTY_TEMPLATE, { ...body, validationResult });
-        }
+        };
 
-        let cookieId: string = this.httpContext.request.cookies[this.COOKIE_NAME];
+        const session = req.session.unsafeCoerce();
+        const extraData = session.getExtraData();
 
-        if (!cookieId) {
-            cookieId = '1';
-            this.httpContext.response.cookie(this.COOKIE_NAME, cookieId);
-        }
+        const changePenaltyIdentifier = (appeals: Appeal) => {
+            appeals[AppealKeys.PENALTY_IDENTIFIER] = body;
+            return Maybe.of(appeals);
+        };
 
-        await this.redisService.setObject(cookieId, { ...body, companyNumber: sanitize(body.companyNumber) });
+        const appealObject = extraData
+            .chainNullable(data => data[AppealKeys.APPEALS_KEY])
+            .mapOrDefault(changePenaltyIdentifier, Maybe.of({
+                [AppealKeys.PENALTY_IDENTIFIER]: body
+            } as Appeal))
+            .mapOrDefault(_ => _, {} as Appeal);
 
-        return this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
+        session.saveExtraData(AppealKeys.APPEALS_KEY, appealObject);
+
+        await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
+
+        return await this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
     }
 }

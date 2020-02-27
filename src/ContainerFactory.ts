@@ -1,22 +1,29 @@
 import { Container } from 'inversify';
-import { RedisClient, createClient } from 'redis';
 import { buildProviderModule } from 'inversify-binding-decorators';
-
-const createRedisClient = () => {
-
-    if (!process.env.CACHE_SERVER) {
-        throw Error('CACHE_SERVER variable not set.');
-    }
-    const redisUrl = `redis://${process.env.CACHE_SERVER}`;
-
-    return createClient(redisUrl).on('error', (err) => { throw err; });
-};
-
-const disconnectClient = (redisClient: RedisClient) => redisClient.flushall();
+import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import IORedis = require('ioredis');
+import { RequestHandler } from 'express';
+import { getEnvOrDefault } from './utils/EnvironmentUtils';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
 
 export function createContainer(): Container {
     const container = new Container();
-    container.bind<RedisClient>(RedisClient).toConstantValue(createRedisClient());
+    const config: CookieConfig = {
+        cookieName: getEnvOrDefault('COOKIE_NAME'),
+        cookieSecret: getEnvOrDefault('COOKIE_SECRET'),
+    };
+    const sessionStore = new SessionStore(new IORedis({
+        host: getEnvOrDefault('CACHE_SERVER'),
+        password: getEnvOrDefault('CACHE_PASSWORD', ''),
+        db: Number(getEnvOrDefault('CACHE_DB'))
+    }));
+    const sessionHandler = SessionMiddleware(config, sessionStore);
+
+    const authMiddleware = new AuthMiddleware();
+
+    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
+    container.bind<SessionStore>(SessionStore).toConstantValue(sessionStore);
+    container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(authMiddleware);
     container.load(buildProviderModule());
     return container;
 }
