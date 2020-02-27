@@ -12,11 +12,8 @@ export function createContainer(): Container {
         cookieName: getEnvOrDefault('COOKIE_NAME'),
         cookieSecret: getEnvOrDefault('COOKIE_SECRET'),
     };
-    const sessionStore = new SessionStore(new IORedis({
-        host: getEnvOrDefault('CACHE_SERVER'),
-        password: getEnvOrDefault('CACHE_PASSWORD', ''),
-        db: Number(getEnvOrDefault('CACHE_DB'))
-    }));
+    const sessionStore = new SessionStore(new IORedis(`${getEnvOrDefault('CACHE_SERVER')}`));
+
     const sessionHandler = SessionMiddleware(config, sessionStore);
 
     const authMiddleware = new AuthMiddleware();
