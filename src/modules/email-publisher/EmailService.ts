@@ -19,6 +19,9 @@ export class EmailService {
     }
 
     public async send(email: Email): Promise<void> {
+        if (email == null) {
+            throw new Error('Email must be defined');
+        }
         const message = this.createMessageFrom(email);
         return this.sendMessage(message);
     }
