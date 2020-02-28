@@ -30,7 +30,7 @@ export class AuthMiddleware extends BaseMiddleware {
             console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
             res.redirect('/signin?return_to=' + req.originalUrl);
         } else {
-            console.log('Going to controller....');
+            console.log('Going to controller...');
             next();
         }
     };
