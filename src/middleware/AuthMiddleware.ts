@@ -26,8 +26,6 @@ export class AuthMiddleware extends BaseMiddleware {
             .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
             .orDefault(false);
 
-        console.log('Signed In=' + signedIn)
-
         if (!signedIn) {
             console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
             res.redirect('/signin?return_to=' + req.originalUrl);
