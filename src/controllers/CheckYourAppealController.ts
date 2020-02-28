@@ -1,22 +1,25 @@
+import { inject } from 'inversify'
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from '../utils/Paths';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
+import { Maybe, SessionMiddleware } from 'ch-node-session-handler';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
-import * as kafka from 'kafka-node'
-import * as util from 'util'
-
-import * as avro from 'avsc'
+import { EmailService } from '../modules/email-publisher/EmailService'
+import { Appeal } from '../models/Appeal'
+import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys'
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
+    constructor (@inject(EmailService) private readonly emailService: EmailService) {
+        super();
+    }
 
     @httpGet('')
     public async renderView(req: Request): Promise<string> {
@@ -35,42 +38,33 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
     @httpPost('')
     public async handleFormSubmission(req: Request): Promise<HttpResponseMessage> {
-        const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER_ADDR });
-        const producer = new kafka.Producer(client);
+        const userProfile = req.session
+            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .extract() as IUserProfile;
 
-        const type = avro.Type.forSchema({
-            type: 'record',
-            name: 'message',
-            fields: [
-                { name: 'app_id', type: 'string' },
-                { name: 'message_id', type: 'string' },
-                { name: 'message_type', type: 'string' },
-                { name: 'data', type: 'string' },
-                { name: 'email_address', type: 'string' },
-                { name: 'created_at', type: 'string' }
-            ]
-        });
+        const appealsData = req.session
+            .chain(_ => _.getExtraData())
+            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .extract() as Appeal;
 
-        await util.promisify(producer.send).bind(producer)([{
-            topic: 'email-send',
-            messages: [
-                type.toBuffer({
-                    app_id: 'lfp-appeals-frontend',
-                    message_id: '5afdb299-d0a7-4a8e-a0ba-ed649ea56ad0',
-                    message_type: 'lfp-appeal-submission-confirmation',
-                    data: JSON.stringify({
-                        to: 'demo@ch.gov.uk',
-                        subject: 'Appeal submitted',
-                        companyNumber: '12345678',
+        try {
+            await this.emailService.send({
+                to: userProfile.email as string,
+                subject: 'Your appeal has been submitted',
+                body: {
+                    templateName: 'lfp-appeal-submission-confirmation',
+                    templateData: {
+                        companyNumber: appealsData[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER],
                         userProfile: {
-                            email: 'demo@ch.gov.uk'
+                            email: userProfile.email
                         }
-                    }),
-                    email_address: 'demo@ch.gov.uk',
-                    created_at: new Date().toISOString()
-                })
-            ]
-        }]);
+                    }
+                }
+            })
+        } catch (err) {
+            console.error(`Submission confirmation email was not sent due to: ${err}`);
+        }
 
         return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
     }

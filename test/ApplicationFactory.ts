@@ -24,7 +24,7 @@ export const getDefaultConfig = () => {
     };
 };
 
-export const createApp = (session?: Session) => createAppConfigurable(container => {
+export const createApp = (session?: Session, configureContainerBindings: (container: Container) => void = () => { }) => createAppConfigurable(container => {
 
     const config = getDefaultConfig();
 
@@ -49,4 +49,5 @@ export const createApp = (session?: Session) => createAppConfigurable(container 
     container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
     container.bind(SessionStore).toConstantValue(sessionStore);
 
+    configureContainerBindings(container);
 });

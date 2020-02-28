@@ -1,10 +1,11 @@
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import IORedis = require('ioredis');
-import { RequestHandler } from 'express';
 import { getEnvOrDefault } from './utils/EnvironmentUtils';
 import { AuthMiddleware } from './middleware/AuthMiddleware';
+import * as IORedis from 'ioredis'
+import * as kafka from 'kafka-node'
+import { EmailService } from './modules/email-publisher/EmailService'
 
 export function createContainer(): Container {
     const container = new Container();
@@ -17,13 +18,16 @@ export function createContainer(): Container {
         password: getEnvOrDefault('CACHE_PASSWORD', ''),
         db: Number(getEnvOrDefault('CACHE_DB'))
     }));
-    const sessionHandler = SessionMiddleware(config, sessionStore);
+    container.bind(SessionStore).toConstantValue(sessionStore);
+    container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
+    container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
 
-    const authMiddleware = new AuthMiddleware();
+    const kafkaClient = new kafka.KafkaClient({
+        kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
+        requestTimeout: 4000 // 4 seconds
+    })
+    container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend', kafkaClient))
 
-    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-    container.bind<SessionStore>(SessionStore).toConstantValue(sessionStore);
-    container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(authMiddleware);
     container.load(buildProviderModule());
     return container;
 }
