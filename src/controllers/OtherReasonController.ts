@@ -13,7 +13,7 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { ReasonsKeys } from '../models/keys/ReasonsKeys';
 import { Appeal } from '../models/Appeal';
-import { getEnvOrDefault } from 'src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../utils/EnvironmentUtils';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {

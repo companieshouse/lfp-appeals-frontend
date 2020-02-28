@@ -13,7 +13,7 @@ import { SessionMiddleware, SessionStore, Maybe, VerifiedSession } from 'ch-node
 import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { Appeal } from '../models/Appeal';
-import { getEnvOrDefault } from 'src/utils/EnvironmentUtils';
+import { getEnvOrDefault } from '../utils/EnvironmentUtils';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
