@@ -13,6 +13,7 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { ReasonsKeys } from '../models/keys/ReasonsKeys';
 import { Appeal } from '../models/Appeal';
+import { getEnvOrDefault } from 'src/utils/EnvironmentUtils';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {
@@ -66,7 +67,9 @@ export class OtherReasonController extends BaseHttpController {
 
             session.saveExtraData(AppealKeys.APPEALS_KEY, appealsObj);
 
-            await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
+            await this.sessionStore
+                .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+                .run();
         }
 
         if (valid) {

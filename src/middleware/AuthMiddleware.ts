@@ -4,7 +4,7 @@ import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionIn
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
-import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
+import { Session } from 'ch-node-session-handler/lib/session/model/Session';
 import { Maybe } from 'ch-node-session-handler';
 
 @injectable()
@@ -14,7 +14,7 @@ export class AuthMiddleware extends BaseMiddleware {
 
         req.session.ifNothing(() => console.log(`${req.url}: Session object is missing!`));
 
-        req.session.map((session: VerifiedSession) => {
+        req.session.map((session: Session) => {
             console.log(`${req.url}: Session object Present!\n`);
             console.log(`Session Content:\n`);
             console.log(session.data);
@@ -22,7 +22,7 @@ export class AuthMiddleware extends BaseMiddleware {
         });
 
         const signedIn: boolean = req.session
-            .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
             .orDefault(false);
 
