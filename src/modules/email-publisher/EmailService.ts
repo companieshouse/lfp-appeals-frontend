@@ -3,8 +3,7 @@ import * as crypto from 'crypto'
 import * as kafka from 'kafka-node'
 
 import { Email } from './Email'
-import { Message } from './message/Message'
-import { serialize } from './message/MessageSerializer'
+import { Message, type } from './message/Message'
 
 export class EmailService {
     private readonly producer: kafka.Producer;
@@ -28,7 +27,7 @@ export class EmailService {
         const send = util.promisify(this.producer.send).bind(this.producer)
         return send([{
             topic: 'email-send',
-            messages: [serialize(message)]
+            messages: [type.toBuffer(message)]
         }])
     }
 

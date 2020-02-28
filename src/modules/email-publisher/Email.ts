@@ -6,5 +6,5 @@ export interface Email {
 
 export interface EmailBody {
     templateName: string;
-    templateData: Record<string, any>;
+    templateData?: Record<string, any>;
 }
