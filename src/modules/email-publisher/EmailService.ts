@@ -1,21 +1,18 @@
-import * as util from 'util'
 import * as crypto from 'crypto'
-import * as kafka from 'kafka-node'
 
 import { Email } from './Email'
+import { Producer } from './producer/Producer'
 import { Message, type } from './message/Message'
 
 export class EmailService {
-    private readonly producer: kafka.Producer;
 
-    constructor (private applicationIdentifier: string, kafkaClient: kafka.KafkaClient) {
+    constructor (private readonly applicationIdentifier: string, private readonly producer: Producer) {
         if (applicationIdentifier == null) {
             throw new Error('Application identifier is required')
         }
-        if (kafkaClient == null) {
-            throw new Error('Kafka client is required')
+        if (producer == null) {
+            throw new Error('Producer is required')
         }
-        this.producer = new kafka.Producer(kafkaClient)
     }
 
     public async send(email: Email): Promise<void> {
@@ -27,11 +24,10 @@ export class EmailService {
     }
 
     private async sendMessage(message: Message): Promise<void> {
-        const send = util.promisify(this.producer.send).bind(this.producer)
-        return send([{
+        await this.producer.send({
             topic: 'email-send',
-            messages: [type.toBuffer(message)]
-        }])
+            message: type.toBuffer(message)
+        })
     }
 
     private createMessageFrom(email: Email): Message {

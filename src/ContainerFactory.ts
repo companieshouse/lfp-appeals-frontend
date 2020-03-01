@@ -6,6 +6,8 @@ import { AuthMiddleware } from './middleware/AuthMiddleware';
 import * as IORedis from 'ioredis'
 import * as kafka from 'kafka-node'
 import { EmailService } from './modules/email-publisher/EmailService'
+import { Payload, Producer } from './modules/email-publisher/producer/Producer'
+import * as util from 'util'
 
 export function createContainer(): Container {
     const container = new Container();
@@ -26,7 +28,17 @@ export function createContainer(): Container {
         kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
         requestTimeout: 4000 // 4 seconds
     })
-    container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend', kafkaClient))
+    container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
+        // tslint:disable-next-line: new-parens
+        new class implements Producer {
+            private readonly producer: kafka.Producer = new kafka.Producer(kafkaClient);
+            async send (payload: Payload): Promise<void> {
+                await util.promisify(this.producer.send).call(this.producer, [{
+                    topic: payload.topic,
+                    messages: [payload.message]
+                }]);
+            }
+        }))
 
     container.load(buildProviderModule());
     return container;
