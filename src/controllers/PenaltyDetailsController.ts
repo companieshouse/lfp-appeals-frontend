@@ -13,6 +13,9 @@ import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler'
 import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { Appeal } from '../models/Appeal';
+import { getEnvOrDefault } from '../utils/EnvironmentUtils';
+import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
+import { sanitize } from '../utils/CompanyNumberSanitizer';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
@@ -55,7 +58,16 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const extraData = session.getExtraData();
 
         const changePenaltyIdentifier = (appeals: Appeal) => {
-            appeals[AppealKeys.PENALTY_IDENTIFIER] = body;
+
+            const companyNumber = sanitize(body[PenaltyIdentifierKeys.COMPANY_NUMBER]);
+
+            console.log('company number after sanitisation: ' + companyNumber)
+
+            const penaltyReference = body[PenaltyIdentifierKeys.PENALTY_REFERENCE];
+
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER] = companyNumber;
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.PENALTY_REFERENCE] = penaltyReference;
+
             return Maybe.of(appeals);
         };
 
@@ -67,8 +79,11 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .mapOrDefault(_ => _, {} as Appeal);
 
         session.saveExtraData(AppealKeys.APPEALS_KEY, appealObject);
+        const cookie = Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET'));
 
-        await this.sessionStore.store(Cookie.createFrom(session), session.data).run();
+        await this.sessionStore
+            .store(cookie, session.data)
+            .run();
 
         return await this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
     }

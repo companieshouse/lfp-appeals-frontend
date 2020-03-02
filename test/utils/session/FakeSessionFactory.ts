@@ -1,7 +1,7 @@
 import { VerifiedSession, Session } from 'ch-node-session-handler/lib/session/model/Session';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 
-export function createFakeSession(entries: Record<string, any>[], secret: string, signedIn?: boolean): VerifiedSession {
+export function createFakeSession(entries: Record<string, any>[], secret: string, signedIn?: boolean): Session {
   const id = generateSessionId();
   const sig = generateSignature(id, secret);
 

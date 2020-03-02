@@ -21,7 +21,7 @@
     "@hapi/joi": "^17.1.0",
     "avsc": "^5.4.18",
     "body-parser": "^1.18.2",
-    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#ee7eba7",
+    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#b6a1b643cb76b964f86bc1fa3a430334d5f2a5a8",
     "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
     "express": "^4.15.5",
@@ -61,7 +61,7 @@
     "supertest": "^4.0.2",
     "ts-node": "^8.6.2",
     "tslint": "^6.0.0",
-    "typescript": "^3.8.2",
+    "typescript": "^3.8.3",
     "typescript-tslint-plugin": "^0.5.5"
   }
 }

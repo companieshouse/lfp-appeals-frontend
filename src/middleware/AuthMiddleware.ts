@@ -4,8 +4,8 @@ import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionIn
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
-import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
-import { Maybe } from 'ch-node-session-handler';
+import { Session } from 'ch-node-session-handler/lib/session/model/Session';
+import { PENALTY_DETAILS_PAGE_URI } from '../utils/Paths';
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
@@ -14,23 +14,19 @@ export class AuthMiddleware extends BaseMiddleware {
 
         req.session.ifNothing(() => console.log(`${req.url}: Session object is missing!`));
 
-        req.session.map((session: VerifiedSession) => {
-            console.log(`${req.url}: Session object Present!\n`);
-            console.log(`Session Content:\n`);
-            console.log(session.data);
+        const signedIn: boolean = req.session
+            .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
+            .orDefault(false);
 
-        });
-
-        const signedIn: Maybe<boolean> = req.session
-            .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1);
-
-        if (!signedIn.orDefault(false)) {
-            console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
-            return res.redirect('/signin?return_to=' + req.originalUrl);
+        if (!signedIn) {
+            console.log(`Not signed in... Redirecting to: /signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
+            return res.redirect(`/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
         }
-        console.log('Going to controller...');
+
+        console.log('Going to controller....');
         next();
+
     };
 
 }
