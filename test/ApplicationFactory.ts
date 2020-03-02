@@ -28,7 +28,7 @@ export const createApp = (session?: Session) => createAppConfigurable(container 
 
     const config = getDefaultConfig();
 
-    const cookie = session ? Cookie.createFrom(session) : null;
+    const cookie = session ? Cookie.representationOf(session, config.cookieSecret) : null;
 
     const sessionStore = Substitute.for<SessionStore>();
 
