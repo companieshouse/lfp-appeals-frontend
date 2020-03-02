@@ -9,9 +9,13 @@ import { EmailService } from './modules/email-publisher/EmailService'
 import { Payload, Producer } from './modules/email-publisher/producer/Producer'
 import * as util from 'util'
 
-function initiateKafkaClient () {
-    const connectionTimeoutInMillis: number = parseInt(process.env.KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS || '2000')
-    const requestTimeoutInMillis: number = parseInt(process.env.KAFKA_BROKER_REQUEST_TIMEOUT_IN_MILLIS || '4000')
+function initiateKafkaClient (): kafka.KafkaClient {
+    const connectionTimeoutInMillis: number = parseInt(
+        getEnvOrDefault('KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS', '2000'), 10
+    );
+    const requestTimeoutInMillis: number = parseInt(
+        getEnvOrDefault('KAFKA_BROKER_REQUEST_TIMEOUT_IN_MILLIS', '4000'), 10
+    );
 
     return new kafka.KafkaClient({
         kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
