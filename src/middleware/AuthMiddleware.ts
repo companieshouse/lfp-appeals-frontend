@@ -21,11 +21,12 @@ export class AuthMiddleware extends BaseMiddleware {
 
         if (!signedIn) {
             console.log(`Not signed in... Redirecting to: /signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
-            res.redirect(`/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
-        } else {
-            console.log('Going to controller....');
-            next();
+            return res.redirect(`/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
         }
+
+        console.log('Going to controller....');
+        next();
+
     };
 
 }
