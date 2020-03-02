@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.0",
+    "avsc": "^5.4.18",
     "body-parser": "^1.18.2",
     "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#b6a1b643cb76b964f86bc1fa3a430334d5f2a5a8",
     "cookie-parser": "^1.4.4",
@@ -30,6 +31,7 @@
     "inversify": "^5.0.1",
     "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",
+    "kafka-node": "^5.0.0",
     "nunjucks": "^3.2.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "^1.11.1"

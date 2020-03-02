@@ -1,11 +1,14 @@
 import { controller, httpGet } from 'inversify-express-utils';
 import { CONFIRMATION_PAGE_URI } from '../utils/Paths';
 import { Request } from 'express';
-import { SessionMiddleware, Maybe } from 'ch-node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces'
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys'
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends BaseAsyncHttpController {
@@ -18,9 +21,15 @@ export class ConfirmationController extends BaseAsyncHttpController {
             .chainNullable(data => data[AppealKeys.APPEALS_KEY])
             .chainNullable(appeals => appeals[AppealKeys.PENALTY_IDENTIFIER])
             .map(penaltyIdentifier => penaltyIdentifier[PenaltyIdentifierKeys.COMPANY_NUMBER])
-            .orDefault({});
+            .extract();
 
-        return this.render('confirmation', { companyNumber });
+        const userEmail = req.session
+            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .map(userProfile => userProfile?.email)
+            .extract();
+
+        return this.render('confirmation', { companyNumber, userEmail });
 
     }
 }

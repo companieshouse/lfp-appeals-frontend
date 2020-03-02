@@ -71,12 +71,15 @@
                 By submitting this appeal you are confirming that, to the best of your knowledge, the details you are
                 providing are true.
             </p>
-            <form action="" >
-                {{
-                    govukButton({
-                        text: 'Confirm and submit appeal'
-                    })
-                }}
+            <form method="post">
+              {{
+                govukButton({
+                  text: 'Confirm and submit appeal',
+                  attributes: {
+                    id: 'submit'
+                  }
+                })
+              }}
             </form>
         </div>
     </div>
