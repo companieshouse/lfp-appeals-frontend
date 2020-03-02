@@ -5,7 +5,7 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
 import { Session } from 'ch-node-session-handler/lib/session/model/Session';
-import { Maybe } from 'ch-node-session-handler';
+import { PENALTY_DETAILS_PAGE_URI } from '../utils/Paths';
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
@@ -27,8 +27,8 @@ export class AuthMiddleware extends BaseMiddleware {
             .orDefault(false);
 
         if (!signedIn) {
-            console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
-            res.redirect('/signin?return_to=' + req.originalUrl);
+            console.log(`Not signed in... Redirecting to: /signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
+            res.redirect(`/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
         } else {
             console.log('Going to controller....');
             next();
