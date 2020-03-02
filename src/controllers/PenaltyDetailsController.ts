@@ -14,6 +14,8 @@ import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { Appeal } from '../models/Appeal';
 import { getEnvOrDefault } from '../utils/EnvironmentUtils';
+import { PenaltyIdentifierKeys } from "../models/keys/PenaltyIdentifierKeys";
+import { sanitize } from "../utils/CompanyNumberSanitizer";
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
@@ -56,7 +58,8 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const extraData = session.getExtraData();
 
         const changePenaltyIdentifier = (appeals: Appeal) => {
-            appeals[AppealKeys.PENALTY_IDENTIFIER] = body;
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER] = sanitize(body[PenaltyIdentifierKeys.COMPANY_NUMBER]);
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.PENALTY_REFERENCE] = body[PenaltyIdentifierKeys.PENALTY_REFERENCE];
             return Maybe.of(appeals);
         };
 
