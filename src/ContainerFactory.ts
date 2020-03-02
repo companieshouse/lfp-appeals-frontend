@@ -9,6 +9,24 @@ import { EmailService } from './modules/email-publisher/EmailService'
 import { Payload, Producer } from './modules/email-publisher/producer/Producer'
 import * as util from 'util'
 
+function initiateKafkaClient () {
+    const connectionTimeoutInMillis: number = parseInt(process.env.KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS || '2000')
+    const requestTimeoutInMillis: number = parseInt(process.env.KAFKA_BROKER_REQUEST_TIMEOUT_IN_MILLIS || '4000')
+
+    return new kafka.KafkaClient({
+        kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
+        connectTimeout: connectionTimeoutInMillis,
+        connectRetryOptions: {
+            retries: 5,
+            factor: 2,
+            minTimeout: connectionTimeoutInMillis,
+            maxTimeout: 4 * connectionTimeoutInMillis,
+            randomize: true
+        },
+        requestTimeout: requestTimeoutInMillis
+    })
+}
+
 export function createContainer(): Container {
     const container = new Container();
     const config: CookieConfig = {
@@ -24,22 +42,10 @@ export function createContainer(): Container {
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
 
-    const kafkaClient = new kafka.KafkaClient({
-        kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
-        connectTimeout: 2000, // 2 seconds
-        connectRetryOptions: {
-            retries: 5,
-            factor: 2,
-            minTimeout: 2000,
-            maxTimeout: 10000,
-            randomize: true
-        },
-        requestTimeout: 4000 // 4 seconds
-    })
     container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
         // tslint:disable-next-line: new-parens
         new class implements Producer {
-            private readonly producer: kafka.Producer = new kafka.Producer(kafkaClient);
+            private readonly producer: kafka.Producer = new kafka.Producer(initiateKafkaClient());
             async send (payload: Payload): Promise<void> {
                 await util.promisify(this.producer.send).call(this.producer, [{
                     topic: payload.topic,
