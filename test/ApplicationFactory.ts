@@ -7,6 +7,7 @@ import { getEnvOrDefault } from '../src/utils/EnvironmentUtils';
 import { Maybe, SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import Substitute from '@fluffy-spoon/substitute';
+import { EmailService } from '../src/modules/email-publisher/EmailService'
 
 export const createAppConfigurable = (configureContainerBindings: (container: Container) => void = () => { }): Application => {
 
@@ -24,30 +25,33 @@ export const getDefaultConfig = () => {
     };
 };
 
-export const createApp = (session?: Session, configureContainerBindings: (container: Container) => void = () => { }) => createAppConfigurable(container => {
+export const createApp = (session?: Session, configureContainerBindings: (container: Container) => void = () => {}) =>
+    createAppConfigurable(container => {
 
-    const config = getDefaultConfig();
+        const config = getDefaultConfig();
 
-    const cookie = session ? Cookie.createFrom(session) : null;
+        const cookie = session ? Cookie.createFrom(session) : null;
 
-    const sessionStore = Substitute.for<SessionStore>();
+        const sessionStore = Substitute.for<SessionStore>();
 
-    if (session && cookie) {
-        sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.data));
-    }
-
-    const realMiddleware = SessionMiddleware(config, sessionStore);
-    const sessionHandler = (req: Request, res: Response, next: NextFunction) => {
         if (session && cookie) {
-            req.cookies[config.cookieName] = cookie.value;
+            sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.data));
         }
-        realMiddleware(req, res, next);
-    };
+
+        const realMiddleware = SessionMiddleware(config, sessionStore);
+        const sessionHandler = (req: Request, res: Response, next: NextFunction) => {
+            if (session && cookie) {
+                req.cookies[config.cookieName] = cookie.value;
+            }
+            realMiddleware(req, res, next);
+        };
 
 
-    container.bind<AuthMiddleware>(AuthMiddleware).toConstantValue(new AuthMiddleware());
-    container.bind<RequestHandler>(SessionMiddleware).toConstantValue(sessionHandler);
-    container.bind(SessionStore).toConstantValue(sessionStore);
+        container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
+        container.bind(SessionMiddleware).toConstantValue(sessionHandler);
+        container.bind(SessionStore).toConstantValue(sessionStore);
 
-    configureContainerBindings(container);
-});
+        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>())
+
+        configureContainerBindings(container);
+    });

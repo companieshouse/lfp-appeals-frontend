@@ -31,9 +31,7 @@ describe('CheckYourAppealController', () => {
         it('should return 200 with populated session data', async () => {
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', appeal);
-            const app = createApp(session, container => {
-                container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
-            });
+            const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
@@ -50,9 +48,7 @@ describe('CheckYourAppealController', () => {
 
         it('should return 200 with no populated session data', async () => {
             const session = createFakeSession([], config.cookieSecret, true);
-            const app = createApp(session, container => {
-                container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
-            });
+            const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
@@ -67,7 +63,7 @@ describe('CheckYourAppealController', () => {
 
         it('should redirect to confirmation page when email sending succeeded', async () => {
             const app = createApp(session, container => {
-                container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
+                container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.resolve());
                 }));
             });
@@ -81,7 +77,7 @@ describe('CheckYourAppealController', () => {
 
         it('should render error when email sending failed', async () => {
             const app = createApp(session, container => {
-                container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
+                container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
                 }));
             });
@@ -98,7 +94,7 @@ describe('CheckYourAppealController', () => {
             });
 
             const app = createApp(session, container => {
-                container.bind(EmailService).toConstantValue(emailService);
+                container.rebind(EmailService).toConstantValue(emailService);
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
