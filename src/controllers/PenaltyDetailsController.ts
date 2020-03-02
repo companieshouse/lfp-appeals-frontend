@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
-import { SessionMiddleware, SessionStore, Maybe, VerifiedSession } from 'ch-node-session-handler';
+import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { Appeal } from '../models/Appeal';
@@ -68,9 +68,10 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .mapOrDefault(_ => _, {} as Appeal);
 
         session.saveExtraData(AppealKeys.APPEALS_KEY, appealObject);
+        const cookie = Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET'));
 
         await this.sessionStore
-            .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+            .store(cookie, session.data)
             .run();
 
         return await this.redirect(OTHER_REASON_DISCLAIMER_PAGE_URI).executeAsync();
