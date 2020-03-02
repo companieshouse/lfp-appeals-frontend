@@ -14,8 +14,8 @@ import { schema } from '../models/PenaltyIdentifier.schema';
 import { AppealKeys } from '../models/keys/AppealKeys';
 import { Appeal } from '../models/Appeal';
 import { getEnvOrDefault } from '../utils/EnvironmentUtils';
-import { PenaltyIdentifierKeys } from "../models/keys/PenaltyIdentifierKeys";
-import { sanitize } from "../utils/CompanyNumberSanitizer";
+import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
+import { sanitize } from '../utils/CompanyNumberSanitizer';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
