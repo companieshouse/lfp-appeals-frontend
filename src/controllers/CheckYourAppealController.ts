@@ -48,23 +48,19 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
             .extract() as Appeal;
 
-        try {
-            await this.emailService.send({
-                to: userProfile.email as string,
-                subject: 'Your appeal has been submitted',
-                body: {
-                    templateName: 'lfp-appeal-submission-confirmation',
-                    templateData: {
-                        companyNumber: appealsData[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER],
-                        userProfile: {
-                            email: userProfile.email
-                        }
+        await this.emailService.send({
+            to: userProfile.email as string,
+            subject: 'Your appeal has been submitted',
+            body: {
+                templateName: 'lfp-appeal-submission-confirmation',
+                templateData: {
+                    companyNumber: appealsData[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER],
+                    userProfile: {
+                        email: userProfile.email
                     }
                 }
-            })
-        } catch (err) {
-            console.error(`Submission confirmation email was not sent due to: ${err}`);
-        }
+            }
+        })
 
         return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
     }

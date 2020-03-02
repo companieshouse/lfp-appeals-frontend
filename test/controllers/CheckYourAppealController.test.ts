@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import '../../src/controllers/CheckYourAppealController';
 import * as request from 'supertest';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from '../../src/utils/Paths';
-import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { expect } from 'chai';
 import { createApp, getDefaultConfig } from '../ApplicationFactory';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
@@ -79,7 +79,7 @@ describe('CheckYourAppealController', () => {
                 })
         })
 
-        it('should redirect to confirmation page when email sending failed', async () => {
+        it('should render error when email sending failed', async () => {
             const app = createApp(session, container => {
                 container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
@@ -88,8 +88,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(MOVED_TEMPORARILY)
-                    expect(response.get('Location')).to.be.equal(CONFIRMATION_PAGE_URI);
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
                 })
         })
 
