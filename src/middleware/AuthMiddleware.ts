@@ -1,11 +1,9 @@
 import { BaseMiddleware } from 'inversify-express-utils';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { getEnvOrDefault } from '../utils/EnvironmentUtils';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
-import { PENALTY_DETAILS_PAGE_URI } from '../utils/Paths';
 import { VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 import { Maybe } from 'ch-node-session-handler';
 
@@ -13,15 +11,26 @@ import { Maybe } from 'ch-node-session-handler';
 export class AuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+
+        req.session.ifNothing(() => console.log(`${req.url}: Session object is missing!`));
+
+        req.session.map((session: VerifiedSession) => {
+            console.log(`${req.url}: Session object Present!\n`);
+            console.log(`Session Content:\n`);
+            console.log(session.data);
+
+        });
+
         const signedIn: Maybe<boolean> = req.session
             .chain((session: VerifiedSession) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1);
 
         if (!signedIn.orDefault(false)) {
-            res.redirect(`${getEnvOrDefault('ACCOUNT_URL', '')}/signin?return_to=${PENALTY_DETAILS_PAGE_URI}`);
-        } else {
-            next();
+            console.log('Not signed in... Redirecting to ' + '/signin?return_to=' + req.originalUrl);
+            return res.redirect('/signin?return_to=' + req.originalUrl);
         }
-    }
+        console.log('Going to controller...');
+        next();
+    };
 
 }
