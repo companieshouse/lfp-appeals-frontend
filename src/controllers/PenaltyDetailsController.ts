@@ -58,8 +58,12 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const extraData = session.getExtraData();
 
         const changePenaltyIdentifier = (appeals: Appeal) => {
-            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER] = sanitize(body[PenaltyIdentifierKeys.COMPANY_NUMBER]);
-            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.PENALTY_REFERENCE] = body[PenaltyIdentifierKeys.PENALTY_REFERENCE];
+            const companyNumber = appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER];
+            const penalityReference = body[PenaltyIdentifierKeys.PENALTY_REFERENCE];
+
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER] = sanitize(companyNumber);
+            appeals[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.PENALTY_REFERENCE] = penalityReference;
+
             return Maybe.of(appeals);
         };
 
