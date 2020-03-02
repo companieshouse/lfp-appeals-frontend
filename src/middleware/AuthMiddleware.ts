@@ -14,13 +14,6 @@ export class AuthMiddleware extends BaseMiddleware {
 
         req.session.ifNothing(() => console.log(`${req.url}: Session object is missing!`));
 
-        req.session.map((session: Session) => {
-            console.log(`${req.url}: Session object Present!\n`);
-            console.log(`Session Content:\n`);
-            console.log(session.data);
-
-        });
-
         const signedIn: boolean = req.session
             .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
