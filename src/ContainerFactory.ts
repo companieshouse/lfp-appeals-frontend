@@ -26,6 +26,14 @@ export function createContainer(): Container {
 
     const kafkaClient = new kafka.KafkaClient({
         kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
+        connectTimeout: 2000, // 2 seconds
+        connectRetryOptions: {
+            retries: 5,
+            factor: 2,
+            minTimeout: 2000,
+            maxTimeout: 10000,
+            randomize: true
+        },
         requestTimeout: 4000 // 4 seconds
     })
     container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
