@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { Appeal } from '../models/Appeal';
+import { Appeal, APPEALS_KEY } from '../models/Appeal';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
@@ -17,7 +17,7 @@ export class ConfirmationController extends BaseAsyncHttpController {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
-            .chainNullable<Appeal>(data => data.appeals)
+            .chainNullable<Appeal>(data => data[APPEALS_KEY])
             .chainNullable(appeal => appeal.penaltyIdentifier)
             .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
             .extract();
