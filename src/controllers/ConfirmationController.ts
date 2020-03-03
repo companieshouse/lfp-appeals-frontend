@@ -3,12 +3,11 @@ import { CONFIRMATION_PAGE_URI } from '../utils/Paths';
 import { Request } from 'express';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { AppealKeys } from '../models/keys/AppealKeys';
-import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces'
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys'
+import { Appeal } from '../models/Appeal';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends BaseAsyncHttpController {
@@ -18,9 +17,9 @@ export class ConfirmationController extends BaseAsyncHttpController {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
-            .chainNullable(data => data[AppealKeys.APPEALS_KEY])
-            .chainNullable(appeals => appeals[AppealKeys.PENALTY_IDENTIFIER])
-            .map(penaltyIdentifier => penaltyIdentifier[PenaltyIdentifierKeys.COMPANY_NUMBER])
+            .chainNullable<Appeal>(data => data.appeals)
+            .chainNullable(appeal => appeal.penaltyIdentifier)
+            .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
             .extract();
 
         const userEmail = req.session
