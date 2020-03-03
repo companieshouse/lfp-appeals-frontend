@@ -11,12 +11,8 @@ import { AuthMiddleware } from '../middleware/AuthMiddleware';
 import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
 import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { schema } from '../models/PenaltyIdentifier.schema';
-import { Appeal } from '../models/Appeal';
+import { Appeal, APPEALS_KEY } from '../models/Appeal';
 import { getEnvOrDefault } from '../utils/EnvironmentUtils';
-<<<<<<< HEAD
-=======
-import { PenaltyIdentifierKeys } from '../models/keys/PenaltyIdentifierKeys';
->>>>>>> master
 import { sanitize } from '../utils/CompanyNumberSanitizer';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
@@ -34,7 +30,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
 
         const penIdentifier = session
             .getExtraData()
-            .chain(data => Maybe.fromNullable(data.appeals as Appeal))
+            .chain<Appeal>(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .mapOrDefault<PenaltyIdentifier>((appeal: Appeal) => appeal.penaltyIdentifier, {} as PenaltyIdentifier);
 
         return await this.render(this.PENALTY_TEMPLATE, penIdentifier);
@@ -59,28 +55,28 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const session = req.session.unsafeCoerce();
         const extraData = session.getExtraData();
 
-        const changePenaltyIdentifier = (appeals: Appeal) => {
-            const companyNumber =
-                sanitize(appeals.penaltyIdentifier.companyNumber);
+        const changePenaltyIdentifier = (appeal: Appeal) => {
 
-            console.log('company number after sanitisation: ' + companyNumber)
+            const companyNumber = sanitize(body.companyNumber);
+            const penaltyReference = body.penaltyReference;
 
-            const penalityReference = body.penaltyReference;
+            appeal.penaltyIdentifier.companyNumber = companyNumber;
+            appeal.penaltyIdentifier.penaltyReference = penaltyReference;
 
-            appeals.penaltyIdentifier.companyNumber = companyNumber;
-            appeals.penaltyIdentifier.penaltyReference = penalityReference;
-
-            return Maybe.of(appeals);
+            return Maybe.of(appeal);
         };
 
         const appealObject = extraData
-            .chainNullable(data => data.appeals as Appeal)
+            .chainNullable<Appeal>(data => data[APPEALS_KEY])
             .mapOrDefault(changePenaltyIdentifier, Maybe.of({
-                penaltyIdentifier: body
+                penaltyIdentifier: {
+                    companyNumber: sanitize(body.companyNumber),
+                    penaltyReference: body.penaltyReference
+                }
             } as Appeal))
             .mapOrDefault(_ => _, {} as Appeal);
 
-        session.saveExtraData('appeals', appealObject);
+        session.saveExtraData(APPEALS_KEY, appealObject);
         const cookie = Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET'));
 
         await this.sessionStore

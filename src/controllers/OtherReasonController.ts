@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
 import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { Appeal } from '../models/Appeal';
+import { Appeal, APPEALS_KEY } from '../models/Appeal';
 import { getEnvOrDefault } from '../utils/EnvironmentUtils';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
@@ -23,8 +23,8 @@ export class OtherReasonController extends BaseHttpController {
     public async renderForm(req: Request): Promise<void> {
         const data = req.session
             .chain(session => session.getExtraData())
-            .chainNullable(extraData => extraData.appeals)
-            .chainNullable(appeals => appeals.reasons)
+            .chainNullable(extraData => extraData[APPEALS_KEY])
+            .chainNullable(appeal => appeal.reasons)
             .chainNullable(reasons => reasons.other);
 
         return await this.render(OK, data.orDefault({}));
@@ -43,7 +43,7 @@ export class OtherReasonController extends BaseHttpController {
             const session = req.session.unsafeCoerce();
             const extraData = session.getExtraData();
 
-            const checkAppealsKey = (data: any) => Maybe.fromNullable(data.appeals)
+            const appeals = (data: any) => Maybe.fromNullable(data[APPEALS_KEY])
                 .mapOrDefault<Appeal>(
                     appeal => {
                         if (!appeal.reasons) {
@@ -57,13 +57,13 @@ export class OtherReasonController extends BaseHttpController {
                 );
 
             const appealsObj = extraData
-                .chainNullable<Appeal>(checkAppealsKey)
-                .mapOrDefault(appeals => {
-                    appeals.reasons.other = body;
-                    return appeals;
+                .chainNullable<Appeal>(appeals)
+                .mapOrDefault(appeal => {
+                    appeal.reasons.other = body;
+                    return appeal;
                 }, {} as Appeal);
 
-            session.saveExtraData('appeals', appealsObj);
+            session.saveExtraData(APPEALS_KEY, appealsObj);
 
             await this.sessionStore
                 .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)

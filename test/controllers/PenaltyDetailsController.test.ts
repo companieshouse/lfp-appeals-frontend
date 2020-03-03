@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { PenaltyIdentifier } from '../../src/models/PenaltyIdentifier';
 import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths';
 import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { Appeal } from '../../src/models/Appeal';
+import { Appeal, APPEALS_KEY } from '../../src/models/Appeal';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -28,7 +28,7 @@ describe('PenaltyDetailsController', () => {
 
 
             let session = createFakeSession([], config.cookieSecret, true);
-            session = session.saveExtraData('appeals', appeal);
+            session = session.saveExtraData(APPEALS_KEY, appeal);
             const app = createApp(session);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
