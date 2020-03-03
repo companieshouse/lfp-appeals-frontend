@@ -5,7 +5,7 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { injectable } from 'inversify';
 import { Session } from 'ch-node-session-handler/lib/session/model/Session';
-import { PENALTY_DETAILS_PAGE_URI } from '../utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {

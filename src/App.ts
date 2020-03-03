@@ -1,5 +1,7 @@
-import { Server } from './Server';
-import { loadEnvironmentVariablesFromFiles } from './utils/ConfigLoader';
+import './Bootstrap'
+
+import { Server } from 'app/Server';
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
 loadEnvironmentVariablesFromFiles();
 

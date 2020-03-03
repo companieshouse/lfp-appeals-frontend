@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { ValidationError } from '../../../src/utils/validation/ValidationError';
+import { ValidationError } from 'app/utils/validation/ValidationError';
 
 describe('ValidationError', () => {
     describe('instance creation', () => {

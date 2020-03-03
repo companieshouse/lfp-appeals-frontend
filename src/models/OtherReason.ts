@@ -1,4 +1,4 @@
-import { OtherReasonKeys } from './keys/OtherReasonKeys';
+import { OtherReasonKeys } from 'app/models/keys/OtherReasonKeys';
 
 export interface OtherReason {
     [OtherReasonKeys.TITLE]: string

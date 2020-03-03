@@ -1,15 +1,15 @@
 import 'reflect-metadata';
 
-import { createApp, getDefaultConfig } from '../ApplicationFactory';
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import * as request from 'supertest';
-import '../../src/controllers/PenaltyDetailsController';
+import 'app/controllers/PenaltyDetailsController';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { expect } from 'chai';
-import { PenaltyIdentifier } from '../../src/models/PenaltyIdentifier';
-import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../../src/utils/Paths';
-import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { AppealKeys } from '../../src/models/keys/AppealKeys';
-import { Appeal } from '../../src/models/Appeal';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { AppealKeys } from 'app/models/keys/AppealKeys';
+import { Appeal } from 'app/models/Appeal';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
