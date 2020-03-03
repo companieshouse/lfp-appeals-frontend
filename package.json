@@ -55,6 +55,7 @@
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-watch-sass": "^1.4.1",
+    "husky": "^4.2.3",
     "mocha": "^7.1.0",
     "node-sass": "^4.13.1",
     "sass-lint": "^1.13.1",
@@ -64,5 +65,11 @@
     "tslint": "^6.0.0",
     "typescript": "^3.8.3",
     "typescript-tslint-plugin": "^0.5.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run lint:scss",
+      "pre-push": "npm test"
+    }
   }
 }

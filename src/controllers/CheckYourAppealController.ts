@@ -7,13 +7,11 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { Request } from 'express';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Maybe, SessionMiddleware } from 'ch-node-session-handler';
-import { AppealKeys } from 'app/models/keys/AppealKeys';
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Appeal } from 'app/models/Appeal'
-import { PenaltyIdentifierKeys } from 'app/models/keys/PenaltyIdentifierKeys'
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
@@ -30,7 +28,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .chain(data => Maybe.fromNullable(data.appeals))
             .orDefault({});
 
         return this.render('check-your-appeal', { ...appealsData, userProfile });
@@ -45,7 +43,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY]))
+            .chain(data => Maybe.fromNullable(data.appeals))
             .extract() as Appeal;
 
         await this.emailService.send({
@@ -54,7 +52,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             body: {
                 templateName: 'lfp-appeal-submission-confirmation',
                 templateData: {
-                    companyNumber: appealsData[AppealKeys.PENALTY_IDENTIFIER][PenaltyIdentifierKeys.COMPANY_NUMBER],
+                    companyNumber: appealsData.penaltyIdentifier.companyNumber,
                     userProfile: {
                         email: userProfile.email
                     }
