@@ -8,6 +8,7 @@ const error = new ValidationError('field', 'Unexpected error');
 describe('ValidationResult', () => {
     describe('instance creation', () => {
         it('should instantiate with empty array of errors by default', () => {
+            // tslint:disable-next-line:no-unused-expression
             expect(new ValidationResult().errors).to.be.empty;
         });
 
@@ -18,6 +19,7 @@ describe('ValidationResult', () => {
 
     describe('retrieving error for specific field', () => {
         it('should return undefined when error for given field does not exist', () => {
+            // tslint:disable-next-line:no-unused-expression
             expect(new ValidationResult([]).getErrorForField('field')).to.be.undefined;
         });
 

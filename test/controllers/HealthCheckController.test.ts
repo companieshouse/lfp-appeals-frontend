@@ -14,10 +14,9 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {
         const app = createAppConfigurable(container => {
-            const redis = createSubstituteOf<Redis>((redis) => {
+            container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.resolve('OK'))
-            });
-            container.bind(SessionStore).toConstantValue(new SessionStore(redis));
+            })));
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
         });
 
@@ -26,10 +25,9 @@ describe('HealthCheckController', () => {
 
     it('should return 500 with status when redis database is down', async () => {
         const app = createAppConfigurable(container => {
-            const redis = createSubstituteOf<Redis>((redis) => {
+            container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.reject('ERROR'))
-            });
-            container.bind(SessionStore).toConstantValue(new SessionStore(redis));
+            })));
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
         });
 

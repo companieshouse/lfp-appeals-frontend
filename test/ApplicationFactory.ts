@@ -9,11 +9,12 @@ import { EmailService } from 'modules/email-publisher/EmailService'
 import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'utils/ConfigLoader';
 import { getEnvOrDefault } from 'utils/EnvironmentUtils';
 
-export const createAppConfigurable = (configureContainerBindings: (container: Container) => void = () => { }): Application => {
+// tslint:disable-next-line:no-empty
+export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {
 
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
-    configureContainerBindings(container);
+    configureBindings(container);
     return new InversifyExpressServer(container).setConfig(getExpressAppConfig('../../')).build();
 };
 
@@ -25,7 +26,8 @@ export const getDefaultConfig = () => {
     };
 };
 
-export const createApp = (session?: Session, configureContainerBindings: (container: Container) => void = () => {}) =>
+// tslint:disable-next-line:no-empty
+export const createApp = (session?: Session, configureBindings: (container: Container) => void = () => {}) =>
     createAppConfigurable(container => {
 
         const config = getDefaultConfig();
@@ -51,7 +53,7 @@ export const createApp = (session?: Session, configureContainerBindings: (contai
         container.bind(SessionMiddleware).toConstantValue(sessionHandler);
         container.bind(SessionStore).toConstantValue(sessionStore);
 
-        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>())
+        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
 
-        configureContainerBindings(container);
+        configureBindings(container);
     });

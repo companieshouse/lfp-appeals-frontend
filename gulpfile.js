@@ -4,7 +4,7 @@ const sass = require('gulp-sass');
 const del = require('del');
 sass.compiler = require('node-sass');
 nodemon = require('gulp-nodemon');
-const tsConfigFileName = 'tsconfig.json';
+const tsConfigFileName = 'tsconfig.prod.json';
 const tsProject = ts.createProject(tsConfigFileName);
 const paths = {
     build: ['dist'],
