@@ -1,7 +1,8 @@
+import 'reflect-metadata'
+
 import { SessionStore } from 'ch-node-session-handler';
 import { Application } from 'express'
 import { Redis } from 'ioredis';
-import 'reflect-metadata'
 import * as request from 'supertest'
 
 import 'app/controllers/HealthCheckController'

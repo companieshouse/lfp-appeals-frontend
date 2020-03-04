@@ -1,7 +1,8 @@
+import 'reflect-metadata';
+
 import { Arg } from '@fluffy-spoon/substitute'
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import 'reflect-metadata';
 import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';

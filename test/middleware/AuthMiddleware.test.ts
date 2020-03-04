@@ -1,10 +1,11 @@
+import 'reflect-metadata';
+
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
-import 'reflect-metadata';
 import * as request from 'supertest';
 
 import 'app/controllers/index';

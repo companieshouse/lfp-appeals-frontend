@@ -1,6 +1,7 @@
+import 'reflect-metadata'
+
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY  } from 'http-status-codes';
-import 'reflect-metadata'
 import * as request from 'supertest'
 
 import 'app/controllers/EntryController'

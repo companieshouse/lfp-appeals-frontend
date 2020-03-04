@@ -1,6 +1,7 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import 'reflect-metadata';
 import * as request from 'supertest';
 
 import 'app/controllers/OtherReasonController';

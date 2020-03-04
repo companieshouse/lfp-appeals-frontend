@@ -1,6 +1,7 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import { OK } from 'http-status-codes';
-import 'reflect-metadata';
 import * as request from 'supertest';
 
 import 'app/controllers/ConfirmationController';
