@@ -1,17 +1,17 @@
-import { inject } from 'inversify'
-import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { Maybe, SessionMiddleware } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { Maybe, SessionMiddleware } from 'ch-node-session-handler';
-import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { inject } from 'inversify'
+import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {

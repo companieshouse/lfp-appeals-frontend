@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import * as Joi from '@hapi/joi';
+import { expect } from 'chai';
 
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
@@ -21,6 +21,7 @@ describe('SchemaValidator', () => {
 
         it('should return validation result without errors when validation succeeded', () => {
             const validationResult = validator.validate({ city: 'Cardiff' });
+            // tslint:disable-next-line:no-unused-expression
             expect(validationResult.errors).to.be.empty;
         });
 

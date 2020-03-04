@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+
 import { sanitize } from 'app/utils/CompanyNumberSanitizer'
 
 describe('CompanyNumberSanitizer', () => {

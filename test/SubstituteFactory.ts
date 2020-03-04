@@ -1,7 +1,8 @@
 import { Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
-export const createSubstituteOf = <T>(configureSubstitute: (substitute: SubstituteOf<T>) => void = () => {}): SubstituteOf<T> => {
+// tslint:disable-next-line:no-empty
+export const createSubstituteOf = <T>(configure: (substitute: SubstituteOf<T>) => void = () => {}): SubstituteOf<T> => {
     const substitute = Substitute.for<T>();
-    configureSubstitute(substitute);
+    configure(substitute);
     return substitute;
 };

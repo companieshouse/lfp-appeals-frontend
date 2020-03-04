@@ -1,10 +1,11 @@
-import { expect } from 'chai';
-import { createSubstituteOf } from 'test/SubstituteFactory'
-
 import { Arg } from '@fluffy-spoon/substitute'
+import { expect } from 'chai';
+
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { type, Message } from 'app/modules/email-publisher/message/Message'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
-import { Message, type } from 'app/modules/email-publisher/message/Message'
+
+import { createSubstituteOf } from 'test/SubstituteFactory'
 
 const applicationIdentifier = 'frontend';
 

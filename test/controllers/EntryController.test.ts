@@ -1,9 +1,12 @@
 import 'reflect-metadata'
-import 'app/controllers/EntryController'
-import * as request from 'supertest'
-import { MOVED_TEMPORARILY  } from 'http-status-codes';
-import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+
 import { expect } from 'chai';
+import { MOVED_TEMPORARILY  } from 'http-status-codes';
+import * as request from 'supertest'
+
+import 'app/controllers/EntryController'
+import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 
 const config = getDefaultConfig()
