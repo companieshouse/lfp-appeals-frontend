@@ -1,17 +1,18 @@
-import { inject } from 'inversify';
-import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils';
-import { OTHER_REASON_PAGE_URI, CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
-import { OtherReason } from 'app/models/OtherReason';
-import { schema } from 'app/models/OtherReason.schema';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { Request } from 'express';
+import { Maybe, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
+import { Request } from 'express';
+import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { inject } from 'inversify';
+import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
+
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { OtherReason } from 'app/models/OtherReason';
+import { schema } from 'app/models/OtherReason.schema';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {

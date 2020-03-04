@@ -1,13 +1,14 @@
+import { expect } from 'chai';
+import { OK } from 'http-status-codes';
 import 'reflect-metadata';
 import * as request from 'supertest';
-import { expect } from 'chai';
 
 import 'app/controllers/ConfirmationController';
-import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
-import { OK } from 'http-status-codes';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
-import { getDefaultConfig, createApp } from 'test/ApplicationFactory';
 import { Appeal } from 'app/models/Appeal';
+import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
 

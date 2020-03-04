@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import * as Joi from '@hapi/joi';
+import { expect } from 'chai';
 
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';

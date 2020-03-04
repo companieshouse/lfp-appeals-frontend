@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
 import { ValidationError } from 'app/utils/validation/ValidationError';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 const error = new ValidationError('field', 'Unexpected error');
 

@@ -1,8 +1,9 @@
-import { inject } from 'inversify';
-import { BaseHttpController, httpGet, controller } from 'inversify-express-utils';
-import { OK, INTERNAL_SERVER_ERROR } from 'http-status-codes';
-import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 import { SessionStore } from 'ch-node-session-handler';
+import { INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
+import { inject } from 'inversify';
+import { controller, httpGet, BaseHttpController } from 'inversify-express-utils';
+
+import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
 @controller(HEALTH_CHECK_URI)
 export class HealthCheckController extends BaseHttpController {

@@ -1,11 +1,12 @@
+import { expect } from 'chai';
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import 'reflect-metadata'
+import * as request from 'supertest'
 
 import 'app/controllers/OtherReasonDisclaimerController'
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
-import * as request from 'supertest'
-import { expect } from 'chai';
-import { OK, MOVED_TEMPORARILY } from 'http-status-codes';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();

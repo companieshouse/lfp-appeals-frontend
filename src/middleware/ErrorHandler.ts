@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
 
 export function handler(err: any, req: Request, res: Response, nextFunction: NextFunction): void {

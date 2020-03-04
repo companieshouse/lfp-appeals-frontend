@@ -1,4 +1,4 @@
-import { VerifiedSession, Session } from 'ch-node-session-handler/lib/session/model/Session';
+import { Session, VerifiedSession } from 'ch-node-session-handler/lib/session/model/Session';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 
 export function createFakeSession(entries: Record<string, any>[], secret: string, signedIn?: boolean): Session {
