@@ -58,7 +58,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const changePenaltyIdentifier = (appeal: Appeal) => {
 
             const companyNumber = sanitize(body.companyNumber);
-            const penaltyReference = body.penaltyReference;
+            const penaltyReference = body.penaltyReference.toUpperCase();
 
             appeal.penaltyIdentifier.companyNumber = companyNumber;
             appeal.penaltyIdentifier.penaltyReference = penaltyReference;
@@ -71,7 +71,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .mapOrDefault(changePenaltyIdentifier, Maybe.of({
                 penaltyIdentifier: {
                     companyNumber: sanitize(body.companyNumber),
-                    penaltyReference: body.penaltyReference
+                    penaltyReference: body.penaltyReference.toUpperCase()
                 }
             } as Appeal))
             .mapOrDefault(_ => _, {} as Appeal);
