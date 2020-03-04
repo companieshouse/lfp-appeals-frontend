@@ -1,13 +1,14 @@
 import Substitute from '@fluffy-spoon/substitute';
-import { EitherUtils, Maybe, Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { Application, NextFunction, Request, RequestHandler, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { AuthMiddleware } from 'middleware/AuthMiddleware';
-import { EmailService } from 'modules/email-publisher/EmailService'
-import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'utils/ConfigLoader';
-import { getEnvOrDefault } from 'utils/EnvironmentUtils';
+
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 // tslint:disable-next-line:no-empty
 export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {

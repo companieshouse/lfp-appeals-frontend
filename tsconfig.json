@@ -2,6 +2,10 @@
     "compilerOptions": {
       "module": "commonjs",
       "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
       "pretty": true,
       "baseUrl": "./src",
       "removeComments": true,

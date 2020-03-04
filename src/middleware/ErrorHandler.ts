@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
 
+// @ts-ignore
 export function handler(err: any, req: Request, res: Response, nextFunction: NextFunction): void {
     console.error(err.message);
     if (!err.statusCode) {
