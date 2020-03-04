@@ -58,7 +58,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                     }
                 }
             }
-        })
+        });
 
         return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
     }

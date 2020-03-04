@@ -24,7 +24,7 @@ const appeal = {
             description: 'they are legit'
         }
     }
-} as Appeal
+} as Appeal;
 
 describe('CheckYourAppealController', () => {
     describe('GET request', () => {
@@ -35,7 +35,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(OK)
+                    expect(response.status).to.be.equal(OK);
                     expect(response.text)
                         .to.contain(appeal.penaltyIdentifier.companyNumber).and
                         .to.contain(appeal.penaltyIdentifier.penaltyReference).and
@@ -70,10 +70,10 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(MOVED_TEMPORARILY)
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(CONFIRMATION_PAGE_URI);
                 })
-        })
+        });
 
         it('should render error when email sending failed', async () => {
             const app = createApp(session, container => {
@@ -86,7 +86,7 @@ describe('CheckYourAppealController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
                 })
-        })
+        });
 
         it('should send confirmation email', async () => {
             const emailService = createSubstituteOf<EmailService>(service => {
@@ -97,7 +97,7 @@ describe('CheckYourAppealController', () => {
                 container.rebind(EmailService).toConstantValue(emailService);
             });
 
-            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
             emailService.received().send({
                 to: 'test',
