@@ -1,4 +1,4 @@
-import { ValidationError } from './ValidationError';
+import { ValidationError } from 'app/utils/validation/ValidationError';
 
 export class ValidationResult {
     constructor (public readonly errors: ValidationError[] = []) {}

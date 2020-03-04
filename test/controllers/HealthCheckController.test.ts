@@ -1,22 +1,23 @@
 import 'reflect-metadata'
-import { Application } from 'express'
-import * as request from 'supertest'
-import { createAppConfigurable } from '../ApplicationFactory';
-import { createSubstituteOf } from '../SubstituteFactory';
 
-import '../../src/controllers/HealthCheckController'
-import { Redis } from 'ioredis';
 import { SessionStore } from 'ch-node-session-handler';
-import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
-import { EmailService } from '../../src/modules/email-publisher/EmailService'
+import { Application } from 'express'
+import { Redis } from 'ioredis';
+import * as request from 'supertest'
+
+import 'app/controllers/HealthCheckController'
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { HEALTH_CHECK_URI } from 'app/utils/Paths';
+
+import { createAppConfigurable } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory';
 
 describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {
         const app = createAppConfigurable(container => {
-            const redis = createSubstituteOf<Redis>((redis) => {
+            container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.resolve('OK'))
-            });
-            container.bind(SessionStore).toConstantValue(new SessionStore(redis));
+            })));
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
         });
 
@@ -25,10 +26,9 @@ describe('HealthCheckController', () => {
 
     it('should return 500 with status when redis database is down', async () => {
         const app = createAppConfigurable(container => {
-            const redis = createSubstituteOf<Redis>((redis) => {
+            container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.reject('ERROR'))
-            });
-            container.bind(SessionStore).toConstantValue(new SessionStore(redis));
+            })));
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
         });
 

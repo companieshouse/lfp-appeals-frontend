@@ -1,8 +1,9 @@
-import { PenaltyIdentifier } from './PenaltyIdentifier';
-import { Reasons } from './Reasons';
-import { AppealKeys } from './keys/AppealKeys';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { Reasons } from 'app/models/Reasons';
+
+export const APPEALS_KEY = 'appeals';
 
 export interface Appeal {
-    [AppealKeys.PENALTY_IDENTIFIER]: PenaltyIdentifier;
-    [AppealKeys.REASONS]: Reasons;
+    penaltyIdentifier: PenaltyIdentifier;
+    reasons: Reasons;
 }

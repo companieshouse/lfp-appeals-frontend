@@ -1,7 +1,6 @@
-import { OtherReason } from './OtherReason';
-import { ReasonsKeys } from './keys/ReasonsKeys';
+import { OtherReason } from 'app/models/OtherReason';
 
 export interface Reasons {
-  [ReasonsKeys.OTHER]: OtherReason;
+  other: OtherReason;
 }
 

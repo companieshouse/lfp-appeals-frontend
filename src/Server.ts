@@ -1,8 +1,10 @@
 import 'reflect-metadata';
+
 import { InversifyExpressServer } from 'inversify-express-utils';
-import './controllers/index';
-import { createContainer } from './ContainerFactory';
-import { getExpressAppConfig } from './utils/ConfigLoader';
+import { getExpressAppConfig } from 'utils/ConfigLoader';
+
+import { createContainer } from 'app/ContainerFactory';
+import 'app/controllers/index';
 
 export class Server {
 

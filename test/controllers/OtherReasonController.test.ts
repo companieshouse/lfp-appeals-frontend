@@ -1,13 +1,15 @@
 import 'reflect-metadata';
 
-import * as request from 'supertest';
 import { expect } from 'chai';
-import { createApp, getDefaultConfig } from '../ApplicationFactory';
-import '../../src/controllers/OtherReasonController';
-import { OTHER_REASON_PAGE_URI, CHECK_YOUR_APPEAL_PAGE_URI } from '../../src/utils/Paths';
-import { OK, UNPROCESSABLE_ENTITY, MOVED_TEMPORARILY } from 'http-status-codes';
-import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { Appeal } from '../../src/models/Appeal';
+import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import * as request from 'supertest';
+
+import 'app/controllers/OtherReasonController';
+import { Appeal } from 'app/models/Appeal';
+import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';

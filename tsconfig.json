@@ -3,7 +3,7 @@
       "module": "commonjs",
       "strict": true,
       "pretty": true,
-      "baseUrl": "./",
+      "baseUrl": "./src",
       "removeComments": true,
       "experimentalDecorators": true,
       "target": "es6",
@@ -14,9 +14,10 @@
         {
           "name": "typescript-tslint-plugin"
         }
-      ]
-    },
-    "include": [
-      "./src/**/*.ts"
-    ]
+      ],
+      "paths": {
+        "app/*": ["./*"],
+        "test/*": ["../test/*"]
+      }
+    }
   }

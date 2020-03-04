@@ -1,13 +1,14 @@
+import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
-import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { getEnvOrDefault } from './utils/EnvironmentUtils';
-import { AuthMiddleware } from './middleware/AuthMiddleware';
 import * as IORedis from 'ioredis'
 import * as kafka from 'kafka-node'
-import { EmailService } from './modules/email-publisher/EmailService'
-import { Payload, Producer } from './modules/email-publisher/producer/Producer'
 import * as util from 'util'
+
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 function initiateKafkaClient (): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(

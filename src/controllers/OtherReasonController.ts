@@ -1,19 +1,18 @@
-import { inject } from 'inversify';
-import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils';
-import { OTHER_REASON_PAGE_URI, CHECK_YOUR_APPEAL_PAGE_URI } from '../utils/Paths';
-import { SchemaValidator } from '../utils/validation/SchemaValidator';
-import { ValidationResult } from '../utils/validation/ValidationResult';
-import { OtherReason } from '../models/OtherReason';
-import { schema } from '../models/OtherReason.schema';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { Request } from 'express';
+import { Maybe, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { AppealKeys } from '../models/keys/AppealKeys';
-import { ReasonsKeys } from '../models/keys/ReasonsKeys';
-import { Appeal } from '../models/Appeal';
-import { getEnvOrDefault } from '../utils/EnvironmentUtils';
+import { Request } from 'express';
+import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { inject } from 'inversify';
+import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
+
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { OtherReason } from 'app/models/OtherReason';
+import { schema } from 'app/models/OtherReason.schema';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends BaseHttpController {
@@ -25,9 +24,9 @@ export class OtherReasonController extends BaseHttpController {
     public async renderForm(req: Request): Promise<void> {
         const data = req.session
             .chain(session => session.getExtraData())
-            .chainNullable(extraData => extraData[AppealKeys.APPEALS_KEY])
-            .chainNullable(appeals => appeals[AppealKeys.REASONS])
-            .chainNullable(reasons => reasons[ReasonsKeys.OTHER]);
+            .chainNullable(extraData => extraData[APPEALS_KEY])
+            .chainNullable(appeal => appeal.reasons)
+            .chainNullable(reasons => reasons.other);
 
         return await this.render(OK, data.orDefault({}));
 
@@ -45,27 +44,27 @@ export class OtherReasonController extends BaseHttpController {
             const session = req.session.unsafeCoerce();
             const extraData = session.getExtraData();
 
-            const checkAppealsKey = (data: any) => Maybe.fromNullable(data[AppealKeys.APPEALS_KEY])
+            const appeals = (data: any) => Maybe.fromNullable(data[APPEALS_KEY])
                 .mapOrDefault<Appeal>(
                     appeal => {
-                        if (!appeal[AppealKeys.REASONS]) {
-                            appeal[AppealKeys.REASONS] = {};
+                        if (!appeal.reasons) {
+                            appeal.reasons = {};
                         }
                         return appeal;
                     },
                     {
-                        [AppealKeys.REASONS]: {}
+                        reasons: {}
                     } as Appeal
                 );
 
             const appealsObj = extraData
-                .chainNullable<Appeal>(checkAppealsKey)
-                .mapOrDefault(appeals => {
-                    appeals[AppealKeys.REASONS][ReasonsKeys.OTHER] = body;
-                    return appeals;
+                .chainNullable<Appeal>(appeals)
+                .mapOrDefault(appeal => {
+                    appeal.reasons.other = body;
+                    return appeal;
                 }, {} as Appeal);
 
-            session.saveExtraData(AppealKeys.APPEALS_KEY, appealsObj);
+            session.saveExtraData(APPEALS_KEY, appealsObj);
 
             await this.sessionStore
                 .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)

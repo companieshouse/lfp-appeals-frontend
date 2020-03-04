@@ -4,7 +4,7 @@ const sass = require('gulp-sass');
 const del = require('del');
 sass.compiler = require('node-sass');
 nodemon = require('gulp-nodemon');
-const tsProject = ts.createProject('tsconfig.json');
+const tsProject = ts.createProject('tsconfig.prod.json');
 const paths = {
     build: ['dist'],
     pages: ['src/views'],
@@ -30,7 +30,7 @@ gulp.task('start:watch', async () => nodemon({
     script: paths.build + '/app.js',
     watch: paths.src,
     ext: 'ts, scss, css, njk',
-    tasks: ['compile-project', 'copy-assets', 'copy-views', 'build-sass'],
+    tasks: ['build'],
     env: { 'DEBUG': 'Application,Request,Response' }
 }));
 
@@ -52,7 +52,11 @@ gulp.task('compile-project', function () {
         .js.pipe(gulp.dest(paths.build));
 });
 
-gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-assets', 'copy-views', 'copy-govukfrontend', 'build-sass')));
+gulp.task('copy-descriptors', function () {
+    return gulp.src('tsconfig.json').pipe(gulp.dest(paths.build));
+});
+
+gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-assets', 'copy-views', 'copy-govukfrontend', 'build-sass', 'copy-descriptors')));
 
 gulp.task('build:clean', gulp.series('clean:build', 'build'));
 

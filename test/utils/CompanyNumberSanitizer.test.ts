@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import { sanitize } from '../../src/utils/CompanyNumberSanitizer'
+
+import { sanitize } from 'app/utils/CompanyNumberSanitizer'
 
 describe('CompanyNumberSanitizer', () => {
     it('should throw error when company number undefined or empty', () =>{

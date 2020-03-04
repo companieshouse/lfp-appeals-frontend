@@ -1,11 +1,12 @@
-import * as dotenv from 'dotenv';
-import * as express from 'express';
-import * as path from 'path';
-import * as nunjucks from 'nunjucks';
 import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
-import { handler } from '../middleware/ErrorHandler';
-import { ROOT_URI } from './Paths';
+import * as dotenv from 'dotenv';
+import * as express from 'express';
+import * as nunjucks from 'nunjucks';
+import * as path from 'path';
+
+import { handler } from 'app/middleware/ErrorHandler';
+import { ROOT_URI } from 'app/utils/Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
