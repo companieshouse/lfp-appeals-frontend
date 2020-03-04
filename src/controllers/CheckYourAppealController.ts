@@ -11,7 +11,7 @@ import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { Appeal } from 'app/models/Appeal'
+import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
@@ -28,7 +28,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data.appeals))
+            .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .orDefault({});
 
         return this.render('check-your-appeal', { ...appealsData, userProfile });
@@ -43,7 +43,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const appealsData = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data.appeals))
+            .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .extract() as Appeal;
 
         await this.emailService.send({

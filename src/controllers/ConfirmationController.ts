@@ -7,7 +7,7 @@ import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys'
-import { Appeal } from 'app/models/Appeal';
+import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends BaseAsyncHttpController {
@@ -17,7 +17,7 @@ export class ConfirmationController extends BaseAsyncHttpController {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
-            .chainNullable<Appeal>(data => data.appeals)
+            .chainNullable<Appeal>(data => data[APPEALS_KEY])
             .chainNullable(appeal => appeal.penaltyIdentifier)
             .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
             .extract();
