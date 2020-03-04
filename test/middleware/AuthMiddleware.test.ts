@@ -13,7 +13,6 @@ import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { Request, Response, NextFunction } from 'express';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -43,12 +42,6 @@ describe('Authentication Middleware', () => {
     const authedApp = createApp(session);
 
     describe('Authed path', () => {
-
-        const penaltyIdentifier: PenaltyIdentifier = {
-            penaltyReference: 'A12345678',
-            companyNumber: 'SC123123'
-        };
-
         it('should not redirect the user to the sign in page if the user is signed in', async () => {
 
             for (const page of protectedPages) {
@@ -70,7 +63,7 @@ describe('Authentication Middleware', () => {
 
             authMiddleware(mockRequest, mockResponse, mockNext);
 
-            //@ts-ignore
+            // @ts-ignore
             mockResponse.didNotReceive().redirect(Arg.any());
 
         });
@@ -91,7 +84,7 @@ describe('Authentication Middleware', () => {
 
             authMiddleware(mockRequest, mockResponse, mockNext);
 
-            //@ts-ignore
+            // @ts-ignore
             mockResponse.received().redirect(Arg.any());
 
         });

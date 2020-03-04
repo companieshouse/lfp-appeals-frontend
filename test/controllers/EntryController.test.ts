@@ -4,9 +4,8 @@ import * as request from 'supertest'
 import { MOVED_TEMPORARILY  } from 'http-status-codes';
 import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { expect } from 'chai';
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 
-const config = getDefaultConfig()
 describe('EntryController', () => {
 
     describe('GET request', () => {

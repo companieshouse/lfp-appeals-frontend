@@ -1,10 +1,10 @@
 import { Container } from 'inversify';
-import { Application, NextFunction, RequestHandler, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'utils/ConfigLoader';
 import { AuthMiddleware } from 'middleware/AuthMiddleware';
 import { getEnvOrDefault } from 'utils/EnvironmentUtils';
-import { Maybe, SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
+import { SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import Substitute from '@fluffy-spoon/substitute';
 import { EmailService } from 'modules/email-publisher/EmailService'
