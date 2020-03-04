@@ -1,19 +1,21 @@
-import { Container } from 'inversify';
-import { Application, NextFunction, Request, Response } from 'express';
-import { InversifyExpressServer } from 'inversify-express-utils';
-import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'utils/ConfigLoader';
-import { AuthMiddleware } from 'middleware/AuthMiddleware';
-import { getEnvOrDefault } from 'utils/EnvironmentUtils';
-import { SessionStore, EitherUtils, SessionMiddleware, Session } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import Substitute from '@fluffy-spoon/substitute';
-import { EmailService } from 'modules/email-publisher/EmailService'
+import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { Application, NextFunction, Request, Response } from 'express';
+import { Container } from 'inversify';
+import { InversifyExpressServer } from 'inversify-express-utils';
 
-export const createAppConfigurable = (configureContainerBindings: (container: Container) => void = () => { }): Application => {
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+
+// tslint:disable-next-line:no-empty
+export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {
 
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
-    configureContainerBindings(container);
+    configureBindings(container);
     return new InversifyExpressServer(container).setConfig(getExpressAppConfig('../../')).build();
 };
 
@@ -25,7 +27,8 @@ export const getDefaultConfig = () => {
     };
 };
 
-export const createApp = (session?: Session, configureContainerBindings: (container: Container) => void = () => {}) =>
+// tslint:disable-next-line:no-empty
+export const createApp = (session?: Session, configureBindings: (container: Container) => void = () => {}) =>
     createAppConfigurable(container => {
 
         const config = getDefaultConfig();
@@ -51,7 +54,7 @@ export const createApp = (session?: Session, configureContainerBindings: (contai
         container.bind(SessionMiddleware).toConstantValue(sessionHandler);
         container.bind(SessionStore).toConstantValue(sessionStore);
 
-        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>())
+        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
 
-        configureContainerBindings(container);
+        configureBindings(container);
     });

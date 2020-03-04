@@ -1,11 +1,13 @@
 import 'reflect-metadata'
 
-import 'app/controllers/OtherReasonDisclaimerController'
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
-import * as request from 'supertest'
 import { expect } from 'chai';
-import { OK, MOVED_TEMPORARILY } from 'http-status-codes';
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import * as request from 'supertest'
+
+import 'app/controllers/OtherReasonDisclaimerController'
+import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();

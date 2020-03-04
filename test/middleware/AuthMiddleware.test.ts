@@ -1,22 +1,25 @@
 import 'reflect-metadata';
-import 'app/controllers/index';
-import { expect } from 'chai';
-import * as request from 'supertest';
-import {
-    OTHER_REASON_DISCLAIMER_PAGE_URI,
-    OTHER_REASON_PAGE_URI,
-    PENALTY_DETAILS_PAGE_URI,
-    CONFIRMATION_PAGE_URI,
-    CHECK_YOUR_APPEAL_PAGE_URI
-} from 'app/utils/Paths';
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+
+import Substitute, { Arg } from '@fluffy-spoon/substitute';
+import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
-import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { Request, Response, NextFunction } from 'express';
+import { expect } from 'chai';
+import { NextFunction, Request, Response } from 'express';
+import * as request from 'supertest';
+
+import 'app/controllers/index';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { Maybe } from 'ch-node-session-handler';
+import {
+    CHECK_YOUR_APPEAL_PAGE_URI,
+    CONFIRMATION_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    OTHER_REASON_PAGE_URI,
+    PENALTY_DETAILS_PAGE_URI
+} from 'app/utils/Paths';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
 const id = generateSessionId();

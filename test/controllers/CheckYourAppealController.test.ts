@@ -1,15 +1,18 @@
 import 'reflect-metadata';
-import 'app/controllers/CheckYourAppealController';
-import * as request from 'supertest';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import { expect } from 'chai';
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
-import { Appeal } from 'app/models/Appeal';
-import { createSubstituteOf } from 'test/SubstituteFactory'
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+
 import { Arg } from '@fluffy-spoon/substitute'
+import { expect } from 'chai';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import * as request from 'supertest';
+
+import 'app/controllers/CheckYourAppealController';
+import { Appeal } from 'app/models/Appeal';
+import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory'
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
 

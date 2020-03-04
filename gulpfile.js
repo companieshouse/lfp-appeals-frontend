@@ -4,8 +4,7 @@ const sass = require('gulp-sass');
 const del = require('del');
 sass.compiler = require('node-sass');
 nodemon = require('gulp-nodemon');
-const tsConfigFileName = 'tsconfig.json';
-const tsProject = ts.createProject(tsConfigFileName);
+const tsProject = ts.createProject('tsconfig.prod.json');
 const paths = {
     build: ['dist'],
     pages: ['src/views'],
@@ -54,7 +53,7 @@ gulp.task('compile-project', function () {
 });
 
 gulp.task('copy-descriptors', function () {
-    return gulp.src(tsConfigFileName).pipe(gulp.dest(paths.build));
+    return gulp.src('tsconfig.json').pipe(gulp.dest(paths.build));
 });
 
 gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-assets', 'copy-views', 'copy-govukfrontend', 'build-sass', 'copy-descriptors')));

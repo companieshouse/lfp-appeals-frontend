@@ -1,7 +1,8 @@
 import { expect } from 'chai';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema'
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 
 
 describe('Penalty Details Schema Validation', () => {

@@ -1,19 +1,20 @@
-import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { inject } from 'inversify';
-import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
-import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
-import { Request } from 'express';
+import { Maybe, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { Request } from 'express';
+import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { inject } from 'inversify';
+import { controller, httpGet, httpPost } from 'inversify-express-utils';
+
+import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
-import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { sanitize } from 'app/utils/CompanyNumberSanitizer';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
@@ -58,7 +59,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
         const changePenaltyIdentifier = (appeal: Appeal) => {
 
             const companyNumber = sanitize(body.companyNumber);
-            const penaltyReference = body.penaltyReference;
+            const penaltyReference = body.penaltyReference.toUpperCase();
 
             appeal.penaltyIdentifier.companyNumber = companyNumber;
             appeal.penaltyIdentifier.penaltyReference = penaltyReference;
@@ -71,7 +72,7 @@ export class PenaltyDetailsController extends BaseAsyncHttpController {
             .mapOrDefault(changePenaltyIdentifier, Maybe.of({
                 penaltyIdentifier: {
                     companyNumber: sanitize(body.companyNumber),
-                    penaltyReference: body.penaltyReference
+                    penaltyReference: body.penaltyReference.toUpperCase()
                 }
             } as Appeal))
             .mapOrDefault(_ => _, {} as Appeal);
