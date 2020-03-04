@@ -48,7 +48,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         await this.emailService.send({
             to: userProfile.email as string,
-            subject: 'Your appeal has been submitted',
+            subject: 'Confirmation of your appeal - ' + appealsData.penaltyIdentifier.companyNumber + ' - Companies House',
             body: {
                 templateName: 'lfp-appeal-submission-confirmation',
                 templateData: {

@@ -101,7 +101,7 @@ describe('CheckYourAppealController', () => {
 
             emailService.received().send({
                 to: 'test',
-                subject: 'Your appeal has been submitted',
+                subject: 'Confirmation of your appeal - 00345567 - Companies House',
                 body: {
                     templateName: 'lfp-appeal-submission-confirmation',
                     templateData: {
