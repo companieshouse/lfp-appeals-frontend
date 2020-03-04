@@ -1,14 +1,14 @@
 import 'reflect-metadata';
-import '../../src/controllers/CheckYourAppealController';
+import 'app/controllers/CheckYourAppealController';
 import * as request from 'supertest';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from '../../src/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { expect } from 'chai';
-import { createApp, getDefaultConfig } from '../ApplicationFactory';
-import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { Appeal } from '../../src/models/Appeal';
-import { createSubstituteOf } from '../SubstituteFactory'
-import { EmailService } from '../../src/modules/email-publisher/EmailService'
+import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { Appeal } from 'app/models/Appeal';
+import { createSubstituteOf } from 'test/SubstituteFactory'
+import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Arg } from '@fluffy-spoon/substitute'
 
 const config = getDefaultConfig();

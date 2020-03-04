@@ -1,5 +1,5 @@
-import { PenaltyIdentifier } from './PenaltyIdentifier';
-import { Reasons } from './Reasons';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { Reasons } from 'app/models/Reasons';
 
 export const APPEALS_KEY = 'appeals';
 

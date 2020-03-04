@@ -1,6 +1,6 @@
 import { AnySchema, ValidationOptions } from '@hapi/joi';
-import { ValidationResult } from './ValidationResult';
-import { ValidationError } from './ValidationError';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { ValidationError } from 'app/utils/validation/ValidationError';
 
 const validationOptions: ValidationOptions = {
     abortEarly: false,

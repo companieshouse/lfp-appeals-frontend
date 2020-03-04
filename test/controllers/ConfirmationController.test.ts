@@ -2,12 +2,12 @@ import 'reflect-metadata';
 import * as request from 'supertest';
 import { expect } from 'chai';
 
-import '../../src/controllers/ConfirmationController';
-import { CONFIRMATION_PAGE_URI } from '../../src/utils/Paths';
+import 'app/controllers/ConfirmationController';
+import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 import { OK } from 'http-status-codes';
-import { createFakeSession } from '../utils/session/FakeSessionFactory';
-import { getDefaultConfig, createApp } from '../ApplicationFactory';
-import { Appeal } from '../../src/models/Appeal';
+import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { getDefaultConfig, createApp } from 'test/ApplicationFactory';
+import { Appeal } from 'app/models/Appeal';
 
 const config = getDefaultConfig();
 

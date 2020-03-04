@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 
-import { schema } from '../../src/models/OtherReason.schema';
-import { SchemaValidator } from '../../src/utils/validation/SchemaValidator';
-import { ValidationResult } from '../../src/utils/validation/ValidationResult';
-import { ValidationError } from '../../src/utils/validation/ValidationError';
+import { schema } from 'app/models/OtherReason.schema';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { ValidationError } from 'app/utils/validation/ValidationError';
 
 const validator = new SchemaValidator(schema);
 

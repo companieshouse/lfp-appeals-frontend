@@ -1,13 +1,13 @@
 import { controller, httpGet } from 'inversify-express-utils';
-import { CONFIRMATION_PAGE_URI } from '../utils/Paths';
+import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 import { Request } from 'express';
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { Appeal, APPEALS_KEY } from '../models/Appeal';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces'
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys'
+import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends BaseAsyncHttpController {

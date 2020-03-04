@@ -1,4 +1,4 @@
-import { OtherReason } from './OtherReason';
+import { OtherReason } from 'app/models/OtherReason';
 
 export interface Reasons {
   other: OtherReason;

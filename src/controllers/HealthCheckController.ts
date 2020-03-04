@@ -1,7 +1,7 @@
 import { inject } from 'inversify';
 import { BaseHttpController, httpGet, controller } from 'inversify-express-utils';
 import { OK, INTERNAL_SERVER_ERROR } from 'http-status-codes';
-import { HEALTH_CHECK_URI } from '../utils/Paths';
+import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 import { SessionStore } from 'ch-node-session-handler';
 
 @controller(HEALTH_CHECK_URI)

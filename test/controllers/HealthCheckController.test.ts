@@ -1,14 +1,14 @@
 import 'reflect-metadata'
 import { Application } from 'express'
 import * as request from 'supertest'
-import { createAppConfigurable } from '../ApplicationFactory';
-import { createSubstituteOf } from '../SubstituteFactory';
+import { createAppConfigurable } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory';
 
-import '../../src/controllers/HealthCheckController'
+import 'app/controllers/HealthCheckController'
 import { Redis } from 'ioredis';
 import { SessionStore } from 'ch-node-session-handler';
-import { HEALTH_CHECK_URI } from '../../src/utils/Paths';
-import { EmailService } from '../../src/modules/email-publisher/EmailService'
+import { HEALTH_CHECK_URI } from 'app/utils/Paths';
+import { EmailService } from 'app/modules/email-publisher/EmailService'
 
 describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {

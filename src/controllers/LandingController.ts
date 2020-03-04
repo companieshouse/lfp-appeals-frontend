@@ -1,5 +1,5 @@
 import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
-import { ROOT_URI, ENTRY_PAGE_URI } from '../utils/Paths';
+import { ROOT_URI, ENTRY_PAGE_URI } from 'app/utils/Paths';
 
 @controller(ROOT_URI)
 export class LandingController extends BaseHttpController {

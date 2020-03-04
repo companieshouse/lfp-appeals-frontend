@@ -1,8 +1,8 @@
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { OTHER_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
+import { OTHER_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 
 @controller(OTHER_REASON_DISCLAIMER_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonDisclaimerController extends BaseAsyncHttpController {

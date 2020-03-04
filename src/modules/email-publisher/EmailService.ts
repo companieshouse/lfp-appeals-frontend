@@ -1,8 +1,8 @@
 import * as crypto from 'crypto'
 
-import { Email } from './Email'
-import { Producer } from './producer/Producer'
-import { Message, type } from './message/Message'
+import { Email } from 'app/modules/email-publisher/Email'
+import { Producer } from 'app/modules/email-publisher/producer/Producer'
+import { Message, type } from 'app/modules/email-publisher/message/Message'
 
 export class EmailService {
 

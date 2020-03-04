@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as Joi from '@hapi/joi';
 
-import { SchemaValidator } from '../../../src/utils/validation/SchemaValidator';
-import { ValidationError } from '../../../src/utils/validation/ValidationError';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
+import { ValidationError } from 'app/utils/validation/ValidationError';
 
 describe('SchemaValidator', () => {
     describe('instance creation', () => {

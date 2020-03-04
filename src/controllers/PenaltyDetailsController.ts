@@ -1,19 +1,19 @@
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from '../utils/Paths';
-import { BaseAsyncHttpController } from './BaseAsyncHttpController';
-import { ValidationResult } from '../utils/validation/ValidationResult';
-import { SchemaValidator } from '../utils/validation/SchemaValidator';
+import { PENALTY_DETAILS_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
+import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { Request } from 'express';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
-import { PenaltyIdentifier } from '../models/PenaltyIdentifier';
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { SessionMiddleware, SessionStore, Maybe } from 'ch-node-session-handler';
-import { schema } from '../models/PenaltyIdentifier.schema';
-import { Appeal, APPEALS_KEY } from '../models/Appeal';
-import { getEnvOrDefault } from '../utils/EnvironmentUtils';
-import { sanitize } from '../utils/CompanyNumberSanitizer';
+import { schema } from 'app/models/PenaltyIdentifier.schema';
+import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { sanitize } from 'app/utils/CompanyNumberSanitizer';
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends BaseAsyncHttpController {
