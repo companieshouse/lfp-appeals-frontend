@@ -29,11 +29,11 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
-    app.use(handler);
-
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
+
+
 
     app.set('view engine', 'njk');
     nunjucks.configure([
@@ -46,5 +46,15 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     });
 
     app.locals.ROOT_URI = ROOT_URI;
+
+    app.use(handler);
+
+    // @ts-ignore
+    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+        res.status(200).render('error')
+            // .send({message: 'xxx'});
+    });
+
+
 };
 
