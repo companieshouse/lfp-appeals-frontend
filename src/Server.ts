@@ -1,13 +1,11 @@
 import 'reflect-metadata';
 
-import {InversifyExpressServer} from 'inversify-express-utils';
-import {getExpressAppConfig} from 'utils/ConfigLoader';
+import { InversifyExpressServer } from 'inversify-express-utils';
+import { getExpressAppConfig } from 'utils/ConfigLoader';
 
-import {createContainer} from 'app/ContainerFactory';
+import { createContainer } from 'app/ContainerFactory';
 import 'app/controllers/index';
 import errorHandlers from 'app/middleware/ErrorHandler';
-
-// import errorHandlers from 'app/middleware/ErrorHandler';
 
 
 export class Server {

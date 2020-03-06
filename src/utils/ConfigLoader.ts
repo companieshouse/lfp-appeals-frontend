@@ -43,6 +43,5 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     });
 
     app.locals.ROOT_URI = ROOT_URI;
-
 };
 
