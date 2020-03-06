@@ -1,8 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
-import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
+import {INTERNAL_SERVER_ERROR} from 'http-status-codes';
 
 // @ts-ignore
-export function handler(err: any, req: Request, res: Response, nextFunction: NextFunction): void {
+function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
+    res.status(404).render('error');
+    next()
+}
+
+
+// @ts-ignore
+function defaultHandler(err: any, req: Request, res: Response, next: NextFunction): void {
     console.error('xxxx', err.message);
     if (!err.statusCode) {
         err.statusCode = INTERNAL_SERVER_ERROR;
@@ -11,5 +18,7 @@ export function handler(err: any, req: Request, res: Response, nextFunction: Nex
         error: err.message
     });
     res.render('error')
-
 }
+
+export default [notFoundHandler, defaultHandler]
+

@@ -5,7 +5,6 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import * as path from 'path';
 
-import { handler } from 'app/middleware/ErrorHandler';
 import { ROOT_URI } from 'app/utils/Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
@@ -33,8 +32,6 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
 
-
-
     app.set('view engine', 'njk');
     nunjucks.configure([
         'dist/views',
@@ -46,15 +43,6 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     });
 
     app.locals.ROOT_URI = ROOT_URI;
-
-    app.use(handler);
-
-    // @ts-ignore
-    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-        res.status(200).render('error')
-            // .send({message: 'xxx'});
-    });
-
 
 };
 
