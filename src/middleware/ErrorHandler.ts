@@ -14,9 +14,6 @@ function defaultHandler(err: any, req: Request, res: Response, next: NextFunctio
     if (!err.statusCode) {
         err.statusCode = INTERNAL_SERVER_ERROR;
     }
-    res.status(err.statusCode).send({
-        error: err.message
-    });
     res.render('error')
 }
 
