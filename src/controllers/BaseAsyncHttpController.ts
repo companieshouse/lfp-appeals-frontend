@@ -6,8 +6,7 @@ export abstract class BaseAsyncHttpController extends BaseHttpController {
             new Promise<string>((resolve, reject) =>
                 this.httpContext.response.status(code).render(template, options, (err, compiled) => {
                     if (err) {
-                        console.log(err);
-                        reject('500 when rendering the template');
+                        reject(err);
                     }
                     resolve(compiled);
                 })
