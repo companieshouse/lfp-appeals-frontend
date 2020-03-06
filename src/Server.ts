@@ -5,7 +5,7 @@ import { getExpressAppConfig } from 'utils/ConfigLoader';
 
 import { createContainer } from 'app/ContainerFactory';
 import 'app/controllers/index';
-import errorHandlers from 'app/middleware/ErrorHandler';
+import { defaultHandler, notFoundHandler } from 'app/middleware/ErrorHandler';
 
 
 export class Server {
@@ -22,7 +22,7 @@ export class Server {
     public start(): void {
 
         const application = this.server.build();
-        application.use(...errorHandlers);
+        application.use(notFoundHandler, defaultHandler);
 
         application.listen(this.port, () => {
             console.log(('  App is running at http://localhost:%d in %s mode'), this.port, process.env.NODE_ENV);
