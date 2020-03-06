@@ -3,11 +3,11 @@ import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-s
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
-import { InversifyExpressServer } from 'inversify-express-utils';
 
+import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { getExpressAppConfig, loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 // tslint:disable-next-line:no-empty
@@ -16,7 +16,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
     configureBindings(container);
-    return new InversifyExpressServer(container).setConfig(getExpressAppConfig('../../')).build();
+    return ApplicationFactory.createInstance(container);
 };
 
 export const getDefaultConfig = () => {

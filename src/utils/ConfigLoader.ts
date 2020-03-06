@@ -5,7 +5,6 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import * as path from 'path';
 
-import { handler } from 'app/middleware/ErrorHandler';
 import { ROOT_URI } from 'app/utils/Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
@@ -28,8 +27,6 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
     app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
-
-    app.use(handler);
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));

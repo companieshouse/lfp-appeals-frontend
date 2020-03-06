@@ -1,0 +1,33 @@
+{% extends "layout.njk" %}
+
+{% block pageTitle %}
+  Sorry, there is a problem with the service - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Sorry, there is a problem with the service
+      </h1>
+      <p class="govuk-body">Try again later.</p>
+      <p class="govuk-body">We have not saved your answers. When the service is available, you will have to start again.</p>
+      <p class="govuk-body">Contact Companies House if you have any questions.</p>
+      <p>
+        Telephone: <br/>
+        <b>0303 1234 500</b>
+      </p>
+      <p>
+        Outside UK: <br/>
+        <b>+44 0303 1234 500</b>
+      </p>
+      <p>
+        Opening times: <br/>
+        <b>Monday to Friday: 8.30am to 6pm</b>
+      </p>
+      <p class="govuk-body">Closed Easter Sunday, Christmas Day, Boxing Day and New Year`s Day.</p>
+    </div>
+  </div>
+{% endblock %}
