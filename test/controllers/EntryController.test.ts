@@ -7,9 +7,8 @@ import * as request from 'supertest'
 import 'app/controllers/EntryController'
 import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 
-const config = getDefaultConfig()
 describe('EntryController', () => {
 
     describe('GET request', () => {

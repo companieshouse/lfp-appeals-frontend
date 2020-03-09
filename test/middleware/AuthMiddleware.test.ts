@@ -10,7 +10,6 @@ import * as request from 'supertest';
 
 import 'app/controllers/index';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
     CONFIRMATION_PAGE_URI,
@@ -46,12 +45,6 @@ describe('Authentication Middleware', () => {
     const authedApp = createApp(session);
 
     describe('Authed path', () => {
-
-        const penaltyIdentifier: PenaltyIdentifier = {
-            penaltyReference: 'A12345678',
-            companyNumber: 'SC123123'
-        };
-
         it('should not redirect the user to the sign in page if the user is signed in', async () => {
 
             for (const page of protectedPages) {
