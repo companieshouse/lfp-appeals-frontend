@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import * as path from 'path';
 
-import { ROOT_URI } from 'app/utils/Paths';
+import * as Paths from 'app/utils/Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
 
@@ -23,10 +23,10 @@ export const loadEnvironmentVariablesFromFiles = () => {
 };
 
 export const getExpressAppConfig = (directory: string) => (app: express.Application): void => {
-    app.use(ROOT_URI, express.static(path.join(directory, '/public')));
-    app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
-    app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
-    app.use(ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
+    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/public')));
+    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
+    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
+    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,6 +42,15 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
         express: app,
     });
 
-    app.locals.ROOT_URI = ROOT_URI;
+    app.locals.paths = Paths;
+    app.locals.ui = {
+        createChangeLinkConfig: (uri: string, accessibleName: string) => {
+            return {
+                href: `${uri}?cm=1`,
+                text: 'Change',
+                visuallyHiddenText: accessibleName
+            }
+        }
+    }
 };
 
