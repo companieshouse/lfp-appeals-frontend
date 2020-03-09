@@ -46,6 +46,30 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .extract() as Appeal;
 
+        const regionPrefix: string = appealsData.penaltyIdentifier.companyNumber.slice(0,2);
+
+        // TODO: NEED TO EXTRACT EMAILS FROM CONFIGS
+        let internalTeam = 'appeals.ch.fake+default.team@gmail.com';
+        if (regionPrefix === 'SC') internalTeam = 'appeals.ch.fake+SC.team@gmail.com';
+        else if(regionPrefix === 'NI') internalTeam = 'appeals.ch.fake+SC.team@gmail.com';
+
+        // Send submission emails to internal team according to the prefix
+        await this.emailService.send({
+            to: internalTeam as string,
+            subject: 'Appeal submitted - ' + appealsData.penaltyIdentifier.companyNumber,
+            body: {
+                // TODO: NEED TO CHANGE THIS TO SUBMISSION INTERNAL TEMPLATE
+                templateName: 'lfp-appeal-submission-confirmation',
+                templateData: {
+                    companyNumber: appealsData.penaltyIdentifier.companyNumber,
+                    userProfile: {
+                        email: userProfile.email
+                    }
+                }
+            }
+        });
+
+        // Send submission confirmation email to user
         await this.emailService.send({
             to: userProfile.email as string,
             subject: 'Confirmation of your appeal - ' + appealsData.penaltyIdentifier.companyNumber + ' - Companies House',
