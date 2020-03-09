@@ -59,11 +59,17 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             subject: 'Appeal submitted - ' + appealsData.penaltyIdentifier.companyNumber,
             body: {
                 // TODO: NEED TO CHANGE THIS TO SUBMISSION INTERNAL TEMPLATE
-                templateName: 'lfp-appeal-submission-confirmation',
+                templateName: 'lfp-appeal-submission-internal',
                 templateData: {
                     companyNumber: appealsData.penaltyIdentifier.companyNumber,
                     userProfile: {
                         email: userProfile.email
+                    },
+                    reasons:{
+                        other: {
+                            title: appealsData.reasons.other.title,
+                            description: appealsData.reasons.other.description
+                        }
                     }
                 }
             }
