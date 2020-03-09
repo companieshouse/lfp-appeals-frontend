@@ -1,4 +1,6 @@
 {% extends "layout.njk" %}
+
+{% from 'govuk/components/summary-list/macro.njk' import govukSummaryList %}
 {% from 'govuk/components/button/macro.njk' import govukButton %}
 
 {% block pageTitle %}
@@ -6,93 +8,83 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">
-                Check your appeal
-            </h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+          Check your appeal
+      </h1>
 
-            <h2 class="govuk-heading-m">Penalty details</h2>
-            <dl class="app-check-your-answers app-check-your-answers--short govuk-!-margin-bottom-8">
-                <div class="app-check-your-answers__contents">
-                    <dt class="app-check-your-answers__question">
-                        Company Number
-                    </dt>
-                    <dd class="app-check-your-answers__answer">
-                        {{ penaltyIdentifier.companyNumber }}
-                    </dd>
-                    <dd class="app-check-your-answers__change"></dd>
-                </div>
-                <div class="app-check-your-answers__contents">
-                    <dt class="app-check-your-answers__question">
-                        Type
-                    </dt>
-                    <dd class="app-check-your-answers__answer">
-                        Late Filing Penalty ({{ penaltyIdentifier.penaltyReference }})
-                    </dd>
-                    <dd class="app-check-your-answers__change"></dd>
-                </div>
-                <div class="app-check-your-answers__contents">
-                    <dt class="app-check-your-answers__question">
-                        Contact email
-                    </dt>
-                    <dd class="app-check-your-answers__answer">
-                        {{ userProfile.email }}
-                    </dd>
-                    <dd class="app-check-your-answers__change"></dd>
-                </div>
-            </dl>
+      <h2 class="govuk-heading-m">Penalty details</h2>
+      {{
+        govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: 'Company Number'
+              },
+              value: {
+                text: penaltyIdentifier.companyNumber
+              }
+            },
+            {
+              key: {
+                text: 'Type'
+              },
+              value: {
+                text: 'Late Filing Penalty (' + penaltyIdentifier.penaltyReference + ')'
+              }
+            },
+            {
+              key: {
+                text: 'Contact email'
+              },
+              value: {
+                text: userProfile.email
+              }
+            }
+          ]
+        })
+      }}
 
-            <h2 class="govuk-heading-l">Reason for appeal</h2>
-            <div class="reason-container">
-                <dl class="app-check-your-answers app-check-your-answers--long">
-                    <div class="app-check-your-answers__contents">
-                        <dt class="app-check-your-answers__question">
-                            Reason
-                        </dt>
-                        <dd class="app-check-your-answers__answer">
-                            {{ reasons.other.title }}
-                        </dd>
-                        <dd class="app-check-your-answers__change">
-                          <a id="change-reason-other" href="#">
-                            Change
-                            <span class="govuk-visually-hidden"> Change title</span>
-                          </a>
-                        </dd>
-                    </div>
+      <h2 class="govuk-heading-l">Reason for appeal</h2>
+      {{
+        govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: 'Reason'
+              },
+                value: {
+                text: reasons.other.title
+              }
+            },
+            {
+              key: {
+                text: 'Further information'
+              },
+              value: {
+                text: reasons.other.description
+              }
+            }
+          ]
+        })
+      }}
 
-                    <div class="app-check-your-answers__contents">
-                        <dt class="app-check-your-answers__question">
-                            Further information
-                        </dt>
-                        <dd class="app-check-your-answers__answer">
-                            {{ reasons.other.description }}
-                        </dd>
-                        <dd class="app-check-your-answers__change">
-                          <a id="change-reason-other" href="#">
-                            Change
-                            <span class="govuk-visually-hidden"> Change further information</span>
-                          </a>
-                        </dd>
-                    </div>
-                </dl>
-            </div>
-
-            <h2 class="govuk-heading-m">Submit your appeal</h2>
-            <p>
-                By submitting this appeal you are confirming that, to the best of your knowledge, the details you are
-                providing are true.
-            </p>
-            <form method="post">
-              {{
-                govukButton({
-                  text: 'Confirm and submit appeal',
-                  attributes: {
-                    id: 'submit'
-                  }
-                })
-              }}
-            </form>
-        </div>
+      <h2 class="govuk-heading-m">Submit your appeal</h2>
+      <p>
+        By submitting this appeal you are confirming that, to the best of your knowledge, the details you are
+        providing are true.
+      </p>
+      <form method="post">
+        {{
+          govukButton({
+            text: 'Confirm and submit appeal',
+            attributes: {
+              id: 'submit'
+            }
+          })
+        }}
+      </form>
     </div>
+  </div>
 {% endblock %}
