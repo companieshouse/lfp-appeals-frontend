@@ -164,7 +164,7 @@ describe('CheckYourAppealController', () => {
                 await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
                 emailService.received().send({
-                    to: 'appeals.ch.fake+default.team@gmail.com',
+                    to: 'appeals.ch.fake+DEFAULT@gmail.com',
                     subject: 'Appeal submitted - 00345567',
                     body: {
                         templateName: 'lfp-appeal-submission-internal',
@@ -196,7 +196,7 @@ describe('CheckYourAppealController', () => {
                 await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
                 emailServiceSC.received().send({
-                    to: 'appeals.ch.fake+SC.team@gmail.com',
+                    to: 'appeals.ch.fake+SC@gmail.com',
                     subject: 'Appeal submitted - SC345567',
                     body: {
                         templateName: 'lfp-appeal-submission-internal',
@@ -229,7 +229,7 @@ describe('CheckYourAppealController', () => {
                 await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
                 emailServiceNI.received().send({
-                    to: 'appeals.ch.fake+NI.team@gmail.com',
+                    to: 'appeals.ch.fake+NI@gmail.com',
                     subject: 'Appeal submitted - NI345567',
                     body: {
                         templateName: 'lfp-appeal-submission-internal',

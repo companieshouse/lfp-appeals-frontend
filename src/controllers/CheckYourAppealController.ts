@@ -47,11 +47,9 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .extract() as Appeal;
 
         const regionPrefix: string = appealsData.penaltyIdentifier.companyNumber.slice(0,2);
-
-        // TODO: NEED TO EXTRACT EMAILS FROM CONFIGS
-        let internalTeam = 'appeals.ch.fake+default.team@gmail.com';
-        if (regionPrefix === 'SC') internalTeam = 'appeals.ch.fake+SC.team@gmail.com';
-        else if(regionPrefix === 'NI') internalTeam = 'appeals.ch.fake+NI.team@gmail.com';
+        let internalTeam = process.env.DEFAULT_TEAM_EMAIL;
+        if (regionPrefix === 'SC') internalTeam = process.env.SC_TEAM_EMAIL;
+        else if(regionPrefix === 'NI') internalTeam = process.env.NI_TEAM_EMAIL;
 
         // Send submission emails to internal team according to the prefix
         await this.emailService.send({
