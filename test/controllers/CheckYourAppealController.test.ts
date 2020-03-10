@@ -45,7 +45,6 @@ describe('CheckYourAppealController', () => {
                         .to.contain('test').and
                         .to.contain(appeal.reasons.other.title).and
                         .to.contain(appeal.reasons.other.description)
-
                 });
         });
 
@@ -91,29 +90,163 @@ describe('CheckYourAppealController', () => {
                 })
         });
 
-        it('should send confirmation email', async () => {
-            const emailService = createSubstituteOf<EmailService>(service => {
-                service.send(Arg.any()).returns(Promise.resolve());
-            });
+        describe('sending user emails', () => {
+            it('should send confirmation email', async () => {
+                const emailService = createSubstituteOf<EmailService>(service => {
+                    service.send(Arg.any()).returns(Promise.resolve());
+                });
 
-            const app = createApp(session, container => {
-                container.rebind(EmailService).toConstantValue(emailService);
-            });
+                const app = createApp(session, container => {
+                    container.rebind(EmailService).toConstantValue(emailService);
+                });
 
-            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+                await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
-            emailService.received().send({
-                to: 'test',
-                subject: 'Confirmation of your appeal - 00345567 - Companies House',
-                body: {
-                    templateName: 'lfp-appeal-submission-confirmation',
-                    templateData: {
-                        companyNumber: '00345567',
-                        userProfile: {
-                            email: 'test'
+                emailService.received().send({
+                    to: 'test',
+                    subject: 'Confirmation of your appeal - 00345567 - Companies House',
+                    body: {
+                        templateName: 'lfp-appeal-submission-confirmation',
+                        templateData: {
+                            companyNumber: '00345567',
+                            userProfile: {
+                                email: 'test'
+                            }
                         }
                     }
+                });
+            })
+        });
+
+        describe('sending internal emails', () => {
+
+            const appealSC = {
+                penaltyIdentifier: {
+                    companyNumber: 'SC345567',
+                    penaltyReference: 'A00000001',
+                },
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    }
                 }
+            } as Appeal;
+
+            const appealNI = {
+                penaltyIdentifier: {
+                    companyNumber: 'NI345567',
+                    penaltyReference: 'A00000001',
+                },
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    }
+                }
+            } as Appeal;
+
+            const sessionSC = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', appealSC);
+
+            const sessionNI = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', appealNI);
+
+            it('should send internal email to default appeals team', async () => {
+                const emailService = createSubstituteOf<EmailService>(service => {
+                    service.send(Arg.any()).returns(Promise.resolve());
+                });
+
+                const app = createApp(session, container => {
+                    container.rebind(EmailService).toConstantValue(emailService);
+                });
+
+                await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+                emailService.received().send({
+                    to: 'appeals.ch.fake+default.team@gmail.com',
+                    subject: 'Appeal submitted - 00345567',
+                    body: {
+                        templateName: 'lfp-appeal-submission-internal',
+                        templateData: {
+                            companyNumber: '00345567',
+                            userProfile: {
+                                email: 'test'
+                            },
+                            reasons: {
+                                other: {
+                                    title: 'I have reasons',
+                                    description: 'they are legit'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            it('should send internal email to SC appeals team', async () => {
+                const emailServiceSC = createSubstituteOf<EmailService>(service => {
+                    service.send(Arg.any()).returns(Promise.resolve());
+                });
+
+                const app = createApp(sessionSC, container => {
+                    container.rebind(EmailService).toConstantValue(emailServiceSC);
+                });
+
+                await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+                emailServiceSC.received().send({
+                    to: 'appeals.ch.fake+SC.team@gmail.com',
+                    subject: 'Appeal submitted - SC345567',
+                    body: {
+                        templateName: 'lfp-appeal-submission-internal',
+                        templateData: {
+                            companyNumber: 'SC345567',
+                            userProfile: {
+                                email: 'test'
+                            },
+                            reasons: {
+                                other: {
+                                    title: 'I have reasons',
+                                    description: 'they are legit'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            it('should send internal email to NI appeals team', async () => {
+
+                const emailServiceNI = createSubstituteOf<EmailService>(service => {
+                    service.send(Arg.any()).returns(Promise.resolve());
+                });
+
+                const app = createApp(sessionNI, container => {
+                    container.rebind(EmailService).toConstantValue(emailServiceNI);
+                });
+
+                await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+                emailServiceNI.received().send({
+                    to: 'appeals.ch.fake+NI.team@gmail.com',
+                    subject: 'Appeal submitted - NI345567',
+                    body: {
+                        templateName: 'lfp-appeal-submission-internal',
+                        templateData: {
+                            companyNumber: 'NI345567',
+                            userProfile: {
+                                email: 'test'
+                            },
+                            reasons: {
+                                other: {
+                                    title: 'I have reasons',
+                                    description: 'they are legit'
+                                }
+                            }
+                        }
+                    }
+                });
             });
         })
     })

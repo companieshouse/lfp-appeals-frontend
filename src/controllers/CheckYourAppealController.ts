@@ -51,14 +51,13 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
         // TODO: NEED TO EXTRACT EMAILS FROM CONFIGS
         let internalTeam = 'appeals.ch.fake+default.team@gmail.com';
         if (regionPrefix === 'SC') internalTeam = 'appeals.ch.fake+SC.team@gmail.com';
-        else if(regionPrefix === 'NI') internalTeam = 'appeals.ch.fake+SC.team@gmail.com';
+        else if(regionPrefix === 'NI') internalTeam = 'appeals.ch.fake+NI.team@gmail.com';
 
         // Send submission emails to internal team according to the prefix
         await this.emailService.send({
             to: internalTeam as string,
             subject: 'Appeal submitted - ' + appealsData.penaltyIdentifier.companyNumber,
             body: {
-                // TODO: NEED TO CHANGE THIS TO SUBMISSION INTERNAL TEMPLATE
                 templateName: 'lfp-appeal-submission-internal',
                 templateData: {
                     companyNumber: appealsData.penaltyIdentifier.companyNumber,
