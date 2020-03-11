@@ -10,9 +10,18 @@ import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMes
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
+import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
-import { companyNumberRegionIdentifier } from 'app/utils/RegionIdentifier';
+import { findRegionByCompanyNumber, Region } from 'app/utils/RegionLookup';
+
+console.log(process.env)
+
+// tslint:disable-next-line: forin
+for (const region in Region) {
+    getEnvOrDefault(`${region}_TEAM_EMAIL`)
+}
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
@@ -48,19 +57,17 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .extract() as Appeal;
 
-        await this.internalEmailSender(appealsData, userProfile);
-        await this.userEmailSender(appealsData, userProfile);
+        await this.emailService.send(this.buildInternalEmail(appealsData, userProfile));
+        await this.emailService.send(this.buildUserEmail(userProfile, appealsData));
 
         return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
     }
 
-    private internalEmailSender = async (appealsData: Appeal, userProfile: IUserProfile): Promise<void> => {
-
-        const internalTeam = companyNumberRegionIdentifier(appealsData.penaltyIdentifier.companyNumber);
-
-        await this.emailService.send({
-            to: internalTeam as string,
-            subject: 'Appeal submitted - ' + appealsData.penaltyIdentifier.companyNumber,
+    private buildInternalEmail(appealsData: Appeal, userProfile: IUserProfile): Email {
+        const region = findRegionByCompanyNumber(appealsData.penaltyIdentifier.companyNumber);
+        return {
+            to: getEnvOrDefault(`${region}_TEAM_EMAIL`),
+            subject: `Appeal submitted - ${appealsData.penaltyIdentifier.companyNumber}`,
             body: {
                 templateName: 'lfp-appeal-submission-internal',
                 templateData: {
@@ -76,14 +83,13 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                     }
                 }
             }
-        });
-    };
+        };
+    }
 
-    private userEmailSender = async (appealsData: Appeal, userProfile: IUserProfile): Promise<void> => {
-
-        await this.emailService.send({
+    private buildUserEmail(userProfile: IUserProfile, appealsData: Appeal): Email {
+        return {
             to: userProfile.email as string,
-            subject: 'Confirmation of your appeal - ' + appealsData.penaltyIdentifier.companyNumber + ' - Companies House',
+            subject: `Confirmation of your appeal - ${appealsData.penaltyIdentifier.companyNumber} - Companies House`,
             body: {
                 templateName: 'lfp-appeal-submission-confirmation',
                 templateData: {
@@ -93,6 +99,6 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                     }
                 }
             }
-        });
-    };
+        };
+    }
 }
