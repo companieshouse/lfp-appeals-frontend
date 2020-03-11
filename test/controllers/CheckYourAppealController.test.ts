@@ -65,6 +65,7 @@ describe('CheckYourAppealController', () => {
             .saveExtraData('appeals', appeal);
 
         it('should redirect to confirmation page when email sending succeeded', async () => {
+
             const app = createApp(session, container => {
                 container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.resolve());

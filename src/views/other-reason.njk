@@ -1,5 +1,6 @@
 {% extends 'layout.njk' %}
 
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
 {% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from 'govuk/components/input/macro.njk' import govukInput %}
 {% from 'govuk/components/textarea/macro.njk' import govukTextarea %}
@@ -7,6 +8,15 @@
 
 {% block pageTitle %}
   Appealing for other reasons
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
 {% endblock %}
 
 {% block content %}
