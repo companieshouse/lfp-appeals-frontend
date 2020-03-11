@@ -3,18 +3,20 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
-import { inject } from 'inversify'
+import { inject } from 'inversify';
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { companyNumberRegionIdentifier } from 'app/utils/RegionIdentifier';
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
+
     constructor (@inject(EmailService) private readonly emailService: EmailService) {
         super();
     }
@@ -46,12 +48,16 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .extract() as Appeal;
 
-        const regionPrefix: string = appealsData.penaltyIdentifier.companyNumber.slice(0,2);
-        let internalTeam = process.env.DEFAULT_TEAM_EMAIL;
-        if (regionPrefix === 'SC') internalTeam = process.env.SC_TEAM_EMAIL;
-        else if(regionPrefix === 'NI') internalTeam = process.env.NI_TEAM_EMAIL;
+        await this.internalEmailSender(appealsData, userProfile);
+        await this.userEmailSender(appealsData, userProfile);
 
-        // Send submission emails to internal team according to the prefix
+        return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
+    }
+
+    private internalEmailSender = async (appealsData: Appeal, userProfile: IUserProfile): Promise<void> => {
+
+        const internalTeam = companyNumberRegionIdentifier(appealsData.penaltyIdentifier.companyNumber);
+
         await this.emailService.send({
             to: internalTeam as string,
             subject: 'Appeal submitted - ' + appealsData.penaltyIdentifier.companyNumber,
@@ -62,7 +68,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                     userProfile: {
                         email: userProfile.email
                     },
-                    reasons:{
+                    reasons: {
                         other: {
                             title: appealsData.reasons.other.title,
                             description: appealsData.reasons.other.description
@@ -71,8 +77,10 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                 }
             }
         });
+    };
 
-        // Send submission confirmation email to user
+    private userEmailSender = async (appealsData: Appeal, userProfile: IUserProfile): Promise<void> => {
+
         await this.emailService.send({
             to: userProfile.email as string,
             subject: 'Confirmation of your appeal - ' + appealsData.penaltyIdentifier.companyNumber + ' - Companies House',
@@ -86,7 +94,5 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                 }
             }
         });
-
-        return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
-    }
+    };
 }
