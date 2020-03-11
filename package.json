@@ -20,6 +20,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "avsc": "^5.4.19",
+    "axios": "^0.19.2",
     "body-parser": "^1.18.2",
     "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#46e8cc58f6f0f499ceb0cda6d6493abbde4c3f90",
     "cookie-parser": "^1.4.4",
