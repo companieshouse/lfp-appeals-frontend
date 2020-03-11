@@ -10,13 +10,13 @@ import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
 import { sanitize } from 'app/utils/CompanyNumberSanitizer';
-import { ENTRY_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
 
 const template = 'penalty-details';
 
 const navigation = {
     previous(): string {
-        return ENTRY_PAGE_URI;
+        return ROOT_URI;
     },
     next(): string {
         return OTHER_REASON_DISCLAIMER_PAGE_URI;
