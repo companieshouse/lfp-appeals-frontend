@@ -40,7 +40,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     }
 
     @httpGet('')
-    public async onGet(): Promise<string> {
+    public async onGet(): Promise<void> {
         return await this.render(
             this.template,
             {
@@ -60,14 +60,15 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     }
 
     @httpPost('')
-    public async onPost(req: Request): Promise<any> {
+    public async onPost(): Promise<void> {
         if (this.formSchema != null) {
-            const validationResult: ValidationResult = new SchemaValidator(this.formSchema).validate(req.body);
+            const validationResult: ValidationResult = new SchemaValidator(this.formSchema)
+                .validate(this.httpContext.request.body);
             if (validationResult.errors.length > 0) {
                 return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
                     this.template,
                     {
-                        ...req.body,
+                        ...this.httpContext.request.body,
                         validationResult,
                         ...this.prepareNavigationConfig()
                     }
@@ -76,17 +77,17 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
         }
 
         if (this.formSanitizeFunction != null) {
-            req.body = this.formSanitizeFunction(req.body)
+            this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body)
         }
 
         if (this.formSubmissionProcessors != null) {
             for (const processorType of this.formSubmissionProcessors) {
                 const processor= this.httpContext.container.get(processorType);
-                await processor.process(req);
+                await processor.process(this.httpContext.request);
             }
         }
 
-        return await this.redirect(this.navigation.next(this.httpContext.request)).executeAsync();
+        return this.httpContext.response.redirect(this.navigation.next(this.httpContext.request));
     }
 
     private prepareNavigationConfig(): any {

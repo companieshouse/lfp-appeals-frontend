@@ -14,7 +14,7 @@ import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 export class ConfirmationController extends BaseAsyncHttpController {
 
     @httpGet('')
-    public async getConfirmationView(req: Request): Promise<string> {
+    public async getConfirmationView(req: Request): Promise<void> {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
