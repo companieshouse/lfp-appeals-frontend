@@ -3,20 +3,28 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
-import { inject } from 'inversify'
+import { inject } from 'inversify';
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { Email } from 'app/modules/email-publisher/Email';
+import { EmailService } from 'app/modules/email-publisher/EmailService';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { findRegionByCompanyNumber, Region } from 'app/utils/RegionLookup';
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
+
     constructor (@inject(EmailService) private readonly emailService: EmailService) {
         super();
+        // tslint:disable-next-line: forin
+        for (const region in Region) {
+            getEnvOrDefault(`${region}_TEAM_EMAIL`)
+        }
     }
 
     @httpGet('')
@@ -46,9 +54,39 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
             .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
             .extract() as Appeal;
 
-        await this.emailService.send({
+        await this.emailService.send(this.buildInternalEmail(appealsData, userProfile));
+        await this.emailService.send(this.buildUserEmail(userProfile, appealsData));
+
+        return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
+    }
+
+    private buildInternalEmail(appealsData: Appeal, userProfile: IUserProfile): Email {
+        const region = findRegionByCompanyNumber(appealsData.penaltyIdentifier.companyNumber);
+        return {
+            to: getEnvOrDefault(`${region}_TEAM_EMAIL`),
+            subject: `Appeal submitted - ${appealsData.penaltyIdentifier.companyNumber}`,
+            body: {
+                templateName: 'lfp-appeal-submission-internal',
+                templateData: {
+                    companyNumber: appealsData.penaltyIdentifier.companyNumber,
+                    userProfile: {
+                        email: userProfile.email
+                    },
+                    reasons: {
+                        other: {
+                            title: appealsData.reasons.other.title,
+                            description: appealsData.reasons.other.description
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private buildUserEmail(userProfile: IUserProfile, appealsData: Appeal): Email {
+        return {
             to: userProfile.email as string,
-            subject: 'Confirmation of your appeal - ' + appealsData.penaltyIdentifier.companyNumber + ' - Companies House',
+            subject: `Confirmation of your appeal - ${appealsData.penaltyIdentifier.companyNumber} - Companies House`,
             body: {
                 templateName: 'lfp-appeal-submission-confirmation',
                 templateData: {
@@ -58,8 +96,6 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
                     }
                 }
             }
-        });
-
-        return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
+        };
     }
 }
