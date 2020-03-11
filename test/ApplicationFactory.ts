@@ -3,6 +3,7 @@ import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-s
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
+import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -15,6 +16,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
+    container.load(buildProviderModule());
     configureBindings(container);
     return ApplicationFactory.createInstance(container);
 };
