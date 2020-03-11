@@ -16,18 +16,15 @@ import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 import { findRegionByCompanyNumber, Region } from 'app/utils/RegionLookup';
 
-console.log(process.env)
-
-// tslint:disable-next-line: forin
-for (const region in Region) {
-    getEnvOrDefault(`${region}_TEAM_EMAIL`)
-}
-
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
 
     constructor (@inject(EmailService) private readonly emailService: EmailService) {
         super();
+        // tslint:disable-next-line: forin
+        for (const region in Region) {
+            getEnvOrDefault(`${region}_TEAM_EMAIL`)
+        }
     }
 
     @httpGet('')
