@@ -11,14 +11,14 @@ import {BaseAsyncHttpController} from 'app/controllers/BaseAsyncHttpController';
 import {AuthMiddleware} from 'app/middleware/AuthMiddleware';
 import {Appeal, APPEALS_KEY} from 'app/models/Appeal'
 import {EmailService} from 'app/modules/email-publisher/EmailService'
-import {AppealSubmitService} from 'app/service/AppealSubmitService';
+import {AppealSubmissionService} from 'app/service/AppealSubmissionService';
 import {CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends BaseAsyncHttpController {
 
     constructor (@inject(EmailService) private readonly emailService: EmailService,
-                 @inject(AppealSubmitService) private readonly appealSubmitService: AppealSubmitService) {
+                 @inject(AppealSubmissionService) private readonly appealSubmissionService: AppealSubmissionService) {
         super();
     }
 
@@ -57,7 +57,7 @@ export class CheckYourAppealController extends BaseAsyncHttpController {
 
         const companyNumber: string = appealsData.penaltyIdentifier.companyNumber;
 
-        await this.appealSubmitService.submitAppeal(appealsData, companyNumber, accessToken);
+        await this.appealSubmissionService.submitAppeal(appealsData, companyNumber, accessToken);
 
         await this.emailService.send({
             to: userProfile.email as string,

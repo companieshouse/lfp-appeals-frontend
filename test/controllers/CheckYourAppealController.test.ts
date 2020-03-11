@@ -8,6 +8,7 @@ import * as request from 'supertest';
 import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { AppealSubmissionService } from 'app/service/AppealSubmissionService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
@@ -69,6 +70,10 @@ describe('CheckYourAppealController', () => {
                 container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.resolve());
                 }));
+                container.rebind(AppealSubmissionService)
+                    .toConstantValue(createSubstituteOf<AppealSubmissionService>(service => {
+                    service.submitAppeal(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
+                }));
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -83,6 +88,12 @@ describe('CheckYourAppealController', () => {
                 container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
                 }));
+
+                container.rebind(AppealSubmissionService)
+                    .toConstantValue(createSubstituteOf<AppealSubmissionService>(service => {
+                    service.submitAppeal(Arg.any(), Arg.any(), Arg.any())
+                        .returns(Promise.reject(Error('Unexpected error')));
+                }));
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -96,8 +107,13 @@ describe('CheckYourAppealController', () => {
                 service.send(Arg.any()).returns(Promise.resolve());
             });
 
+            const appealSubmissionService = createSubstituteOf<AppealSubmissionService>(service => {
+                service.submitAppeal(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
+            });
+
             const app = createApp(session, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
+                container.rebind(AppealSubmissionService).toConstantValue(appealSubmissionService);
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);

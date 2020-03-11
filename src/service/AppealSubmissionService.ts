@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 import { Appeal } from 'app/models/Appeal';
 
-export class AppealSubmitService {
+export class AppealSubmissionService {
     constructor(private readonly appealsApiUrl: string) {
     }
 

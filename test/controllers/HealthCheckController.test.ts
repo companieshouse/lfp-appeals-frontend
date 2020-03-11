@@ -7,6 +7,7 @@ import * as request from 'supertest'
 
 import 'app/controllers/HealthCheckController'
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { AppealSubmissionService } from 'app/service/AppealSubmissionService'
 import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
@@ -18,7 +19,8 @@ describe('HealthCheckController', () => {
             container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.resolve('OK'))
             })));
-            container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
+            container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
+            container.bind(AppealSubmissionService).toConstantValue(createSubstituteOf<AppealSubmissionService>());
         });
 
         await makeHealthCheckRequest(app).expect(200, 'Redis status: 200');
@@ -29,7 +31,8 @@ describe('HealthCheckController', () => {
             container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
                 redis.ping().returns(Promise.reject('ERROR'))
             })));
-            container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>())
+            container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
+            container.bind(AppealSubmissionService).toConstantValue(createSubstituteOf<AppealSubmissionService>());
         });
 
         await makeHealthCheckRequest(app).expect(500, 'Redis status: 500');
