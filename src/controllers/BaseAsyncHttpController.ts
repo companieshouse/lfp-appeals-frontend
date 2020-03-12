@@ -1,16 +1,12 @@
+import { Response } from 'express';
 import { BaseHttpController } from 'inversify-express-utils';
+import * as util from 'util';
 
 export abstract class BaseAsyncHttpController extends BaseHttpController {
-    public renderWithStatus = (code: number) =>
-        async (template: string, options: any = {}): Promise<string> =>
-            new Promise<string>((resolve, reject) =>
-                this.httpContext.response.status(code).render(template, options, (err, compiled) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(compiled);
-                })
-            );
+    public renderWithStatus = (code: number) =>  async (template: string, options: any = {}): Promise<void> => {
+        const response: Response = this.httpContext.response.status(code);
+        return util.promisify<string, any, void>(response.render).call(response, template, options);
+    };
 
-    public render: (template: string, options?: any) => Promise<string> = this.renderWithStatus(200);
+    public render: (template: string, options?: any) => Promise<void> = this.renderWithStatus(200);
 }

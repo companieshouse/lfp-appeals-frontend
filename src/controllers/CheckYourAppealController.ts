@@ -1,101 +1,52 @@
-import { Maybe, SessionMiddleware } from 'ch-node-session-handler';
+import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { Request } from 'express';
-import { inject } from 'inversify';
-import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { HttpResponseMessage } from 'inversify-express-utils/dts/httpResponseMessage';
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { controller } from 'inversify-express-utils';
 
-import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { BaseController } from 'app/controllers/BaseController';
+import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
+import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal'
-import { Email } from 'app/modules/email-publisher/Email';
-import { EmailService } from 'app/modules/email-publisher/EmailService';
+import { Appeal } from 'app/models/Appeal'
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
-import { findRegionByCompanyNumber, Region } from 'app/utils/RegionLookup';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { Region } from 'app/utils/RegionLookup';
+
+const template = 'check-your-appeal';
+
+const navigation = {
+    previous(): string {
+        return OTHER_REASON_PAGE_URI;
+    },
+    next(): string {
+        return CONFIRMATION_PAGE_URI;
+    }
+};
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class CheckYourAppealController extends BaseAsyncHttpController {
-
-    constructor (@inject(EmailService) private readonly emailService: EmailService) {
-        super();
+export class CheckYourAppealController extends BaseController<any> {
+    constructor () {
+        super(template, navigation, undefined, undefined,
+            [InternalEmailFormSubmissionProcessor, UserEmailFormSubmissionProcessor]);
         // tslint:disable-next-line: forin
         for (const region in Region) {
             getEnvOrDefault(`${region}_TEAM_EMAIL`)
         }
     }
 
-    @httpGet('')
-    public async renderView(req: Request): Promise<string> {
-        const userProfile = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+    protected prepareViewModelFromSession(session: Session): Record<string, any> {
+        const userProfile = session.getValue<ISignInInfo>(SessionKey.SignInInfo)
             .map(info => info[SignInInfoKeys.UserProfile])
             .orDefault({});
 
-        const appealsData = req.session
-            .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
-            .orDefault({});
-
-        return this.render('check-your-appeal', { ...appealsData, userProfile });
-    }
-
-    @httpPost('')
-    public async handleFormSubmission(req: Request): Promise<HttpResponseMessage> {
-        const userProfile = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .extract() as IUserProfile;
-
-        const appealsData = req.session
-            .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
-            .extract() as Appeal;
-
-        await this.emailService.send(this.buildInternalEmail(appealsData, userProfile));
-        await this.emailService.send(this.buildUserEmail(userProfile, appealsData));
-
-        return this.redirect(CONFIRMATION_PAGE_URI).executeAsync();
-    }
-
-    private buildInternalEmail(appealsData: Appeal, userProfile: IUserProfile): Email {
-        const region = findRegionByCompanyNumber(appealsData.penaltyIdentifier.companyNumber);
         return {
-            to: getEnvOrDefault(`${region}_TEAM_EMAIL`),
-            subject: `Appeal submitted - ${appealsData.penaltyIdentifier.companyNumber}`,
-            body: {
-                templateName: 'lfp-appeal-submission-internal',
-                templateData: {
-                    companyNumber: appealsData.penaltyIdentifier.companyNumber,
-                    userProfile: {
-                        email: userProfile.email
-                    },
-                    reasons: {
-                        other: {
-                            title: appealsData.reasons.other.title,
-                            description: appealsData.reasons.other.description
-                        }
-                    }
-                }
-            }
+            ...super.prepareViewModelFromSession(session),
+            userProfile
         };
     }
 
-    private buildUserEmail(userProfile: IUserProfile, appealsData: Appeal): Email {
-        return {
-            to: userProfile.email as string,
-            subject: `Confirmation of your appeal - ${appealsData.penaltyIdentifier.companyNumber} - Companies House`,
-            body: {
-                templateName: 'lfp-appeal-submission-confirmation',
-                templateData: {
-                    companyNumber: appealsData.penaltyIdentifier.companyNumber,
-                    userProfile: {
-                        email: userProfile.email
-                    }
-                }
-            }
-        };
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        return appeal;
     }
 }
