@@ -16,10 +16,11 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
     }
 
     private async updateSession(session: Session, value: any): Promise<void> {
-        session.saveExtraData(APPEALS_KEY, session.getExtraData()
-            .chainNullable<Appeal>(data => data[APPEALS_KEY])
-            .map(appeal => this.prepareModelPriorSessionSave(appeal, value))
-            .orDefault({} as Appeal));
+        const appeal = session.getExtraData()
+            .map<Appeal>(data => data[APPEALS_KEY])
+            .orDefault({} as Appeal);
+
+        session.saveExtraData(APPEALS_KEY, this.prepareModelPriorSessionSave(appeal, value));
 
         await this.sessionStore
             .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
