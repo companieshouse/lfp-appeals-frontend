@@ -41,6 +41,9 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
 
     @httpGet('')
     public async onGet(): Promise<void> {
+        // check page passes in session and:
+        // 1. pass through if user holds pass for URI extracted from `this.httpContext.request`
+        // 2. redirect to page representing last received pass
         return await this.render(
             this.template,
             {
@@ -79,6 +82,8 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
         if (this.formSanitizeFunction != null) {
             this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body)
         }
+
+        // Create page pass out of `this.navigation.next(this.httpContext.request)` and store it in session
 
         if (this.formSubmissionProcessors != null) {
             for (const processorType of this.formSubmissionProcessors) {
