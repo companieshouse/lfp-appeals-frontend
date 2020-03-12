@@ -1,30 +1,37 @@
 import axios, { AxiosRequestConfig } from 'axios';
-
 import { Appeal } from 'app/models/Appeal';
 
 export class AppealSubmissionService {
+
     constructor(private readonly appealsApiUrl: string) {
+        this.appealsApiUrl = appealsApiUrl;
     }
 
     public async submitAppeal(appealData: Appeal, companyId: string, token: string): Promise<any> {
 
-        try {
-
-            const config: AxiosRequestConfig = {
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: 'Bearer ' + token
-                }
-            }
-
-            return axios.post(this.appealsApiUrl + '/companies/' + companyId + '/appeals', appealData, config);
-
-        } catch (e) {
-
-            console.log(e);
-
+        if (token == null) {
+            throw new Error('Token is missing');
         }
 
-    }
+        const config: AxiosRequestConfig = {
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'Bearer ' + token
+            }
+        }
 
+        const uri: string = `${this.appealsApiUrl}/companies/${companyId}/appeals`;
+
+        console.log('Making a POST request to ' + uri);
+
+        return await axios
+            .post(uri, appealData, config)
+            .then(response => {
+                console.log(response.data)
+                return response.data
+            })
+            .catch(err => {
+                throw err
+            });
+    }
 }
