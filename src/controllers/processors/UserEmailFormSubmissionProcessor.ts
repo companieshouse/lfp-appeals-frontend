@@ -1,4 +1,3 @@
-import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -11,6 +10,22 @@ import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
+function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
+    return {
+        to: userProfile.email as string,
+        subject: `Confirmation of your appeal - ${appeal.penaltyIdentifier.companyNumber} - Companies House`,
+        body: {
+            templateName: 'lfp-appeal-submission-confirmation',
+            templateData: {
+                companyNumber: appeal.penaltyIdentifier.companyNumber,
+                userProfile: {
+                    email: userProfile.email
+                }
+            }
+        }
+    };
+}
+
 @provide(UserEmailFormSubmissionProcessor)
 export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor {
     constructor(@inject(EmailService) private readonly emailService: EmailService) {}
@@ -19,29 +34,13 @@ export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor
         const userProfile = req.session
             .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map(info => info[SignInInfoKeys.UserProfile])
-            .orDefault({});
+            .unsafeCoerce() as IUserProfile;
 
-        const appealsData = req.session
+        const appeal = req.session
             .chain(_ => _.getExtraData())
-            .chain(data => Maybe.fromNullable(data[APPEALS_KEY]))
-            .orDefault({});
+            .map(data => data[APPEALS_KEY] as Appeal)
+            .unsafeCoerce();
 
-        await this.emailService.send(this.buildEmail(userProfile as IUserProfile, appealsData));
-    }
-
-    private buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
-        return {
-            to: userProfile?.email as string,
-            subject: `Confirmation of your appeal - ${appeal.penaltyIdentifier.companyNumber} - Companies House`,
-            body: {
-                templateName: 'lfp-appeal-submission-confirmation',
-                templateData: {
-                    companyNumber: appeal.penaltyIdentifier.companyNumber,
-                    userProfile: {
-                        email: userProfile?.email
-                    }
-                }
-            }
-        };
+        await this.emailService.send(buildEmail(userProfile, appeal));
     }
 }
