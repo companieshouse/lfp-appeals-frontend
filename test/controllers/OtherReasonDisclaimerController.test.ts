@@ -14,8 +14,16 @@ const config = getDefaultConfig();
 
 describe('OtherReasonDisclaimerController', () => {
 
-    const session = createFakeSession([], config.cookieSecret, true);
+    const applicationData = {
+        navigation: {
+            permissions: [OTHER_REASON_DISCLAIMER_PAGE_URI]
+        }
+    };
+
+    const session = createFakeSession([], config.cookieSecret, true)
+        .saveExtraData('appeals', applicationData);
     const app = createApp(session);
+
 
     describe('GET request', () => {
         it('should return 200 when trying to access the other-reason-entry page', async () => {

@@ -70,6 +70,8 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                 navigation: {}
             } as ApplicationData);
 
+        console.log(applicationData);
+
         if(applicationData.navigation.permissions === undefined) {
             console.log('Start of journey');
             if(this.httpContext.request.url !== PENALTY_DETAILS_PAGE_URI){
@@ -77,7 +79,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
             }
         } else {
             const permissions = applicationData.navigation.permissions;
-            if (!permissions.includes(this.httpContext.request.url)) {
+            if (!applicationData.navigation.permissions.includes(this.httpContext.request.url)) {
                 console.log('Redirecting, No pass to enter: ', this.httpContext.request.url);
                 return this.httpContext.response.redirect(permissions[permissions.length - 1]);
             }
