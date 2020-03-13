@@ -19,7 +19,7 @@ export class AppealStorageService {
                 Accept: 'application/json',
                 Authorization: 'Bearer ' + token
             }
-        }
+        };
 
         const uri: string = `${this.appealsApiUrl}/companies/${appealData.penaltyIdentifier.companyNumber}/appeals`;
 
@@ -28,11 +28,8 @@ export class AppealStorageService {
         return await axios
             .post(uri, appealData, config)
             .then(response => {
-                console.log(response.data)
-                return response.data
-            })
-            .catch(err => {
-                throw err
+                console.log(response.data);
+                return response.data;
             });
     }
 }
