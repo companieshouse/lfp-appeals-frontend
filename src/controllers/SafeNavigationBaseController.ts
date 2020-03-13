@@ -10,7 +10,7 @@ import {
     FormSubmissionProcessor,
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
-import { AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -23,18 +23,16 @@ class InternalProcessor implements FormSubmissionProcessor {
 
     async process(request: RequestWithNavigation): Promise<void> {
         const session = request.session.unsafeCoerce();
-        const appealExtraData: AppealExtraData = session.getExtraData()
-            .map<AppealExtraData>(data => data[APPEALS_KEY])
-            .orDefault({} as AppealExtraData);
+        const applicationData: ApplicationData = session.getExtraData()
+            .map<ApplicationData>(data => data[APPEALS_KEY])
+            .orDefault({} as ApplicationData);
 
-        console.log(appealExtraData);
-
-        const visitedPages = appealExtraData?.navigation?.visitedPages || [];
+        const permissions = applicationData?.navigation?.permissions || [];
         const page = request.navigation.next(request);
 
-        if (!visitedPages.includes(page)) {
-            console.log('Updating page passes');
-            session.saveExtraData(APPEALS_KEY, this.updateSessionNavigationWithPagePass(appealExtraData, page));
+        if (!permissions.includes(page)) {
+            console.log('Updating page permissions');
+            session.saveExtraData(APPEALS_KEY, this.updateNavigationPermissions(applicationData, page));
         }
 
         await this.sessionStore
@@ -42,11 +40,11 @@ class InternalProcessor implements FormSubmissionProcessor {
             .run();
     }
 
-    private updateSessionNavigationWithPagePass(appealExtraData: AppealExtraData, pagePass: string): AppealExtraData {
+    private updateNavigationPermissions(appealExtraData: ApplicationData, page: string): ApplicationData {
         return {
             ...appealExtraData,
             navigation: {
-                visitedPages: [...appealExtraData?.navigation?.visitedPages || [], pagePass]
+                permissions: [...appealExtraData?.navigation?.permissions || [], page]
             }
         };
     }
@@ -66,27 +64,22 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
 
     async onGet(): Promise<void> {
         const session = this.httpContext.request.session.unsafeCoerce();
-        const appealsExtraData = session.getExtraData()
-            .map<AppealExtraData>(data => data[APPEALS_KEY])
+        const applicationData = session.getExtraData()
+            .map<ApplicationData>(data => data[APPEALS_KEY])
             .orDefault({
                 navigation: {}
-            } as AppealExtraData);
+            } as ApplicationData);
 
-        console.log(appealsExtraData);
-
-        // Check if session navigation is undefined (beginning of journey)
-        if(appealsExtraData.navigation.visitedPages === undefined){
+        if(applicationData.navigation.permissions === undefined) {
             console.log('Start of journey');
             if(this.httpContext.request.url !== PENALTY_DETAILS_PAGE_URI){
                 return this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
             }
-        }else{
-            const visitedPages = appealsExtraData.navigation.visitedPages;
-            console.log(visitedPages);
-            if (!visitedPages.includes(this.httpContext.request.url)) {
-                console.log('No pass to enter: ', this.httpContext.request.url);
-                console.log('Redirecting');
-                return this.httpContext.response.redirect(visitedPages[visitedPages.length - 1]);
+        } else {
+            const permissions = applicationData.navigation.permissions;
+            if (!permissions.includes(this.httpContext.request.url)) {
+                console.log('Redirecting, No pass to enter: ', this.httpContext.request.url);
+                return this.httpContext.response.redirect(permissions[permissions.length - 1]);
             }
         }
 

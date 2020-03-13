@@ -9,12 +9,10 @@ export interface Appeal {
 }
 
 export interface Navigation{
-    visitedPages: string[];
+    permissions: string[];
 }
 
-export interface AppealExtraData{
+export interface ApplicationData{
     appeal: Appeal;
     navigation: Navigation
 }
-
-// A note to damian: The naming is temporary, I will think of something better

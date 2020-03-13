@@ -7,7 +7,7 @@ import { controller, httpGet } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
 import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
@@ -18,7 +18,7 @@ export class ConfirmationController extends BaseAsyncHttpController {
 
         const companyNumber = req.session
             .chain(_ => _.getExtraData())
-            .chainNullable<AppealExtraData>(data => data[APPEALS_KEY])
+            .chainNullable<ApplicationData>(data => data[APPEALS_KEY])
             .chainNullable(appealExtraData => appealExtraData.appeal.penaltyIdentifier)
             .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
             .extract();

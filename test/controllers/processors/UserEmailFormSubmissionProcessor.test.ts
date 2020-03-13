@@ -9,7 +9,7 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { Request } from 'express';
 
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
-import { Appeal, AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal, ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -48,7 +48,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
                                     companyNumber: '00345567'
                                 }
                             } as Appeal
-                        } as AppealExtraData
+                        } as ApplicationData
                     }
                 })
             )

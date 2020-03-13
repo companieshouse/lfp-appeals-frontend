@@ -5,7 +5,7 @@ import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
-import { Appeal, AppealExtraData, APPEALS_KEY, Navigation } from 'app/models/Appeal';
+import { Appeal, ApplicationData, APPEALS_KEY, Navigation } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
@@ -30,15 +30,15 @@ describe('PenaltyDetailsController', () => {
             }
         } as Appeal;
 
-        const appealExtraData = {
+        const applicationData = {
             appeal,
             navigation
-        } as AppealExtraData;
+        } as ApplicationData;
 
         it('should return 200 when trying to access page with a session', async () => {
 
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData(APPEALS_KEY, appealExtraData);
+                .saveExtraData(APPEALS_KEY, applicationData);
             const app = createApp(session);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
@@ -80,8 +80,6 @@ describe('PenaltyDetailsController', () => {
                 penaltyReference: '',
                 companyNumber: 'SC123123'
             };
-
-
 
             const session = createFakeSession([], config.cookieSecret, true);
             const app = createApp(session);

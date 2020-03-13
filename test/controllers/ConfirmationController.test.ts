@@ -5,7 +5,7 @@ import { OK } from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/ConfirmationController';
-import { Appeal, Navigation } from 'app/models/Appeal';
+import { Appeal, ApplicationData, Navigation } from 'app/models/Appeal';
 import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
@@ -16,7 +16,7 @@ const config = getDefaultConfig();
 describe('ConfirmationController', () => {
 
     const navigation = {
-        visitedPages: [CONFIRMATION_PAGE_URI]
+        permissions: [CONFIRMATION_PAGE_URI]
     } as Navigation;
 
     describe('GET request', () => {
@@ -27,13 +27,13 @@ describe('ConfirmationController', () => {
             },
         } as Appeal;
 
-        const appealExtraData = {
+        const applicationData = {
             appeal,
             navigation
-        };
+        } as ApplicationData;
 
         let session = createFakeSession([], config.cookieSecret, true);
-        session = session.saveExtraData('appeals', appealExtraData);
+        session = session.saveExtraData('appeals', applicationData);
         const app = createApp(session);
 
         it('should return 200 when trying to access page', async () => {
