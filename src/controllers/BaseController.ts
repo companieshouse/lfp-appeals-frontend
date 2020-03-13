@@ -6,19 +6,18 @@ import { unmanaged } from 'inversify';
 import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { Appeal, AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T
-type FormSubmissionProcessorConstructor = new (...args:any[]) => FormSubmissionProcessor
 
 const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
     return new Proxy(step, {
-        get (target: Navigation, propertyName: 'previous' | 'next'): any {
+        get(target: Navigation, propertyName: 'previous' | 'next'): any {
             return (req: Request) => {
                 if (req.query.cm === '1') {
                     return CHECK_YOUR_APPEAL_PAGE_URI;
@@ -41,9 +40,6 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
 
     @httpGet('')
     public async onGet(): Promise<void> {
-        // check page passes in session and:
-        // 1. pass through if user holds pass for URI extracted from `this.httpContext.request`
-        // 2. redirect to page representing last received pass
         return await this.render(
             this.template,
             {
@@ -54,12 +50,12 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
-        const appeal: Appeal = session
+        const appealExtraData: AppealExtraData = session
             .getExtraData()
-            .chain<Appeal>(data => Maybe.fromNullable(data[APPEALS_KEY]))
-            .orDefault({} as Appeal);
+            .chain<AppealExtraData>(data => Maybe.fromNullable(data[APPEALS_KEY]))
+            .orDefault({} as AppealExtraData);
 
-        return this.prepareViewModelFromAppeal(appeal)
+        return this.prepareViewModelFromAppeal(appealExtraData.appeal || {})
     }
 
     @httpPost('')
@@ -80,14 +76,12 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
         }
 
         if (this.formSanitizeFunction != null) {
-            this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body)
+            this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body);
         }
-
-        // Create page pass out of `this.navigation.next(this.httpContext.request)` and store it in session
 
         if (this.formSubmissionProcessors != null) {
             for (const processorType of this.formSubmissionProcessors) {
-                const processor= this.httpContext.container.get(processorType);
+                const processor = this.httpContext.container.get(processorType);
                 await processor.process(this.httpContext.request);
             }
         }

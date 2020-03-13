@@ -6,7 +6,7 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal, AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
@@ -36,11 +36,11 @@ export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor
             .map(info => info[SignInInfoKeys.UserProfile])
             .unsafeCoerce() as IUserProfile;
 
-        const appeal = req.session
+        const appealExtraData: AppealExtraData = req.session
             .chain(_ => _.getExtraData())
-            .map(data => data[APPEALS_KEY] as Appeal)
+            .map(data => data[APPEALS_KEY] as AppealExtraData)
             .unsafeCoerce();
 
-        await this.emailService.send(buildEmail(userProfile, appeal));
+        await this.emailService.send(buildEmail(userProfile, appealExtraData.appeal));
     }
 }
