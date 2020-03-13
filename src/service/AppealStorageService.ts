@@ -1,13 +1,14 @@
 import axios, { AxiosRequestConfig } from 'axios';
+
 import { Appeal } from 'app/models/Appeal';
 
-export class AppealSubmissionService {
+export class AppealStorageService {
 
     constructor(private readonly appealsApiUrl: string) {
         this.appealsApiUrl = appealsApiUrl;
     }
 
-    public async submitAppeal(appealData: Appeal, companyId: string, token: string): Promise<any> {
+    public async store(appealData: Appeal, companyId: string, token: string): Promise<any> {
 
         if (token == null) {
             throw new Error('Token is missing');

@@ -1,9 +1,19 @@
 {% extends 'layout.njk' %}
 
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
 {% from 'govuk/components/button/macro.njk' import govukButton %}
 
 {% block pageTitle %}
   Unlikely appeal examples
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
 {% endblock %}
 
 {% block content %}
@@ -23,14 +33,14 @@
           <li>another director is responsible for preparing the accounts</li>
         </ul>
         <form method="post">
-          {{ 
+          {{
             govukButton({
               text: 'Continue with appeal',
               classes: 'govuk-link govuk-!-margin-top-5 govuk-link--interrupt',
               attributes: {
                 id: 'submit'
               }
-            }) 
+            })
           }}
         </form>
   </div>

@@ -8,7 +8,7 @@ import * as util from 'util'
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
-import { AppealSubmissionService } from 'app/service/AppealSubmissionService';
+import { AppealStorageService } from 'app/service/AppealStorageService';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 function initiateKafkaClient (): kafka.KafkaClient {
@@ -44,7 +44,7 @@ export function createContainer(): Container {
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
 
-    container.bind(AppealSubmissionService).toConstantValue(new AppealSubmissionService(getEnvOrDefault('APPEALS_API_URL')));
+    container.bind(AppealStorageService).toConstantValue(new AppealStorageService(getEnvOrDefault('APPEALS_API_URL')));
 
     container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
         // tslint:disable-next-line: new-parens

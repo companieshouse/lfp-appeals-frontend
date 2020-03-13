@@ -1,91 +1,55 @@
-import { Maybe, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { Request } from 'express';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { inject } from 'inversify';
-import { controller, httpGet, httpPost, BaseHttpController } from 'inversify-express-utils';
+import { provide } from 'inversify-binding-decorators';
+import { controller } from 'inversify-express-utils';
 
+import { BaseController } from 'app/controllers/BaseController';
+import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
 import { OtherReason } from 'app/models/OtherReason';
-import { schema } from 'app/models/OtherReason.schema';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
-import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { schema as formSchema } from 'app/models/OtherReason.schema';
+import {
+    CHECK_YOUR_APPEAL_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    OTHER_REASON_PAGE_URI
+} from 'app/utils/Paths';
 
+const template = 'other-reason';
+
+const navigation = {
+    previous(): string {
+        return OTHER_REASON_DISCLAIMER_PAGE_URI;
+    },
+    next(): string {
+        return CHECK_YOUR_APPEAL_PAGE_URI;
+    }
+};
+
+@provide(FormSubmissionProcessor)
+class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<OtherReason> {
+    constructor(@inject(SessionStore) sessionStore: SessionStore) {
+        super(sessionStore);
+    }
+
+    protected prepareModelPriorSessionSave(appeal: Appeal, value: OtherReason): Appeal {
+        return {
+            ...appeal,
+            reasons: {
+                other: value
+            }
+        };
+    }
+}
+
+// tslint:disable-next-line: max-classes-per-file
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class OtherReasonController extends BaseHttpController {
-    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {
-        super();
+export class OtherReasonController extends BaseController<OtherReason> {
+    constructor() {
+        super(template, navigation, formSchema, undefined, [FormSubmissionProcessor]);
     }
 
-    @httpGet('')
-    public async renderForm(req: Request): Promise<void> {
-        const data = req.session
-            .chain(session => session.getExtraData())
-            .chainNullable(extraData => extraData[APPEALS_KEY])
-            .chainNullable(appeal => appeal.reasons)
-            .chainNullable(reasons => reasons.other);
-
-        return await this.render(OK, data.orDefault({}));
-
-    }
-
-    @httpPost('')
-    public async handleFormSubmission(req: Request): Promise<any> {
-        const body: OtherReason = req.body;
-
-        const validationResult: ValidationResult = new SchemaValidator(schema).validate(body);
-        const valid = validationResult.errors.length === 0;
-
-        if (valid) {
-
-            const session = req.session.unsafeCoerce();
-            const extraData = session.getExtraData();
-
-            const appeals = (data: any) => Maybe.fromNullable(data[APPEALS_KEY])
-                .mapOrDefault<Appeal>(
-                    appeal => {
-                        if (!appeal.reasons) {
-                            appeal.reasons = {};
-                        }
-                        return appeal;
-                    },
-                    {
-                        reasons: {}
-                    } as Appeal
-                );
-
-            const appealsObj = extraData
-                .chainNullable<Appeal>(appeals)
-                .mapOrDefault(appeal => {
-                    appeal.reasons.other = body;
-                    return appeal;
-                }, {} as Appeal);
-
-            session.saveExtraData(APPEALS_KEY, appealsObj);
-
-            await this.sessionStore
-                .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
-                .run();
-        }
-
-        if (valid) {
-            return this.redirect(CHECK_YOUR_APPEAL_PAGE_URI).executeAsync();
-        }
-
-        return this.render(UNPROCESSABLE_ENTITY, { ...body, validationResult });
-    }
-
-    private async render(status: number, data: object): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.httpContext.response.status(status).render('other-reason', data, (err, compiled) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(compiled as any);
-            });
-        });
+    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
+        return appeal.reasons?.other;
     }
 }

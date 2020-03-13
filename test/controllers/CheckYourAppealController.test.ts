@@ -7,8 +7,8 @@ import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
+import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { AppealSubmissionService } from 'app/service/AppealSubmissionService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
@@ -30,8 +30,6 @@ const appeal = {
     }
 } as Appeal;
 
-const token: string = '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
-
 describe('CheckYourAppealController', () => {
     describe('GET request', () => {
         it('should return 200 with populated session data', async () => {
@@ -48,7 +46,6 @@ describe('CheckYourAppealController', () => {
                         .to.contain('test').and
                         .to.contain(appeal.reasons.other.title).and
                         .to.contain(appeal.reasons.other.description)
-
                 });
         });
 
@@ -64,24 +61,36 @@ describe('CheckYourAppealController', () => {
     });
 
     describe('POST request', () => {
-
         const session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData('appeals', appeal);
 
-        const emailService = createSubstituteOf<EmailService>(service => {
-            service.send(Arg.any()).returns(Promise.resolve());
-        });
+        it('should send email with appeal to internal team and submission confirmation to user', async () => {
+            const emailService = createSubstituteOf<EmailService>(service => {
+                service.send(Arg.any()).returns(Promise.resolve());
+            });
 
-        const appealSubmissionService = createSubstituteOf<AppealSubmissionService>(service => {
-            service.submitAppeal(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
-        });
+            const app = createApp(session, container => {
+                container.rebind(EmailService).toConstantValue(emailService);
+            });
 
-        let app = createApp(session, container => {
-            container.rebind(EmailService).toConstantValue(emailService);
-            container.rebind(AppealSubmissionService).toConstantValue(appealSubmissionService);
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+            emailService.received().send(Arg.is((email: Email) => {
+                return email.to === 'appeals.ch.fake+DEFAULT@gmail.com'
+                    && email.body.templateName === 'lfp-appeal-submission-internal';
+            }));
+            emailService.received().send(Arg.is((email: Email) => {
+                return email.to === 'test'
+                    && email.body.templateName === 'lfp-appeal-submission-confirmation';
+            }));
         });
 
         it('should redirect to confirmation page when email sending succeeded', async () => {
+            const app = createApp(session, container => {
+                container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
+                    service.send(Arg.any()).returns(Promise.resolve());
+                }));
+            });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
@@ -90,17 +99,36 @@ describe('CheckYourAppealController', () => {
                 })
         });
 
-        it('should render error when email sending failed', async () => {
-            app = createApp(session, container => {
-                container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
-                    service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
-                }));
+        it('should not send email to user and render error when internal email did not send', async () => {
+            const emailService = createSubstituteOf<EmailService>(service => {
+                service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
+            });
+            const app = createApp(session, container => {
+                container.rebind(EmailService).toConstantValue(emailService);
+            });
 
-                container.rebind(AppealSubmissionService)
-                    .toConstantValue(createSubstituteOf<AppealSubmissionService>(service => {
-                    service.submitAppeal(Arg.any(), Arg.any(), Arg.any())
-                        .returns(Promise.reject(Error('Unexpected error')));
-                }));
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                });
+
+            emailService.didNotReceive().send(Arg.is((email: Email) => {
+                return email.body.templateName === 'lfp-appeal-submission-confirmation';
+            }));
+        });
+
+        it('should render error when only user email did not send', async () => {
+            const emailService = createSubstituteOf<EmailService>(service => {
+                service.send(Arg.is((email: Email) => {
+                    return email.body.templateName === 'lfp-appeal-submission-internal';
+                })).returns(Promise.resolve());
+                service.send(Arg.is((email: Email) => {
+                    return email.body.templateName === 'lfp-appeal-submission-confirmation';
+                })).returns(Promise.reject(Error('Unexpected error')));
+            });
+
+            const app = createApp(session, container => {
+                container.rebind(EmailService).toConstantValue(emailService);
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -109,52 +137,5 @@ describe('CheckYourAppealController', () => {
                 })
         });
 
-        it('should send confirmation email', async () => {
-
-            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
-
-            emailService.received().send({
-                to: 'test',
-                subject: 'Confirmation of your appeal - 00345567 - Companies House',
-                body: {
-                    templateName: 'lfp-appeal-submission-confirmation',
-                    templateData: {
-                        companyNumber: '00345567',
-                        userProfile: {
-                            email: 'test'
-                        }
-                    }
-                }
-            });
-        });
-
-        it('should render error when submission of appeal failed', async () => {
-
-            app = createApp(session, container => {
-
-                container.rebind(AppealSubmissionService)
-                    .toConstantValue(createSubstituteOf<AppealSubmissionService>(service => {
-                        service.submitAppeal(Arg.any(), Arg.any(), Arg.any())
-                            .returns(Promise.reject(Error('Unexpected error')));
-                    }));
-
-                container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
-                    service.send(Arg.any()).returns(Promise.resolve());
-                }));
-            });
-
-            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
-                .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
-                })
-        })
-
-        it('should submit appeal', async () => {
-
-            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
-
-            appealSubmissionService.received().submitAppeal(appeal, appeal.penaltyIdentifier.companyNumber, token);
-
-        })
     })
 });

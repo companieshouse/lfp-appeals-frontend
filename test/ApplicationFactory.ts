@@ -3,11 +3,12 @@ import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-s
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
+import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { AppealSubmissionService } from 'app/service/AppealSubmissionService';
+import { AppealStorageService } from 'app/service/AppealStorageService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
@@ -16,6 +17,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 
     loadEnvironmentVariablesFromFiles();
     const container = new Container();
+    container.load(buildProviderModule());
     configureBindings(container);
     return ApplicationFactory.createInstance(container);
 };
@@ -54,7 +56,7 @@ export const createApp = (session?: Session, configureBindings: (container: Cont
         container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
         container.bind(SessionMiddleware).toConstantValue(sessionHandler);
         container.bind(SessionStore).toConstantValue(sessionStore);
-        container.bind(AppealSubmissionService).toConstantValue(Substitute.for<AppealSubmissionService>());
+        container.bind(AppealStorageService).toConstantValue(Substitute.for<AppealStorageService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
 
         configureBindings(container);
