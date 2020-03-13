@@ -78,6 +78,9 @@ describe('Authentication Middleware', () => {
             const unAuthedSession = createFakeSession([], config.cookieSecret, false);
 
             const mockRequest = {
+                headers: {
+                    host: 'localhost'
+                },
                 session: Maybe.of(unAuthedSession)
             } as Request;
             const mockResponse = Substitute.for<Response>();
