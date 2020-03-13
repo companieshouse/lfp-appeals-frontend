@@ -6,10 +6,10 @@ import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes'
 import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
-import { Appeal } from 'app/models/Appeal';
+import { Appeal, AppealExtraData, Navigation } from 'app/models/Appeal';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory'
@@ -31,10 +31,19 @@ const appeal = {
 } as Appeal;
 
 describe('CheckYourAppealController', () => {
+    const navigation = {
+        visitedPages: [CHECK_YOUR_APPEAL_PAGE_URI]
+    } as Navigation;
+
     describe('GET request', () => {
         it('should return 200 with populated session data', async () => {
+            const appealExtraData = {
+                appeal,
+                navigation
+            } as AppealExtraData;
+
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData('appeals', appeal);
+                .saveExtraData('appeals', appealExtraData);
             const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -50,7 +59,12 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should return 200 with no populated session data', async () => {
-            const session = createFakeSession([], config.cookieSecret, true);
+            const appealExtraData = {
+                navigation
+            } as AppealExtraData;
+
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', appealExtraData);
             const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -61,8 +75,14 @@ describe('CheckYourAppealController', () => {
     });
 
     describe('POST request', () => {
+
+        const appealExtraData = {
+            appeal,
+            navigation
+        } as AppealExtraData;
+
         const session = createFakeSession([], config.cookieSecret, true)
-            .saveExtraData('appeals', appeal);
+            .saveExtraData('appeals', appealExtraData);
 
         it('should send email with appeal to internal team and submission confirmation to user', async () => {
             const emailService = createSubstituteOf<EmailService>(service => {

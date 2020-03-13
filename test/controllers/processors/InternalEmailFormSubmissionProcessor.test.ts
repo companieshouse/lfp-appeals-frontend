@@ -9,7 +9,7 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { Request } from 'express';
 
 import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal, AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
@@ -52,16 +52,18 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         } as ISignInInfo,
                         [SessionKey.ExtraData]: {
                             [APPEALS_KEY]: {
-                                penaltyIdentifier: {
-                                    companyNumber
-                                },
-                                reasons: {
-                                    other: {
-                                        title: 'I have reasons',
-                                        description: 'They are legit'
+                                appeal: {
+                                    penaltyIdentifier: {
+                                        companyNumber
+                                    },
+                                    reasons: {
+                                        other: {
+                                            title: 'I have reasons',
+                                            description: 'They are legit'
+                                        }
                                     }
-                                }
-                            } as Appeal
+                                } as Appeal
+                            } as AppealExtraData
                         }
                     })
                 )

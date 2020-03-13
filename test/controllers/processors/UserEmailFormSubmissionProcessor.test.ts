@@ -9,7 +9,7 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { Request } from 'express';
 
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal, AppealExtraData, APPEALS_KEY } from 'app/models/Appeal';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -20,7 +20,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
 
         const processor = new UserEmailFormSubmissionProcessor(emailService);
         try {
-            await processor.process({ session: Maybe.empty() as Maybe<Session> } as Request);
+            await processor.process({session: Maybe.empty() as Maybe<Session>} as Request);
             assert.fail();
         } catch (err) {
             assert.equal(err.message, 'Maybe got coerced to a null');
@@ -43,10 +43,12 @@ describe('UserEmailFormSubmissionProcessor', () => {
                     } as ISignInInfo,
                     [SessionKey.ExtraData]: {
                         [APPEALS_KEY]: {
-                            penaltyIdentifier: {
-                                companyNumber: '00345567'
-                            }
-                        } as Appeal
+                            appeal: {
+                                penaltyIdentifier: {
+                                    companyNumber: '00345567'
+                                }
+                            } as Appeal
+                        } as AppealExtraData
                     }
                 })
             )
