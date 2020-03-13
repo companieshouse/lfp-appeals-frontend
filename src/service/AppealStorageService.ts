@@ -8,7 +8,7 @@ export class AppealStorageService {
         this.appealsApiUrl = appealsApiUrl;
     }
 
-    public async save(appealData: Appeal, companyId: string, token: string): Promise<any> {
+    public async save(appealData: Appeal, token: string): Promise<any> {
 
         if (token == null) {
             throw new Error('Token is missing');
@@ -21,7 +21,7 @@ export class AppealStorageService {
             }
         }
 
-        const uri: string = `${this.appealsApiUrl}/companies/${companyId}/appeals`;
+        const uri: string = `${this.appealsApiUrl}/companies/${appealData.penaltyIdentifier.companyNumber}/appeals`;
 
         console.log('Making a POST request to ' + uri);
 
