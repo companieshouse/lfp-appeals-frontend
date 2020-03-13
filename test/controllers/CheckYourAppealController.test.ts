@@ -1,19 +1,20 @@
 import 'reflect-metadata';
 
-import { Arg } from '@fluffy-spoon/substitute'
-import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import {Arg} from '@fluffy-spoon/substitute'
+import {expect} from 'chai';
+import {INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK} from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
-import { Appeal } from 'app/models/Appeal';
-import { Email } from 'app/modules/email-publisher/Email';
-import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import {Appeal} from 'app/models/Appeal';
+import {Email} from 'app/modules/email-publisher/Email';
+import {EmailService} from 'app/modules/email-publisher/EmailService'
+import {AppealStorageService} from 'app/service/AppealStorageService';
+import {CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createSubstituteOf } from 'test/SubstituteFactory'
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import {createApp, getDefaultConfig} from 'test/ApplicationFactory';
+import {createSubstituteOf} from 'test/SubstituteFactory'
+import {createFakeSession} from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
 
@@ -137,5 +138,40 @@ describe('CheckYourAppealController', () => {
                 })
         });
 
+        it('should render error when appeal storage failed', async () => {
+
+            const app = createApp(session, container => {
+
+                container.rebind(AppealStorageService)
+                    .toConstantValue(createSubstituteOf<AppealStorageService>(service => {
+                        service.store(Arg.any(), Arg.any(), Arg.any())
+                            .returns(Promise.reject(Error('Unexpected error')));
+                    }));
+            });
+
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                })
+        });
+
+        it('should store appeal', async () => {
+
+            const token: string =
+                '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
+
+            const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
+                service.store(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
+            })
+
+            const app = createApp(session, container => {
+                container.rebind(AppealStorageService).toConstantValue(appealStorageService);
+            });
+
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+            appealStorageService.received().store(appeal, appeal.penaltyIdentifier.companyNumber, token);
+
+        });
     })
 });
