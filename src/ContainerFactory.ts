@@ -43,8 +43,7 @@ export function createContainer(): Container {
     container.bind(SessionStore).toConstantValue(sessionStore);
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
-
-    container.bind(AppealStorageService).toConstantValue(new AppealStorageService(getEnvOrDefault('APPEALS_API_URL')));
+    container.bind(AppealStorageService).toConstantValue(new AppealStorageService());
 
     container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
         // tslint:disable-next-line: new-parens

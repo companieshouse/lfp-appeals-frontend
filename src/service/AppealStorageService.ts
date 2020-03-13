@@ -1,12 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { Appeal } from 'app/models/Appeal';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 export class AppealStorageService {
-
-    constructor(private readonly appealsApiUrl: string) {
-        this.appealsApiUrl = appealsApiUrl;
-    }
 
     public async save(appealData: Appeal, token: string): Promise<any> {
 
@@ -21,7 +18,9 @@ export class AppealStorageService {
             }
         };
 
-        const uri: string = `${this.appealsApiUrl}/companies/${appealData.penaltyIdentifier.companyNumber}/appeals`;
+        const apiUri = getEnvOrDefault(`APPEALS_API_URL`);
+
+        const uri: string = apiUri + '/companies/' + `${appealData.penaltyIdentifier.companyNumber}` + '/appeals';
 
         console.log('Making a POST request to ' + uri);
 
