@@ -144,7 +144,7 @@ describe('CheckYourAppealController', () => {
 
                 container.rebind(AppealStorageService)
                     .toConstantValue(createSubstituteOf<AppealStorageService>(service => {
-                        service.store(Arg.any(), Arg.any(), Arg.any())
+                        service.save(Arg.any(), Arg.any(), Arg.any())
                             .returns(Promise.reject(Error('Unexpected error')));
                     }));
             });
@@ -161,7 +161,7 @@ describe('CheckYourAppealController', () => {
                 '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
 
             const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
-                service.store(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
+                service.save(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve());
             })
 
             const app = createApp(session, container => {
@@ -170,7 +170,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
-            appealStorageService.received().store(appeal, appeal.penaltyIdentifier.companyNumber, token);
+            appealStorageService.received().save(appeal, appeal.penaltyIdentifier.companyNumber, token);
 
         });
     })

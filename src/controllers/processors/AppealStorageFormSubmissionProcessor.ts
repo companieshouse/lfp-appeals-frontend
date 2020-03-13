@@ -28,6 +28,6 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
             .map(data => data[APPEALS_KEY] as Appeal)
             .unsafeCoerce();
 
-        await this.appealStorageService.store(appeal, appeal.penaltyIdentifier.companyNumber, accessToken);
+        await this.appealStorageService.save(appeal, appeal.penaltyIdentifier.companyNumber, accessToken);
     }
 }

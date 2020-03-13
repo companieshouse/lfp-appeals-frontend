@@ -8,7 +8,7 @@ export class AppealStorageService {
         this.appealsApiUrl = appealsApiUrl;
     }
 
-    public async store(appealData: Appeal, companyId: string, token: string): Promise<any> {
+    public async save(appealData: Appeal, companyId: string, token: string): Promise<any> {
 
         if (token == null) {
             throw new Error('Token is missing');

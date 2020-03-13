@@ -44,7 +44,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
             assert.equal(err.message, 'Maybe got coerced to a null');
         }
 
-        appealStorageService.didNotReceive().store(Arg.any(), Arg.any(), Arg.any());
+        appealStorageService.didNotReceive().save(Arg.any(), Arg.any(), Arg.any());
     });
 
     it('should store appeal', async () => {
@@ -65,6 +65,6 @@ describe('AppealStorageForSubmissionProcessor', () => {
             )
         } as Request);
 
-        appealStorageService.received().store(appeal, appeal.penaltyIdentifier.companyNumber, token);
+        appealStorageService.received().save(appeal, appeal.penaltyIdentifier.companyNumber, token);
     })
 });
