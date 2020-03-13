@@ -7,6 +7,9 @@ import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissi
 import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
+const sessionCookieSecret = getEnvOrDefault('COOKIE_SECRET');
+const sessionTimeToLiveInSeconds = parseInt(getEnvOrDefault('DEFAULT_SESSION_EXPIRATION'), 10);
+
 @injectable()
 export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements FormSubmissionProcessor {
     protected constructor(@unmanaged() readonly sessionStore: SessionStore) {}
@@ -23,7 +26,7 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
         session.saveExtraData(APPEALS_KEY, this.prepareModelPriorSessionSave(appeal, value));
 
         await this.sessionStore
-            .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+            .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
             .run();
     }
 
