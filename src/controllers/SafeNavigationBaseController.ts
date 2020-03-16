@@ -10,15 +10,15 @@ import {
     FormSubmissionProcessor,
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
-import { ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 type RequestWithNavigation = Request & { navigation: Navigation }
 
-@provide(InternalProcessor)
-class InternalProcessor implements FormSubmissionProcessor {
+@provide(Processor)
+class Processor implements FormSubmissionProcessor {
     constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {}
 
     async process(request: RequestWithNavigation): Promise<void> {
@@ -31,7 +31,6 @@ class InternalProcessor implements FormSubmissionProcessor {
         const page = request.navigation.next(request);
 
         if (!permissions.includes(page)) {
-            console.log('Updating page permissions');
             session.saveExtraData(APPEALS_KEY, this.updateNavigationPermissions(applicationData, page));
         }
 
@@ -40,11 +39,11 @@ class InternalProcessor implements FormSubmissionProcessor {
             .run();
     }
 
-    private updateNavigationPermissions(appealExtraData: ApplicationData, page: string): ApplicationData {
+    private updateNavigationPermissions(applicationData: ApplicationData, page: string): ApplicationData {
         return {
-            ...appealExtraData,
+            ...applicationData,
             navigation: {
-                permissions: [...appealExtraData?.navigation?.permissions || [], page]
+                permissions: [...applicationData?.navigation?.permissions || [], page]
             }
         };
     }
@@ -58,7 +57,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
         super(template, navigation, formSchema, formSanitizeFunction, [
-            ...formSubmissionProcessors || [], InternalProcessor
+            ...formSubmissionProcessors || [], Processor
         ]);
     }
 
@@ -70,22 +69,16 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                 navigation: {}
             } as ApplicationData);
 
-        console.log(applicationData);
-
-        if(applicationData.navigation.permissions === undefined) {
-            console.log('Start of journey');
-            if(this.httpContext.request.url !== PENALTY_DETAILS_PAGE_URI){
+        if (applicationData.navigation.permissions === undefined) {
+            if (this.httpContext.request.url !== PENALTY_DETAILS_PAGE_URI) {
                 return this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
             }
         } else {
             const permissions = applicationData.navigation.permissions;
             if (!applicationData.navigation.permissions.includes(this.httpContext.request.url)) {
-                console.log('Redirecting, No pass to enter: ', this.httpContext.request.url);
                 return this.httpContext.response.redirect(permissions[permissions.length - 1]);
             }
         }
-
-        console.log('welcome to: ', this.httpContext.request.url);
 
         return super.onGet();
     }

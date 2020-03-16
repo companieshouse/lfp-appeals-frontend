@@ -40,7 +40,7 @@ function createTestController(config: ControllerConfig): any {
     // tslint:disable-next-line:new-parens
     return new class extends BaseController<any> {
         constructor() {
-            super(template, navigation , config.formSchema, config.formSanitizeFn,
+            super(template, navigation, config.formSchema, config.formSanitizeFn,
                 config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
             this.httpContext = config.httpContext
