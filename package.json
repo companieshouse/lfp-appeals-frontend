@@ -21,7 +21,7 @@
     "@hapi/joi": "^17.1.1",
     "avsc": "^5.4.19",
     "body-parser": "^1.18.2",
-    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#refresh-session-ttl-upon-save",
+    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#aa2e12ad26fa5c513c4b84ffdea086cbc9ff3350",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.15.5",
