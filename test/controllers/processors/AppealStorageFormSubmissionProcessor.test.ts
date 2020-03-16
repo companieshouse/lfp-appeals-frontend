@@ -58,10 +58,9 @@ describe('AppealStorageForSubmissionProcessor', () => {
                             access_token: token
                         } as IAccessToken
                     } as ISignInInfo,
-
                     [SessionKey.ExtraData]: {
                         [APPLICATION_DATA_KEY]: {
-                            appeal: { appeal }
+                           appeal
                         }
                     }
                 })

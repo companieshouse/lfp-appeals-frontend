@@ -7,7 +7,7 @@ import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
-import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 
 @provide(AppealStorageFormSubmissionProcessor)
@@ -26,7 +26,7 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
 
         const appeal = req.session
             .chain(_ => _.getExtraData())
-            .map(extraData => extraData[APPLICATION_DATA_KEY])
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .map(data => data.appeal as Appeal)
             .unsafeCoerce();
 
