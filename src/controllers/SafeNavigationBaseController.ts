@@ -33,11 +33,11 @@ class InternalProcessor implements FormSubmissionProcessor {
         if (!permissions.includes(page)) {
             console.log('Updating page permissions');
             session.saveExtraData(APPEALS_KEY, this.updateNavigationPermissions(applicationData, page));
-        }
 
-        await this.sessionStore
-            .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
-            .run();
+            await this.sessionStore
+                .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+                .run();
+        }
     }
 
     private updateNavigationPermissions(appealExtraData: ApplicationData, page: string): ApplicationData {
