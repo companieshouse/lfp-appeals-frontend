@@ -10,7 +10,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
