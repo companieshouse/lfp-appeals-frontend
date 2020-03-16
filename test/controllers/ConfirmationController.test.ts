@@ -5,7 +5,7 @@ import { OK } from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/ConfirmationController';
-import { Appeal} from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
@@ -21,8 +21,7 @@ describe('ConfirmationController', () => {
         permissions: [CONFIRMATION_PAGE_URI]
     } as Navigation;
 
-    describe('GET r' +
-        'request', () => {
+    describe('GET request', () => {
 
         const appeal = {
             penaltyIdentifier: {
@@ -41,7 +40,6 @@ describe('ConfirmationController', () => {
 
 
         it('should return 200 when trying to access page', async () => {
-            console.log(session);
             await request(app).get(CONFIRMATION_PAGE_URI)
                 .expect(response => {
 

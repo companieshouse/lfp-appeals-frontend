@@ -6,7 +6,7 @@ import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes'
 import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
-import { Appeal} from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { Email } from 'app/modules/email-publisher/Email';

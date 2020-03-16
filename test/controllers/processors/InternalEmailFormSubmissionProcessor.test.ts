@@ -9,7 +9,7 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { Request } from 'express';
 
 import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
-import { Appeal} from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
