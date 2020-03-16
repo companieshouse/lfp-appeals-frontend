@@ -8,6 +8,9 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
+const sessionCookieSecret = getEnvOrDefault('COOKIE_SECRET');
+const sessionTimeToLiveInSeconds = parseInt(getEnvOrDefault('DEFAULT_SESSION_EXPIRATION'), 10);
+
 @injectable()
 export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements FormSubmissionProcessor {
     protected constructor(@unmanaged() readonly sessionStore: SessionStore) {}
@@ -29,7 +32,7 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
         });
 
         await this.sessionStore
-            .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+            .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
             .run();
     }
 
