@@ -101,7 +101,7 @@ describe('Safe navigation base controller', () => {
             createTestController({
                 httpContext: {
                     request: {
-                        url: '/intro',
+                        path: '/intro',
                         query: {},
                         session: Maybe.of(new Session({
                             [SessionKey.ExtraData]: {
