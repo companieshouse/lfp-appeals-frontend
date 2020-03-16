@@ -70,13 +70,15 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
             } as ApplicationData);
 
         if (applicationData.navigation.permissions === undefined) {
-            if (this.httpContext.request.url !== PENALTY_DETAILS_PAGE_URI) {
+            if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
                 return this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
             }
         } else {
             const permissions = applicationData.navigation.permissions;
-            if (!applicationData.navigation.permissions.includes(this.httpContext.request.url)) {
-                return this.httpContext.response.redirect(permissions[permissions.length - 1]);
+            if (!applicationData.navigation.permissions.includes(this.httpContext.request.path)) {
+                if(this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI){
+                    return this.httpContext.response.redirect(permissions[permissions.length - 1]);
+                }
             }
         }
 
