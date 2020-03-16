@@ -7,9 +7,11 @@ import * as request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
+import { ApplicationData } from 'app/models/ApplicationData';
+import { Navigation } from 'app/models/Navigation';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory'
@@ -31,10 +33,19 @@ const appeal = {
 } as Appeal;
 
 describe('CheckYourAppealController', () => {
+    const navigation = {
+        permissions: [CHECK_YOUR_APPEAL_PAGE_URI]
+    } as Navigation;
+
     describe('GET request', () => {
         it('should return 200 with populated session data', async () => {
+            const applicationData = {
+                appeal,
+                navigation
+            } as ApplicationData;
+
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData('appeals', appeal);
+                .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -50,7 +61,12 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should return 200 with no populated session data', async () => {
-            const session = createFakeSession([], config.cookieSecret, true);
+            const applicationData = {
+                navigation
+            } as ApplicationData;
+
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
@@ -61,8 +77,14 @@ describe('CheckYourAppealController', () => {
     });
 
     describe('POST request', () => {
+
+        const applicationData = {
+            appeal,
+            navigation
+        } as ApplicationData;
+
         const session = createFakeSession([], config.cookieSecret, true)
-            .saveExtraData('appeals', appeal);
+            .saveExtraData('appeals', applicationData);
 
         it('should send email with appeal to internal team and submission confirmation to user', async () => {
             const emailService = createSubstituteOf<EmailService>(service => {

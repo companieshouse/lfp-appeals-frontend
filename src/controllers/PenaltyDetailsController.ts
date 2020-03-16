@@ -3,7 +3,7 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
@@ -43,12 +43,13 @@ class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<Penal
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class PenaltyDetailsController extends BaseController<PenaltyIdentifier> {
+export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor() {
         super(template, navigation, formSchema, sanitizeForm, [FormSubmissionProcessor]);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
+
         return appeal.penaltyIdentifier;
     }
 }

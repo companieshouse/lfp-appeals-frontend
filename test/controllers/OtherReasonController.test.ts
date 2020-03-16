@@ -20,10 +20,17 @@ const config = getDefaultConfig();
 
 describe('OtherReasonController', () => {
 
+    const applicationData = {
+        navigation: {
+            permissions: [OTHER_REASON_PAGE_URI]
+        }
+    };
+
     describe('GET request', () => {
         it('should return 200 response', async () => {
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
             await request(app).get(OTHER_REASON_PAGE_URI)
