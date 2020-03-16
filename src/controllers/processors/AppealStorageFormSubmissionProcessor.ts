@@ -18,13 +18,16 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
 
     async process(req: Request): Promise<void> {
 
-        const userId = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .map(userProfile => userProfile?.id as string);
+        const signInInfo = req.session
+            .map(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .unsafeCoerce();
 
-        const accessToken = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+        const userId = signInInfo
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .map(userProfile => userProfile?.id as string)
+            .unsafeCoerce();
+
+        const accessToken = signInInfo
             .map(info => info[SignInInfoKeys.AccessToken])
             .map(token => token?.access_token as string)
             .unsafeCoerce();
