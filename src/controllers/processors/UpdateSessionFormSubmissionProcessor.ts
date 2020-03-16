@@ -5,7 +5,7 @@ import { injectable, unmanaged } from 'inversify';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 @injectable()
@@ -18,12 +18,12 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
 
     private async updateSession(session: Session, value: any): Promise<void> {
         const applicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPEALS_KEY])
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .orDefault({
                 appeal: {}
             } as ApplicationData);
 
-        session.saveExtraData(APPEALS_KEY, {
+        session.saveExtraData(APPLICATION_DATA_KEY, {
             ...applicationData,
             appeal: this.prepareModelPriorSessionSave(applicationData.appeal, value)
         });

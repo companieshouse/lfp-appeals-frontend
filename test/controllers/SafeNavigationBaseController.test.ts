@@ -10,7 +10,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -77,7 +77,7 @@ describe('Safe navigation base controller', () => {
                         url: '/summary',
                         session: Maybe.of(new Session({
                             [SessionKey.ExtraData]: {
-                                [APPEALS_KEY]: {
+                                [APPLICATION_DATA_KEY]: {
                                     navigation: {
                                         permissions: ['/intro']
                                     }
@@ -105,7 +105,7 @@ describe('Safe navigation base controller', () => {
                         query: {},
                         session: Maybe.of(new Session({
                             [SessionKey.ExtraData]: {
-                                [APPEALS_KEY]: {
+                                [APPLICATION_DATA_KEY]: {
                                     navigation: {
                                         permissions: ['/intro']
                                     }
@@ -153,7 +153,7 @@ describe('Safe navigation base controller', () => {
                 if (session == null) {
                     return true;
                 }
-                const applicationData = session[SessionKey.ExtraData][APPEALS_KEY] as ApplicationData;
+                const applicationData = session[SessionKey.ExtraData][APPLICATION_DATA_KEY] as ApplicationData;
                 return applicationData.navigation.permissions === ['/next'];
             }))
         });
@@ -175,7 +175,7 @@ describe('Safe navigation base controller', () => {
                         query: {},
                         session: Maybe.of(new Session({
                             [SessionKey.ExtraData]: {
-                                [APPEALS_KEY]: {
+                                [APPLICATION_DATA_KEY]: {
                                     navigation: {
                                         permissions: ['/next']
                                     }

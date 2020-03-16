@@ -8,7 +8,7 @@ import { httpGet, httpPost } from 'inversify-express-utils';
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
@@ -53,7 +53,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
         const applicationData: ApplicationData = session
             .getExtraData()
-            .chain<ApplicationData>(data => Maybe.fromNullable(data[APPEALS_KEY]))
+            .chain<ApplicationData>(data => Maybe.fromNullable(data[APPLICATION_DATA_KEY]))
             .orDefault({} as ApplicationData);
 
         return this.prepareViewModelFromAppeal(applicationData.appeal || {})

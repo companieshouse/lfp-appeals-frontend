@@ -9,7 +9,7 @@ import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 const template = 'confirmation';
@@ -33,7 +33,7 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
         const companyNumber = session
             .getExtraData()
-            .chainNullable<ApplicationData>(data => data[APPEALS_KEY])
+            .chainNullable<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .chainNullable(applicationData => applicationData.appeal.penaltyIdentifier)
             .map(penaltyIdentifier => penaltyIdentifier.companyNumber)
             .extract();

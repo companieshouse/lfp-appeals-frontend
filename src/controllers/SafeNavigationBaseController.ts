@@ -10,7 +10,7 @@ import {
     FormSubmissionProcessor,
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -24,14 +24,14 @@ class Processor implements FormSubmissionProcessor {
     async process(request: RequestWithNavigation): Promise<void> {
         const session = request.session.unsafeCoerce();
         const applicationData: ApplicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPEALS_KEY])
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .orDefault({} as ApplicationData);
 
         const permissions = applicationData?.navigation?.permissions || [];
         const page = request.navigation.next(request);
 
         if (!permissions.includes(page)) {
-            session.saveExtraData(APPEALS_KEY, this.updateNavigationPermissions(applicationData, page));
+            session.saveExtraData(APPLICATION_DATA_KEY, this.updateNavigationPermissions(applicationData, page));
 
             await this.sessionStore
                 .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
@@ -64,7 +64,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
     async onGet(): Promise<void> {
         const session = this.httpContext.request.session.unsafeCoerce();
         const applicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPEALS_KEY])
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .orDefault({
                 navigation: {}
             } as ApplicationData);

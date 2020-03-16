@@ -6,7 +6,7 @@ import * as request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
@@ -40,7 +40,7 @@ describe('PenaltyDetailsController', () => {
         it('should return 200 when trying to access page with a session', async () => {
 
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData(APPEALS_KEY, applicationData);
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
             const app = createApp(session);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
@@ -65,7 +65,7 @@ describe('PenaltyDetailsController', () => {
             } as Appeal;
 
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData(APPEALS_KEY, appeal);
+                .saveExtraData(APPLICATION_DATA_KEY, appeal);
             const app = createApp(session);
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)

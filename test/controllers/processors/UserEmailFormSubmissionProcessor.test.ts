@@ -10,7 +10,7 @@ import { Request } from 'express';
 
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -43,7 +43,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
                         } as IUserProfile
                     } as ISignInInfo,
                     [SessionKey.ExtraData]: {
-                        [APPEALS_KEY]: {
+                        [APPLICATION_DATA_KEY]: {
                             appeal: {
                                 penaltyIdentifier: {
                                     companyNumber: '00345567'

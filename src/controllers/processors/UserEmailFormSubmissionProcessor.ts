@@ -7,7 +7,7 @@ import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
@@ -39,7 +39,7 @@ export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor
 
         const applicationData: ApplicationData = req.session
             .chain(_ => _.getExtraData())
-            .map(data => data[APPEALS_KEY] as ApplicationData)
+            .map(data => data[APPLICATION_DATA_KEY] as ApplicationData)
             .unsafeCoerce();
 
         await this.emailService.send(buildEmail(userProfile, applicationData.appeal));
