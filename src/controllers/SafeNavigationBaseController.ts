@@ -15,7 +15,6 @@ import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-
 type RequestWithNavigation = Request & { navigation: Navigation }
 
 @provide(Processor)
