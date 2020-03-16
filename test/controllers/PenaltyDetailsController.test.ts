@@ -65,7 +65,7 @@ describe('PenaltyDetailsController', () => {
             } as Appeal;
 
             const session = createFakeSession([], config.cookieSecret, true)
-                .saveExtraData(APPLICATION_DATA_KEY, appeal);
+                .saveExtraData(APPLICATION_DATA_KEY, { appeal });
             const app = createApp(session);
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
