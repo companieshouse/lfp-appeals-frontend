@@ -3,7 +3,7 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
@@ -44,7 +44,7 @@ class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<Other
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class OtherReasonController extends BaseController<OtherReason> {
+export class OtherReasonController extends SafeNavigationBaseController<OtherReason> {
     constructor() {
         super(template, navigation, formSchema, undefined, [FormSubmissionProcessor]);
     }

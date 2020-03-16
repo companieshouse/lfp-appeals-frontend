@@ -5,11 +5,12 @@ import * as assert from 'assert';
 import { Maybe, Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import {IAccessToken, ISignInInfo} from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { IAccessToken, ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 
 import { AppealStorageFormSubmissionProcessor } from 'app/controllers/processors/AppealStorageFormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
+import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -59,7 +60,9 @@ describe('AppealStorageForSubmissionProcessor', () => {
                     } as ISignInInfo,
 
                     [SessionKey.ExtraData]: {
-                        [APPEALS_KEY]: appeal
+                        [APPLICATION_DATA_KEY]: {
+                            appeal: { appeal }
+                        }
                     }
                 })
             )
