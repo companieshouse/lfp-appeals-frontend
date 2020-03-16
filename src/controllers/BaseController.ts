@@ -7,7 +7,8 @@ import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal} from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';

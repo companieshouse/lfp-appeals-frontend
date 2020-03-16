@@ -4,7 +4,8 @@ import { Request } from 'express';
 import { injectable, unmanaged } from 'inversify';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal} from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 @injectable()

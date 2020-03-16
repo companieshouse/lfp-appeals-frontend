@@ -6,7 +6,8 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, ApplicationData, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal} from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';

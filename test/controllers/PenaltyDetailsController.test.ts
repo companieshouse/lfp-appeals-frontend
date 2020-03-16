@@ -5,7 +5,9 @@ import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
-import { Appeal, ApplicationData, APPEALS_KEY, Navigation } from 'app/models/Appeal';
+import { Appeal} from 'app/models/Appeal';
+import { ApplicationData, APPEALS_KEY } from 'app/models/ApplicationData';
+import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
