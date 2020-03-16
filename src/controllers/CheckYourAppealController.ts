@@ -4,7 +4,7 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -25,7 +25,7 @@ const navigation = {
 };
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class CheckYourAppealController extends BaseController<any> {
+export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor () {
         super(template, navigation, undefined, undefined,
             [InternalEmailFormSubmissionProcessor, UserEmailFormSubmissionProcessor]);

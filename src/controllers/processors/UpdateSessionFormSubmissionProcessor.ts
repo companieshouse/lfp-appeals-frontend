@@ -4,7 +4,8 @@ import { Request } from 'express';
 import { injectable, unmanaged } from 'inversify';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 const sessionCookieSecret = getEnvOrDefault('COOKIE_SECRET');
@@ -19,11 +20,16 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
     }
 
     private async updateSession(session: Session, value: any): Promise<void> {
-        const appeal = session.getExtraData()
-            .map<Appeal>(data => data[APPEALS_KEY])
-            .orDefault({} as Appeal);
+        const applicationData = session.getExtraData()
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+            .orDefault({
+                appeal: {}
+            } as ApplicationData);
 
-        session.saveExtraData(APPEALS_KEY, this.prepareModelPriorSessionSave(appeal, value));
+        session.saveExtraData(APPLICATION_DATA_KEY, {
+            ...applicationData,
+            appeal: this.prepareModelPriorSessionSave(applicationData.appeal, value)
+        });
 
         await this.sessionStore
             .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)

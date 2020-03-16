@@ -5,7 +5,9 @@ import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import * as request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
-import { Appeal, APPEALS_KEY } from 'app/models/Appeal';
+import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
@@ -18,19 +20,27 @@ const errorSummaryHeading = 'There is a problem with the information you entered
 const config = getDefaultConfig();
 
 describe('PenaltyDetailsController', () => {
+
+    const navigation = {} as Navigation;
+
     describe('GET request', () => {
 
+        const appeal = {
+            penaltyIdentifier: {
+                companyNumber: '00345567',
+                penaltyReference: 'A00000001',
+            }
+        } as Appeal;
+
+        const applicationData = {
+            appeal,
+            navigation
+        } as ApplicationData;
+
         it('should return 200 when trying to access page with a session', async () => {
-            const appeal = {
-                penaltyIdentifier: {
-                    companyNumber: '00345567',
-                    penaltyReference: 'A00000001',
-                }
-            } as Appeal
 
-
-            let session = createFakeSession([], config.cookieSecret, true);
-            session = session.saveExtraData(APPEALS_KEY, appeal);
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
             const app = createApp(session);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
@@ -52,9 +62,10 @@ describe('PenaltyDetailsController', () => {
                     companyNumber: '00345567',
                     penaltyReference: 'A00000001',
                 }
-            } as Appeal
+            } as Appeal;
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, { appeal });
             const app = createApp(session);
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
