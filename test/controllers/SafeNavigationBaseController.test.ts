@@ -125,7 +125,7 @@ describe('Safe navigation base controller', () => {
 
     describe('POST handler', () => {
         it ('should store navigation pass for unique page that user is about to be redirected to', () => {
-            process.env.COOKIE_SECRET = 'secret';
+            process.env.COOKIE_SECRET = 'super long and very secure secret';
 
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
                 substitute.store(Arg.any()).returns(EitherUtils.wrapValue('1'));
