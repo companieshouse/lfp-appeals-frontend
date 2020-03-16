@@ -46,11 +46,11 @@ export class InternalEmailFormSubmissionProcessor implements FormSubmissionProce
             .map(info => info[SignInInfoKeys.UserProfile])
             .unsafeCoerce() as IUserProfile;
 
-        const appealExtraData: ApplicationData = req.session
+        const applicationData: ApplicationData = req.session
             .chain(_ => _.getExtraData())
             .map(data => data[APPEALS_KEY] as ApplicationData)
             .unsafeCoerce();
 
-        await this.emailService.send(buildEmail(userProfile as IUserProfile, appealExtraData.appeal));
+        await this.emailService.send(buildEmail(userProfile as IUserProfile, applicationData.appeal));
     }
 }
