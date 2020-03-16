@@ -1,3 +1,3 @@
-import { loadEnvironmentVariablesFromFiles} from 'app/utils/ConfigLoader';
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
 loadEnvironmentVariablesFromFiles();
