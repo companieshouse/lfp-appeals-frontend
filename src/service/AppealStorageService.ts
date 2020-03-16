@@ -20,7 +20,8 @@ export class AppealStorageService {
 
         const apiUri = getEnvOrDefault(`APPEALS_API_URL`);
 
-        const uri: string = apiUri + '/companies/' + `${appealData.penaltyIdentifier.companyNumber}` + '/appeals';
+        const uri: string = apiUri + '/companies/' + `${appealData.penaltyIdentifier.companyNumber}`
+            + `/appeals with token: ${token}`;
 
         console.log('Making a POST request to ' + uri);
 

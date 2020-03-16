@@ -18,6 +18,11 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
 
     async process(req: Request): Promise<void> {
 
+        const userId = req.session
+            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+            .map(info => info[SignInInfoKeys.UserProfile])
+            .map(userProfile => userProfile?.id as string);
+
         const accessToken = req.session
             .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
             .map(info => info[SignInInfoKeys.AccessToken])
@@ -29,6 +34,8 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
             .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .map(data => data.appeal as Appeal)
             .unsafeCoerce();
+
+        console.log(`Saving appeal for userId: ${userId} accessToken: ${accessToken}`);
 
         await this.appealStorageService.save(appeal, accessToken);
     }
