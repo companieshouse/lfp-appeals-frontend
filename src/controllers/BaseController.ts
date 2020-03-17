@@ -83,7 +83,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
         if (this.formSubmissionProcessors != null) {
             for (const processorType of this.formSubmissionProcessors) {
                 const processor = this.httpContext.container.get(processorType);
-                await processor.process(this.httpContext.request);
+                await processor.process(this.httpContext.request, this.httpContext.response);
             }
         }
 
