@@ -25,7 +25,8 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
             path: '/',
             httpOnly: true,
             secure: sessionCookieSecureFlag === 'true',
-            maxAge: sessionTimeToLiveInSeconds * 1000
+            maxAge: sessionTimeToLiveInSeconds * 1000,
+            encode: String
         })
     }
 
