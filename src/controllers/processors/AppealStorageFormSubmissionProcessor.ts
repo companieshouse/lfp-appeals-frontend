@@ -6,7 +6,6 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
-import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 
@@ -35,10 +34,10 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
         const appeal = req.session
             .chain(_ => _.getExtraData())
             .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .map(data => data.appeal as Appeal)
+            .map(data => data.appeal)
             .unsafeCoerce();
 
-        console.log(`Saving appeal for userId: ${userId} accessToken: ${accessToken}`);
+        console.log(`Saving appeal for userId: ${userId}`);
 
         await this.appealStorageService.save(appeal, accessToken);
     }

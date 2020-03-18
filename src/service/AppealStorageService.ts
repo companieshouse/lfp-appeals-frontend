@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { Appeal } from 'app/models/Appeal';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 export class AppealStorageService {
 
@@ -18,17 +18,15 @@ export class AppealStorageService {
             }
         };
 
-        const apiUri = getEnvOrDefault(`APPEALS_API_URL`);
+        const apiUri = getEnvOrThrow(`APPEALS_API_URL`);
 
-        const uri: string = apiUri + '/companies/' + `${appealData.penaltyIdentifier.companyNumber}`
-            + `/appeals with token: ${token}`;
+        const uri: string = `${apiUri}/companies/${appealData.penaltyIdentifier.companyNumber}/appeals`;
 
         console.log('Making a POST request to ' + uri);
 
         return await axios
             .post(uri, appealData, config)
             .then(response => {
-                console.log(response.data);
                 return response.data;
             });
     }

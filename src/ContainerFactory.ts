@@ -9,7 +9,6 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { AppealStorageService } from 'app/service/AppealStorageService';
 
 function initiateKafkaClient (): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -43,7 +42,6 @@ export function createContainer(): Container {
     container.bind(SessionStore).toConstantValue(sessionStore);
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
-    container.bind(AppealStorageService).toConstantValue(new AppealStorageService());
 
     container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
         // tslint:disable-next-line: new-parens
