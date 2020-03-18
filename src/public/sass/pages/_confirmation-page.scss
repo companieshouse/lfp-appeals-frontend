@@ -1,0 +1,12 @@
+.print-summary-body {
+    display: none;
+}
+
+@media print {
+    .print-summary-body {
+        display: block;
+    }
+    .print-link{
+        display: none;
+    }
+}
