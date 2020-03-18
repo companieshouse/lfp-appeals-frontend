@@ -5,6 +5,7 @@ import * as express from 'express';
 import * as nunjucks from 'nunjucks';
 import * as path from 'path';
 
+import { getEnv, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import * as Paths from 'app/utils/Paths';
 
 const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
@@ -50,6 +51,15 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
                 text: 'Change',
                 visuallyHiddenText: accessibleName
             }
+        }
+    };
+
+    const url = getEnv('PIWIK_URL');
+    const site = getEnv('PIWIK_SITE_ID');
+    if (url && site) {
+        app.locals.piwik = { url, site }
+        app.locals.cdn = {
+            host: getEnvOrThrow('CDN_HOST')
         }
     }
 };

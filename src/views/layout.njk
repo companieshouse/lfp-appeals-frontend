@@ -74,4 +74,17 @@
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="{{ paths.ROOT_URI }}/govuk/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
+  {% if piwik %}
+  <script src="//{{ cdn.host }}/javascripts/app/piwik-enable.js"></script>
+  <script type="application/javascript">
+    (function() {
+      bindPiwikListener('appeals', '{{ piwik.url }}', {{ piwik.site }});
+    }());
+  </script>
+  <noscript>
+    <p>
+      <img src="{{ piwik.url }}/piwik.php?idsite={{ piwik.site }}" style="border:0;" alt="" />
+    </p>
+  </noscript>
+  {% endif %}
 {% endblock %}
