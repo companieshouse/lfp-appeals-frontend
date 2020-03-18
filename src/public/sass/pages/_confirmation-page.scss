@@ -1,18 +1,11 @@
-.print-summary-body {
-    display: none;
+@include govuk-media-query($media-type: screen) {
+    .govuk-\!-display-none-screen {
+        display: none !important;
+    }
 }
 
-@media print {
-    .print-summary-body {
-        display: block;
-    }
-    .print-link{
-        display: none;
-    }
-    .govuk-footer{
-        display: none;
-    }
-    .feedback-survey{
-        display: none;
+@include govuk-media-query($media-type: print) {
+    .govuk-footer {
+        display: none !important;
     }
 }
