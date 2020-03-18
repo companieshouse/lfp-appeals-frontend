@@ -1,0 +1,14 @@
+@include govuk-media-query($media-type: screen) {
+    .govuk-\!-display-none-screen {
+        display: none !important;
+    }
+}
+
+@include govuk-media-query($media-type: print) {
+    .govuk-footer {
+        display: none !important;
+    }
+    .govuk-panel {
+        color: #777777;
+    }
+}
