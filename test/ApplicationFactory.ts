@@ -10,7 +10,7 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 // tslint:disable-next-line:no-empty
 export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {
@@ -25,8 +25,8 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 export const getDefaultConfig = () => {
     loadEnvironmentVariablesFromFiles();
     return {
-        cookieName: getEnvOrDefault('COOKIE_NAME'),
-        cookieSecret: getEnvOrDefault('COOKIE_SECRET')
+        cookieName: getEnvOrThrow('COOKIE_NAME'),
+        cookieSecret: getEnvOrThrow('COOKIE_SECRET')
     };
 };
 

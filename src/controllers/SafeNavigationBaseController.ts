@@ -11,7 +11,7 @@ import {
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -34,7 +34,7 @@ class Processor implements FormSubmissionProcessor {
             session.saveExtraData(APPLICATION_DATA_KEY, this.updateNavigationPermissions(applicationData, page));
 
             await this.sessionStore
-                .store(Cookie.representationOf(session, getEnvOrDefault('COOKIE_SECRET')), session.data)
+                .store(Cookie.representationOf(session, getEnvOrThrow('COOKIE_SECRET')), session.data)
                 .run();
         }
     }
