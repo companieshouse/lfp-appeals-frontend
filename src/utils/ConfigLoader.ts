@@ -57,7 +57,7 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     const url = getEnv('PIWIK_URL');
     const site = getEnv('PIWIK_SITE_ID');
     if (url && site) {
-        app.locals.piwik = { url, site }
+        app.locals.piwik = { url, site };
         app.locals.cdn = {
             host: getEnvOrThrow('CDN_HOST')
         }
