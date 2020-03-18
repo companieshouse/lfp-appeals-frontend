@@ -10,13 +10,13 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
 
 function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
     const region = findRegionByCompanyNumber(appeal.penaltyIdentifier.companyNumber);
     return {
-        to: getEnvOrDefault(`${region}_TEAM_EMAIL`),
+        to: getEnvOrThrow(`${region}_TEAM_EMAIL`),
         subject: `Appeal submitted - ${appeal.penaltyIdentifier.companyNumber}`,
         body: {
             templateName: 'lfp-appeal-submission-internal',

@@ -9,7 +9,7 @@ import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal'
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
 
@@ -31,7 +31,7 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
             [InternalEmailFormSubmissionProcessor, UserEmailFormSubmissionProcessor]);
         // tslint:disable-next-line: forin
         for (const region in Region) {
-            getEnvOrDefault(`${region}_TEAM_EMAIL`)
+            getEnvOrThrow(`${region}_TEAM_EMAIL`)
         }
     }
 

@@ -8,7 +8,7 @@ import * as util from 'util'
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 function initiateKafkaClient (): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -19,7 +19,7 @@ function initiateKafkaClient (): kafka.KafkaClient {
     );
 
     return new kafka.KafkaClient({
-        kafkaHost: getEnvOrDefault('KAFKA_BROKER_ADDR'),
+        kafkaHost: getEnvOrThrow('KAFKA_BROKER_ADDR'),
         connectTimeout: connectionTimeoutInMillis,
         connectRetryOptions: {
             retries: 5,
@@ -35,10 +35,10 @@ function initiateKafkaClient (): kafka.KafkaClient {
 export function createContainer(): Container {
     const container = new Container();
     const config: CookieConfig = {
-        cookieName: getEnvOrDefault('COOKIE_NAME'),
-        cookieSecret: getEnvOrDefault('COOKIE_SECRET'),
+        cookieName: getEnvOrThrow('COOKIE_NAME'),
+        cookieSecret: getEnvOrThrow('COOKIE_SECRET'),
     };
-    const sessionStore = new SessionStore(new IORedis(`${getEnvOrDefault('CACHE_SERVER')}`));
+    const sessionStore = new SessionStore(new IORedis(`${getEnvOrThrow('CACHE_SERVER')}`));
     container.bind(SessionStore).toConstantValue(sessionStore);
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());

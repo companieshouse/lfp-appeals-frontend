@@ -6,13 +6,13 @@ import { injectable, unmanaged } from 'inversify';
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
+import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
-const sessionCookieName = getEnvOrDefault('COOKIE_NAME');
-const sessionCookieDomain = getEnvOrDefault('COOKIE_DOMAIN');
+const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
+const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
 const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
-const sessionCookieSecret = getEnvOrDefault('COOKIE_SECRET');
-const sessionTimeToLiveInSeconds = parseInt(getEnvOrDefault('DEFAULT_SESSION_EXPIRATION'), 10);
+const sessionCookieSecret = getEnvOrThrow('COOKIE_SECRET');
+const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
 
 @injectable()
 export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements FormSubmissionProcessor {
