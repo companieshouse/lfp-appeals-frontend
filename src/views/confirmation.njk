@@ -1,31 +1,57 @@
 {% extends 'layout.njk' %}
 
 {% from 'govuk/components/panel/macro.njk' import govukPanel %}
+{% from 'govuk/components/summary-list/macro.njk' import govukSummaryList %}
 
 {% block beforeContent %}{% endblock %}
+
+{% block bodyStart %}
+  <noscript>
+    <style>
+      #print-link {display:none;}
+    </style>
+  </noscript>
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
       {{ govukPanel
         ({
           titleText: 'Appeal submitted',
-          html: 'Your reference number is your company number <br><strong>' + companyNumber + '</strong>'
+          html: 'Your reference number is your company number <br><strong>' + penaltyIdentifier.companyNumber + '</strong>'
         })
       }}
-
       <p class="govuk-body-l">
         We’ve sent a confirmation email to
-        <span class="govuk-body-l govuk-!-font-weight-bold">{{ userEmail }}</span>
+        <span class="govuk-body-l govuk-!-font-weight-bold">{{ userProfile.email }}</span>
         which contains the information you’ve provided for this appeal.
       </p>
-
+      <p class="govuk-!-display-none-print" id="print-link">
+        <a href="javascript:if(window.print)window.print()" class="govuk-link">Print a copy of this appeal</a>
+      </p>
+      <div class="govuk-!-display-none-screen">
+        <h2 class="govuk-heading-l">Reason for appeal</h2>
+        {{
+          govukSummaryList({
+            rows: [
+              {
+                key: { text: 'Reason' },
+                value: { text: reasons.other.title }
+              },
+              {
+                key: { text: 'Further information' },
+                value: { text: reasons.other.description }
+              }
+            ]
+          })
+        }}
+      </div>
       <h2 class="govuk-heading-m">What happens next</h2>
       <p class="govuk-body">We'll review the appeal and email you with a decision within 20 working days.
         We'll pause recovery action during this time.</p>
       <p class="govuk-body">We may contact you during the review process if we need more information.</p>
-      <p>
+      <p class="govuk-!-display-none-print">
         <a href="https://www.research.net/r/alfp-confirmation" target="_blank">What did you think of this service?</a>
         (takes 30 seconds)
       </p>

@@ -31,7 +31,8 @@
             text: 'Start now',
             isStartButton: true,
             attributes: {
-              id: 'start-now'
+              id: 'start-now',
+              onclick: '_paq.push(["trackGoal", 1]);' if piwik
             }
           })
         }}

@@ -41,7 +41,7 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
         const userProfile = session.getValue<ISignInInfo>(SessionKey.SignInInfo)
             .map(info => info[SignInInfoKeys.UserProfile])
-            .orDefault({});
+            .unsafeCoerce();
 
         return {
             ...super.prepareViewModelFromSession(session),
