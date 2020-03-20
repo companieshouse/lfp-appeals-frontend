@@ -8,6 +8,7 @@ import * as util from 'util'
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
+import { AppealStorageService } from 'app/service/AppealStorageService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 function initiateKafkaClient (): kafka.KafkaClient {
@@ -54,6 +55,9 @@ export function createContainer(): Container {
                 }]);
             }
         }))
+
+    container.bind(AppealStorageService).toConstantValue(
+        new AppealStorageService(getEnvOrThrow(`APPEALS_API_URL`)));
 
     container.load(buildProviderModule());
     return container;

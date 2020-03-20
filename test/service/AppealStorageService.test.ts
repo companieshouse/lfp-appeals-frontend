@@ -21,7 +21,7 @@ describe('AppealStorageService', () => {
     describe('saving appeals', () => {
 
         it('should throw an error when token not defined', () => {
-            const appealStorageService = new AppealStorageService();
+            const appealStorageService = new AppealStorageService('/companies/1/appeals');
 
             [undefined, null].forEach(async invalidToken => {
                 try {
