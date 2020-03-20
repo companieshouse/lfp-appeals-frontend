@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import { Appeal } from 'app/models/Appeal';
 
@@ -25,14 +25,10 @@ export class AppealStorageService {
 
         console.log('Making a POST request to ' + uri);
 
-        await this.saveAppeal(appealData, uri, config);
-    }
-
-    private async saveAppeal(appealData: Appeal, uri: string, config: AxiosRequestConfig): Promise<any> {
         return await axios
             .post(uri, appealData, config)
-            .then(response => {
-                return response.data;
+            .then((response: AxiosResponse) => {
+                return response;
             });
     }
 }
