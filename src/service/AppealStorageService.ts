@@ -8,7 +8,11 @@ export class AppealStorageService {
         this.uri = uri;
     }
 
-    public async save(appealData: Appeal, token: string): Promise<any> {
+    public async save(appeal: Appeal, token: string): Promise<any> {
+
+        if (appeal == null) {
+            throw new Error('Appeal data is missing');
+        }
 
         if (token == null) {
             throw new Error('Token is missing');
@@ -21,12 +25,12 @@ export class AppealStorageService {
             }
         };
 
-        const uri: string = `${this.uri}/companies/${appealData.penaltyIdentifier.companyNumber}/appeals`;
+        const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
         console.log('Making a POST request to ' + uri);
 
         return await axios
-            .post(uri, appealData, config)
+            .post(uri, appeal, config)
             .then((response: AxiosResponse) => {
                 return response;
             });

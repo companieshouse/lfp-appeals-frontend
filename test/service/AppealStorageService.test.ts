@@ -23,6 +23,19 @@ describe('AppealStorageService', () => {
 
     describe('saving appeals', () => {
 
+        it('should throw an error when appeal not defined', () => {
+            const appealStorageService = new AppealStorageService('/companies/1/appeals');
+
+            [undefined, null].forEach(async appeal => {
+                try {
+                    await appealStorageService.save(appeal as any, '123')
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('Appeal is missing')
+                }
+            })
+        });
+
         it('should throw an error when token not defined', () => {
             const appealStorageService = new AppealStorageService('/companies/1/appeals');
 
