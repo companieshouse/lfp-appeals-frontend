@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { CREATED } from 'http-status-codes';
 
 import { Appeal } from 'app/models/Appeal';
 
@@ -32,7 +33,9 @@ export class AppealStorageService {
         return await axios
             .post(uri, appeal, config)
             .then((response: AxiosResponse) => {
-                return response;
+                if (response.status === CREATED && response.headers.location) {
+                    return response.headers.location;
+                }
             });
     }
 }
