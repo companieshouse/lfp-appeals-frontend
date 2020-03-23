@@ -125,7 +125,7 @@ describe('AppealStorageService', () => {
                 expect(err.code).to.be.equal(UNPROCESSABLE_ENTITY);
                 expect(err.message).to.contain({'reason': 'reasons must not be null'});
             }
-        })
+        });
 
         it('should return status 500 when internal server error', async () => {
 
@@ -149,4 +149,4 @@ describe('AppealStorageService', () => {
             }
         })
     })
-})
+});
