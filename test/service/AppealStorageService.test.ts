@@ -96,13 +96,16 @@ describe('AppealStorageService', () => {
 
         it('should return status 422 when invalid appeal data', async () => {
 
+            const invalidAppeal = {
+                'penaltyIdentifier': {
+                    'companyNumber': '00345567',
+                    'penaltyReference': 'A00000001'
+                }
+            };
+
             nock(HOST)
-                .post(APPEALS_URI, {
-                        'penaltyIdentifier': {
-                            'companyNumber': '00345567',
-                            'penaltyReference': 'A00000001'
-                        }
-                    },
+                .post(APPEALS_URI,
+                    invalidAppeal,
                     {
                         reqheaders: {
                             authorization: 'Bearer ' + BEARER_TOKEN,
@@ -115,12 +118,7 @@ describe('AppealStorageService', () => {
                 });
 
             try {
-                await appealStorageService.save({
-                    'penaltyIdentifier': {
-                        'companyNumber': '00345567',
-                        'penaltyReference': 'A00000001'
-                    }
-                } as Appeal, BEARER_TOKEN)
+                await appealStorageService.save(invalidAppeal as Appeal, BEARER_TOKEN)
             } catch (err) {
                 expect(err.code).to.be.equal(UNPROCESSABLE_ENTITY);
                 expect(err.message).to.contain({'reason': 'reasons must not be null'});
