@@ -11,6 +11,7 @@ import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { AppealStorageService } from 'app/service/AppealStorageService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
@@ -159,5 +160,40 @@ describe('CheckYourAppealController', () => {
                 })
         });
 
+        it('should render error when appeal storage failed', async () => {
+
+            const app = createApp(session, container => {
+
+                container.rebind(AppealStorageService)
+                    .toConstantValue(createSubstituteOf<AppealStorageService>(service => {
+                        service.save(Arg.any(), Arg.any())
+                            .returns(Promise.reject(Error('Unexpected error')));
+                    }));
+            });
+
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                })
+        });
+
+        it('should store appeal', async () => {
+
+            const token: string =
+                '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
+
+            const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
+                service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
+            })
+
+            const app = createApp(session, container => {
+                container.rebind(AppealStorageService).toConstantValue(appealStorageService);
+            });
+
+            await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
+
+            appealStorageService.received().save(appeal, token);
+
+        });
     })
 });

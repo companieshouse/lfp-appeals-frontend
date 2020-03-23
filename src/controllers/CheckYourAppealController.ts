@@ -5,6 +5,7 @@ import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionIn
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
+import { AppealStorageFormSubmissionProcessor } from 'app/controllers/processors/AppealStorageFormSubmissionProcessor';
 import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -28,7 +29,9 @@ const navigation = {
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor () {
         super(template, navigation, undefined, undefined,
-            [InternalEmailFormSubmissionProcessor, UserEmailFormSubmissionProcessor]);
+            [AppealStorageFormSubmissionProcessor,
+                InternalEmailFormSubmissionProcessor,
+                UserEmailFormSubmissionProcessor]);
         // tslint:disable-next-line: forin
         for (const region in Region) {
             getEnvOrThrow(`${region}_TEAM_EMAIL`)

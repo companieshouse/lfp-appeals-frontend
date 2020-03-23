@@ -8,6 +8,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { AppealStorageService } from 'app/service/AppealStorageService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -55,7 +56,7 @@ export const createApp = (session?: Session, configureBindings: (container: Cont
         container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
         container.bind(SessionMiddleware).toConstantValue(sessionHandler);
         container.bind(SessionStore).toConstantValue(sessionStore);
-
+        container.bind(AppealStorageService).toConstantValue(Substitute.for<AppealStorageService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
 
         configureBindings(container);
