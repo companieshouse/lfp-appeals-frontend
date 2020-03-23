@@ -1,5 +1,7 @@
-$govuk-assets-path: '/appeal-a-penalty/';
 $govuk-global-styles: true;
+$govuk-assets-path: '/';
+$govuk-images-path: "/images/govuk-frontend/v3.5.0/images/";
+$govuk-fonts-path: "/fonts/";
 
 @import 'govuk-frontend/govuk/all';
 
