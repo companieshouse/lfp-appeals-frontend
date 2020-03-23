@@ -9,7 +9,7 @@ export class AppealStorageService {
         this.uri = uri;
     }
 
-    public async save(appeal: Appeal, token: string): Promise<any> {
+    public async save(appeal: Appeal, token: string): Promise<string> {
 
         if (appeal == null) {
             throw new Error('Appeal data is missing');

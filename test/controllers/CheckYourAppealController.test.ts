@@ -183,7 +183,7 @@ describe('CheckYourAppealController', () => {
                 '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
 
             const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
-                service.save(Arg.any(), Arg.any()).returns(Promise.resolve());
+                service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
             })
 
             const app = createApp(session, container => {
