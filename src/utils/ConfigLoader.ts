@@ -24,10 +24,8 @@ export const loadEnvironmentVariablesFromFiles = () => {
 };
 
 export const getExpressAppConfig = (directory: string) => (app: express.Application): void => {
-    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/public')));
     app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
     app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
-    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
