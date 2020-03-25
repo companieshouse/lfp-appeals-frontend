@@ -8,6 +8,7 @@
 
 {% block head %}
   <!--[if !IE 8]><!-->
+  <link href="//{{ cdn.host }}/stylesheets/govuk-frontend/v3.6.0/govuk-frontend-3.6.0.css" rel="stylesheet"/>
   <link href="//{{ cdn.host }}/stylesheets/services/late-filing-penalties/application.css" rel="stylesheet"/>
   <!--<![endif]-->
 
@@ -72,7 +73,7 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="//{{ cdn.host }}/javascripts/app/late-filing-penalties/all.js"></script>
+  <script src="//{{ cdn.host }}/javascripts/govuk-frontend/v3.6.0/govuk-frontend-3.6.0.min.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
   {% if piwik %}
   <script src="//{{ cdn.host }}/javascripts/app/piwik-enable.js"></script>
