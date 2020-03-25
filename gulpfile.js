@@ -20,26 +20,16 @@ gulp.task('clean:build', async function () {
     return del.sync(paths.build);
 });
 
-gulp.task('build-sass', function () {
-    return gulp.src(paths.sassSrc + '/**/*.scss')
-        .pipe(sass({ includePaths: paths.nodeModules }).on('error', sass.logError))
-        .pipe(gulp.dest(paths.build + '/public/css'));
-});
-
 gulp.task('start:watch', async () => nodemon({
     script: paths.build + '/app.js',
     watch: paths.src,
-    ext: 'ts, scss, css, njk',
+    ext: 'ts, njk',
     tasks: ['build'],
     env: { 'DEBUG': 'Application,Request,Response' }
 }));
 
 gulp.task('copy-views', function () {
     return gulp.src(paths.pages + '/**/*').pipe(gulp.dest(paths.build + '/views'));
-});
-
-gulp.task('copy-assets', function () {
-    return gulp.src(paths.public + '/**/*').pipe(gulp.dest(paths.build + '/public/'));
 });
 
 gulp.task('copy-govukfrontend', function () {
@@ -56,7 +46,7 @@ gulp.task('copy-descriptors', function () {
     return gulp.src('tsconfig.json').pipe(gulp.dest(paths.build));
 });
 
-gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-assets', 'copy-views', 'copy-govukfrontend', 'build-sass', 'copy-descriptors')));
+gulp.task('build', gulp.series('compile-project', gulp.parallel('copy-views', 'copy-govukfrontend', 'copy-descriptors')));
 
 gulp.task('build:clean', gulp.series('clean:build', 'build'));
 

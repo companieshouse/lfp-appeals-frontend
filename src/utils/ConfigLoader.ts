@@ -24,10 +24,8 @@ export const loadEnvironmentVariablesFromFiles = () => {
 };
 
 export const getExpressAppConfig = (directory: string) => (app: express.Application): void => {
-    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/public')));
     app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend')));
     app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk')));
-    app.use(Paths.ROOT_URI, express.static(path.join(directory, '/node_modules/govuk-frontend/govuk/assets')));
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,17 +48,18 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
                 href: `${uri}?cm=1`,
                 text: 'Change',
                 visuallyHiddenText: accessibleName
-            }
+            };
         }
+    };
+
+    app.locals.cdn = {
+        host: getEnvOrThrow('CDN_HOST')
     };
 
     const url = getEnv('PIWIK_URL');
     const site = getEnv('PIWIK_SITE_ID');
     if (url && site) {
         app.locals.piwik = { url, site };
-        app.locals.cdn = {
-            host: getEnvOrThrow('CDN_HOST')
-        }
     }
 };
 
