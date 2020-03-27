@@ -39,7 +39,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
 
 @provide(InternalEmailFormSubmissionProcessor)
 export class InternalEmailFormSubmissionProcessor implements FormSubmissionProcessor {
-    constructor(@inject(EmailService) private readonly emailService: EmailService) {}
+    constructor(@inject(EmailService) private readonly emailService: EmailService) { }
 
     async process(req: Request): Promise<void> {
         const userProfile = req.session
@@ -54,8 +54,7 @@ export class InternalEmailFormSubmissionProcessor implements FormSubmissionProce
 
         const email = buildEmail(userProfile as IUserProfile, applicationData.appeal);
 
-        loggerInstance().debug(`${InternalEmailFormSubmissionProcessor.name} - process: Email built: ${JSON.stringify(email)}`)
-
-        await this.emailService.send(email);
+        await this.emailService.send(email)
+            .catch(_ => loggerInstance().error(`${InternalEmailFormSubmissionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`));
     }
 }

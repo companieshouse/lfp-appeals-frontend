@@ -45,9 +45,8 @@ export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor
 
         const email = buildEmail(userProfile, applicationData.appeal);
 
-        loggerInstance()
-            .debug(`${UserEmailFormSubmissionProcessor.name} - process: Email built: ${JSON.stringify(email)}`);
+        await this.emailService.send(email)
+            .catch(_ => loggerInstance().error(`${UserEmailFormSubmissionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`));
 
-        await this.emailService.send(email);
     }
 }

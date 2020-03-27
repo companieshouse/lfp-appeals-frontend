@@ -38,17 +38,16 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
                 appeal: {}
             } as ApplicationData);
 
-        loggerInstance()
-            .debug(`${UpdateSessionFormSubmissionProcessor.name} - updateSession: Updating session data with: ${JSON.stringify(applicationData)}`);
-
         session.saveExtraData(APPLICATION_DATA_KEY, {
             ...applicationData,
             appeal: this.prepareModelPriorSessionSave(applicationData.appeal, value)
         });
 
-        await this.sessionStore
+        const result = await this.sessionStore
             .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
             .run();
+
+        result.ifLeft(_ => loggerInstance().error(`${UpdateSessionFormSubmissionProcessor.name} - updateSession: failed to save session`))
     }
 
     // @ts-ignore

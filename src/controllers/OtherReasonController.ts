@@ -54,8 +54,6 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
-        loggerInstance()
-            .debug(`${OtherReasonController.name} - prepareViewModelFromAppeal: ${JSON.stringify(appeal.reasons?.other)}`);
         return appeal.reasons?.other;
     }
 }

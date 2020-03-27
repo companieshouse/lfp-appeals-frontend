@@ -30,13 +30,13 @@ export class AppealStorageService {
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
         loggerInstance()
-            .debug('Making a POST request to ' + uri);
+            .debug(`Making a POST request to ${uri}`);
 
         return await axios
             .post(uri, appeal, config)
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.headers.location) {
-                    loggerInstance().info(`${AppealStorageService.name} - save: Created appeal`);
+                    loggerInstance().info(`${AppealStorageService.name} - save: created resource ${response.headers.location}`);
                     return response.headers.location;
                 }
             });

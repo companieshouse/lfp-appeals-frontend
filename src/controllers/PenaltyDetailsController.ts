@@ -53,8 +53,6 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
-        loggerInstance()
-            .debug(`${PenaltyDetailsController.name} - prepareViewModelFromAppeal: ${JSON.stringify(appeal.penaltyIdentifier)}`);
         return appeal.penaltyIdentifier;
     }
 }

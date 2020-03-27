@@ -1,6 +1,5 @@
 import * as crypto from 'crypto'
 
-import { loggerInstance } from 'app/middleware/Logger';
 import { Email } from 'app/modules/email-publisher/Email'
 import { type, Message } from 'app/modules/email-publisher/message/Message'
 import { Producer } from 'app/modules/email-publisher/producer/Producer'
@@ -21,7 +20,6 @@ export class EmailService {
             throw new Error('Email must be defined');
         }
         const message = this.createMessageFrom(email);
-        loggerInstance().debug(`${EmailService.name} - send: message=${JSON.stringify(message)}`)
         return this.sendMessage(message);
     }
 

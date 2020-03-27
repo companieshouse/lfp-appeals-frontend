@@ -55,8 +55,6 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        loggerInstance()
-            .debug(`${CheckYourAppealController.name} - prepareViewModelFromAppeal: ${JSON.stringify(appeal)}`);
         return appeal;
     }
 }

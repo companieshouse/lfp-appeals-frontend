@@ -19,7 +19,7 @@ export class AuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
         req.session
-            .ifNothing(() => loggerInstance().info(`${AuthMiddleware.name} - handler: Session object is missing!`));
+            .ifNothing(() => loggerInstance().debug(`${AuthMiddleware.name} - handler: Session object is missing!`));
 
         const signedIn: boolean = req.session
             .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))

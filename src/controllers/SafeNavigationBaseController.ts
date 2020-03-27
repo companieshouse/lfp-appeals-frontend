@@ -80,7 +80,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
             const permissions = applicationData.navigation.permissions;
             if (!applicationData.navigation.permissions.includes(this.httpContext.request.path)) {
                 loggerInstance()
-                    .info(`${SafeNavigationBaseController.name} - onGet: Application did not have permissions to access ${this.httpContext.request.path}.`);
+                    .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
                 if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
                     return this.httpContext.response.redirect(permissions[permissions.length - 1]);
                 }

@@ -32,10 +32,10 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
 
 export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
-        @unmanaged() readonly navigation: Navigation,
-        @unmanaged() readonly formSchema?: AnySchema,
-        @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-        @unmanaged() readonly formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
+                          @unmanaged() readonly navigation: Navigation,
+                          @unmanaged() readonly formSchema?: AnySchema,
+                          @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
+                          @unmanaged() readonly formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
         super();
         this.navigation = createChangeModeAwareNavigationProxy(navigation);
     }
@@ -66,8 +66,6 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
             const validationResult: ValidationResult = new SchemaValidator(this.formSchema)
                 .validate(this.httpContext.request.body);
             if (validationResult.errors.length > 0) {
-                loggerInstance()
-                    .debug(`${BaseController.name} - Validation error.`);
                 return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
                     this.template,
                     {

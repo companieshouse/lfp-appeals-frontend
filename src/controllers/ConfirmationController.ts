@@ -45,8 +45,6 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        loggerInstance()
-            .debug(`${ConfirmationController.name} - prepareViewModelFromAppeal: ${JSON.stringify(appeal)}`);
         return appeal;
     }
 }
