@@ -1,4 +1,5 @@
 import bodyParser = require('body-parser');
+import { createLoggerMiddleware } from 'ch-logging';
 import cookieParser = require('cookie-parser');
 import * as dotenv from 'dotenv';
 import * as express from 'express';
@@ -15,6 +16,8 @@ const checkFileExists = (config: dotenv.DotenvConfigOutput) => {
     else return config;
 };
 
+export const APP_NAME = 'lfp-appeals-frontend';
+
 export const loadEnvironmentVariablesFromFiles = () => {
     dotenv.config({ path: DEFAULT_ENV_FILE });
     if (process.env.NODE_ENV) {
@@ -30,6 +33,9 @@ export const getExpressAppConfig = (directory: string) => (app: express.Applicat
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
+
+    const loggingMiddleware = createLoggerMiddleware(APP_NAME);
+    app.use(loggingMiddleware);
 
     app.set('view engine', 'njk');
     nunjucks.configure([

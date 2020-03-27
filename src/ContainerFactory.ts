@@ -1,16 +1,16 @@
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
-import * as IORedis from 'ioredis'
+import IORedis from 'ioredis'
 import * as kafka from 'kafka-node'
 import * as util from 'util'
+import { APP_NAME } from './utils/ConfigLoader';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-
 function initiateKafkaClient (): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
         getEnvOrDefault('KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS', '2000'), 10
@@ -44,7 +44,7 @@ export function createContainer(): Container {
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
     container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
 
-    container.bind(EmailService).toConstantValue(new EmailService('lfp-appeals-frontend',
+    container.bind(EmailService).toConstantValue(new EmailService(APP_NAME,
         // tslint:disable-next-line: new-parens
         new class implements Producer {
             private readonly producer: kafka.Producer = new kafka.Producer(initiateKafkaClient());

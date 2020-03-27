@@ -6,6 +6,7 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Email } from 'app/modules/email-publisher/Email';
@@ -51,6 +52,10 @@ export class InternalEmailFormSubmissionProcessor implements FormSubmissionProce
             .map(data => data[APPLICATION_DATA_KEY] as ApplicationData)
             .unsafeCoerce();
 
-        await this.emailService.send(buildEmail(userProfile as IUserProfile, applicationData.appeal));
+        const email = buildEmail(userProfile as IUserProfile, applicationData.appeal);
+
+        loggerInstance().debug(`${InternalEmailFormSubmissionProcessor.name} - process: Email built: ${JSON.stringify(email)}`)
+
+        await this.emailService.send(email);
     }
 }

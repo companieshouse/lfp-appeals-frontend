@@ -6,6 +6,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
@@ -27,7 +28,7 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
     return {
         companyNumber: sanitize(body.companyNumber),
         penaltyReference: body.penaltyReference.toUpperCase()
-    }
+    };
 };
 
 @provide(FormSubmissionProcessor)
@@ -37,7 +38,10 @@ class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<Penal
     }
 
     protected prepareModelPriorSessionSave(appeal: Appeal, value: any): Appeal {
-        return { ...appeal, penaltyIdentifier: value };
+        const model = { ...appeal, penaltyIdentifier: value };
+        loggerInstance()
+            .debug(`${PenaltyDetailsController.name} - prepareModelPriorSessionSave: ${JSON.stringify(model)}`);
+        return model;
     }
 }
 
@@ -49,7 +53,8 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
-
+        loggerInstance()
+            .debug(`${PenaltyDetailsController.name} - prepareViewModelFromAppeal: ${JSON.stringify(appeal.penaltyIdentifier)}`);
         return appeal.penaltyIdentifier;
     }
 }

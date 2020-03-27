@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CREATED } from 'http-status-codes';
 
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 
 export class AppealStorageService {
@@ -28,12 +29,14 @@ export class AppealStorageService {
 
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
-        console.log('Making a POST request to ' + uri);
+        loggerInstance()
+            .debug('Making a POST request to ' + uri);
 
         return await axios
             .post(uri, appeal, config)
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.headers.location) {
+                    loggerInstance().info(`${AppealStorageService.name} - save: Created appeal`);
                     return response.headers.location;
                 }
             });
