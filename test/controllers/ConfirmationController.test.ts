@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { expect } from 'chai';
 import { OK } from 'http-status-codes';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import 'app/controllers/ConfirmationController';
 import { Appeal } from 'app/models/Appeal';

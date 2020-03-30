@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Arg } from '@fluffy-spoon/substitute'
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
@@ -184,7 +184,7 @@ describe('CheckYourAppealController', () => {
 
             const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
                 service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
-            })
+            });
 
             const app = createApp(session, container => {
                 container.rebind(AppealStorageService).toConstantValue(appealStorageService);

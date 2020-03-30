@@ -6,7 +6,7 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import 'app/controllers/index';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';

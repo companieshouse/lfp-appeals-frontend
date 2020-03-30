@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import { SessionStore } from 'ch-node-session-handler';
 import { Application } from 'express'
 import { Redis } from 'ioredis';
-import * as request from 'supertest'
+import request from 'supertest'
 
 import 'app/controllers/HealthCheckController'
 import { EmailService } from 'app/modules/email-publisher/EmailService'

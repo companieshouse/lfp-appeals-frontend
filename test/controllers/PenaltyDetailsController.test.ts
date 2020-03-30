@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
 import { Appeal } from 'app/models/Appeal';

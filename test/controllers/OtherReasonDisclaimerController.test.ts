@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import * as request from 'supertest'
+import request from 'supertest'
 
 import 'app/controllers/OtherReasonDisclaimerController'
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';

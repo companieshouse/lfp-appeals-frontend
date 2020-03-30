@@ -55,6 +55,9 @@ export class InternalEmailFormSubmissionProcessor implements FormSubmissionProce
         const email = buildEmail(userProfile as IUserProfile, applicationData.appeal);
 
         await this.emailService.send(email)
-            .catch(_ => loggerInstance().error(`${InternalEmailFormSubmissionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`));
+            .catch(_ => {
+                loggerInstance().error(`${InternalEmailFormSubmissionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`)
+                throw _
+            });
     }
 }

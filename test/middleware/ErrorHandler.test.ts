@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
 import { expect } from 'chai';
-import * as express from 'express';
+import express from 'express';
 import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { defaultHandler, notFoundHandler } from 'app/middleware/ErrorHandler';
 import { getExpressAppConfig as configureApplication } from 'app/utils/ConfigLoader';
