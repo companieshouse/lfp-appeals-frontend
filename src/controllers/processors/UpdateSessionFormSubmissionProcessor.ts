@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { injectable, unmanaged } from 'inversify';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -16,7 +17,7 @@ const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIR
 
 @injectable()
 export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements FormSubmissionProcessor {
-    protected constructor(@unmanaged() readonly sessionStore: SessionStore) {}
+    protected constructor(@unmanaged() readonly sessionStore: SessionStore) { }
 
     async process(req: Request, res: Response): Promise<void> {
         await this.updateSession(req.session.unsafeCoerce(), req.body);
@@ -27,7 +28,7 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
             secure: sessionCookieSecureFlag === 'true',
             maxAge: sessionTimeToLiveInSeconds * 1000,
             encode: String
-        })
+        });
     }
 
     private async updateSession(session: Session, value: any): Promise<void> {
@@ -42,9 +43,11 @@ export abstract class UpdateSessionFormSubmissionProcessor<MODEL> implements For
             appeal: this.prepareModelPriorSessionSave(applicationData.appeal, value)
         });
 
-        await this.sessionStore
+        const result = await this.sessionStore
             .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
             .run();
+
+        result.ifLeft(_ => loggerInstance().error(`${UpdateSessionFormSubmissionProcessor.name} - updateSession: failed to save session`))
     }
 
     // @ts-ignore

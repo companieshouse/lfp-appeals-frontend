@@ -6,6 +6,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { OtherReason } from 'app/models/OtherReason';
 import { schema as formSchema } from 'app/models/OtherReason.schema';
@@ -33,12 +34,15 @@ class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<Other
     }
 
     protected prepareModelPriorSessionSave(appeal: Appeal, value: OtherReason): Appeal {
-        return {
+        const model = {
             ...appeal,
             reasons: {
                 other: value
             }
         };
+        loggerInstance()
+            .debug(`${OtherReasonController.name} - prepareModelPriorSessionSave: ${JSON.stringify(model)}`);
+        return model;
     }
 }
 

@@ -7,6 +7,7 @@ import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
@@ -14,7 +15,7 @@ import { Navigation } from 'app/utils/navigation/navigation';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
-export type FormSanitizeFunction<T> = (body: T) => T
+export type FormSanitizeFunction<T> = (body: T) => T;
 
 const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
     return new Proxy(step, {
@@ -23,10 +24,10 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
                 if (req.query.cm === '1') {
                     return CHECK_YOUR_APPEAL_PAGE_URI;
                 }
-                return (target[propertyName] as (req: Request) => string).apply(this, [req])
-            }
+                return (target[propertyName] as (req: Request) => string).apply(this, [req]);
+            };
         }
-    })
+    });
 };
 
 export abstract class BaseController<FORM> extends BaseAsyncHttpController {
@@ -56,7 +57,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
             .chain<ApplicationData>(data => Maybe.fromNullable(data[APPLICATION_DATA_KEY]))
             .orDefault({} as ApplicationData);
 
-        return this.prepareViewModelFromAppeal(applicationData.appeal || {})
+        return this.prepareViewModelFromAppeal(applicationData.appeal || {});
     }
 
     @httpPost('')
@@ -78,6 +79,10 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
 
         if (this.formSanitizeFunction != null) {
             this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body);
+            loggerInstance()
+                .debug(`
+                ${BaseController.name} - Sanitized form body: ${JSON.stringify(this.httpContext.request.body)}
+                `);
         }
 
         if (this.formSubmissionProcessors != null) {
@@ -97,7 +102,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
                     href: this.navigation.previous(this.httpContext.request)
                 }
             }
-        }
+        };
     }
 
     protected abstract prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM;

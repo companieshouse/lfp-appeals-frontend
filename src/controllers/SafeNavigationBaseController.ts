@@ -10,16 +10,17 @@ import {
     FormSubmissionProcessor,
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
+import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-type RequestWithNavigation = Request & { navigation: Navigation }
+type RequestWithNavigation = Request & { navigation: Navigation; };
 
 @provide(Processor)
 class Processor implements FormSubmissionProcessor {
-    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) {}
+    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) { }
 
     async process(request: RequestWithNavigation): Promise<void> {
         const session = request.session.unsafeCoerce();
@@ -70,13 +71,17 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
             } as ApplicationData);
 
         if (applicationData.navigation.permissions === undefined) {
+            loggerInstance()
+                .info(`${SafeNavigationBaseController.name} - onGet: No navigation permissions found.`);
             if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
                 return this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
             }
         } else {
             const permissions = applicationData.navigation.permissions;
             if (!applicationData.navigation.permissions.includes(this.httpContext.request.path)) {
-                if(this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI){
+                loggerInstance()
+                    .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
+                if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
                     return this.httpContext.response.redirect(permissions[permissions.length - 1]);
                 }
             }
@@ -86,7 +91,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
     }
 
     async onPost(): Promise<void> {
-        (this.httpContext.request as RequestWithNavigation).navigation =  this.navigation;
+        (this.httpContext.request as RequestWithNavigation).navigation = this.navigation;
         return super.onPost();
     }
 }

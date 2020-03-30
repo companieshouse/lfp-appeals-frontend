@@ -9,7 +9,8 @@ import { AppealStorageFormSubmissionProcessor } from 'app/controllers/processors
 import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
 import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { Appeal } from 'app/models/Appeal'
+import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
@@ -27,14 +28,14 @@ const navigation = {
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
-    constructor () {
+    constructor() {
         super(template, navigation, undefined, undefined,
             [AppealStorageFormSubmissionProcessor,
                 InternalEmailFormSubmissionProcessor,
                 UserEmailFormSubmissionProcessor]);
         // tslint:disable-next-line: forin
         for (const region in Region) {
-            getEnvOrThrow(`${region}_TEAM_EMAIL`)
+            getEnvOrThrow(`${region}_TEAM_EMAIL`);
         }
     }
 
@@ -43,10 +44,14 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
             .map(info => info[SignInInfoKeys.UserProfile])
             .unsafeCoerce();
 
-        return {
+        const model = {
             ...super.prepareViewModelFromSession(session),
             userProfile
         };
+        loggerInstance()
+            .debug(`${CheckYourAppealController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
+
+        return model;
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
