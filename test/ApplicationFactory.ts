@@ -9,6 +9,7 @@ import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { AppealStorageService } from 'app/service/AppealStorageService';
+import { EvidenceUploadService } from 'app/service/EvidenceUploadService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -58,6 +59,7 @@ export const createApp = (session?: Session, configureBindings: (container: Cont
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealStorageService).toConstantValue(Substitute.for<AppealStorageService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
+        container.bind(EvidenceUploadService).toConstantValue(Substitute.for<EvidenceUploadService>());
 
         configureBindings(container);
     });
