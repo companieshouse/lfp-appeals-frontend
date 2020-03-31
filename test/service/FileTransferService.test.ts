@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 
 import { FileTransferService } from 'app/service/FileTransferService'
@@ -20,18 +20,16 @@ describe('FileTransferService', () => {
                     await fileTransferService.upload(evidence!, 'filename')
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
-                        .and.to.haveOwnProperty('message').equal('Evidence file is missing')
+                        .and.to.haveOwnProperty('message').equal('File is missing')
                 }
             })
         });
 
         it('should throw an error when file name not defined', () => {
 
-            const evidence: Buffer = Buffer.from('This is a test');
-
             [undefined, null].forEach(async filename => {
                 try {
-                    await fileTransferService.upload(evidence as Buffer, filename!)
+                    await fileTransferService.upload(Buffer.from('This is a test'), filename!)
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('File name is missing')
@@ -39,33 +37,30 @@ describe('FileTransferService', () => {
             })
         });
 
-        it('should return 201 status code when evidence uploaded', async () => {
+        it('should return file ID when supported media uploaded', async () => {
 
-            const EVIDENCE_ID: string = 'mock-id';
-            const evidence: Buffer = Buffer.from('This is a test');
+            const evidenceID: string = 'mock-id';
 
             nock(HOST)
                 .post(URI,
-                    new RegExp(`form-data; name="upload";[^]*${evidence}`,'m'),
+                    new RegExp(`form-data; name="upload"; filename="test.supported"`,'m'),
                     {
                         reqheaders: {
                             'x-api-key': KEY
                         },
                     }
                 )
-                .reply(201, {id: EVIDENCE_ID});
+                .reply(CREATED, { id: evidenceID });
 
-            const response = await fileTransferService.upload(evidence, 'test.supported');
-            expect(response).to.equal(EVIDENCE_ID);
+            const response = await fileTransferService.upload(Buffer.from('This is a test'), 'test.supported');
+            expect(response).to.equal(evidenceID);
         });
 
-        it('should return 415 status code when unsupported medium uploaded', async () => {
-
-            const evidence: Buffer = Buffer.from('This is a test');
+        it('should throw error when unsupported media uploaded', async () => {
 
             nock(HOST)
                 .post(URI,
-                    new RegExp(`form-data; name="upload";[^]*${evidence}`,'m'),
+                    new RegExp(`form-data; name="upload"; filename="test.not_supported"`,'m'),
                     {
                         reqheaders: {
                             'x-api-key': KEY
@@ -73,15 +68,14 @@ describe('FileTransferService', () => {
                     }
                 )
                 .replyWithError({
-                    message: {'message': 'unsupported file type'},
-                    code: 415,
+                    message: { message: 'unsupported file type' },
+                    code: UNSUPPORTED_MEDIA_TYPE,
                 });
 
-            try{
-                await fileTransferService.upload(evidence, 'test.not_supported');
-            } catch(err){
-                expect(err.code).to.be.equal(UNSUPPORTED_MEDIA_TYPE);
-                expect(err.message).to.contain({'message': 'unsupported file type'});
+            try {
+                await fileTransferService.upload(Buffer.from('This is a test'), 'test.not_supported');
+            } catch(err) {
+                expect(err.message).to.contain('Unsupported file type');
             }
         });
     });
