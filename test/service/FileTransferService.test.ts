@@ -1,17 +1,16 @@
 import { expect } from 'chai';
-import FormData from 'form-data';
 import nock = require('nock');
 
 import { FileTransferService } from 'app/service/FileTransferService'
 
 describe('FileTransferService', () => {
 
-    const KEY: string = 'mockKey';
+    const KEY: string = 'mock-key';
     const HOST: string = 'http://localhost';
-    const evidenceUploadService = new FileTransferService(HOST , KEY);
+    const URI: string = '/dev/files';
+    const evidenceUploadService = new FileTransferService(HOST + URI , KEY);
 
     describe('upload file', () => {
-        const URI: string = '/dev/files';
 
         it('should throw an error when evidence not defined', () => {
 
@@ -39,14 +38,10 @@ describe('FileTransferService', () => {
             })
         });
 
-
         it('should return 201 status code when evidence uploaded', async () => {
 
-            const EVIDENCE_ID: string = 'Mock ID';
+            const EVIDENCE_ID: string = 'mock-id';
             const evidence: Buffer = Buffer.from('This is a test');
-
-            const data = new FormData();
-            data.append('upload', evidence, {filename: 'test'});
 
             nock(HOST)
                 .post(URI,
@@ -59,11 +54,8 @@ describe('FileTransferService', () => {
                 )
                 .reply(201, {id: EVIDENCE_ID});
 
-
-            await evidenceUploadService.upload(evidence, 'test')
-                .then((response) => {
-                    expect(response).to.equal(EVIDENCE_ID);
-                })
+            const response = await evidenceUploadService.upload(evidence, 'test.pdf');
+            expect(response).to.equal(EVIDENCE_ID);
         });
     });
 });

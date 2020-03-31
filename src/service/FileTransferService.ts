@@ -4,12 +4,9 @@ import { CREATED } from 'http-status-codes';
 
 export class FileTransferService {
 
-    private readonly uri: string;
-
-    constructor(private readonly host: string, private readonly key: string) {
-        this.host = host;
+    constructor(private readonly url: string, private readonly key: string) {
+        this.url = url;
         this.key = key;
-        this.uri = `${this.host}/dev/files`;
     }
 
     public async upload(evidence: Buffer, fileName: string): Promise<string> {
@@ -32,10 +29,10 @@ export class FileTransferService {
             }
         };
 
-        console.log('Making a POST request to ' + this.uri);
+        console.log('Making a POST request to ' + this.url);
 
         return await axios
-            .post(this.uri, data, config)
+            .post(this.url, data, config)
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.data.id) {
                     console.log('Evidence ID is: ' + response.data.id);
