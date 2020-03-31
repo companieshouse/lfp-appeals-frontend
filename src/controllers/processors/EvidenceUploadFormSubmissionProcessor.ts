@@ -8,6 +8,7 @@ import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissi
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EvidenceUploadService } from 'app/service/EvidenceUploadService';
+import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 @provide(EvidenceUploadFormSubmissionProcessor)
 export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProcessor {
@@ -16,8 +17,6 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
     }
 
     async process(req: Request): Promise<void> {
-
-        const id = '';
 
         console.log(req.headers['content-type']);
 
@@ -30,7 +29,7 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
         console.log(`Uploading file for company number: ${appeal.penaltyIdentifier.companyNumber}` +
             ` and penalty reference: ${appeal.penaltyIdentifier.penaltyReference}`);
 
-        const maxSizeBytes: number = parseInt('4194304', 10);
+        const maxSizeBytes: number = parseInt(getEnvOrDefault('MAX_FILE_SIZE_BYTES', ''), 10);
 
         const chunkArray: Buffer[] = [];
 
@@ -43,7 +42,7 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
 
         req.pipe(busboy);
 
-        busboy.on('file',
+        await busboy.on('file',
             (fieldname: string, fileStream: Socket, filename: string, encoding: string, mimetype: string) => {
 
                 console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding
@@ -65,13 +64,10 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
                 });
             });
 
-        busboy.on('finish', () => {
+        await busboy.on('finish', () => {
             console.log('Done parsing form!');
             // res.writeHead(303, {Connection: 'close', Location: '/'});
             // res.end();
         });
-        req.pipe(busboy);
-
-        await id;
     }
 }
