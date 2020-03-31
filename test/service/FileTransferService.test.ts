@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 
@@ -79,4 +79,26 @@ describe('FileTransferService', () => {
             }
         });
     });
+
+    describe('File Metadata', () => {
+        // const validId = 'someId';
+        const expectedBuffer = Buffer.from('hello');
+        const filename = 'hello.txt'
+
+        before(async () => await fileTransferService.upload(expectedBuffer, filename))
+
+        it('should throw an error if the axios request fails', async () => {
+
+
+            nock(HOST).post(URI, {}, {
+                reqheaders: { 'x-api-key': KEY }
+            }).reply(404)
+
+            await fileTransferService.download('').then(_ => assert.fail())
+        })
+    });
+
+    describe('Donwload a file', () => {
+        it('should throw an error if the')
+    })
 });
