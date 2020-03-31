@@ -23,7 +23,7 @@ export class FileTransferService {
         }
 
         const data = new FormData();
-        data.append('upload', evidence, {filename: fileName});
+        data.append('upload', evidence, fileName);
 
         const config: AxiosRequestConfig = {
             headers: {
