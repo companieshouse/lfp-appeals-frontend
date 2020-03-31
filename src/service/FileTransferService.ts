@@ -9,6 +9,8 @@ export class FileTransferService {
         this.key = key;
     }
 
+    private uri: string = `${this.host}/dev/files`;
+
     public async upload(evidence: Buffer, fileName: string): Promise<string> {
 
         if (evidence == null) {
@@ -29,12 +31,10 @@ export class FileTransferService {
             }
         };
 
-        const uri: string = `${this.host}/dev/files`;
-
-        console.log('Making a POST request to ' + uri);
+        console.log('Making a POST request to ' + this.uri);
 
         return await axios
-            .post(uri, data, config)
+            .post(this.uri, data, config)
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.data.id) {
                     console.log('Evidence ID is: ' + response.data.id);
