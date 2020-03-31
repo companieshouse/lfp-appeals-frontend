@@ -10,6 +10,7 @@ import {
     FormSubmissionProcessor,
     FormSubmissionProcessorConstructor
 } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -57,8 +58,8 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           formSchema?: AnySchema,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
-        super(template, navigation, formSchema, formSanitizeFunction, [
-            ...formSubmissionProcessors || [], Processor
+        super(template, navigation, formSchema ? new FormValidator(formSchema) : undefined,
+            formSanitizeFunction, [...formSubmissionProcessors || [], Processor
         ]);
     }
 

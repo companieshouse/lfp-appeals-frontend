@@ -11,6 +11,7 @@ import { Container } from 'inversify';
 
 import { BaseController } from 'app/controllers/BaseController';
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormValidator } from 'app/controllers/validators/FormValidator';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
@@ -40,8 +41,8 @@ function createTestController(config: ControllerConfig): any {
     // tslint:disable-next-line:new-parens
     return new class extends BaseController<any> {
         constructor() {
-            super(template, navigation, config.formSchema, config.formSanitizeFn,
-                config.processor ? [config.processor] : []);
+            super(template, navigation, config.formSchema ? new FormValidator(config.formSchema) : undefined,
+                config.formSanitizeFn, config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
             this.httpContext = config.httpContext
         }

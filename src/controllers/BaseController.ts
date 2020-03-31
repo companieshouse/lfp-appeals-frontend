@@ -1,4 +1,3 @@
-import { AnySchema } from '@hapi/joi';
 import { Maybe, Session } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
@@ -7,12 +6,12 @@ import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T;
@@ -30,10 +29,11 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
     });
 };
 
+// tslint:disable-next-line:max-classes-per-file
 export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
                           @unmanaged() readonly navigation: Navigation,
-                          @unmanaged() readonly formSchema?: AnySchema,
+                          @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           @unmanaged() readonly formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
         super();
@@ -62,9 +62,8 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
 
     @httpPost('')
     public async onPost(): Promise<void> {
-        if (this.formSchema != null) {
-            const validationResult: ValidationResult = new SchemaValidator(this.formSchema)
-                .validate(this.httpContext.request.body);
+        if (this.validator != null) {
+            const validationResult: ValidationResult = this.validator.validate(this.httpContext.request);
             if (validationResult.errors.length > 0) {
                 return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
                     this.template,
