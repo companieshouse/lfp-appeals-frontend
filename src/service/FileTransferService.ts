@@ -4,12 +4,13 @@ import { CREATED } from 'http-status-codes';
 
 export class FileTransferService {
 
+    private readonly uri: string;
+
     constructor(private readonly host: string, private readonly key: string) {
         this.host = host;
         this.key = key;
+        this.uri = `${this.host}/dev/files`;
     }
-
-    private uri: string = `${this.host}/dev/files`;
 
     public async upload(evidence: Buffer, fileName: string): Promise<string> {
 
