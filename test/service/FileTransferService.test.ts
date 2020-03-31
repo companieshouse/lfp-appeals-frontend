@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 
 import { FileTransferService } from 'app/service/FileTransferService'
@@ -45,7 +46,7 @@ describe('FileTransferService', () => {
 
             nock(HOST)
                 .post(URI,
-                    new RegExp(`form-data; name="upload"[^]*${evidence}`,'m'),
+                    new RegExp(`form-data; name="upload";[^]*${evidence}`,'m'),
                     {
                         reqheaders: {
                             'x-api-key': KEY
@@ -54,8 +55,34 @@ describe('FileTransferService', () => {
                 )
                 .reply(201, {id: EVIDENCE_ID});
 
-            const response = await evidenceUploadService.upload(evidence, 'test.pdf');
+            const response = await evidenceUploadService.upload(evidence, 'test.supported');
             expect(response).to.equal(EVIDENCE_ID);
+        });
+
+        it('should return 415 status code when unsupported medium uploaded', async () => {
+
+            const evidence: Buffer = Buffer.from('This is a test');
+
+            nock(HOST)
+                .post(URI,
+                    new RegExp(`form-data; name="upload";[^]*${evidence}`,'m'),
+                    {
+                        reqheaders: {
+                            'x-api-key': KEY
+                        },
+                    }
+                )
+                .replyWithError({
+                    message: {'message': 'unsupported file type'},
+                    code: 415,
+                });
+
+            try{
+                await evidenceUploadService.upload(evidence, 'test.not_supported');
+            } catch(err){
+                expect(err.code).to.be.equal(UNSUPPORTED_MEDIA_TYPE);
+                expect(err.message).to.contain({'message': 'unsupported file type'});
+            }
         });
     });
 });
