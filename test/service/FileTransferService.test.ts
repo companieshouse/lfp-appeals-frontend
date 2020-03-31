@@ -9,7 +9,7 @@ describe('FileTransferService', () => {
     const KEY: string = 'mock-key';
     const HOST: string = 'http://localhost';
     const URI: string = '/dev/files';
-    const evidenceUploadService = new FileTransferService(HOST + URI , KEY);
+    const fileTransferService = new FileTransferService(HOST + URI , KEY);
 
     describe('upload file', () => {
 
@@ -17,7 +17,7 @@ describe('FileTransferService', () => {
 
             [undefined, null].forEach(async evidence => {
                 try {
-                    await evidenceUploadService.upload(evidence!, 'filename')
+                    await fileTransferService.upload(evidence!, 'filename')
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Evidence file is missing')
@@ -31,7 +31,7 @@ describe('FileTransferService', () => {
 
             [undefined, null].forEach(async filename => {
                 try {
-                    await evidenceUploadService.upload(evidence as Buffer, filename!)
+                    await fileTransferService.upload(evidence as Buffer, filename!)
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('File name is missing')
@@ -55,7 +55,7 @@ describe('FileTransferService', () => {
                 )
                 .reply(201, {id: EVIDENCE_ID});
 
-            const response = await evidenceUploadService.upload(evidence, 'test.supported');
+            const response = await fileTransferService.upload(evidence, 'test.supported');
             expect(response).to.equal(EVIDENCE_ID);
         });
 
@@ -78,7 +78,7 @@ describe('FileTransferService', () => {
                 });
 
             try{
-                await evidenceUploadService.upload(evidence, 'test.not_supported');
+                await fileTransferService.upload(evidence, 'test.not_supported');
             } catch(err){
                 expect(err.code).to.be.equal(UNSUPPORTED_MEDIA_TYPE);
                 expect(err.message).to.contain({'message': 'unsupported file type'});
