@@ -2,6 +2,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 
+import { loggerInstance } from 'app/middleware/Logger';
+
 export class FileTransferService {
 
     constructor(private readonly url: string, private readonly key: string) {
@@ -9,9 +11,9 @@ export class FileTransferService {
         this.key = key;
     }
 
-    public async upload(evidence: Buffer, fileName: string): Promise<string> {
+    public async upload(file: Buffer, fileName: string): Promise<string> {
 
-        if (evidence == null) {
+        if (file == null) {
             throw new Error('File is missing');
         }
 
@@ -20,7 +22,7 @@ export class FileTransferService {
         }
 
         const data = new FormData();
-        data.append('upload', evidence, fileName);
+        data.append('upload', file, fileName);
 
         const config: AxiosRequestConfig = {
             headers: {
@@ -29,13 +31,13 @@ export class FileTransferService {
             }
         };
 
-        console.log('Making a POST request to ' + this.url);
+        loggerInstance()
+            .debug(`Making a POST request to ${this.url}`);
 
         return await axios
             .post(this.url, data, config)
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.data.id) {
-                    console.log('Evidence ID is: ' + response.data.id);
                     return response.data.id;
                 }
             }).catch((err) => {
