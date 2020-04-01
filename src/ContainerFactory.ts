@@ -10,7 +10,7 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
 import { AppealStorageService } from 'app/service/AppealStorageService';
-import { EvidenceUploadService } from 'app/service/EvidenceUploadService';
+import { FileTransferService } from 'app/service/FileTransferService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 function initiateKafkaClient (): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -55,13 +55,13 @@ export function createContainer(): Container {
                     messages: [payload.message]
                 }]);
             }
-        }))
+        }));
 
     container.bind(AppealStorageService).toConstantValue(
         new AppealStorageService(getEnvOrThrow(`APPEALS_API_URL`)));
 
-    container.bind(EvidenceUploadService).toConstantValue(
-        new EvidenceUploadService(getEnvOrDefault(`FILE_TRANSFER_API_URL`, ''),
+    container.bind(FileTransferService).toConstantValue(
+        new FileTransferService(getEnvOrDefault(`FILE_TRANSFER_API_URL`, ''),
             getEnvOrDefault(`FILE_TRANSFER_API_KEY`, '')));
 
     container.load(buildProviderModule());

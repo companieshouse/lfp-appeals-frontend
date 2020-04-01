@@ -7,13 +7,13 @@ import { Socket } from 'net';
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { EvidenceUploadService } from 'app/service/EvidenceUploadService';
+import { FileTransferService } from 'app/service/FileTransferService';
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 
 @provide(EvidenceUploadFormSubmissionProcessor)
 export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProcessor {
 
-    constructor(@inject(EvidenceUploadService) private readonly evidenceUploadService: EvidenceUploadService) {
+    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
     }
 
     async process(req: Request): Promise<void> {
@@ -56,7 +56,7 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
                     console.log('File [' + fieldname + '] Finished');
                     const fileData: Buffer = Buffer.concat(chunkArray);
                     try {
-                        await this.evidenceUploadService.upload(fileData, filename);
+                        await this.fileTransferService.upload(fileData, filename);
                     } catch (err) {
                         console.log(err)
                     }
