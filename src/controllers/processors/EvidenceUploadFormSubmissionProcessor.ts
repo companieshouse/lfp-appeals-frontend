@@ -5,6 +5,7 @@ import { provide } from 'inversify-binding-decorators';
 import { Socket } from 'net';
 
 import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { FileTransferService } from 'app/service/FileTransferService';
@@ -18,16 +19,16 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
 
     async process(req: Request): Promise<void> {
 
-        console.log(req.headers['content-type']);
-
         const appeal: Appeal = req.session
             .chain(_ => _.getExtraData())
             .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
             .map(data => data.appeal)
             .unsafeCoerce();
 
-        console.log(`Uploading file for company number: ${appeal.penaltyIdentifier.companyNumber}` +
-            ` and penalty reference: ${appeal.penaltyIdentifier.penaltyReference}`);
+        loggerInstance()
+            .info(`${EvidenceUploadFormSubmissionProcessor.name} - process:
+            Uploading file for company number: ${appeal.penaltyIdentifier.companyNumber}` +
+                ` and penalty reference: ${appeal.penaltyIdentifier.penaltyReference}`);
 
         const maxSizeBytes: number = parseInt(getEnvOrDefault('MAX_FILE_SIZE_BYTES', ''), 10);
 
@@ -45,15 +46,17 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
         await busboy.on('file',
             (fieldname: string, fileStream: Socket, filename: string, encoding: string, mimetype: string) => {
 
-                console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding
+
+                loggerInstance().debug('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding
                     + ', mimetype: ' + mimetype);
 
                 fileStream.on('data', (data: Buffer) => {
-                    console.log('File [' + fieldname + '] received ' + data.length + ' bytes for file' + filename);
+                    loggerInstance().debug('File [' + fieldname + '] received ' + data.length +
+                        ' bytes for file' + filename);
                     chunkArray.push(data);
                 });
                 fileStream.on('end', async () => {
-                    console.log('File [' + fieldname + '] Finished');
+                    loggerInstance().debug('File [' + fieldname + '] Finished');
                     const fileData: Buffer = Buffer.concat(chunkArray);
                     try {
                         await this.fileTransferService.upload(fileData, filename);
@@ -65,7 +68,7 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
             });
 
         await busboy.on('finish', () => {
-            console.log('Done parsing form!');
+            loggerInstance().debug('Done parsing form!');
             // res.writeHead(303, {Connection: 'close', Location: '/'});
             // res.end();
         });
