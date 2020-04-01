@@ -2,8 +2,6 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import * as Fs from 'fs';
 import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
-import * as Path from 'path';
-import { promisify } from 'util';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { FileMetada } from 'app/models/FileMetada';
@@ -61,21 +59,16 @@ export class FileTransferService {
         };
 
         return await axios
-            .get<FileMetada>(`https://${this.url}/${fileId}`, config)
+            .get<FileMetada>(`${this.url}/${fileId}`, config)
             .then(_ => _.data)
             .catch(_ => {
-                throw Error(`Could not retrieve file metada. Status: ${_.status}`);
+                throw Error(`Could not retrieve file metada. ${_.message}`);
             });
     }
 
-    async download(fileId: string): Promise<void> {
-        // File name has to have the original name. Make call to FILE_TRANSFER_API to get the metadata
-        const fileMetada = await this.fileMetada(fileId);
+    async download(fileId: string, downloadDir: string): Promise<void> {
 
-        // Make download request: GET https://{{FILE_TRANSFER_API_URL}}/dev/files/{{req.file_id}}/download
-        const url = `https://${this.url}/${fileId}`;
-        const path = Path.resolve(__dirname, 'images', fileMetada.name);
-
+        const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
             headers: {
                 'x-api-key': this.key
@@ -83,16 +76,23 @@ export class FileTransferService {
             responseType: 'stream'
         };
 
-        return axios.get<Buffer>(url, config)
-            .then(async (_: AxiosResponse<Buffer>) => await this.writeToFile(path, _.data))
+        return axios.get<Fs.ReadStream>(url, config)
+            .then((_: AxiosResponse<Fs.ReadStream>) => {
+                const parsedHeaders = _.headers['content-disposition'].split(';');
+                const filename = parsedHeaders[1].split('=')[1];
+                this.writeToFile(`${downloadDir}/${filename}`, _.data);
+            })
             .catch(_ => {
-                throw Error(`Could not download file metada. Status: ${_.status}`);
+                throw Error(`Could not download file metada. ${_.message}`);
             });
 
     }
 
-    private async writeToFile(path: string, data: any): Promise<void> {
-        const writeToFile = promisify(Fs.writeFile);
-        return writeToFile(path, data);
+    public writeToFile(path: string, data: Fs.ReadStream): void {
+        const writeStream = Fs.createWriteStream(path, {
+            autoClose: true
+        });
+
+        data.pipe(writeStream);
     }
 }
