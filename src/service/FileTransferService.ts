@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Response } from 'express';
 import FormData from 'form-data';
 import * as Fs from 'fs';
 import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
@@ -66,7 +67,7 @@ export class FileTransferService {
             });
     }
 
-    async download(fileId: string, downloadDir: string): Promise<void> {
+    async download(fileId: string, res: Response): Promise<Fs.ReadStream> {
 
         const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
@@ -78,9 +79,11 @@ export class FileTransferService {
 
         return axios.get<Fs.ReadStream>(url, config)
             .then((_: AxiosResponse<Fs.ReadStream>) => {
-                const parsedHeaders = _.headers['content-disposition'].split(';');
-                const filename = parsedHeaders[1].split('=')[1];
-                this.writeToFile(`${downloadDir}/${filename}`, _.data);
+                res.setHeader('Content-Type', _.headers['Content-Type']);
+                res.setHeader('Content-Length', _.headers['Content-Length']);
+                res.setHeader('Content-Disposition', _.headers['content-disposition']);
+                _.data.pipe(res);
+                return _.data;
             })
             .catch(_ => {
                 throw Error(`Could not download file metada. ${_.message}`);
@@ -88,11 +91,4 @@ export class FileTransferService {
 
     }
 
-    public writeToFile(path: string, data: Fs.ReadStream): void {
-        const writeStream = Fs.createWriteStream(path, {
-            autoClose: true
-        });
-
-        data.pipe(writeStream);
-    }
 }

@@ -6,6 +6,8 @@ import { promisify } from 'util';
 
 import { FileMetada } from 'app/models/FileMetada';
 import { FileTransferService } from 'app/service/FileTransferService';
+import Substitute from '@fluffy-spoon/substitute';
+import { Response } from 'express';
 
 describe('FileTransferService', () => {
 
@@ -127,12 +129,14 @@ describe('FileTransferService', () => {
         const downloadUrl = `${URI}/${fileID}/download`;
         const fileDataBuffer = Fs.createReadStream(fileToStream);
 
+        const mockResponse = Substitute.for<Response>();
+
         it('should throw an error if the file does not exist', async () => {
 
             createGetNockRequest(downloadUrl).reply(404);
 
             try {
-                await fileTransferService.download(fileID, downloadedDirPath);
+                await fileTransferService.download(fileID, mockResponse);
             } catch (err) {
                 expect(err.message).to.contain('404');
             }
@@ -146,7 +150,8 @@ describe('FileTransferService', () => {
 
             const readFile = promisify(Fs.readFile);
 
-            await fileTransferService.download(fileID, downloadedDirPath).then(async _ => {
+            await fileTransferService.download(fileID, mockResponse).then(async _ => {
+                _.pipe(Fs.createWriteStream(downloadedFilePath));
                 const receivedBufferString = await readFile(downloadedFilePath);
                 const expectedBufferString = await readFile(fileToStreamPath)
                 expect(receivedBufferString).to.deep.eq(expectedBufferString);
