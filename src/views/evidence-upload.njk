@@ -22,7 +22,7 @@
           {{
             govukFileUpload({
               id: 'file-upload',
-              name:'fileUpload',
+              name: 'file',
               errorMessage: Err,
               label: {
                 text: uploadText
@@ -55,7 +55,7 @@
         </dl>
       {% endif %}
 
-      <form method="post">
+      <form method="post" action="?">
         {{
           govukButton({
             text: 'Continue'
