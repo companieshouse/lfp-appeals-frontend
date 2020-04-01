@@ -57,6 +57,9 @@ describe('Base controller', () => {
         navigation: {
             back: {
                 href: '/previous'
+            },
+            forward: {
+                href: '/next'
             }
         }
     };
@@ -215,6 +218,9 @@ describe('Base controller', () => {
                 await createTestController({
                     httpContext: {
                         container,
+                        request: {
+                            query: {},
+                        },
                         response
                     },
                     processor: SadProcessor,

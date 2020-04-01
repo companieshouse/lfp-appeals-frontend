@@ -1,5 +1,5 @@
 import { Maybe, Session } from 'ch-node-session-handler';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { unmanaged } from 'inversify';
 import { httpGet, httpPost } from 'inversify-express-utils';
@@ -28,6 +28,14 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
         }
     });
 };
+
+export type ExtraActionHandlers = { [action: string]: ActionHandlerConstructor }
+
+export interface ActionHandler {
+    handle(request: Request, response: Response): Promise<void>
+}
+
+export type ActionHandlerConstructor = new (...args: any[]) => ActionHandler
 
 // tslint:disable-next-line:max-classes-per-file
 export abstract class BaseController<FORM> extends BaseAsyncHttpController {
@@ -62,6 +70,24 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
 
     @httpPost('')
     public async onPost(): Promise<void> {
+        const action: string = this.httpContext.request.query?.action;
+        if (action != null) {
+            const actionHandlerType = this.getExtraActionHandlers()[action];
+            if (actionHandlerType == null) {
+                throw new Error(`Action handler for action ${action} must be registered`)
+            }
+            const actionHandler = this.httpContext.container.get(actionHandlerType);
+            return await actionHandler.handle(this.httpContext.request, this.httpContext.response);
+        }
+
+        return await this.handleDefaultAction();
+    }
+
+    protected getExtraActionHandlers(): ExtraActionHandlers {
+        return {}
+    }
+
+    private async handleDefaultAction(): Promise<void> {
         if (this.validator != null) {
             const validationResult: ValidationResult = this.validator.validate(this.httpContext.request);
             if (validationResult.errors.length > 0) {
@@ -99,6 +125,9 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
             navigation: {
                 back: {
                     href: this.navigation.previous(this.httpContext.request)
+                },
+                forward: {
+                    href: this.navigation.next(this.httpContext.request)
                 }
             }
         };

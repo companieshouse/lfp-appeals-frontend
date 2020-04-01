@@ -1,7 +1,10 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
+import { Request, Response } from 'express';
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { ActionHandler, BaseController, ExtraActionHandlers } from 'app/controllers/BaseController';
 import { EvidenceUploadFormSubmissionProcessor }
     from 'app/controllers/processors/EvidenceUploadFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -25,14 +28,31 @@ const navigation = {
     }
 };
 
+@provide(FileUploadActionHandler)
+class FileUploadActionHandler implements ActionHandler {
+    // tslint:disable-next-line: max-line-length
+    constructor(@inject(EvidenceUploadFormSubmissionProcessor) private readonly processor: EvidenceUploadFormSubmissionProcessor) {}
+
+    async handle(request: Request, response: Response): Promise<void> {
+        await this.processor.process(request);
+        response.redirect(request.url);
+    }
+}
+
+// tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
     constructor() {
-        super(template, navigation, undefined, undefined,
-            [EvidenceUploadFormSubmissionProcessor]);
+        super(template, navigation, undefined);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
         return appeal.reasons?.other;
+    }
+
+    protected getExtraActionHandlers(): ExtraActionHandlers {
+        return {
+            'upload-file': FileUploadActionHandler
+        };
     }
 }

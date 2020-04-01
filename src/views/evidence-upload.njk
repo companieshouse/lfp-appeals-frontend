@@ -11,58 +11,60 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="post" enctype="multipart/form-data" id="file-upload-form">
-        <h1 class="govuk-heading-xl">
-          Add documents to support your application
-        </h1>
+      <h1 class="govuk-heading-xl">
+        Add documents to support your application
+      </h1>
 
+      <form method="post" enctype="multipart/form-data" action="?action=upload-file">
         <p>Add a document</p>
 
         <div class='file-upload'>
           {{
-          govukFileUpload({
-            id: 'file-upload',
-            name:'fileUpload',
-            errorMessage: Err,
-            label: {
-              text: uploadText
-            }
-          })
+            govukFileUpload({
+              id: 'file-upload',
+              name:'fileUpload',
+              errorMessage: Err,
+              label: {
+                text: uploadText
+              }
+            })
           }}
           {{
-          govukButton({
-            text: 'Add document',
-            classes: 'govuk-button--secondary'
-          })
+            govukButton({
+              text: 'Add document',
+              classes: 'govuk-button--secondary'
+            })
           }}
         </div>
-
-        {% if attachments and attachments.length > 0 %}
-          <dl class="govuk-upload-list">
-            {% for attachment in attachments | reverse %}
-              <div class="ch-upload-list__row uploaded-file-{{loop.index0}}">
-                <dt class="ch-upload-list__key govuk-visually-hidden">
-                  Uploaded file
-                </dt>
-                <dd class="ch-upload-list__value">
-                  <a href="#" class="govuk-link">{{ attachment.name }}</a>
-                </dd>
-                <dd class="ch-upload-list__actions">
-                </dd>
-              </div>
-            {% endfor %}
-          </dl>
-        {% endif %}
-
       </form>
-      {{
-      govukButton({
-        text: 'Continue'
-      })
-      }}
+
+      {% if attachments and attachments.length > 0 %}
+        <dl class="govuk-upload-list">
+          {% for attachment in attachments | reverse %}
+            <div class="ch-upload-list__row uploaded-file-{{loop.index0}}">
+              <dt class="ch-upload-list__key govuk-visually-hidden">
+                Uploaded file
+              </dt>
+              <dd class="ch-upload-list__value">
+                <a href="#" class="govuk-link">{{ attachment.name }}</a>
+              </dd>
+              <dd class="ch-upload-list__actions">
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+      {% endif %}
+
+      <form method="post">
+        {{
+          govukButton({
+            text: 'Continue'
+          })
+        }}
+      </form>
 
       <p>
-        <a href="#" class="govuk-link">Continue without adding documents</a>
+        <a href="{{ navigation.forward.href }}" class="govuk-link">Continue without adding documents</a>
       </p>
     </div>
   </div>
