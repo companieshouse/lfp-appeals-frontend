@@ -55,9 +55,24 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
                         ' bytes for file' + filename);
                     chunkArray.push(data);
                 });
+
+                fileStream.on('limit', () => {
+                    fileStream.destroy();
+                    const maxInMB: number = Math.floor(maxSizeBytes / (1024 * 1024));
+
+                    loggerInstance().debug('File limit' + maxInMB + 'MB reached for file ' + filename);
+
+                    throw new Error('File size must be smaller than ' + maxInMB + 'MB')
+                });
+
                 fileStream.on('end', async () => {
                     loggerInstance().debug('File [' + fieldname + '] Finished');
                     const fileData: Buffer = Buffer.concat(chunkArray);
+
+                    if (fileData.length === 0) {
+                        throw new Error('You must add a document');
+                    }
+
                     await this.fileTransferService.upload(fileData, filename)
                         .catch((err) => {
                             console.log(err)
