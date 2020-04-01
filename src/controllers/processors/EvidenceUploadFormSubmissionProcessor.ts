@@ -58,12 +58,10 @@ export class EvidenceUploadFormSubmissionProcessor implements FormSubmissionProc
                 fileStream.on('end', async () => {
                     loggerInstance().debug('File [' + fieldname + '] Finished');
                     const fileData: Buffer = Buffer.concat(chunkArray);
-                    try {
-                        await this.fileTransferService.upload(fileData, filename);
-                    } catch (err) {
-                        console.log(err)
-                    }
-
+                    await this.fileTransferService.upload(fileData, filename)
+                        .catch((err) => {
+                            console.log(err)
+                        });
                 });
             });
 
