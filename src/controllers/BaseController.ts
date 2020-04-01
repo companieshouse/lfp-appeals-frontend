@@ -29,15 +29,12 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
     });
 };
 
-export type ExtraActionHandlers = { [action: string]: ActionHandlerConstructor }
-
 export interface ActionHandler {
-    handle(request: Request, response: Response): Promise<void>
+    handle(request: Request, response: Response): void | Promise<void>
 }
 
 export type ActionHandlerConstructor = new (...args: any[]) => ActionHandler
 
-// tslint:disable-next-line:max-classes-per-file
 export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
                           @unmanaged() readonly navigation: Navigation,
@@ -71,53 +68,58 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     @httpPost('')
     public async onPost(): Promise<void> {
         const action: string = this.httpContext.request.query?.action;
+
         if (action != null) {
-            const actionHandlerType = this.getExtraActionHandlers()[action];
-            if (actionHandlerType == null) {
+            let actionHandler = this.getExtraActionHandlers()[action];
+            if (actionHandler == null) {
                 throw new Error(`Action handler for action ${action} must be registered`)
             }
-            const actionHandler = this.httpContext.container.get(actionHandlerType);
-            return await actionHandler.handle(this.httpContext.request, this.httpContext.response);
+            if (typeof actionHandler === 'function') {
+                actionHandler = this.httpContext.container.get(actionHandler) as ActionHandler;
+            }
+            return actionHandler.handle(this.httpContext.request, this.httpContext.response);
+        } else {
+            return this.getDefaultActionHandler().handle(this.httpContext.request, this.httpContext.response);
         }
-
-        return await this.handleDefaultAction();
     }
 
-    protected getExtraActionHandlers(): ExtraActionHandlers {
+    protected getExtraActionHandlers(): Record<string, ActionHandler | ActionHandlerConstructor> {
         return {}
     }
 
-    private async handleDefaultAction(): Promise<void> {
-        if (this.validator != null) {
-            const validationResult: ValidationResult = this.validator.validate(this.httpContext.request);
-            if (validationResult.errors.length > 0) {
-                return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                    this.template,
-                    {
-                        ...this.httpContext.request.body,
-                        validationResult,
-                        ...this.prepareNavigationConfig()
+    private getDefaultActionHandler(): ActionHandler {
+        const that = this;
+        return {
+           async handle(request: Request, response: Response): Promise<void> {
+                if (that.validator != null) {
+                    const validationResult: ValidationResult = that.validator.validate(request);
+                    if (validationResult.errors.length > 0) {
+                        return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
+                            that.template,
+                            {
+                                ...request.body,
+                                validationResult,
+                                ...that.prepareNavigationConfig()
+                            }
+                        );
                     }
-                );
+                }
+
+                if (that.formSanitizeFunction != null) {
+                    request.body = that.formSanitizeFunction(request.body);
+                    loggerInstance().debug(`${BaseController.name} - sanitized form body: ${JSON.stringify(request.body)}`);
+                }
+
+                if (that.formSubmissionProcessors != null) {
+                    for (const processorType of that.formSubmissionProcessors) {
+                        const processor = that.httpContext.container.get(processorType);
+                        await processor.process(request, response);
+                    }
+                }
+
+                return response.redirect(that.navigation.next(request));
             }
         }
-
-        if (this.formSanitizeFunction != null) {
-            this.httpContext.request.body = this.formSanitizeFunction(this.httpContext.request.body);
-            loggerInstance()
-                .debug(`
-                ${BaseController.name} - Sanitized form body: ${JSON.stringify(this.httpContext.request.body)}
-                `);
-        }
-
-        if (this.formSubmissionProcessors != null) {
-            for (const processorType of this.formSubmissionProcessors) {
-                const processor = this.httpContext.container.get(processorType);
-                await processor.process(this.httpContext.request, this.httpContext.response);
-            }
-        }
-
-        return this.httpContext.response.redirect(this.navigation.next(this.httpContext.request));
     }
 
     private prepareNavigationConfig(): any {
