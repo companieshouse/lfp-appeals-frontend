@@ -6,7 +6,7 @@ import { unmanaged } from 'inversify';
 import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
-import { FormSubmissionProcessorConstructor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -37,18 +37,18 @@ const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
 const sessionCookieSecret = getEnvOrThrow('COOKIE_SECRET');
 const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
 
-export interface ActionHandler {
+export interface FormActionHandler {
     handle(request: Request, response: Response): void | Promise<void>
 }
 
-export type ActionHandlerConstructor = new (...args: any[]) => ActionHandler
+export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHandler
 
 export class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
                           @unmanaged() readonly navigation: Navigation,
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          @unmanaged() readonly formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
+                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[]) {
         super();
         this.navigation = createChangeModeAwareNavigationProxy(navigation);
     }
@@ -116,7 +116,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 throw new Error(`Action handler for action ${action} must be registered`)
             }
             if (typeof actionHandler === 'function') {
-                actionHandler = this.httpContext.container.get(actionHandler) as ActionHandler;
+                actionHandler = this.httpContext.container.get(actionHandler) as FormActionHandler;
             }
             return actionHandler.handle(this.httpContext.request, this.httpContext.response);
         } else {
@@ -129,7 +129,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * <p>
      * Designed to be overridden.
      */
-    protected getExtraActionHandlers(): Record<string, ActionHandler | ActionHandlerConstructor> {
+    protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         return {}
     }
 
@@ -143,7 +143,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      *  <p>
      *  Controllers that extend this class can shape session model by overriding {@link prepareSessionModelPriorSave }.
      */
-    private getDefaultActionHandler(): ActionHandler {
+    private getDefaultActionHandler(): FormActionHandler {
         const that = this;
         return {
             async handle(request: Request, response: Response): Promise<void> {
@@ -166,10 +166,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                     loggerInstance().debug(`${BaseController.name} - sanitized form body: ${JSON.stringify(request.body)}`);
                 }
 
-                if (that.formSubmissionProcessors != null) {
-                    for (const processorType of that.formSubmissionProcessors) {
-                        const processor = that.httpContext.container.get(processorType);
-                        await processor.process(request, response);
+                if (that.formActionProcessors != null) {
+                    for (const actionProcessorType of that.formActionProcessors) {
+                        const actionProcessor = that.httpContext.container.get(actionProcessorType);
+                        await actionProcessor.process(request, response);
                     }
                 }
 

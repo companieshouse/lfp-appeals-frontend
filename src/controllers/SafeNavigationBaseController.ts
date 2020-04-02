@@ -4,9 +4,9 @@ import { provide } from 'inversify-binding-decorators';
 
 import { BaseController, FormSanitizeFunction } from 'app/controllers/BaseController';
 import {
-    FormSubmissionProcessor,
-    FormSubmissionProcessorConstructor
-} from 'app/controllers/processors/FormSubmissionProcessor';
+    FormActionProcessor,
+    FormActionProcessorConstructor
+} from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -16,7 +16,7 @@ import { Navigation } from 'app/utils/navigation/navigation';
 type RequestWithNavigation = Request & { navigation: Navigation; };
 
 @provide(Processor)
-class Processor implements FormSubmissionProcessor {
+class Processor implements FormActionProcessor {
     process(request: RequestWithNavigation): void {
         const session = request.session.unsafeCoerce();
         const applicationData: ApplicationData = session.getExtraData()
@@ -44,9 +44,9 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           navigation: Navigation,
                           formSchema?: AnySchema,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          formSubmissionProcessors?: FormSubmissionProcessorConstructor[]) {
+                          formActionProcessors?: FormActionProcessorConstructor[]) {
         super(template, navigation, formSchema ? new FormValidator(formSchema) : undefined,
-            formSanitizeFunction, [...formSubmissionProcessors || [], Processor
+            formSanitizeFunction, [...formActionProcessors || [], Processor
         ]);
     }
 

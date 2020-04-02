@@ -12,7 +12,7 @@ import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
@@ -34,7 +34,7 @@ type ControllerConfig = {
         request?: Partial<Request>
         response: Partial<Response>
     }
-    processor?: new (...args:any[]) => FormSubmissionProcessor
+    processor?: new (...args:any[]) => FormActionProcessor
 }
 
 function createTestController(config: ControllerConfig): any {
@@ -196,7 +196,7 @@ describe('Safe navigation base controller', () => {
 
         it ('should not store navigation pass when no redirect is about to be made', () => {
             // tslint:disable-next-line:max-classes-per-file
-            class SadProcessor implements FormSubmissionProcessor {
+            class SadProcessor implements FormActionProcessor {
                 process(): void | Promise<void> {
                     return Promise.reject(new Error(':('));
                 }

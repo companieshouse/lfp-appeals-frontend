@@ -13,7 +13,7 @@ import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
 
 import { BaseController } from 'app/controllers/BaseController';
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -36,7 +36,7 @@ type ControllerConfig = {
     }
     formSchema?: AnySchema
     formSanitizeFn?: (formBody: any) => any
-    processor?: new (...args:any[]) => FormSubmissionProcessor
+    processor?: new (...args:any[]) => FormActionProcessor
     viewModel?: {}
 }
 
@@ -181,7 +181,7 @@ describe('Base controller', () => {
 
         it('should redirect to next page when processing is succeeded', async () => {
             // tslint:disable-next-line:max-classes-per-file
-            class HappyProcessor implements FormSubmissionProcessor {
+            class HappyProcessor implements FormActionProcessor {
                 process(): void | Promise<void> {
                     return Promise.resolve();
                 }
@@ -209,7 +209,7 @@ describe('Base controller', () => {
 
         it('should throw error when processing failed', async () => {
             // tslint:disable-next-line:max-classes-per-file
-            class SadProcessor implements FormSubmissionProcessor {
+            class SadProcessor implements FormActionProcessor {
                 process(): void | Promise<void> {
                     return Promise.reject(new Error(':('));
                 }

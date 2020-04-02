@@ -8,7 +8,7 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 
-import { UserEmailFormSubmissionProcessor } from 'app/controllers/processors/UserEmailFormSubmissionProcessor';
+import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -19,7 +19,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
     it('should throw error when session does not exist', async () => {
         const emailService = createSubstituteOf<EmailService>();
 
-        const processor = new UserEmailFormSubmissionProcessor(emailService);
+        const processor = new UserEmailFormActionProcessor(emailService);
         try {
             await processor.process({session: Maybe.empty() as Maybe<Session>} as Request);
             assert.fail();
@@ -33,7 +33,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
     it('should send right email to logged in user', async () => {
         const emailService = createSubstituteOf<EmailService>();
 
-        const processor = new UserEmailFormSubmissionProcessor(emailService);
+        const processor = new UserEmailFormActionProcessor(emailService);
         await processor.process({
             session: Maybe.of(
                 new Session({

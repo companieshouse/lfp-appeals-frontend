@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
-import { ActionHandler, ActionHandlerConstructor, BaseController } from 'app/controllers/BaseController';
+import { BaseController, FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { Appeal } from 'app/models/Appeal';
@@ -38,7 +38,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
-    protected getExtraActionHandlers(): Record<string, ActionHandler | ActionHandlerConstructor> {
+    protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         const that = this;
         return {
             'upload-file': {
