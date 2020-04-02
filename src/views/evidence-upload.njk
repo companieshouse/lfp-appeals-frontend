@@ -16,7 +16,13 @@
       </h1>
 
       <form method="post" enctype="multipart/form-data" action="?action=upload-file">
-        <p>Add a document</p>
+        {% set uploadText %}
+          {% if attachments.length > 0 %}
+            Add another document
+          {% else %}
+            Add a document
+          {% endif %}
+        {% endset %}
 
         <div class='file-upload'>
           {{
