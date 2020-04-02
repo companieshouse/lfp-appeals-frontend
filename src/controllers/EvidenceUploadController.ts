@@ -39,10 +39,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return {
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
-
                     await parseFormData(request, response);
 
-                    if(!request.file) response.redirect(request.url);
+                    if (!request.file) {
+                        response.redirect(request.route.path)
+                    }
 
                     const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
 
