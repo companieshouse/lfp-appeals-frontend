@@ -35,8 +35,14 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
-        appeal.reasons.other.title = value.title;
-        appeal.reasons.other.description = value.description;
+        if (appeal.reasons?.other != null) {
+            appeal.reasons.other.title = value.title;
+            appeal.reasons.other.description = value.description;
+        } else {
+            appeal.reasons = {
+                other: value
+            }
+        }
         loggerInstance()
             .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
         return appeal;
