@@ -53,17 +53,33 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         this.navigation = createChangeModeAwareNavigationProxy(navigation);
     }
 
+    /**
+     * GET handler that renders template with session data if present.
+     * <p>
+     * Controllers that extend this class can shape view model by overriding either {@link prepareViewModelFromAppeal}
+     * if view model can be rendered purely of appeal data or {@link prepareViewModelFromSession} if access to
+     * whole session is necessary.
+     */
     @httpGet('')
     public async onGet(): Promise<void> {
         return await this.render(
             this.template,
             {
-                ...this.prepareViewModelFromSession(this.httpContext.request.session.unsafeCoerce()),
+                ...this.httpContext.request.session
+                    .map(session => this.prepareViewModelFromSession(session))
+                    .orDefault({} as Record<string, any> & FORM),
                 ...this.prepareNavigationConfig()
             }
         );
     }
 
+    /**
+     * Builds view model based of session data by delegating to {@link prepareViewModelFromAppeal}.
+     * <p>
+     * Designed to be overridden.
+     *
+     * @param session
+     */
     protected prepareViewModelFromSession(session: Session): Record<string, any> & FORM {
         const applicationData: ApplicationData = session
             .getExtraData()
@@ -73,11 +89,23 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         return this.prepareViewModelFromAppeal(applicationData.appeal || {});
     }
 
+    /**
+     * Builds view model based of appeal data. By default it returns empty object.
+     * <p>
+     * Designed to be overridden.
+     *
+     * @param appeal
+     */
     // @ts-ignore
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
         return {} as FORM
     }
 
+    /**
+     * POST handler that by delegates handling to {@link getDefaultActionHandler} if no action query argument is present
+     * or to one of extra handlers defined in {@link getExtraActionHandlers} map if action query is present. If there is
+     * no matching action handler for action query argument then an error will be thrown.
+     */
     @httpPost('')
     public async onPost(): Promise<void> {
         const action: string = this.httpContext.request.query?.action;
@@ -96,10 +124,25 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         }
     }
 
+    /**
+     * Returns map of additional action handlers which is empty by default.
+     * <p>
+     * Designed to be overridden.
+     */
     protected getExtraActionHandlers(): Record<string, ActionHandler | ActionHandlerConstructor> {
         return {}
     }
 
+    /**
+     * Returns default action handler that:
+     *  - validates form data and renders errors when needed (if validator is provided),
+     *  - sanitizes form data (if sanitize function is provided),
+     *  - performs additional processing (if one or more processor is provided),
+     *  - persists session in database,
+     *  - redirects to next navigation point.
+     *  <p>
+     *  Controllers that extend this class can shape session model by overriding {@link prepareModelPriorSessionSave }.
+     */
     private getDefaultActionHandler(): ActionHandler {
         const that = this;
         return {
@@ -151,11 +194,25 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         }
     }
 
+    /**
+     * Builds session model based on both existing appeal data and form data. By default it makes no change.
+     * <p>
+     * Designed to be overridden.
+     */
     // @ts-ignore
     protected prepareModelPriorSessionSave(appeal: Appeal, value: FORM): Appeal {
         return appeal;
     }
 
+    /**
+     * Persists session state in database and serves refreshed session cookie to the browser. It it part of an internal
+     * API nto intended for override. It remains exposed to controllers that extends this class in case on of the
+     * extra action handlers needs to persist session after modification.
+     * <p>
+     * Cause it is internal API it assumes existence of session and throws an error when called while session was empty.
+     *
+     * Warning: it should not be overridden.
+     */
     protected async persistSession(): Promise<void> {
         const session = this.httpContext.request.session.unsafeCoerce();
 
