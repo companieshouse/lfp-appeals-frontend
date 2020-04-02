@@ -13,7 +13,7 @@ import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
 
 import { BaseController } from 'app/controllers/BaseController';
-import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
+import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -36,7 +36,7 @@ type ControllerConfig = {
     }
     formSchema?: AnySchema
     formSanitizeFn?: (formBody: any) => any
-    processor?: new (...args:any[]) => FormActionProcessor
+    processor?: FormActionProcessorConstructor
     viewModel?: {}
 }
 
