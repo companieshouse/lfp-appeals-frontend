@@ -34,7 +34,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
         return appeal.reasons?.other;
     }
 
-    protected prepareModelPriorSessionSave(appeal: Appeal, value: OtherReason): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
         const model = {
             ...appeal,
             reasons: {

@@ -141,7 +141,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      *  - persists session in database,
      *  - redirects to next navigation point.
      *  <p>
-     *  Controllers that extend this class can shape session model by overriding {@link prepareModelPriorSessionSave }.
+     *  Controllers that extend this class can shape session model by overriding {@link prepareSessionModelPriorSave }.
      */
     private getDefaultActionHandler(): ActionHandler {
         const that = this;
@@ -184,7 +184,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                         });
 
                     // tslint:disable-next-line: max-line-length
-                    applicationData.appeal = that.prepareModelPriorSessionSave(applicationData.appeal || {}, request.body);
+                    applicationData.appeal = that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
 
                     await that.persistSession();
                 }
@@ -200,7 +200,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * Designed to be overridden.
      */
     // @ts-ignore
-    protected prepareModelPriorSessionSave(appeal: Appeal, value: FORM): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: FORM): Appeal {
         return appeal;
     }
 
