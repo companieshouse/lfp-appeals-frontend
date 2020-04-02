@@ -7,6 +7,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { FileTransferService } from 'app/service/FileTransferService';
@@ -59,6 +60,7 @@ export const createApp = (session?: Session, configureBindings: (container: Cont
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealStorageService).toConstantValue(Substitute.for<AppealStorageService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
+        container.bind(FileTransferFeatureMiddleware).toConstantValue(Substitute.for<FileTransferFeatureMiddleware>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
 
         configureBindings(container);
