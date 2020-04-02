@@ -1,11 +1,9 @@
-import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
 import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
 
 import { ActionHandler, ActionHandlerConstructor, BaseController } from 'app/controllers/BaseController';
-import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -25,22 +23,9 @@ const navigation = {
     }
 };
 
-@provide(UpdateSessionProcessor)
-class UpdateSessionProcessor extends UpdateSessionFormSubmissionProcessor<any> {
-    constructor(@inject(SessionStore) sessionStore: SessionStore) {
-        super(sessionStore);
-    }
-
-    protected prepareModelPriorSessionSave(appeal: Appeal): Appeal {
-        return appeal;
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
-    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService,
-                @inject(UpdateSessionProcessor) private readonly updateSessionProcessor: UpdateSessionProcessor) {
+    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation);
     }
 
@@ -67,9 +52,9 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                         id, name: request.file.originalname, contentType: request.file.mimetype, size: request.file.size
                     }];
 
-                    await that.updateSessionProcessor.process(request, response);
+                    await that.persistSession();
 
-                    response.redirect(request.url);
+                    response.redirect(request.route.path);
                 }
             }
         };

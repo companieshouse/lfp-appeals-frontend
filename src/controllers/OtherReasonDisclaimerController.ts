@@ -22,8 +22,4 @@ export class OtherReasonDisclaimerController extends SafeNavigationBaseControlle
     constructor() {
         super(template, navigation);
     }
-
-    protected prepareViewModelFromAppeal(): any {
-        return {};
-    }
 }

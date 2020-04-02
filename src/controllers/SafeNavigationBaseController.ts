@@ -1,8 +1,5 @@
 import { AnySchema } from '@hapi/joi';
-import { SessionStore } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Request } from 'express';
-import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { BaseController, FormSanitizeFunction } from 'app/controllers/BaseController';
@@ -13,7 +10,6 @@ import {
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -21,33 +17,24 @@ type RequestWithNavigation = Request & { navigation: Navigation; };
 
 @provide(Processor)
 class Processor implements FormSubmissionProcessor {
-    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore) { }
-
-    async process(request: RequestWithNavigation): Promise<void> {
+    process(request: RequestWithNavigation): void {
         const session = request.session.unsafeCoerce();
         const applicationData: ApplicationData = session.getExtraData()
             .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .orDefault({} as ApplicationData);
+            .orDefaultLazy(() => {
+                const value = {} as ApplicationData;
+                session.saveExtraData(APPLICATION_DATA_KEY, value);
+                return value
+            });
 
         const permissions = applicationData?.navigation?.permissions || [];
         const page = request.navigation.next(request);
 
         if (!permissions.includes(page)) {
-            session.saveExtraData(APPLICATION_DATA_KEY, this.updateNavigationPermissions(applicationData, page));
-
-            await this.sessionStore
-                .store(Cookie.representationOf(session, getEnvOrThrow('COOKIE_SECRET')), session.data)
-                .run();
+            applicationData.navigation = {
+                permissions: [...permissions, page]
+            };
         }
-    }
-
-    private updateNavigationPermissions(applicationData: ApplicationData, page: string): ApplicationData {
-        return {
-            ...applicationData,
-            navigation: {
-                permissions: [...applicationData?.navigation?.permissions || [], page]
-            }
-        };
     }
 }
 

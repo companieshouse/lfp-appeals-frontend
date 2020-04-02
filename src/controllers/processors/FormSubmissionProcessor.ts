@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 export type FormSubmissionProcessorConstructor = new (...args: any[]) => FormSubmissionProcessor
 
 export interface FormSubmissionProcessor {
-    process(req: Request, res?: Response): void | Promise<void>
+    process(request: Request): void | Promise<void>
 }

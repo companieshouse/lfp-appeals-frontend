@@ -1,4 +1,5 @@
-import { Maybe, Session } from 'ch-node-session-handler';
+import { Maybe, Session, SessionStore } from 'ch-node-session-handler';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { unmanaged } from 'inversify';
@@ -10,6 +11,7 @@ import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -29,13 +31,19 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
     });
 };
 
+const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
+const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
+const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
+const sessionCookieSecret = getEnvOrThrow('COOKIE_SECRET');
+const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
+
 export interface ActionHandler {
     handle(request: Request, response: Response): void | Promise<void>
 }
 
 export type ActionHandlerConstructor = new (...args: any[]) => ActionHandler
 
-export abstract class BaseController<FORM> extends BaseAsyncHttpController {
+export class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
                           @unmanaged() readonly navigation: Navigation,
                           @unmanaged() readonly validator?: Validator,
@@ -90,7 +98,7 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
     private getDefaultActionHandler(): ActionHandler {
         const that = this;
         return {
-           async handle(request: Request, response: Response): Promise<void> {
+            async handle(request: Request, response: Response): Promise<void> {
                 if (that.validator != null) {
                     const validationResult: ValidationResult = that.validator.validate(request);
                     if (validationResult.errors.length > 0) {
@@ -117,9 +125,48 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
                     }
                 }
 
+                const session = request.session.extract();
+                if (session != null) {
+                    const applicationData: ApplicationData = session.getExtraData()
+                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+                        .orDefaultLazy(() => {
+                            const value = {} as ApplicationData;
+                            session.saveExtraData(APPLICATION_DATA_KEY, value);
+                            return value
+                        });
+
+                    // tslint:disable-next-line: max-line-length
+                    applicationData.appeal = that.prepareModelPriorSessionSave(applicationData.appeal || {}, request.body);
+
+                    await that.persistSession();
+                }
+
                 return response.redirect(that.navigation.next(request));
             }
         }
+    }
+
+    protected async persistSession(): Promise<void> {
+        const session = this.httpContext.request.session.unsafeCoerce();
+
+        const result = await this.httpContext.container.get(SessionStore)
+            .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
+            .run();
+
+        result.ifLeft(_ => {
+            loggerInstance().error(`${BaseController.name} - update session: failed to save session`);
+            throw new Error('Failed to save session')
+        });
+
+        this.httpContext.response
+            .cookie(sessionCookieName, this.httpContext.request.cookies[sessionCookieName], {
+                domain: sessionCookieDomain,
+                path: '/',
+                httpOnly: true,
+                secure: sessionCookieSecureFlag === 'true',
+                maxAge: sessionTimeToLiveInSeconds * 1000,
+                encode: String
+            })
     }
 
     private prepareNavigationConfig(): any {
@@ -135,5 +182,13 @@ export abstract class BaseController<FORM> extends BaseAsyncHttpController {
         };
     }
 
-    protected abstract prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM;
+    // @ts-ignore
+    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
+        return {} as FORM
+    }
+
+    // @ts-ignore
+    protected prepareModelPriorSessionSave(appeal: Appeal, value: FORM): Appeal {
+        return appeal;
+    }
 }

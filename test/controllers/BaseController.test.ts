@@ -1,4 +1,7 @@
 import 'reflect-metadata'
+// tslint:disable-next-line: ordered-imports
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+loadEnvironmentVariablesFromFiles();
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
@@ -106,7 +109,8 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
-                        body: formBody
+                        body: formBody,
+                        session: Maybe.empty()
                     },
                     response
                 },
@@ -132,7 +136,7 @@ describe('Base controller', () => {
                     request: {
                         query: {},
                         body: formBody,
-                        session: Maybe.of(new Session())
+                        session: Maybe.empty()
                     },
                     response
                 },
@@ -165,6 +169,7 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
+                        session: Maybe.empty()
                     },
                     response
                 }
@@ -191,6 +196,7 @@ describe('Base controller', () => {
                     container,
                     request: {
                         query: {},
+                        session: Maybe.empty()
                     },
                     response
                 },
