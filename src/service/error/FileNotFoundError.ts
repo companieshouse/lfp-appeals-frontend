@@ -1,0 +1,8 @@
+import { AbstractFileError } from './AbstractFileError';
+
+export class FileNotFoundError extends AbstractFileError {
+
+    constructor(fileId: string, extra?: string){
+        super(FileNotFoundError.name, fileId, f => `File ${f} not found.`, extra);
+    }
+}

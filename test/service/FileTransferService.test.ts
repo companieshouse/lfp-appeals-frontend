@@ -1,4 +1,6 @@
+import Substitute from '@fluffy-spoon/substitute';
 import { assert, expect } from 'chai';
+import { Response } from 'express';
 import * as Fs from 'fs';
 import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
@@ -6,8 +8,8 @@ import { promisify } from 'util';
 
 import { FileMetada } from 'app/models/FileMetada';
 import { FileTransferService } from 'app/service/FileTransferService';
-import Substitute from '@fluffy-spoon/substitute';
-import { Response } from 'express';
+import { FileDownloadError } from 'app/service/error/FileDownloadError';
+import { FileNotFoundError } from 'app/service/error/FileNotFoundError';
 
 describe('FileTransferService', () => {
 
@@ -108,7 +110,7 @@ describe('FileTransferService', () => {
             try {
                 await fileTransferService.fileMetada(fileID);
             } catch (err) {
-                expect(err.message).to.contain('404');
+                expect(err.name).to.eq(FileNotFoundError.name);
             }
 
         });
@@ -121,11 +123,11 @@ describe('FileTransferService', () => {
     });
 
     describe('Download a file', () => {
-        const fileToStream = 'package.json'
+        const fileToStream = 'package.json';
         const fileToStreamPath = `./${fileToStream}`;
-        const downloadFileName = 'hello.txt'
-        const downloadedDirPath =  `./test`
-        const downloadedFilePath = `${downloadedDirPath}/${downloadFileName}`
+        const downloadFileName = 'hello.txt';
+        const downloadedDirPath = `./test`;
+        const downloadedFilePath = `${downloadedDirPath}/${downloadFileName}`;
         const downloadUrl = `${URI}/${fileID}/download`;
         const fileDataBuffer = Fs.createReadStream(fileToStream);
 
@@ -138,11 +140,11 @@ describe('FileTransferService', () => {
             try {
                 await fileTransferService.download(fileID, mockResponse);
             } catch (err) {
-                expect(err.message).to.contain('404');
+                expect(err.name).to.eq(FileDownloadError.name);
             }
         });
 
-        it('should return the 200 and the correct file content', async () => {
+        it('should return the 200 and put the correct file content into the response object', async () => {
 
             createGetNockRequest(downloadUrl).reply(200, fileDataBuffer, {
                 'content-disposition': `attachment; filename=${downloadFileName}`
@@ -150,17 +152,18 @@ describe('FileTransferService', () => {
 
             const readFile = promisify(Fs.readFile);
 
-            await fileTransferService.download(fileID, mockResponse).then(async _ => {
-                _.pipe(Fs.createWriteStream(downloadedFilePath));
-                const receivedBufferString = await readFile(downloadedFilePath);
-                const expectedBufferString = await readFile(fileToStreamPath)
-                expect(receivedBufferString).to.deep.eq(expectedBufferString);
-            });
+
+
+            await fileTransferService.download(fileID, Fs.createWriteStream(downloadedFilePath));
+            const receivedBufferString = await readFile(downloadedFilePath);
+            const expectedBufferString = await readFile(fileToStreamPath);
+            expect(receivedBufferString).to.deep.eq(expectedBufferString);
+
 
         });
 
         after(() => {
             Fs.unlinkSync(downloadedFilePath);
-        })
+        });
     });
 });
