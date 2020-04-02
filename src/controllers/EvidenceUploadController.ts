@@ -7,10 +7,12 @@ import { controller } from 'inversify-express-utils';
 import { ActionHandler, ActionHandlerConstructor, BaseController } from 'app/controllers/BaseController';
 import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/service/FileTransferService';
+import { getEnv } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
@@ -21,6 +23,9 @@ const navigation = {
         return OTHER_REASON_PAGE_URI;
     },
     next(): string {
+        if (getEnv('FILE_TRANSFER_FEATURE') === '1') {
+            return EVIDENCE_UPLOAD_PAGE_URI;
+        }
         return CHECK_YOUR_APPEAL_PAGE_URI;
     }
 };
@@ -37,7 +42,7 @@ class UpdateSessionProcessor extends UpdateSessionFormSubmissionProcessor<any> {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService,
                 @inject(UpdateSessionProcessor) private readonly updateSessionProcessor: UpdateSessionProcessor) {

@@ -57,10 +57,10 @@ export const createApp = (session?: Session, configureBindings: (container: Cont
 
         container.bind(AuthMiddleware).toConstantValue(new AuthMiddleware());
         container.bind(SessionMiddleware).toConstantValue(sessionHandler);
+        container.bind(FileTransferFeatureMiddleware).toConstantValue(new FileTransferFeatureMiddleware());
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealStorageService).toConstantValue(Substitute.for<AppealStorageService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
-        container.bind(FileTransferFeatureMiddleware).toConstantValue(Substitute.for<FileTransferFeatureMiddleware>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
 
         configureBindings(container);
