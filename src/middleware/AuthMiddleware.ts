@@ -3,7 +3,7 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { Session } from 'ch-node-session-handler/lib/session/model/Session';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { injectable } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 import { loggerInstance } from './Logger';
 
@@ -14,7 +14,7 @@ function buildReturnUri(req: Request): string {
     return new URL(PENALTY_DETAILS_PAGE_URI, `${req.protocol}://${req.headers.host}`).href;
 }
 
-@injectable()
+@provide(AuthMiddleware)
 export class AuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {

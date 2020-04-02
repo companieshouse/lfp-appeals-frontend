@@ -1,12 +1,12 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { injectable } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { getEnv } from 'app/utils/EnvironmentUtils';
 import { ENTRY_PAGE_URI } from 'app/utils/Paths';
 
-@injectable()
+@provide(FileTransferFeatureMiddleware)
 export class FileTransferFeatureMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
