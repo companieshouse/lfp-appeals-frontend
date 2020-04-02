@@ -7,6 +7,7 @@ import * as util from 'util'
 import { APP_NAME } from './utils/ConfigLoader';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
 import { AppealStorageService } from 'app/service/AppealStorageService';
@@ -59,6 +60,8 @@ export function createContainer(): Container {
 
     container.bind(AppealStorageService).toConstantValue(
         new AppealStorageService(getEnvOrThrow(`APPEALS_API_URL`)));
+
+    container.bind(FileTransferFeatureMiddleware).toConstantValue(new FileTransferFeatureMiddleware());
 
     container.bind(FileTransferService).toConstantValue(
         new FileTransferService(getEnvOrDefault(`FILE_TRANSFER_API_URL`, ''),

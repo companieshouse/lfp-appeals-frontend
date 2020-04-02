@@ -2,6 +2,7 @@ import 'reflect-metadata'
 
 import { expect } from 'chai';
 import { OK } from 'http-status-codes';
+import { afterEach, beforeEach } from 'mocha';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -41,10 +42,22 @@ const appeal = {
     }
 } as Appeal;
 
+let initialFileTransferFlag: string | undefined;
+
 describe('EvidenceUploadController', () => {
+
+    beforeEach(() => {
+        initialFileTransferFlag = process.env.FILE_TRANSFER_FEATURE;
+    });
+
+    afterEach(() => {
+        process.env.FILE_TRANSFER_FEATURE = initialFileTransferFlag;
+    });
 
     describe('GET request', () => {
         it('should return 200 when trying to access the evidence-upload page', async () => {
+
+            process.env.FILE_TRANSFER_FEATURE = '1';
 
             const applicationData = {
                 navigation
@@ -62,6 +75,8 @@ describe('EvidenceUploadController', () => {
 
 
         it('should return 200 when trying to access page with session data', async () => {
+
+            process.env.FILE_TRANSFER_FEATURE = '1';
 
             const applicationData = {
                 appeal,

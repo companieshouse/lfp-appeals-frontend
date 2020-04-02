@@ -16,7 +16,13 @@
       </h1>
 
       <form method="post" enctype="multipart/form-data" action="?action=upload-file">
-        <p>Add a document</p>
+        {% set uploadText %}
+          {% if attachments.length > 0 %}
+            Add another document
+          {% else %}
+            Add a document
+          {% endif %}
+        {% endset %}
 
         <div class='file-upload'>
           {{
@@ -42,13 +48,11 @@
         <dl class="govuk-upload-list">
           {% for attachment in attachments | reverse %}
             <div class="ch-upload-list__row uploaded-file-{{loop.index0}}">
-              <dt class="ch-upload-list__key govuk-visually-hidden">
+              <dt class="govuk-visually-hidden">
                 Uploaded file
               </dt>
               <dd class="ch-upload-list__value">
                 {{ attachment.name }}
-              </dd>
-              <dd class="ch-upload-list__actions">
               </dd>
             </div>
           {% endfor %}
@@ -68,5 +72,4 @@
       </p>
     </div>
   </div>
-
 {% endblock %}
