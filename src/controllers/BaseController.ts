@@ -64,13 +64,18 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         );
     }
 
-    protected prepareViewModelFromSession(session: Session): Record<string, any> {
+    protected prepareViewModelFromSession(session: Session): Record<string, any> & FORM {
         const applicationData: ApplicationData = session
             .getExtraData()
             .chain<ApplicationData>(data => Maybe.fromNullable(data[APPLICATION_DATA_KEY]))
             .orDefault({} as ApplicationData);
 
         return this.prepareViewModelFromAppeal(applicationData.appeal || {});
+    }
+
+    // @ts-ignore
+    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
+        return {} as FORM
     }
 
     @httpPost('')
@@ -146,6 +151,11 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         }
     }
 
+    // @ts-ignore
+    protected prepareModelPriorSessionSave(appeal: Appeal, value: FORM): Appeal {
+        return appeal;
+    }
+
     protected async persistSession(): Promise<void> {
         const session = this.httpContext.request.session.unsafeCoerce();
 
@@ -180,15 +190,5 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 }
             }
         };
-    }
-
-    // @ts-ignore
-    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
-        return {} as FORM
-    }
-
-    // @ts-ignore
-    protected prepareModelPriorSessionSave(appeal: Appeal, value: FORM): Appeal {
-        return appeal;
     }
 }
