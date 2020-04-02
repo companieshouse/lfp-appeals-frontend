@@ -10,9 +10,8 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { getEnv } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
-import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'evidence-upload';
 
@@ -21,10 +20,7 @@ const navigation = {
         return OTHER_REASON_PAGE_URI;
     },
     next(): string {
-        if (getEnv('FILE_TRANSFER_FEATURE') === '1') {
-            return EVIDENCE_UPLOAD_PAGE_URI;
-        }
-        return CHECK_YOUR_APPEAL_PAGE_URI;
+        return EVIDENCE_UPLOAD_PAGE_URI;
     }
 };
 
