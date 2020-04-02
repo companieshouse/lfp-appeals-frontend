@@ -1,41 +1,47 @@
+import 'reflect-metadata'
+// tslint:disable-next-line: ordered-imports
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+loadEnvironmentVariablesFromFiles();
+
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
-import { afterEach, beforeEach } from 'mocha';
+import { after, before } from 'mocha';
 import request from 'supertest';
 
+import 'app/controllers/EvidenceUploadController'
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
-import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { ENTRY_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+
 const config = getDefaultConfig();
 
 let initialFileTransferFlag: string | undefined;
 
 describe('File Transfer Feature Toggle Middleware', () => {
 
-    beforeEach(() => {
+    before(() => {
         initialFileTransferFlag = process.env.FILE_TRANSFER_FEATURE;
     });
 
-    afterEach(() => {
+    after(() => {
         process.env.FILE_TRANSFER_FEATURE = initialFileTransferFlag;
     });
 
-    describe('Feature switched on path', () => {
+    describe('Feature switched on', () => {
 
         it('should call next() if feature flag is on', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '1';
 
-            const mockResponse = Substitute.for<Response>();
             const mockRequest = Substitute.for<Request>();
+            const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();
 
-            const fileTransferMiddleware = new FileTransferFeatureMiddleware().handler;
-
-            fileTransferMiddleware(mockRequest, mockResponse, mockNext);
+            new FileTransferFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
             // @ts-ignore
             mockResponse.didNotReceive().redirect(Arg.any());
@@ -50,24 +56,22 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)
-                .expect(200);
+                .expect(OK);
         });
 
     });
 
-    describe('Feature switched off path', () => {
+    describe('Feature switched off', () => {
 
         it('should redirect if feature flag is off', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '0';
 
-            const mockResponse = Substitute.for<Response>();
             const mockRequest = Substitute.for<Request>();
+            const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();
 
-            const fileTransferMiddleware = new FileTransferFeatureMiddleware().handler;
-
-            fileTransferMiddleware(mockRequest, mockResponse, mockNext);
+            new FileTransferFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
             // @ts-ignore
             mockResponse.received().redirect(Arg.any());
@@ -82,8 +86,8 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)
-                .expect(302)
-                .then(res => expect(res.header.location).to.include('/start'));
+                .expect(MOVED_TEMPORARILY)
+                .then(res => expect(res.header.location).to.include(ENTRY_PAGE_URI));
         });
 
     });
