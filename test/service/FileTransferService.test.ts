@@ -122,7 +122,9 @@ describe('FileTransferService', () => {
         });
     });
 
-    describe('Download a file', () => {
+    describe('Download a file', async () => {
+        const readFile = promisify(Fs.readFile);
+
         const fileToStream = 'package.json';
         const fileToStreamPath = `./${fileToStream}`;
         const downloadFileName = 'hello.txt';
@@ -131,39 +133,58 @@ describe('FileTransferService', () => {
         const downloadUrl = `${URI}/${fileID}/download`;
         const fileDataBuffer = Fs.createReadStream(fileToStream);
 
-        const mockResponse = Substitute.for<Response>();
+        const expectedBufferString = await readFile(fileToStreamPath);
+
+        const contentDisposition = `attachment; filename=${downloadFileName}`;
+        const contentLength = `${expectedBufferString.byteLength}`;
+        const contentType = `application/json`;
+
+        const createDownloadRequest = () => createGetNockRequest(downloadUrl).reply(200, fileDataBuffer, {
+            'content-disposition': contentDisposition,
+            'content-length': contentLength,
+            'content-type': contentType
+        });
 
         it('should throw an error if the file does not exist', async () => {
 
             createGetNockRequest(downloadUrl).reply(404);
 
             try {
-                await fileTransferService.download(fileID, mockResponse);
+                await fileTransferService.download(fileID, Substitute.for<Response>());
             } catch (err) {
                 expect(err.name).to.eq(FileDownloadError.name);
             }
         });
 
         it('should return the 200 and put the correct file content into the response object', async () => {
-
-            createGetNockRequest(downloadUrl).reply(200, fileDataBuffer, {
-                'content-disposition': `attachment; filename=${downloadFileName}`
-            });
-
-            const readFile = promisify(Fs.readFile);
-
-
+            createDownloadRequest();
 
             await fileTransferService.download(fileID, Fs.createWriteStream(downloadedFilePath));
             const receivedBufferString = await readFile(downloadedFilePath);
-            const expectedBufferString = await readFile(fileToStreamPath);
             expect(receivedBufferString).to.deep.eq(expectedBufferString);
-
+            Fs.unlinkSync(downloadedFilePath);
 
         });
 
-        after(() => {
-            Fs.unlinkSync(downloadedFilePath);
+        it('should set the correct headers if the stream is a response object', async () => {
+            createDownloadRequest();
+            const mockResponse = Substitute.for<Response>();
+
+            const fileTransferServiceProxy = new Proxy(fileTransferService, {
+                get: (target: any, p: PropertyKey, _: any): any => {
+                    if (p in target && p === 'pipeDataIntoStream') {
+                        // @ts-ignore
+                        return (...args: any) => Promise.resolve();
+                    }
+                    return target[p];
+                }
+            });
+
+            await fileTransferServiceProxy.download(fileID, mockResponse);
+            mockResponse.received().setHeader('Content-Disposition', contentDisposition);
+            mockResponse.received().setHeader('Content-Length', contentLength);
+            mockResponse.received().setHeader('Content-Type', contentType);
+
         });
     });
 });

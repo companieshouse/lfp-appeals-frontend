@@ -87,8 +87,10 @@ export class FileTransferService {
                     response.setHeader('Content-Type', axiosResponse.headers['content-type']);
                     response.setHeader('Content-Length', axiosResponse.headers['content-length']);
                     response.setHeader('Content-Disposition', axiosResponse.headers['content-disposition']);
+
                 }
                 await this.pipeDataIntoStream(axiosResponse, res);
+
             })
             .catch(_ => {
                 throw new FileDownloadError(fileId, _.message);
@@ -96,7 +98,7 @@ export class FileTransferService {
 
     }
 
-    private async pipeDataIntoStream(axiosResponse: AxiosResponse<stream.Readable>,
+    public async pipeDataIntoStream(axiosResponse: AxiosResponse<stream.Readable>,
                                        writableStream: stream.Writable): Promise<void> {
         return new Promise<void>((resolve, reject) => axiosResponse.data.pipe(writableStream)
             .on('finish', resolve)
