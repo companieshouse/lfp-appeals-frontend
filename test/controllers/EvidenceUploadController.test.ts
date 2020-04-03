@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import {INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK} from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -51,7 +51,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData = { navigation } as ApplicationData;
+            const applicationData: Partial<ApplicationData> = { navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -62,7 +62,6 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(OK);
                 });
         });
-
 
         it('should return 200 when trying to access page with session data', async () => {
 
@@ -117,7 +116,6 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                 })
-
         });
 
         it('should return 302 and redirect to evidence upload page after successful upload', async () => {
@@ -135,6 +133,26 @@ describe('EvidenceUploadController', () => {
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
+        });
+
+        it('should return 500 after failed upload', async () => {
+
+            const app = createApp(session, container => {
+
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject(Error('Unexpected error')));
+                    }));
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', `test/files/${FILE_NAME}`)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                    expect(response.text).to.contain('Sorry, there is a problem with the service');
+                });
         });
 
         it('should return 500 if no appeal in session', async () => {

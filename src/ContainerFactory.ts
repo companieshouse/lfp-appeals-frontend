@@ -59,8 +59,8 @@ export function createContainer(): Container {
         new AppealStorageService(getEnvOrThrow(`APPEALS_API_URL`)));
 
     container.bind(FileTransferService).toConstantValue(
-        new FileTransferService(getEnvOrDefault(`FILE_TRANSFER_API_URL`, ''),
-            getEnvOrDefault(`FILE_TRANSFER_API_KEY`, '')));
+        new FileTransferService(getEnvOrThrow(`FILE_TRANSFER_API_URL`),
+            getEnvOrThrow(`FILE_TRANSFER_API_KEY`)));
 
     container.load(buildProviderModule());
     return container;

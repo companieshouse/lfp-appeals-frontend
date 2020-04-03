@@ -20,7 +20,7 @@ import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
 
-const appeal = {
+const appeal: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
@@ -31,19 +31,14 @@ const appeal = {
             description: 'they are legit'
         }
     }
-} as Appeal;
+};
 
 describe('CheckYourAppealController', () => {
-    const navigation = {
-        permissions: [CHECK_YOUR_APPEAL_PAGE_URI]
-    } as Navigation;
+    const navigation: Navigation = { permissions: [CHECK_YOUR_APPEAL_PAGE_URI] };
 
     describe('GET request', () => {
         it('should return 200 with populated session data', async () => {
-            const applicationData = {
-                appeal,
-                navigation
-            } as ApplicationData;
+            const applicationData: ApplicationData = { appeal, navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', applicationData);
@@ -62,9 +57,7 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should return 200 with no populated session data', async () => {
-            const applicationData = {
-                navigation
-            } as ApplicationData;
+            const applicationData: Partial<ApplicationData> = { navigation } ;
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', applicationData);
@@ -79,10 +72,7 @@ describe('CheckYourAppealController', () => {
 
     describe('POST request', () => {
 
-        const applicationData = {
-            appeal,
-            navigation
-        } as ApplicationData;
+        const applicationData: ApplicationData = { appeal, navigation };
 
         const session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData('appeals', applicationData);
