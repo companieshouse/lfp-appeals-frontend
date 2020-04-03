@@ -1,16 +1,18 @@
 import 'reflect-metadata';
 
-import Substitute, { Arg } from '@fluffy-spoon/substitute';
+import Substitute from '@fluffy-spoon/substitute';
+import { AxiosResponse } from 'axios';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
+import { Response } from 'express';
+import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/FileDownloadController';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { FileDownloadError } from 'app/service/error/FileDownloadError';
 import { FileNotFoundError } from 'app/service/error/FileNotFoundError';
-import { DOWNLOAD_FILE_URI } from 'app/utils/Paths';
+import { FileTransferServiceError } from 'app/service/error/FileTransferServiceError';
+import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
 
@@ -20,8 +22,27 @@ const createDefaultApp = (fileTransferService: FileTransferService) => createApp
 });
 describe('FileDownloadController', () => {
     const FILE_ID = '123';
-    const DOWNLOAD_PROMPT_URL = `${DOWNLOAD_FILE_URI}/prompt/${FILE_ID}`;
-    const EXPECTED_DOWNLOAD_LINK_URL = `${DOWNLOAD_FILE_URI}/data/${FILE_ID}/download`;
+    const DOWNLOAD_PROMPT_URL = `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}`;
+    const EXPECTED_DOWNLOAD_LINK_URL = `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download`;
+
+    const contentDisposition = `attachment; filename=hello.txt`;
+    const contentLength = 1000;
+    const contentType = `application/json`;
+
+    const fakeDownloadMethod = (response: Response, returnData: Promise<void>) =>
+        // @ts-ignore
+        async (fileId: string, stream: any, onStart: (axiosRes: AxiosResponse) => void) => {
+            response.setHeader('Content-Disposition', contentDisposition);
+            response.setHeader('Content-Length', contentLength);
+            response.setHeader('Content-Type', contentType);
+            return returnData;
+        };
+
+    const fileTransferServiceProxy = (response: Response, returnData: Promise<void>): FileTransferService => {
+        return {
+            download: fakeDownloadMethod(response, returnData)
+        } as FileTransferService;
+    };
 
     it('should render the prompt page correctly', async () => {
 
@@ -39,40 +60,42 @@ describe('FileDownloadController', () => {
 
     it('should start downloading the file when the file is valid', async () => {
 
-        const fileTransferService = Substitute.for<FileTransferService>();
-        fileTransferService.download(FILE_ID, Arg.any()).returns(Promise.resolve());
+        const mockResponse = Substitute.for<Response>();
 
-        await request(createDefaultApp(fileTransferService))
+
+
+        await request(createDefaultApp(fileTransferServiceProxy(mockResponse, Promise.resolve())))
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
                 expect(res.status).to.eq(204);
+                mockResponse.received().setHeader('Content-Disposition', contentDisposition);
+                mockResponse.received().setHeader('Content-Length', contentLength);
+                mockResponse.received().setHeader('Content-Type', contentType);
             });
 
     });
 
-    it('should render an error page when the file service fails to download file', async () => {
-        let fileTransferService = Substitute.for<FileTransferService>();
+    it('should render an error page when the file service fails to download file', () => {
         const randomReason = 'for some reason';
         const fileNotFoundError = new FileNotFoundError(FILE_ID);
-        const fileDownloadError = new FileDownloadError(FILE_ID, randomReason);
+        const fileDownloadError = new FileTransferServiceError(FILE_ID, INTERNAL_SERVER_ERROR, randomReason);
+        const fileDownloadErrorGateway = new FileTransferServiceError(FILE_ID, GATEWAY_TIMEOUT, randomReason);
 
-        fileTransferService.download(FILE_ID, Arg.any()).returns(Promise.reject(fileNotFoundError));
 
-        await request(createDefaultApp(fileTransferService))
-            .get(EXPECTED_DOWNLOAD_LINK_URL)
-            .then(res => {
-                expect(res.status).to.eq(NOT_FOUND);
-                expect(res.text).to.contain(fileNotFoundError.message);
-            });
+        const expectedErrors = [fileNotFoundError.message, fileDownloadError.message, fileDownloadErrorGateway.message, 'Sorry, there is a problem with the service'];
+        let counter = 0;
 
-        fileTransferService = Substitute.for<FileTransferService>();
-        fileTransferService.download(FILE_ID, Arg.any()).returns(Promise.reject(fileDownloadError));
+        [NOT_FOUND, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT, 0].forEach(async status => {
 
-        await request(createDefaultApp(fileTransferService))
-            .get(EXPECTED_DOWNLOAD_LINK_URL)
-            .then(res => {
-                expect(res.status).to.eq(INTERNAL_SERVER_ERROR);
-                expect(res.text).to.contain(fileDownloadError.message);
-            });
+            const fileTransferService =
+                fileTransferServiceProxy(Substitute.for<Response>(), Promise.reject(status));
+
+            await request(createDefaultApp(fileTransferService))
+                .get(EXPECTED_DOWNLOAD_LINK_URL)
+                .then(res => {
+                    expect(res.status).to.eq(status);
+                    expect(res.text).to.contain(expectedErrors[counter++]);
+                });
+        });
     });
 });

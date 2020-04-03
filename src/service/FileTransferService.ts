@@ -1,13 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Response } from 'express';
 import FormData from 'form-data';
-import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import * as stream from 'stream';
-import { FileDownloadError } from './error/FileDownloadError';
 import { FileNotFoundError } from './error/FileNotFoundError';
+import { FileTransferServiceError } from './error/FileTransferServiceError';
 
 import { loggerInstance } from 'app/middleware/Logger';
-import { FileMetada } from 'app/models/FileMetada';
+import { FileMetadata } from 'app/models/FileMetadata';
 
 export class FileTransferService {
 
@@ -54,7 +53,7 @@ export class FileTransferService {
             });
     }
 
-    async fileMetada(fileId: string): Promise<FileMetada> {
+    async getFileMetadata(fileId: string): Promise<FileMetadata> {
         const config: AxiosRequestConfig = {
             headers: {
                 'x-api-key': this.key
@@ -62,15 +61,16 @@ export class FileTransferService {
         };
 
         return await axios
-            .get<FileMetada>(`${this.url}/${fileId}`, config)
-            .then(_ => _.data)
-            .catch(_ => {
-                throw new FileNotFoundError(fileId, _.message);
+            .get<FileMetadata>(`${this.url}/${fileId}`, config)
+            .then((axiosResponse: AxiosResponse<FileMetadata>) => axiosResponse.data)
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
             });
     }
 
-    async download(fileId: string, res: stream.Writable): Promise<void> {
-
+    async download(fileId: string,
+        writableStream: stream.Writable,
+        onStart?: (axiosResponse: AxiosResponse<stream.Readable>) => void): Promise<void> {
         const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
             headers: {
@@ -81,28 +81,34 @@ export class FileTransferService {
 
         return axios.get<stream.Readable>(url, config)
             .then(async (axiosResponse: AxiosResponse<stream.Readable>) => {
-
-                if ((res as Response).setHeader) {
-                    const response = res as Response;
-                    response.setHeader('Content-Type', axiosResponse.headers['content-type']);
-                    response.setHeader('Content-Length', axiosResponse.headers['content-length']);
-                    response.setHeader('Content-Disposition', axiosResponse.headers['content-disposition']);
-
+                if (onStart) {
+                    onStart(axiosResponse);
                 }
-                await this.pipeDataIntoStream(axiosResponse, res);
-
+                await this.pipeDataIntoStream(axiosResponse, writableStream);
             })
-            .catch(_ => {
-                throw new FileDownloadError(fileId, _.message);
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
             });
 
     }
 
     public async pipeDataIntoStream(axiosResponse: AxiosResponse<stream.Readable>,
-                                       writableStream: stream.Writable): Promise<void> {
+        writableStream: stream.Writable): Promise<void> {
         return new Promise<void>((resolve, reject) => axiosResponse.data.pipe(writableStream)
             .on('finish', resolve)
             .on('error', reject));
+    }
+
+    private getErrorFrom(err: any, fileId: string): Error {
+        if (err.isAxiosError) {
+            switch (err.response.status) {
+                case NOT_FOUND:
+                    return new FileNotFoundError(fileId, err.message);
+                default:
+                    return new FileTransferServiceError(fileId, err.response.status, err.message);
+            }
+        }
+        return Error(err.message);
     }
 
 }

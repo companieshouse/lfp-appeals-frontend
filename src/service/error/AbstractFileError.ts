@@ -1,10 +1,8 @@
 export abstract class AbstractFileError extends Error {
-    constructor(className: string,
-                fileId: string,
-                messageProd: (fileId: string) => string,
-                public readonly status: number,
+    constructor(fileId: string,
+                messageProducer: (fileId: string) => string,
+                public readonly statusCode: number,
                 public readonly extraData?: string,) {
-        super(messageProd(fileId));
-        super.name = className;
+        super(messageProducer(fileId));
     }
 }

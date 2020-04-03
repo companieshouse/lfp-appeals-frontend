@@ -2,14 +2,14 @@ import Substitute from '@fluffy-spoon/substitute';
 import { assert, expect } from 'chai';
 import { Response } from 'express';
 import * as Fs from 'fs';
-import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 import { promisify } from 'util';
 
-import { FileMetada } from 'app/models/FileMetada';
+import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { FileDownloadError } from 'app/service/error/FileDownloadError';
 import { FileNotFoundError } from 'app/service/error/FileNotFoundError';
+import { FileTransferServiceError } from 'app/service/error/FileTransferServiceError';
 
 describe('FileTransferService', () => {
 
@@ -22,11 +22,10 @@ describe('FileTransferService', () => {
             reqheaders: { 'x-api-key': KEY }
         });
     const fileID = 'someId';
-    const expectedMetada: FileMetada = {
+    const expectedMetada: FileMetadata = {
         av_status: 'scanned',
         content_type: 'application/txt',
         id: fileID,
-        links: { download: '', self: '' },
         name: 'hello.txt',
         size: 100
     };
@@ -108,9 +107,9 @@ describe('FileTransferService', () => {
             createGetNockRequest(fileMetadaUrl).reply(404);
 
             try {
-                await fileTransferService.fileMetada(fileID);
+                await fileTransferService.getFileMetadata(fileID);
             } catch (err) {
-                expect(err.name).to.eq(FileNotFoundError.name);
+                expect(err.constructor.name).to.eq(FileNotFoundError.name);
             }
 
         });
@@ -118,7 +117,7 @@ describe('FileTransferService', () => {
 
             createGetNockRequest(fileMetadaUrl).reply(200, expectedMetada);
 
-            await fileTransferService.fileMetada(fileID).then(_ => assert.deepEqual(_, expectedMetada));
+            await fileTransferService.getFileMetadata(fileID).then(_ => assert.deepEqual(_, expectedMetada));
         });
     });
 
@@ -145,15 +144,21 @@ describe('FileTransferService', () => {
             'content-type': contentType
         });
 
-        it('should throw an error if the file does not exist', async () => {
+        it('should throw appropriate errors if the file does not exist', () => {
 
-            createGetNockRequest(downloadUrl).reply(404);
+            const expectedErrors = [FileNotFoundError.name, FileTransferServiceError.name, Error.name];
+            let counter = 0;
 
-            try {
-                await fileTransferService.download(fileID, Substitute.for<Response>());
-            } catch (err) {
-                expect(err.name).to.eq(FileDownloadError.name);
-            }
+            [NOT_FOUND, INTERNAL_SERVER_ERROR, 0].forEach(async status => {
+                createGetNockRequest(downloadUrl).reply(status);
+                try {
+                    await fileTransferService.download(fileID, Substitute.for<Response>());
+                } catch (err) {
+                    expect(err.contructor.name).to.eq(expectedErrors[counter++]);
+                }
+            });
+
+
         });
 
         it('should return the 200 and put the correct file content into the response object', async () => {
@@ -166,25 +171,5 @@ describe('FileTransferService', () => {
 
         });
 
-        it('should set the correct headers if the stream is a response object', async () => {
-            createDownloadRequest();
-            const mockResponse = Substitute.for<Response>();
-
-            const fileTransferServiceProxy = new Proxy(fileTransferService, {
-                get: (target: any, p: PropertyKey, _: any): any => {
-                    if (p in target && p === 'pipeDataIntoStream') {
-                        // @ts-ignore
-                        return (...args: any) => Promise.resolve();
-                    }
-                    return target[p];
-                }
-            });
-
-            await fileTransferServiceProxy.download(fileID, mockResponse);
-            mockResponse.received().setHeader('Content-Disposition', contentDisposition);
-            mockResponse.received().setHeader('Content-Length', contentLength);
-            mockResponse.received().setHeader('Content-Type', contentType);
-
-        });
     });
 });

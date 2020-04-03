@@ -1,16 +1,16 @@
+import { AxiosResponse } from 'axios';
 import { Response } from 'express';
 import { OK } from 'http-status-codes';
 import { inject } from 'inversify';
-import { controller, httpGet, requestParam, response } from 'inversify-express-utils';
+import { controller, httpGet, requestParam } from 'inversify-express-utils';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
-import { loggerInstance } from 'app/middleware/Logger';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { DOWNLOAD_FILE_URI } from 'app/utils/Paths';
+import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'download-file';
 
-@controller(DOWNLOAD_FILE_URI)
+@controller(DOWNLOAD_FILE_PAGE_URI)
 export class FileDownloadController extends BaseAsyncHttpController {
 
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
@@ -18,21 +18,26 @@ export class FileDownloadController extends BaseAsyncHttpController {
     }
 
     @httpGet('/prompt/:fileId')
-    public renderPrompt(@response() res: Response, @requestParam('fileId') fileId: string): void {
-        res.render(template, { fileId });
+    public renderPrompt(@requestParam('fileId') fileId: string): void {
+        this.httpContext.response.render(template, { fileId });
     }
 
     @httpGet('/data/:fileId/download')
-    public async download(@response() res: Response, @requestParam('fileId') fileId: string): Promise<void> {
+    public async download(@requestParam('fileId') fileId: string): Promise<void> {
 
-        try {
-            await this.fileTransferService.download(fileId, res);
-            res.status(OK);
-        } catch (err) {
-            loggerInstance().error(`${err} - at - ${FileDownloadController.name}.download`);
-            return await this.renderWithStatus(err.status)('error', { message: err.message });
-        }
+        const res = this.httpContext.response;
 
+        return await this.fileTransferService.download(fileId, res, (axiosResponse: AxiosResponse<any>) => {
+            this.setHeaders(res, axiosResponse);
+        });
+
+    }
+
+    private setHeaders(res: Response, axiosResponse: AxiosResponse<any>): void {
+        res.setHeader('Content-Type', axiosResponse.headers['content-length']);
+        res.setHeader('Content-Length', axiosResponse.headers['content-length']);
+        res.setHeader('Content-Disposition', axiosResponse.headers['content-disposition']);
+        res.status(OK);
     }
 
 }
