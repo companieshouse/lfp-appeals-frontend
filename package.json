@@ -42,7 +42,7 @@
     "tslib": "^1.11.1"
   },
   "devDependencies": {
-    "@fluffy-spoon/substitute": "^1.117.0",
+    "@fluffy-spoon/substitute": "^1.118.0",
     "@types/body-parser": "^1.19.0",
     "@types/chai": "^4.2.11",
     "@types/cookie-parser": "^1.4.2",
