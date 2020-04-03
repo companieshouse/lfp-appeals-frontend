@@ -125,14 +125,17 @@ describe('EvidenceUploadController', () => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
+            const FILE_NAME: string = 'test-file.txt';
+
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
-                .attach('file', 'test/files/test-file.txt')
+                .attach('file', `test/files/${FILE_NAME}`)
                 .expect(response => {
-                    console.log(response)
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                 });
+
+            fileTransferService.received().upload(Arg.any(), FILE_NAME);
         });
     });
 });
