@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import {INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK} from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -51,7 +51,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData = {navigation} as ApplicationData;
+            const applicationData = { navigation } as ApplicationData;
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -66,7 +66,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with session data', async () => {
 
-            const applicationData: ApplicationData = {appeal, navigation};
+            const applicationData: ApplicationData = { appeal, navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -96,11 +96,16 @@ describe('EvidenceUploadController', () => {
             }
         };
 
-        const applicationData: ApplicationData = { appeal, navigation };
+        let applicationData: ApplicationData = { appeal, navigation };
 
-        const session = createFakeSession([], config.cookieSecret, true)
+        let session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData(APPLICATION_DATA_KEY, applicationData);
 
+        const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+            service.upload(Arg.any()).returns(Promise.resolve('123'));
+        });
+
+        const FILE_NAME: string = 'test-file.txt';
 
         it('should return 302 and redirect to evidence upload page if no file chosen', async () => {
 
@@ -117,15 +122,9 @@ describe('EvidenceUploadController', () => {
 
         it('should return 302 and redirect to evidence upload page after successful upload', async () => {
 
-            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                service.upload(Arg.any()).returns(Promise.resolve('123'));
-            });
-
             const app = createApp(session, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
-
-            const FILE_NAME: string = 'test-file.txt';
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
@@ -133,6 +132,28 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                });
+
+            fileTransferService.received().upload(Arg.any(), FILE_NAME);
+        });
+
+        it('should return 500 if no appeal in session', async () => {
+
+            applicationData = { navigation } as ApplicationData;
+
+            session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData('appeals', applicationData);
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', `test/files/${FILE_NAME}`)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                    expect(response.text).to.contain('Sorry, there is a problem with the service');
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
