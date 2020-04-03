@@ -13,7 +13,7 @@ export const parseFormData = util.promisify(
         },
         // @ts-ignore
         // tslint:disable-next-line: typedef
-        fileFilter (req, file, cb) {
+        fileFilter (request, file, cb) {
             if (!supportedFileTypes.includes(file.mimetype)) {
                 return cb(new Error('File not supported'))
             }

@@ -35,36 +35,44 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
+    private async renderUploadError(request: Request, message: string): Promise<void> {
+        const that = this;
+        return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
+            that.template, {
+                ...request.body,
+                errorList: [{text: message}]
+            }
+        );
+    }
+
     protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         const that = this;
         return {
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
 
+                    const attachments = request.session
+                        .chain(_ => _.getExtraData())
+                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+                        .map(data => data.appeal.reasons.other.attachments)
+                        .unsafeCoerce();
+
                     try{
                         await parseFormData(request, response)
                     } catch (error){
                         if (error.message === 'File not supported'){
-                            return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                                that.template, {
-                                    ...request.body,
-                                    errorList: [{text: 'The selected file must be a TXT, DOC, PDF, JPEG or PNG'}]
-                                }
-                            );
+                            return await that.renderUploadError(request, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         }
                         else if(error.message === 'File too large'){
-                            return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                                that.template, {
-                                    ...request.body,
-                                    errorList: [{text: 'File size must be smaller than 4MB'}]
-                                }
-                            );
+                            return await that.renderUploadError(request, 'File size must be smaller than 4MB');
                         }
                     }
 
-                    if (!request.file) {
+                    if (!request.file){
                         response.redirect(request.route.path);
                         return;
+                    }else if(attachments!.length >= 10){
+                        return await that.renderUploadError(request, 'You can only select up to 10 files at the same time.');
                     }
 
                     const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
