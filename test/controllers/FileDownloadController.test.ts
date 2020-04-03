@@ -71,7 +71,6 @@ describe('FileDownloadController', () => {
         await request(createDefaultApp(fileTransferService))
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
-                console.log(res);
                 expect(res.status).to.eq(INTERNAL_SERVER_ERROR);
                 expect(res.text).to.contain(fileDownloadError.message);
             });
