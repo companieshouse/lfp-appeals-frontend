@@ -10,6 +10,7 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/service/FileTransferService';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
@@ -23,6 +24,10 @@ const navigation = {
         return EVIDENCE_UPLOAD_PAGE_URI;
     }
 };
+
+const maxFileSize: number = Number(getEnvOrThrow(`MAX_FILE_SIZE_BYTES`));
+const supportedFileTypes: string [] =
+    ['text/plain', 'application/msword', 'application/pdf', 'image/jpeg', 'image/png'];
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
@@ -39,11 +44,20 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return {
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
+
                     await parseFormData(request, response);
 
                     if (!request.file) {
                         response.redirect(request.route.path);
                         return;
+                    } else if (request.file.buffer.byteLength > maxFileSize){
+                        console.error('byteLength too long: ',request.file.buffer.byteLength);
+                        // Render Page with error
+                        return
+                    } else if (!supportedFileTypes.includes(request.file.mimetype)){
+                        console.error('filetype not supported: ',request.file.mimetype);
+                        // Render Page with error
+                        return
                     }
 
                     const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
