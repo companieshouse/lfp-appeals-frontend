@@ -1,7 +1,8 @@
 import 'reflect-metadata'
 
+import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import { OK } from 'http-status-codes';
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -10,9 +11,11 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Navigation } from 'app/models/Navigation';
+import { FileTransferService } from 'app/service/FileTransferService';
 import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const config = getDefaultConfig();
@@ -21,33 +24,34 @@ const navigation: Navigation = {
     permissions: [EVIDENCE_UPLOAD_PAGE_URI]
 };
 
-const appeal: Appeal = {
-    penaltyIdentifier: {
-        companyNumber: '00345567',
-        penaltyReference: 'A00000001',
-    },
-    reasons: {
-        other: {
-            title: 'I have reasons',
-            description: 'they are legit',
-            attachments: [
-                {
-                    name: 'some-file.jpeg'
-                } as Attachment,
-                {
-                    name: 'another-file.jpeg'
-                } as Attachment
-            ]
-        }
-    }
-};
-
 describe('EvidenceUploadController', () => {
 
     describe('GET request', () => {
+
+        const appeal: Appeal = {
+            penaltyIdentifier: {
+                companyNumber: '00345567',
+                penaltyReference: 'A00000001',
+            },
+            reasons: {
+                other: {
+                    title: 'I have reasons',
+                    description: 'they are legit',
+                    attachments: [
+                        {
+                            name: 'some-file.jpeg'
+                        } as Attachment,
+                        {
+                            name: 'another-file.jpeg'
+                        } as Attachment
+                    ]
+                }
+            }
+        };
+
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData = { navigation } as ApplicationData;
+            const applicationData = {navigation} as ApplicationData;
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -62,7 +66,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with session data', async () => {
 
-            const applicationData: ApplicationData = { appeal, navigation };
+            const applicationData: ApplicationData = {appeal, navigation};
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -78,6 +82,57 @@ describe('EvidenceUploadController', () => {
     });
 
     describe('POST request', () => {
-        // TODO
+
+        const appeal: Appeal = {
+            penaltyIdentifier: {
+                companyNumber: '00345567',
+                penaltyReference: 'A00000001',
+            },
+            reasons: {
+                other: {
+                    title: 'I have reasons',
+                    description: 'they are legit',
+                }
+            }
+        };
+
+        const applicationData: ApplicationData = { appeal, navigation };
+
+        const session = createFakeSession([], config.cookieSecret, true)
+            .saveExtraData(APPLICATION_DATA_KEY, applicationData);
+
+
+        it('should return 302 and redirect to evidence upload page if no file chosen', async () => {
+
+            const app = createApp(session);
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                })
+
+        });
+
+        it('should return 302 and redirect to evidence upload page after successful upload', async () => {
+
+            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                service.upload(Arg.any()).returns(Promise.resolve('123'));
+            });
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', 'test/files/test-file.txt')
+                .expect(response => {
+                    console.log(response)
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                });
+        });
     });
 });
