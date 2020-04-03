@@ -1,0 +1,75 @@
+{% extends "layout.njk" %}
+
+{% from "govuk/components/file-upload/macro.njk"   import govukFileUpload %}
+{% from 'govuk/components/button/macro.njk'        import govukButton %}
+{% from "govuk/components/input/macro.njk"         import govukInput %}
+
+{% block pageTitle %}
+  Add documents to support your application
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Add documents to support your application
+      </h1>
+
+      <form method="post" enctype="multipart/form-data" action="?action=upload-file">
+        {% set uploadText %}
+          {% if attachments.length > 0 %}
+            Add another document
+          {% else %}
+            Add a document
+          {% endif %}
+        {% endset %}
+
+        <div class='file-upload'>
+          {{
+            govukFileUpload({
+              id: 'file-upload',
+              name: 'file',
+              errorMessage: Err,
+              label: {
+                text: uploadText
+              }
+            })
+          }}
+          {{
+            govukButton({
+              text: 'Add document',
+              classes: 'govuk-button--secondary'
+            })
+          }}
+        </div>
+      </form>
+
+      {% if attachments and attachments.length > 0 %}
+        <dl class="govuk-upload-list">
+          {% for attachment in attachments | reverse %}
+            <div class="ch-upload-list__row">
+              <dt class="govuk-visually-hidden">
+                Uploaded file
+              </dt>
+              <dd class="ch-upload-list__value">
+                {{ attachment.name }}
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+      {% endif %}
+
+      <form method="post" action="?">
+        {{
+          govukButton({
+            text: 'Continue'
+          })
+        }}
+      </form>
+
+      <p>
+        <a href="{{ navigation.forward.href }}" class="govuk-link">Continue without adding documents</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

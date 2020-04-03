@@ -8,7 +8,7 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { IAccessToken, ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 
-import { AppealStorageFormSubmissionProcessor } from 'app/controllers/processors/AppealStorageFormSubmissionProcessor';
+import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealStorageService } from 'app/service/AppealStorageService';
@@ -19,7 +19,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
 
     const appealStorageService = createSubstituteOf<AppealStorageService>();
 
-    const processor = new AppealStorageFormSubmissionProcessor(appealStorageService);
+    const processor = new AppealStorageFormActionProcessor(appealStorageService);
 
     const appeal: Appeal = {
         penaltyIdentifier: {

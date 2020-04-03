@@ -1,10 +1,7 @@
-import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -31,28 +28,20 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
     };
 };
 
-@provide(FormSubmissionProcessor)
-class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<PenaltyIdentifier> {
-    constructor(@inject(SessionStore) sessionStore: SessionStore) {
-        super(sessionStore);
-    }
-
-    protected prepareModelPriorSessionSave(appeal: Appeal, value: any): Appeal {
-        const model = { ...appeal, penaltyIdentifier: value };
-        loggerInstance()
-            .debug(`${PenaltyDetailsController.name} - prepareModelPriorSessionSave: ${JSON.stringify(model)}`);
-        return model;
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor() {
-        super(template, navigation, formSchema, sanitizeForm, [FormSubmissionProcessor]);
+        super(template, navigation, formSchema, sanitizeForm);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
         return appeal.penaltyIdentifier;
+    }
+
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+        appeal.penaltyIdentifier = value;
+        loggerInstance()
+            .debug(`${PenaltyDetailsController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+        return appeal;
     }
 }

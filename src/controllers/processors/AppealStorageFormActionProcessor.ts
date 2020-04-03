@@ -5,13 +5,13 @@ import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 
-@provide(AppealStorageFormSubmissionProcessor)
-export class AppealStorageFormSubmissionProcessor implements FormSubmissionProcessor {
+@provide(AppealStorageFormActionProcessor)
+export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
     constructor(@inject(AppealStorageService) private readonly appealStorageService: AppealStorageService) {
     }
@@ -39,9 +39,9 @@ export class AppealStorageFormSubmissionProcessor implements FormSubmissionProce
             .unsafeCoerce();
 
         loggerInstance()
-            .debug(`${AppealStorageFormSubmissionProcessor.name} - process: Saving appeal with data ${JSON.stringify(appeal)}`);
+            .debug(`${AppealStorageFormActionProcessor.name} - process: Saving appeal with data ${JSON.stringify(appeal)}`);
         loggerInstance()
-            .info(`${AppealStorageFormSubmissionProcessor.name} - process: Saving appeal for userId: ${userId}`);
+            .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
         await this.appealStorageService.save(appeal, accessToken);
     }

@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -28,8 +28,8 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
     };
 }
 
-@provide(UserEmailFormSubmissionProcessor)
-export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor {
+@provide(UserEmailFormActionProcessor)
+export class UserEmailFormActionProcessor implements FormActionProcessor {
     constructor(@inject(EmailService) private readonly emailService: EmailService) { }
 
     async process(req: Request): Promise<void> {
@@ -47,7 +47,7 @@ export class UserEmailFormSubmissionProcessor implements FormSubmissionProcessor
 
         await this.emailService.send(email)
             .catch(_ => {
-                loggerInstance().error(`${UserEmailFormSubmissionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`);
+                loggerInstance().error(`${UserEmailFormActionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`);
                 throw _
             });
 

@@ -8,7 +8,7 @@ import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInI
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 
-import { InternalEmailFormSubmissionProcessor } from 'app/controllers/processors/InternalEmailFormSubmissionProcessor';
+import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -22,7 +22,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
     it('should throw error when session does not exist', async () => {
         const emailService = createSubstituteOf<EmailService>();
 
-        const processor = new InternalEmailFormSubmissionProcessor(emailService);
+        const processor = new InternalEmailFormActionProcessor(emailService);
         try {
             await processor.process({ session: Maybe.empty() as Maybe<Session> } as Request);
             assert.fail();
@@ -42,7 +42,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         for (const { companyNumber, recipient } of scenarios) {
             const emailService = createSubstituteOf<EmailService>();
 
-            const processor = new InternalEmailFormSubmissionProcessor(emailService);
+            const processor = new InternalEmailFormActionProcessor(emailService);
             await processor.process({
                 session: Maybe.of(
                     new Session({

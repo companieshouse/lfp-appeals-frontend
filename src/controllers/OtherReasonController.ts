@@ -1,10 +1,7 @@
-import { SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
+import { SessionMiddleware  } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { UpdateSessionFormSubmissionProcessor } from 'app/controllers/processors/UpdateSessionFormSubmissionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -27,33 +24,27 @@ const navigation = {
     }
 };
 
-@provide(FormSubmissionProcessor)
-class FormSubmissionProcessor extends UpdateSessionFormSubmissionProcessor<OtherReason> {
-    constructor(@inject(SessionStore) sessionStore: SessionStore) {
-        super(sessionStore);
-    }
-
-    protected prepareModelPriorSessionSave(appeal: Appeal, value: OtherReason): Appeal {
-        const model = {
-            ...appeal,
-            reasons: {
-                other: value
-            }
-        };
-        loggerInstance()
-            .debug(`${OtherReasonController.name} - prepareModelPriorSessionSave: ${JSON.stringify(model)}`);
-        return model;
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class OtherReasonController extends SafeNavigationBaseController<OtherReason> {
     constructor() {
-        super(template, navigation, formSchema, undefined, [FormSubmissionProcessor]);
+        super(template, navigation, formSchema);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
         return appeal.reasons?.other;
+    }
+
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
+        if (appeal.reasons?.other != null) {
+            appeal.reasons.other.title = value.title;
+            appeal.reasons.other.description = value.description;
+        } else {
+            appeal.reasons = {
+                other: value
+            }
+        }
+        loggerInstance()
+            .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+        return appeal;
     }
 }

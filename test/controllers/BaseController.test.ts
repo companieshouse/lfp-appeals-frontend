@@ -1,4 +1,7 @@
 import 'reflect-metadata'
+// tslint:disable-next-line: ordered-imports
+import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+loadEnvironmentVariablesFromFiles();
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
@@ -10,7 +13,8 @@ import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
 
 import { BaseController } from 'app/controllers/BaseController';
-import { FormSubmissionProcessor } from 'app/controllers/processors/FormSubmissionProcessor';
+import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
+import { FormValidator } from 'app/controllers/validators/FormValidator';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
@@ -32,7 +36,7 @@ type ControllerConfig = {
     }
     formSchema?: AnySchema
     formSanitizeFn?: (formBody: any) => any
-    processor?: new (...args:any[]) => FormSubmissionProcessor
+    processor?: FormActionProcessorConstructor
     viewModel?: {}
 }
 
@@ -40,8 +44,8 @@ function createTestController(config: ControllerConfig): any {
     // tslint:disable-next-line:new-parens
     return new class extends BaseController<any> {
         constructor() {
-            super(template, navigation, config.formSchema, config.formSanitizeFn,
-                config.processor ? [config.processor] : []);
+            super(template, navigation, config.formSchema ? new FormValidator(config.formSchema) : undefined,
+                config.formSanitizeFn, config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
             this.httpContext = config.httpContext
         }
@@ -56,6 +60,9 @@ describe('Base controller', () => {
         navigation: {
             back: {
                 href: '/previous'
+            },
+            forward: {
+                href: '/next'
             }
         }
     };
@@ -102,7 +109,8 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
-                        body: formBody
+                        body: formBody,
+                        session: Maybe.empty()
                     },
                     response
                 },
@@ -128,7 +136,7 @@ describe('Base controller', () => {
                     request: {
                         query: {},
                         body: formBody,
-                        session: Maybe.of(new Session())
+                        session: Maybe.empty()
                     },
                     response
                 },
@@ -161,6 +169,7 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
+                        session: Maybe.empty()
                     },
                     response
                 }
@@ -172,7 +181,7 @@ describe('Base controller', () => {
 
         it('should redirect to next page when processing is succeeded', async () => {
             // tslint:disable-next-line:max-classes-per-file
-            class HappyProcessor implements FormSubmissionProcessor {
+            class HappyProcessor implements FormActionProcessor {
                 process(): void | Promise<void> {
                     return Promise.resolve();
                 }
@@ -187,6 +196,7 @@ describe('Base controller', () => {
                     container,
                     request: {
                         query: {},
+                        session: Maybe.empty()
                     },
                     response
                 },
@@ -199,7 +209,7 @@ describe('Base controller', () => {
 
         it('should throw error when processing failed', async () => {
             // tslint:disable-next-line:max-classes-per-file
-            class SadProcessor implements FormSubmissionProcessor {
+            class SadProcessor implements FormActionProcessor {
                 process(): void | Promise<void> {
                     return Promise.reject(new Error(':('));
                 }
@@ -214,6 +224,9 @@ describe('Base controller', () => {
                 await createTestController({
                     httpContext: {
                         container,
+                        request: {
+                            query: {},
+                        },
                         response
                     },
                     processor: SadProcessor,
