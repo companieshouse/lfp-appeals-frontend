@@ -21,7 +21,7 @@ const config = getDefaultConfig();
 
 describe('PenaltyDetailsController', () => {
 
-    const navigation = {} as Navigation;
+    const navigation: Navigation = {} as Navigation;
 
     describe('GET request', () => {
 
@@ -32,10 +32,7 @@ describe('PenaltyDetailsController', () => {
             }
         } as Appeal;
 
-        const applicationData = {
-            appeal,
-            navigation
-        } as ApplicationData;
+        const applicationData: ApplicationData = { appeal, navigation };
 
         it('should return 200 when trying to access page with a session', async () => {
 

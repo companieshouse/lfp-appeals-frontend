@@ -17,22 +17,19 @@ const config = getDefaultConfig();
 
 describe('ConfirmationController', () => {
 
-    const navigation = {
+    const navigation: Navigation = {
         permissions: [CONFIRMATION_PAGE_URI]
-    } as Navigation;
+    };
 
     describe('GET request', () => {
 
         const appeal = {
             penaltyIdentifier: {
                 companyNumber: '00345567',
-            },
+            }
         } as Appeal;
 
-        const applicationData = {
-            appeal,
-            navigation
-        } as ApplicationData;
+        const applicationData: ApplicationData = { appeal, navigation };
 
         const session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData('appeals', applicationData);

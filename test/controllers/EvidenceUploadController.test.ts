@@ -51,7 +51,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData = { navigation } as ApplicationData;
+            const applicationData: Partial<ApplicationData> = { navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -62,7 +62,6 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(OK);
                 });
         });
-
 
         it('should return 200 when trying to access page with session data', async () => {
 
@@ -117,7 +116,6 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                 })
-
         });
 
         it('should return 302 and redirect to evidence upload page after successful upload', async () => {
@@ -152,7 +150,7 @@ describe('EvidenceUploadController', () => {
                 .query('action=upload-file')
                 .attach('file', `test/files/${FILE_NAME}`)
                 .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     expect(response.text).to.contain('Sorry, there is a problem with the service');
                 });
         });
