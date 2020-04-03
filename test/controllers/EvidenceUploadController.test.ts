@@ -104,7 +104,7 @@ describe('EvidenceUploadController', () => {
             service.upload(Arg.any()).returns(Promise.resolve('123'));
         });
 
-        const FILE_NAME: string = 'test-file.txt';
+        const FILE_NAME: string = 'test-file.jpg';
 
         it('should return 302 and redirect to evidence upload page if no file chosen', async () => {
 
