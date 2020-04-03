@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import {INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK} from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -135,6 +135,26 @@ describe('EvidenceUploadController', () => {
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
+        });
+
+        it('should return 500 after failed upload', async () => {
+
+            const app = createApp(session, container => {
+
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject(Error('Unexpected error')));
+                    }));
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', `test/files/${FILE_NAME}`)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                    expect(response.text).to.contain('Sorry, there is a problem with the service');
+                });
         });
 
         it('should return 500 if no appeal in session', async () => {
