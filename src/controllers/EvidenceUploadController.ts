@@ -1,6 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
-import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
@@ -35,11 +35,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
-    private async renderUploadError(request: Request, message: string): Promise<void> {
+    private async renderUploadError( message: string ): Promise<void> {
         const that = this;
         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
             that.template, {
-                ...request.body,
+                ...this.httpContext.request.body,
                 errorList: [{text: message}]
             }
         );
@@ -61,18 +61,21 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                         await parseFormData(request, response)
                     } catch (error){
                         if (error.message === 'File not supported'){
-                            return await that.renderUploadError(request, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                            return await that
+                                .renderUploadError('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         }
                         else if(error.message === 'File too large'){
-                            return await that.renderUploadError(request, 'File size must be smaller than 4MB');
+                            return await that
+                                .renderUploadError('File size must be smaller than 4MB');
                         }
                     }
 
                     if (!request.file){
-                        response.redirect(request.route.path);
+                        response.redirect(MOVED_TEMPORARILY, request.route.path);
                         return;
-                    }else if(attachments!.length >= 10){
-                        return await that.renderUploadError(request, 'You can only select up to 10 files at the same time.');
+                    }else if(attachments && attachments.length >= 10){
+                        return await that
+                            .renderUploadError('You can only select up to 10 files at the same time.');
                     }
 
                     const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
