@@ -13,5 +13,6 @@ export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const OTHER_REASON_DISCLAIMER_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/other-reason-entry`;
 export const OTHER_REASON_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/reason-other`;
 export const EVIDENCE_UPLOAD_PAGE_URI = `${ROOT_URI}/evidence-upload`;
+export const EVIDENCE_REMOVAL_PAGE_URI = `${ROOT_URI}/remove-document`;
 export const CHECK_YOUR_APPEAL_PAGE_URI = `${ROOT_URI}/check-your-answers`;
 export const CONFIRMATION_PAGE_URI = `${ROOT_URI}/confirmation`;

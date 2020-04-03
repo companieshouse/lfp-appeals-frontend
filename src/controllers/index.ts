@@ -1,6 +1,7 @@
 import 'app/controllers/CheckYourAppealController';
 import 'app/controllers/ConfirmationController';
 import 'app/controllers/EntryController'
+import 'app/controllers/EvidenceRemovalController';
 import 'app/controllers/EvidenceUploadController';
 import 'app/controllers/HealthCheckController';
 import 'app/controllers/LandingController';
