@@ -94,6 +94,24 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
 
                     response.redirect(request.route.path);
                 }
+            },
+            'upload-file-continue': {
+                async handle(request: Request, response: Response): Promise<void> {
+
+                    const appeal = request.session
+                        .chain(_ => _.getExtraData())
+                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+                        .map(data => data.appeal)
+                        .unsafeCoerce();
+
+                    const attachments = appeal.reasons.other.attachments;
+
+                    if (!attachments || attachments.length === 0) {
+                        return await that.renderUploadError('You must add a document or click ' +
+                            '“Continue without adding documents”');
+                    }
+                    response.redirect(request.route.path);
+                }
             }
         };
     }

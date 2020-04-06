@@ -14,7 +14,7 @@
     <div class="govuk-grid-column-two-thirds">
       {% if errorList.length > 0 %}
         {{ govukErrorSummary({
-          titleText: "There was a problem with the document you added",
+          titleText: "There was a problem",
           errorList: errorList
         }) }}
       {% endif %}
@@ -68,10 +68,13 @@
         </dl>
       {% endif %}
 
-      <form method="post" action="?">
+      <form method="post" action="?action=upload-file-continue">
         {{
           govukButton({
-            text: 'Continue'
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
           })
         }}
       </form>

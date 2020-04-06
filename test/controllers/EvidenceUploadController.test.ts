@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -24,34 +24,47 @@ const navigation: Navigation = {
     permissions: [EVIDENCE_UPLOAD_PAGE_URI]
 };
 
+const appeal: Appeal = {
+    penaltyIdentifier: {
+        companyNumber: '00345567',
+        penaltyReference: 'A00000001',
+    },
+    reasons: {
+        other: {
+            title: 'I have reasons',
+            description: 'they are legit',
+        }
+    }
+};
+
+const appealWithAttachments: Appeal = {
+    penaltyIdentifier: {
+        companyNumber: '00345567',
+        penaltyReference: 'A00000001',
+    },
+    reasons: {
+        other: {
+            title: 'I have reasons',
+            description: 'they are legit',
+            attachments: [
+                {
+                    name: 'some-file.jpeg'
+                } as Attachment,
+                {
+                    name: 'another-file.jpeg'
+                } as Attachment
+            ]
+        }
+    }
+};
+
 describe('EvidenceUploadController', () => {
 
     describe('GET request', () => {
 
-        const appeal: Appeal = {
-            penaltyIdentifier: {
-                companyNumber: '00345567',
-                penaltyReference: 'A00000001',
-            },
-            reasons: {
-                other: {
-                    title: 'I have reasons',
-                    description: 'they are legit',
-                    attachments: [
-                        {
-                            name: 'some-file.jpeg'
-                        } as Attachment,
-                        {
-                            name: 'another-file.jpeg'
-                        } as Attachment
-                    ]
-                }
-            }
-        };
-
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData: Partial<ApplicationData> = { navigation };
+            const applicationData: Partial<ApplicationData> = {navigation};
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -65,7 +78,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with session data', async () => {
 
-            const applicationData: ApplicationData = { appeal, navigation };
+            const applicationData: ApplicationData = {appeal: appealWithAttachments, navigation};
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -80,22 +93,48 @@ describe('EvidenceUploadController', () => {
         });
     });
 
-    describe('POST request', () => {
+    describe('POST request: action=upload-file-continue', () => {
 
-        const appeal: Appeal = {
-            penaltyIdentifier: {
-                companyNumber: '00345567',
-                penaltyReference: 'A00000001',
-            },
-            reasons: {
-                other: {
-                    title: 'I have reasons',
-                    description: 'they are legit',
-                }
-            }
-        };
+        it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
 
-        let applicationData: ApplicationData = { appeal, navigation };
+            const applicationData: ApplicationData = {appeal: appealWithAttachments, navigation};
+
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
+
+            const app = createApp(session);
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file-continue')
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                })
+        });
+
+        it('on continue should return error when no files have been uploaded', async () => {
+
+            const applicationData: ApplicationData = {appeal, navigation};
+
+            const session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
+
+            const app = createApp(session);
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file-continue')
+                .expect(response => {
+                    console.log(response);
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('There was a problem')
+                        .and.to.contain('“Continue without adding documents”');
+                })
+        });
+    });
+
+    describe('POST request: action=upload-file', () => {
+
+        let applicationData: ApplicationData = {appeal, navigation};
 
         let session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -157,7 +196,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 500 if no appeal in session', async () => {
 
-            applicationData = { navigation } as ApplicationData;
+            applicationData = {navigation} as ApplicationData;
 
             session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', applicationData);
