@@ -13,6 +13,7 @@ import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatur
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
+import { createSchema } from 'app/models/chunks/YesNo.schema';
 import { FileTransferService } from 'app/service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -28,17 +29,8 @@ const navigation: Navigation = {
     }
 };
 
-const errorMessage = 'You must tell us if you want to remove the document';
-
 const schema: Joi.AnySchema = Joi.object({
-    remove: Joi.string()
-        .required()
-        .valid('true', 'false')
-        .messages({
-            'any.required': errorMessage,
-            'string.base': errorMessage,
-            'string.empty': errorMessage
-        })
+    remove: createSchema('You must tell us if you want to remove the document')
 }).unknown(true);
 
 const findAttachment = (fileId: string, appeal: Appeal): Attachment => {
