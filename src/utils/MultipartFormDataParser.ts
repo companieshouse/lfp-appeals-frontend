@@ -3,8 +3,7 @@ import util from 'util';
 
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
-const supportedFileTypes =
-    ['text/plain', 'application/msword', 'application/pdf', 'image/jpeg', 'image/png'];
+const supportedFileTypes: string[] = getEnvOrThrow('SUPPORTED_MIME_TYPES').split(',');
 
 export const parseFormData = util.promisify(
     multer({
