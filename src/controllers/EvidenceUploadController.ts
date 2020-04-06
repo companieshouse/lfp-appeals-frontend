@@ -1,6 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
-import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY} from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
@@ -37,12 +37,12 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
-    private async renderUploadError( message: string ): Promise<void> {
+    private async renderUploadError( text: string ): Promise<void> {
         const that = this;
         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
             that.template, {
                 ...this.httpContext.request.body,
-                errorList: [{text: message}]
+                errorList: [{text, href: '#file-upload'}]
             }
         );
     }
@@ -88,7 +88,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
-                        if (err.code === UNSUPPORTED_MEDIA_TYPE) {
+                        if (err.message === 'Request failed with status code 415') {
                             return await that
                                 .renderUploadError('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         } else {
