@@ -13,6 +13,7 @@ import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatur
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
+import { YesNo } from 'app/models/chunks/YesNo';
 import { createSchema } from 'app/models/chunks/YesNo.schema';
 import { FileTransferService } from 'app/service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
@@ -54,7 +55,7 @@ class Processor implements FormActionProcessor {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {}
 
     async process(request: Request): Promise<void> {
-        if (request.body.remove !== 'true') {
+        if (request.body.remove !== YesNo.yes) {
             return;
         }
 

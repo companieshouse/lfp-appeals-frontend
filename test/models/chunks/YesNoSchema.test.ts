@@ -1,5 +1,6 @@
 import Joi from '@hapi/joi';
 
+import { YesNo } from 'app/models/chunks/YesNo';
 import { createSchema } from 'app/models/chunks/YesNo.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
@@ -54,16 +55,16 @@ describe('YesNo schema', () => {
     });
 
     describe('invalid values', () => {
-        it('should accept true string', () => {
+        it('should accept "yes" string', () => {
             const validationResult = validator.validate({
-                consent: 'true'
+                consent: YesNo.yes
             });
             assertValidationErrors(validationResult, [])
         });
 
-        it('should accept false string', () => {
+        it('should accept "no" string', () => {
             const validationResult = validator.validate({
-                consent: 'false'
+                consent: YesNo.no
             });
             assertValidationErrors(validationResult, [])
         });

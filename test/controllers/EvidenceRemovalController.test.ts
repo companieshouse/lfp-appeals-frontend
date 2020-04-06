@@ -12,6 +12,7 @@ import 'app/controllers/EvidenceRemovalController'
 import { Appeal } from 'app/models/Appeal';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
+import { YesNo } from 'app/models/chunks/YesNo';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { SubstituteOf } from '@fluffy-spoon/substitute';
@@ -94,7 +95,7 @@ describe('EvidenceRemovalController', () => {
                 const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: 'false' })
+                    .send({ remove: YesNo.no })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                         expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)
@@ -107,7 +108,7 @@ describe('EvidenceRemovalController', () => {
                 const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: 'true' })
+                    .send({ remove: YesNo.yes })
                     .expect(response => {
                         expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     });
@@ -117,7 +118,7 @@ describe('EvidenceRemovalController', () => {
                 const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: 'true', fileId: '456' })
+                    .send({ remove: YesNo.yes, fileId: '456' })
                     .expect(response => {
                         expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     });
@@ -131,7 +132,7 @@ describe('EvidenceRemovalController', () => {
                 });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: 'true', fileId: attachment.id })
+                    .send({ remove: YesNo.yes, fileId: attachment.id })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                         expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)
