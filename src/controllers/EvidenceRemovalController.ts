@@ -33,11 +33,11 @@ const schema: Joi.AnySchema = Joi.object({
     remove: createSchema('You must tell us if you want to remove the document')
 }).unknown(true);
 
-const findAttachment = (fileId: string, appeal: Appeal): Attachment => {
+const findAttachment = (appeal: Appeal, fileId: string): Attachment => {
     if (fileId == null || fileId.trim().length < 1) {
         throw new Error('File identifier is missing');
     }
-    const attachment = appeal.reasons.other?.attachments?.find(item => item.id === fileId);
+    const attachment = appeal.reasons.other?.attachments?.find(file => file.id === fileId);
     if (attachment == null) {
         throw new Error(`File ${fileId} does not belong to appeal`);
     }
@@ -64,7 +64,7 @@ class Processor implements FormActionProcessor {
             .map(applicationData => applicationData.appeal)
             .unsafeCoerce();
 
-        const attachment = findAttachment(request.body.fileId, appeal);
+        const attachment = findAttachment(appeal, request.body.fileId);
         await this.fileTransferService.delete(attachment.id);
         appeal.reasons.other.attachments!.splice(appeal.reasons.other.attachments!.indexOf(attachment), 1)
     }
@@ -78,7 +78,7 @@ export class EvidenceRemovalController extends BaseController<any> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const attachment: Attachment = findAttachment(this.httpContext.request.query.f, appeal);
+        const attachment: Attachment = findAttachment(appeal, this.httpContext.request.query.f);
 
         return { fileId: attachment.id, fileName: attachment.name };
     }
