@@ -64,7 +64,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const applicationData: Partial<ApplicationData> = {navigation};
+            const applicationData: Partial<ApplicationData> = { navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -78,7 +78,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with session data', async () => {
 
-            const applicationData: ApplicationData = {appeal: appealWithAttachments, navigation};
+            const applicationData: ApplicationData = { appeal: appealWithAttachments, navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -95,9 +95,11 @@ describe('EvidenceUploadController', () => {
 
     describe('POST request: action=upload-file-continue', () => {
 
+        const UPLOAD_FILE_CONTINUE_ACTION: string = 'upload-file-continue';
+
         it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
 
-            const applicationData: ApplicationData = {appeal: appealWithAttachments, navigation};
+            const applicationData: ApplicationData = { appeal: appealWithAttachments, navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -105,7 +107,7 @@ describe('EvidenceUploadController', () => {
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file-continue')
+                .query('action=' + UPLOAD_FILE_CONTINUE_ACTION)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
@@ -114,7 +116,7 @@ describe('EvidenceUploadController', () => {
 
         it('on continue should return error when no files have been uploaded', async () => {
 
-            const applicationData: ApplicationData = {appeal, navigation};
+            const applicationData: ApplicationData = { appeal, navigation };
 
             const session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -122,7 +124,7 @@ describe('EvidenceUploadController', () => {
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file-continue')
+                .query('action=' + UPLOAD_FILE_CONTINUE_ACTION)
                 .expect(response => {
                     console.log(response);
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -134,7 +136,7 @@ describe('EvidenceUploadController', () => {
 
     describe('POST request: action=upload-file', () => {
 
-        let applicationData: ApplicationData = {appeal, navigation};
+        let applicationData: ApplicationData = { appeal, navigation };
 
         let session = createFakeSession([], config.cookieSecret, true)
             .saveExtraData(APPLICATION_DATA_KEY, applicationData);
@@ -144,13 +146,14 @@ describe('EvidenceUploadController', () => {
         });
 
         const FILE_NAME: string = 'test-file.jpg';
+        const UPLOAD_FILE_ACTION: string = 'upload-file';
 
         it('should return 302 and redirect to evidence upload page if no file chosen', async () => {
 
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file')
+                .query('action=' + UPLOAD_FILE_ACTION)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
@@ -164,7 +167,7 @@ describe('EvidenceUploadController', () => {
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file')
+                .query('action=' + UPLOAD_FILE_ACTION)
                 .attach('file', `test/files/${FILE_NAME}`)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -186,7 +189,7 @@ describe('EvidenceUploadController', () => {
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file')
+                .query('action=' + UPLOAD_FILE_ACTION)
                 .attach('file', `test/files/${FILE_NAME}`)
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
@@ -196,7 +199,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 500 if no appeal in session', async () => {
 
-            applicationData = {navigation} as ApplicationData;
+            applicationData = { navigation } as ApplicationData;
 
             session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', applicationData);
@@ -206,7 +209,7 @@ describe('EvidenceUploadController', () => {
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=upload-file')
+                .query('action=' + UPLOAD_FILE_ACTION)
                 .attach('file', `test/files/${FILE_NAME}`)
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
