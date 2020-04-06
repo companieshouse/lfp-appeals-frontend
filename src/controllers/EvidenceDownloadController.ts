@@ -11,7 +11,7 @@ import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 const template = 'download-file';
 
 @controller(DOWNLOAD_FILE_PAGE_URI)
-export class FileDownloadController extends BaseAsyncHttpController {
+export class EvidenceDownloadController extends BaseAsyncHttpController {
 
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super();
