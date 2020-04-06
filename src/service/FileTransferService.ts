@@ -54,6 +54,7 @@ export class FileTransferService {
     }
 
     async getFileMetadata(fileId: string): Promise<FileMetadata> {
+
         const config: AxiosRequestConfig = {
             headers: {
                 'x-api-key': this.key
@@ -71,6 +72,7 @@ export class FileTransferService {
     async download(fileId: string,
         writableStream: stream.Writable,
         onStart?: (axiosResponse: AxiosResponse<stream.Readable>) => void): Promise<void> {
+
         const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
             headers: {
@@ -94,12 +96,14 @@ export class FileTransferService {
 
     public async pipeDataIntoStream(axiosResponse: AxiosResponse<stream.Readable>,
         writableStream: stream.Writable): Promise<void> {
+
         return new Promise<void>((resolve, reject) => axiosResponse.data.pipe(writableStream)
             .on('finish', resolve)
             .on('error', reject));
     }
 
     private getErrorFrom(err: any, fileId: string): Error {
+
         if (err.isAxiosError) {
             switch (err.response.status) {
                 case NOT_FOUND:
@@ -108,7 +112,9 @@ export class FileTransferService {
                     return new FileTransferServiceError(fileId, err.response.status, err.message);
             }
         }
+
         return Error(err.message);
+
     }
 
 }

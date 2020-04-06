@@ -34,10 +34,12 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
     }
 
     private setHeaders(res: Response, axiosResponse: AxiosResponse<any>): void {
+
         res.setHeader('Content-Type', axiosResponse.headers['content-length']);
         res.setHeader('Content-Length', axiosResponse.headers['content-length']);
         res.setHeader('Content-Disposition', axiosResponse.headers['content-disposition']);
         res.status(OK);
+
     }
 
 }

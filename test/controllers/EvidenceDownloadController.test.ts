@@ -47,7 +47,6 @@ describe('EvidenceDownloadController', () => {
 
     it('should render the prompt page correctly', async () => {
 
-
         const fileTransferService = Substitute.for<FileTransferService>();
 
         await request(createDefaultApp(fileTransferService))
@@ -62,8 +61,6 @@ describe('EvidenceDownloadController', () => {
     it('should start downloading the file when the file is valid', async () => {
 
         const mockResponse = Substitute.for<Response>();
-
-
 
         await request(createDefaultApp(fileTransferServiceProxy(mockResponse, Promise.resolve())))
             .get(EXPECTED_DOWNLOAD_LINK_URL)
@@ -81,7 +78,6 @@ describe('EvidenceDownloadController', () => {
         const fileNotFoundError = new FileNotFoundError(FILE_ID);
         const fileDownloadError = new FileTransferServiceError(FILE_ID, INTERNAL_SERVER_ERROR, randomReason);
         const fileDownloadErrorGateway = new FileTransferServiceError(FILE_ID, GATEWAY_TIMEOUT, randomReason);
-
 
         const expectedErrors = [fileNotFoundError.message, fileDownloadError.message, fileDownloadErrorGateway.message, 'Sorry, there is a problem with the service'];
         let counter = 0;
