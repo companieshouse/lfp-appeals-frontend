@@ -1,16 +1,14 @@
-import { AxiosResponse } from 'axios';
-import { Response } from 'express';
-import { OK } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller, httpGet, requestParam } from 'inversify-express-utils';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
+import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { FileTransferService } from 'app/service/FileTransferService';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'download-file';
 
-@controller(DOWNLOAD_FILE_PAGE_URI)
+@controller(DOWNLOAD_FILE_PAGE_URI, FileTransferFeatureMiddleware)
 export class EvidenceDownloadController extends BaseAsyncHttpController {
 
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
@@ -27,18 +25,10 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
 
         const res = this.httpContext.response;
 
-        return await this.fileTransferService.download(fileId, res, (axiosResponse: AxiosResponse<any>) => {
-            this.setHeaders(res, axiosResponse);
-        });
+        const metadata = await this.fileTransferService.getFileMetadata(fileId);
+        res.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
 
-    }
-
-    private setHeaders(res: Response, axiosResponse: AxiosResponse<any>): void {
-
-        res.setHeader('Content-Type', axiosResponse.headers['content-length']);
-        res.setHeader('Content-Length', axiosResponse.headers['content-length']);
-        res.setHeader('Content-Disposition', axiosResponse.headers['content-disposition']);
-        res.status(OK);
+        return await this.fileTransferService.download(fileId, res);
 
     }
 

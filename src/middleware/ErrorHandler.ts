@@ -4,15 +4,15 @@ import { loggerInstance } from './Logger';
 
 // @ts-ignore
 export function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
-    res.status(NOT_FOUND).render('error', {});
+    res.status(NOT_FOUND).render('error');
 }
 
 
 // @ts-ignore
 export function defaultHandler(err: any, req: Request, res: Response, next: NextFunction): void {
-    loggerInstance().error(`${err.constructor.name} - ${err.message}${err.extraData ? ` - ${err.extraData}` : ''}`);
+    loggerInstance().error(`${err.constructor.name} - ${err.message}`);
     if (!err.statusCode) {
         err.statusCode = INTERNAL_SERVER_ERROR;
     }
-    res.status(err.statusCode).render('error', err.message ? { message: err.message} : {})
+    res.status(err.statusCode).render('error')
 }

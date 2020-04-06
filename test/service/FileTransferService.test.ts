@@ -2,14 +2,12 @@ import Substitute from '@fluffy-spoon/substitute';
 import { assert, expect } from 'chai';
 import { Response } from 'express';
 import * as Fs from 'fs';
-import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 import { promisify } from 'util';
 
 import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { FileNotFoundError } from 'app/service/error/FileNotFoundError';
-import { FileTransferServiceError } from 'app/service/error/FileTransferServiceError';
 
 describe('FileTransferService', () => {
 
@@ -104,20 +102,22 @@ describe('FileTransferService', () => {
 
         it('should throw an error if the axios request fails', async () => {
 
-            createGetNockRequest(fileMetadaUrl).reply(404);
+            createGetNockRequest(fileMetadaUrl).reply(NOT_FOUND);
 
             try {
                 await fileTransferService.getFileMetadata(fileID);
             } catch (err) {
-                expect(err.constructor.name).to.eq(FileNotFoundError.name);
+                expect(err.message).to.include(`File ${fileID} not found`);
             }
 
         });
+
         it('should get file metada if it exists', async () => {
 
-            createGetNockRequest(fileMetadaUrl).reply(200, expectedMetada);
+            createGetNockRequest(fileMetadaUrl).reply(OK, expectedMetada);
+            const fileMetadata = await fileTransferService.getFileMetadata(fileID);
+            expect(fileMetadata).to.deep.eq(expectedMetada);
 
-            await fileTransferService.getFileMetadata(fileID).then(_ => assert.deepEqual(_, expectedMetada));
         });
     });
 
@@ -125,20 +125,22 @@ describe('FileTransferService', () => {
         const readFile = promisify(Fs.readFile);
 
         const fileToStream = 'package.json';
-        const fileToStreamPath = `./${fileToStream}`;
         const downloadFileName = 'hello.txt';
-        const downloadedDirPath = `./test`;
-        const downloadedFilePath = `${downloadedDirPath}/${downloadFileName}`;
-        const downloadUrl = `${URI}/${fileID}/download`;
-        const fileDataBuffer = Fs.createReadStream(fileToStream);
 
-        const expectedBufferString = await readFile(fileToStreamPath);
+        const downloadedDirPath = `./test`;
+        const fileToStreamPath = `./${fileToStream}`;
+        const downloadedFilePath = `${downloadedDirPath}/${downloadFileName}`;
+
+        const fileDataBuffer: Fs.ReadStream = Fs.createReadStream(fileToStreamPath);
+        const expectedBufferString: Buffer = await readFile(fileToStreamPath);
 
         const contentDisposition = `attachment; filename=${downloadFileName}`;
         const contentLength = `${expectedBufferString.byteLength}`;
         const contentType = `application/json`;
 
-        const createDownloadRequest = () => createGetNockRequest(downloadUrl).reply(200, fileDataBuffer, {
+        const downloadUrl = `${URI}/${fileID}/download`;
+
+        const createDownloadRequest = () => createGetNockRequest(downloadUrl).reply(OK, fileDataBuffer, {
             'content-disposition': contentDisposition,
             'content-length': contentLength,
             'content-type': contentType
@@ -146,7 +148,7 @@ describe('FileTransferService', () => {
 
         it('should throw appropriate errors if the file does not exist', () => {
 
-            const expectedErrors = [FileNotFoundError.name, FileTransferServiceError.name, Error.name];
+            const expectedErrors = [`File ${fileID} not found`, Error.name, Error.name];
             let counter = 0;
 
             [NOT_FOUND, INTERNAL_SERVER_ERROR, 0].forEach(async status => {
@@ -154,7 +156,7 @@ describe('FileTransferService', () => {
                 try {
                     await fileTransferService.download(fileID, Substitute.for<Response>());
                 } catch (err) {
-                    expect(err.contructor.name).to.eq(expectedErrors[counter++]);
+                    expect(err.contructor.name).to.include(expectedErrors[counter++]);
                 }
             });
 
@@ -165,7 +167,7 @@ describe('FileTransferService', () => {
             createDownloadRequest();
 
             await fileTransferService.download(fileID, Fs.createWriteStream(downloadedFilePath));
-            const receivedBufferString = await readFile(downloadedFilePath);
+            const receivedBufferString: Buffer = await readFile(downloadedFilePath);
             expect(receivedBufferString).to.deep.eq(expectedBufferString);
             Fs.unlinkSync(downloadedFilePath);
 

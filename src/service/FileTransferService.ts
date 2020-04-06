@@ -2,8 +2,6 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import * as stream from 'stream';
-import { FileNotFoundError } from './error/FileNotFoundError';
-import { FileTransferServiceError } from './error/FileTransferServiceError';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { FileMetadata } from 'app/models/FileMetadata';
@@ -55,13 +53,17 @@ export class FileTransferService {
 
     async getFileMetadata(fileId: string): Promise<FileMetadata> {
 
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
         const config: AxiosRequestConfig = {
             headers: {
                 'x-api-key': this.key
             },
         };
 
-        return await axios
+        return axios
             .get<FileMetadata>(`${this.url}/${fileId}`, config)
             .then((axiosResponse: AxiosResponse<FileMetadata>) => axiosResponse.data)
             .catch(err => {
@@ -69,9 +71,7 @@ export class FileTransferService {
             });
     }
 
-    async download(fileId: string,
-        writableStream: stream.Writable,
-        onStart?: (axiosResponse: AxiosResponse<stream.Readable>) => void): Promise<void> {
+    async download(fileId: string, writableStream: stream.Writable): Promise<void> {
 
         const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
@@ -83,9 +83,6 @@ export class FileTransferService {
 
         return axios.get<stream.Readable>(url, config)
             .then(async (axiosResponse: AxiosResponse<stream.Readable>) => {
-                if (onStart) {
-                    onStart(axiosResponse);
-                }
                 await this.pipeDataIntoStream(axiosResponse, writableStream);
             })
             .catch(err => {
@@ -107,12 +104,9 @@ export class FileTransferService {
         if (err.isAxiosError) {
             switch (err.response.status) {
                 case NOT_FOUND:
-                    return new FileNotFoundError(fileId, err.message);
-                default:
-                    return new FileTransferServiceError(fileId, err.response.status, err.message);
+                    return new Error(`File ${fileId} not found.`);
             }
         }
-
         return Error(err.message);
 
     }

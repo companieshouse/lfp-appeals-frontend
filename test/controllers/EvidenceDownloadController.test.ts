@@ -1,17 +1,14 @@
 import 'reflect-metadata';
 
 import Substitute from '@fluffy-spoon/substitute';
-import { AxiosResponse } from 'axios';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
-import { Response } from 'express';
 import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
+import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/service/FileTransferService';
-import { FileNotFoundError } from 'app/service/error/FileNotFoundError';
-import { FileTransferServiceError } from 'app/service/error/FileTransferServiceError';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
@@ -29,19 +26,15 @@ describe('EvidenceDownloadController', () => {
     const contentLength = 1000;
     const contentType = `application/json`;
 
-    const createControllerDownloadCall = (response: Response, returnData: Promise<void>) => {
-        response.setHeader('Content-Disposition', contentDisposition);
-        response.setHeader('Content-Length', contentLength);
-        response.setHeader('Content-Type', contentType);
-        // @ts-ignore
-        return async (fileId: string, stream: any, onStart: (axiosRes: AxiosResponse) => void) => {
-            return returnData;
-        };
-    };
 
-    const fileTransferServiceProxy = (response: Response, returnData: Promise<void>): FileTransferService => {
+    const fileTransferServiceProxy = (
+        downloadResult: Promise<void>,
+        fileMetadatResult: Promise<FileMetadata>): FileTransferService => {
         return {
-            download: createControllerDownloadCall(response, returnData)
+            // @ts-ignore
+            download: async (fileId: string, stream: any) => downloadResult,
+            // @ts-ignore
+            getFileMetadata: async (fileId: string) => fileMetadatResult
         } as FileTransferService;
     };
 
@@ -60,32 +53,42 @@ describe('EvidenceDownloadController', () => {
 
     it('should start downloading the file when the file is valid', async () => {
 
-        const mockResponse = Substitute.for<Response>();
+        const metadata: FileMetadata = {
+            av_status: 'scanned',
+            content_type: contentType,
+            id: FILE_ID,
+            name: 'hello.txt',
+            size: contentLength
+        };
 
-        await request(createDefaultApp(fileTransferServiceProxy(mockResponse, Promise.resolve())))
+        const fakeFileTransferProxy =
+            fileTransferServiceProxy(Promise.resolve(), Promise.resolve<FileMetadata>(metadata));
+
+        await request(
+            createDefaultApp(fakeFileTransferProxy))
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
+                expect(res.header['content-disposition']).eq(contentDisposition);
                 expect(res.status).to.eq(204);
-                mockResponse.received().setHeader('Content-Disposition', contentDisposition);
-                mockResponse.received().setHeader('Content-Length', contentLength);
-                mockResponse.received().setHeader('Content-Type', contentType);
             });
 
     });
 
     it('should render an error page when the file service fails to download file', () => {
-        const randomReason = 'for some reason';
-        const fileNotFoundError = new FileNotFoundError(FILE_ID);
-        const fileDownloadError = new FileTransferServiceError(FILE_ID, INTERNAL_SERVER_ERROR, randomReason);
-        const fileDownloadErrorGateway = new FileTransferServiceError(FILE_ID, GATEWAY_TIMEOUT, randomReason);
+        const fileNotFoundError = new Error(`File ${FILE_ID} not found.`);
+        const fileDownloadError = new Error(`Some internal server error`);
 
-        const expectedErrors = [fileNotFoundError.message, fileDownloadError.message, fileDownloadErrorGateway.message, 'Sorry, there is a problem with the service'];
-        let counter = 0;
+        const expectedErrors = [fileNotFoundError.message, fileDownloadError.message, fileDownloadError.message, 'Sorry, there is a problem with the service'];
 
-        [NOT_FOUND, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT, 0].forEach(async status => {
+        const getBrokenFileTransferService =
+            (status: number) =>
+                fileTransferServiceProxy(
+                    Promise.reject(status),
+                    Promise.reject(status)
+                );
 
-            const fileTransferService =
-                fileTransferServiceProxy(Substitute.for<Response>(), Promise.reject(status));
+        const testAppWith = async (fileTransferService: FileTransferService) => {
+            let counter = 0;
 
             await request(createDefaultApp(fileTransferService))
                 .get(EXPECTED_DOWNLOAD_LINK_URL)
@@ -93,6 +96,16 @@ describe('EvidenceDownloadController', () => {
                     expect(res.status).to.eq(status);
                     expect(res.text).to.contain(expectedErrors[counter++]);
                 });
+
+        };
+
+        const statusFailureArray = [NOT_FOUND, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT, 0];
+
+        statusFailureArray.forEach(async status => {
+
+            const fileTransferService = getBrokenFileTransferService(status);
+
+            await testAppWith(fileTransferService);
         });
     });
 });
