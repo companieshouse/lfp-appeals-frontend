@@ -24,6 +24,8 @@ const navigation: Navigation = {
     permissions: [EVIDENCE_UPLOAD_PAGE_URI]
 };
 
+const pageHeading = 'Add documents to support your application';
+
 const appeal: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
@@ -54,6 +56,20 @@ const appealWithAttachments: Appeal = {
                     name: 'another-file.jpeg'
                 } as Attachment
             ]
+        }
+    }
+};
+
+const appealWithMaxAttachments: Appeal = {
+    penaltyIdentifier: {
+        companyNumber: '00345567',
+        penaltyReference: 'A00000001',
+    },
+    reasons: {
+        other: {
+            title: 'I have reasons',
+            description: 'they are legit',
+            attachments: Array(10).fill({name: 'some-file.jpeg'} as Attachment)
         }
     }
 };
@@ -153,7 +169,7 @@ describe('EvidenceUploadController', () => {
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=' + UPLOAD_FILE_ACTION)
+                .query('action=upload-file')
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
@@ -217,6 +233,53 @@ describe('EvidenceUploadController', () => {
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
+        });
+
+        it('should return validation error if file not supported', async () => {
+
+            const unsupportedFileName = 'test-file.woff2';
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', `test/files/${unsupportedFileName}`)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                });
+
+            fileTransferService.didNotReceive().upload(Arg.any(), unsupportedFileName);
+        });
+
+        it('should return validation error when more than 10 files uploaded', async () => {
+
+
+            applicationData = { appeal: appealWithMaxAttachments, navigation };
+
+            session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=upload-file')
+                .attach('file', `test/files/${FILE_NAME}`)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('You can only select up to 10 files at the same time.');
+                });
+
+        });
+
+        it('should return ERROR if large file has been uploaded', () => {
+            // TODO
         });
     });
 });
