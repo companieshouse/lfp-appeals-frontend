@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
-import * as stream from 'stream';
+import { Readable} from 'stream';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { FileMetadata } from 'app/models/FileMetadata';
@@ -71,7 +71,11 @@ export class FileTransferService {
             });
     }
 
-    async download(fileId: string, writableStream: stream.Writable): Promise<void> {
+    async download(fileId: string): Promise<Readable> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
 
         const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
@@ -81,22 +85,12 @@ export class FileTransferService {
             responseType: 'stream'
         };
 
-        return axios.get<stream.Readable>(url, config)
-            .then(async (axiosResponse: AxiosResponse<stream.Readable>) => {
-                await this.pipeDataIntoStream(axiosResponse, writableStream);
-            })
+        return axios.get<Readable>(url, config)
+            .then(async (axiosResponse: AxiosResponse<Readable>) => axiosResponse.data)
             .catch(err => {
                 throw this.getErrorFrom(err, fileId);
             });
 
-    }
-
-    public async pipeDataIntoStream(axiosResponse: AxiosResponse<stream.Readable>,
-        writableStream: stream.Writable): Promise<void> {
-
-        return new Promise<void>((resolve, reject) => axiosResponse.data.pipe(writableStream)
-            .on('finish', resolve)
-            .on('error', reject));
     }
 
     private getErrorFrom(err: any, fileId: string): Error {
@@ -107,7 +101,7 @@ export class FileTransferService {
                     return new Error(`File ${fileId} not found.`);
             }
         }
-        return Error(err.message);
+        return new Error(err.message);
 
     }
 

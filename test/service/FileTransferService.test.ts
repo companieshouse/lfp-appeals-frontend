@@ -1,10 +1,7 @@
-import Substitute from '@fluffy-spoon/substitute';
-import { assert, expect } from 'chai';
-import { Response } from 'express';
-import * as Fs from 'fs';
+import { expect } from 'chai';
 import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
-import { promisify } from 'util';
+import { Readable, Writable } from 'stream';
 
 import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/service/FileTransferService';
@@ -100,6 +97,17 @@ describe('FileTransferService', () => {
 
         const fileMetadaUrl = `${URI}/${fileID}`;
 
+        it('should throw an error when no fileId is provided', () => {
+            [undefined, null].forEach(async fileId => {
+                try {
+                    await fileTransferService.getFileMetadata(fileId!);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('File ID is missing');
+                }
+            });
+        });
+
         it('should throw an error if the axios request fails', async () => {
 
             createGetNockRequest(fileMetadaUrl).reply(NOT_FOUND);
@@ -121,29 +129,28 @@ describe('FileTransferService', () => {
         });
     });
 
-    describe('Download a file', async () => {
-        const readFile = promisify(Fs.readFile);
+    describe('Download a file', () => {
+        const inputText = 'This is some random text that will be converted to a buffer';
+        const fileDataBuffer = Readable.from(inputText);
 
-        const fileToStream = 'package.json';
         const downloadFileName = 'hello.txt';
-
-        const downloadedDirPath = `./test`;
-        const fileToStreamPath = `./${fileToStream}`;
-        const downloadedFilePath = `${downloadedDirPath}/${downloadFileName}`;
-
-        const fileDataBuffer: Fs.ReadStream = Fs.createReadStream(fileToStreamPath);
-        const expectedBufferString: Buffer = await readFile(fileToStreamPath);
-
         const contentDisposition = `attachment; filename=${downloadFileName}`;
-        const contentLength = `${expectedBufferString.byteLength}`;
-        const contentType = `application/json`;
 
         const downloadUrl = `${URI}/${fileID}/download`;
 
         const createDownloadRequest = () => createGetNockRequest(downloadUrl).reply(OK, fileDataBuffer, {
             'content-disposition': contentDisposition,
-            'content-length': contentLength,
-            'content-type': contentType
+        });
+
+        it('should throw an error when no fileId is provided', () => {
+            [undefined, null].forEach(async fileId => {
+                try {
+                    await fileTransferService.download(fileId!);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('File ID is missing');
+                }
+            });
         });
 
         it('should throw appropriate errors if the file does not exist', () => {
@@ -152,24 +159,38 @@ describe('FileTransferService', () => {
             let counter = 0;
 
             [NOT_FOUND, INTERNAL_SERVER_ERROR, 0].forEach(async status => {
-                createGetNockRequest(downloadUrl).reply(status);
-                try {
-                    await fileTransferService.download(fileID, Substitute.for<Response>());
-                } catch (err) {
-                    expect(err.contructor.name).to.include(expectedErrors[counter++]);
-                }
+                createGetNockRequest(downloadUrl).replyWithError(new Error(`${status}`));
+
+                await fileTransferService.download(fileID)
+                    .catch(err => expect(err.message).to.include(expectedErrors[counter++]));
+
             });
 
 
         });
 
         it('should return the 200 and put the correct file content into the response object', async () => {
-            createDownloadRequest();
 
-            await fileTransferService.download(fileID, Fs.createWriteStream(downloadedFilePath));
-            const receivedBufferString: Buffer = await readFile(downloadedFilePath);
-            expect(receivedBufferString).to.deep.eq(expectedBufferString);
-            Fs.unlinkSync(downloadedFilePath);
+            createDownloadRequest();
+            const chunks: any[] = [];
+
+            const writable = new Writable();
+
+            writable._write = (chunk: any,
+                // @ts-ignore
+                encoding: string,
+                callback: (error?: Error | null | undefined) => void): void => {
+
+                chunks.push(chunk);
+                callback();
+            };
+
+            const readable = await fileTransferService.download(fileID);
+
+            await new Promise((res, rej) => readable.pipe(writable).on('finish', res).on('error', rej));
+
+            const result = Buffer.concat(chunks).toString();
+            expect(result).to.eq(inputText);
 
         });
 

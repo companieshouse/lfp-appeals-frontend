@@ -3,7 +3,8 @@ import 'reflect-metadata';
 import Substitute from '@fluffy-spoon/substitute';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
-import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
+import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
+import { Readable } from 'stream';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
@@ -12,7 +13,6 @@ import { FileTransferService } from 'app/service/FileTransferService';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
-
 const createDefaultApp = (fileTransferService: FileTransferService) => createAppConfigurable(container => {
     container.bind(SessionStore).toConstantValue(Substitute.for<SessionStore>());
     container.bind(FileTransferService).toConstantValue(fileTransferService);
@@ -28,11 +28,11 @@ describe('EvidenceDownloadController', () => {
 
 
     const fileTransferServiceProxy = (
-        downloadResult: Promise<void>,
+        downloadResult: Promise<Readable>,
         fileMetadatResult: Promise<FileMetadata>): FileTransferService => {
         return {
             // @ts-ignore
-            download: async (fileId: string, stream: any) => downloadResult,
+            download: async (fileId: string) => downloadResult,
             // @ts-ignore
             getFileMetadata: async (fileId: string) => fileMetadatResult
         } as FileTransferService;
@@ -62,14 +62,15 @@ describe('EvidenceDownloadController', () => {
         };
 
         const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(), Promise.resolve<FileMetadata>(metadata));
+            fileTransferServiceProxy(Promise.resolve(Readable.from('')),
+                Promise.resolve<FileMetadata>(metadata));
 
         await request(
             createDefaultApp(fakeFileTransferProxy))
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
                 expect(res.header['content-disposition']).eq(contentDisposition);
-                expect(res.status).to.eq(204);
+                expect(res.status).to.eq(OK);
             });
 
     });
