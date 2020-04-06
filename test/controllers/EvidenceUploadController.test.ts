@@ -239,7 +239,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return validation error if file not supported', async () => {
 
-            const unsupportedFileName = 'test-file.woff2';
+            const unsupportedFileName = 'test-file.zip';
 
             const app = createApp(session, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
@@ -247,7 +247,7 @@ describe('EvidenceUploadController', () => {
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
-                .attach('file', `test/files/${unsupportedFileName}`)
+                .attach('file', buffer, {filename: unsupportedFileName , contentType: 'application/zip'})
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
@@ -271,17 +271,32 @@ describe('EvidenceUploadController', () => {
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
-                .attach('file', `test/files/${FILE_NAME}`)
+                .attach('file', buffer, FILE_NAME)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You can only select up to 10 files at the same time.');
+                        .and.to.contain('You can only select up to 10 files at the same time');
                 });
 
         });
 
-        it('should return ERROR if large file has been uploaded', () => {
-            // TODO
+        it('should return ERROR if large file has been uploaded', async () => {
+            const largeBuffer = Buffer.alloc(5000000);
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + UPLOAD_FILE_ACTION)
+                .attach('file', largeBuffer, FILE_NAME)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('File size must be smaller than 4MB');
+                });
+
+            fileTransferService.received().upload(Arg.any(), FILE_NAME);
         });
     });
 });

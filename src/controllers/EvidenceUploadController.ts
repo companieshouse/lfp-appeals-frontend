@@ -80,7 +80,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     }else if(appeal.reasons.other.attachments &&
                         appeal.reasons.other.attachments!.length >= maxNumberOfFiles){
                         return await that
-                            .renderUploadError('You can only select up to 10 files at the same time.');
+                            .renderUploadError('You can only select up to 10 files at the same time');
                     }
 
                     const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
