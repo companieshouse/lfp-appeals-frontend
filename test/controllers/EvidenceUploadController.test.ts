@@ -274,7 +274,12 @@ describe('EvidenceUploadController', () => {
 
         it('should return validation error if file not supported', async () => {
 
-            const unsupportedFileName = 'test-file.zip';
+            const unsupportedFileName = 'test-file.fake';
+
+            applicationData = { appeal: appealWithAttachments, navigation };
+
+            session = createFakeSession([], config.cookieSecret, true)
+                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
 
             const app = createApp(session, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
@@ -288,8 +293,6 @@ describe('EvidenceUploadController', () => {
                     expect(response.text).to.contain(pageHeading)
                         .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                 });
-
-            fileTransferService.didNotReceive().upload(Arg.any(), unsupportedFileName);
         });
 
         it('should return validation error when more than 10 files uploaded', async () => {

@@ -37,10 +37,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
-    private async renderUploadError( text: string ): Promise<void> {
+    private async renderUploadError( appeal: Appeal, text: string ): Promise<void> {
         const that = this;
         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
             that.template, {
+                ...this.prepareViewModelFromAppeal(appeal),
                 ...this.httpContext.request.body,
                 errorList: [{text, href: '#file-upload'}]
             }
@@ -66,11 +67,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     } catch (error){
                         if (error.message === 'File not supported'){
                             return await that
-                                .renderUploadError('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                                .renderUploadError(appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         }
                         else if(error.message === 'File too large'){
                             return await that
-                                .renderUploadError('File size must be smaller than 4MB');
+                                .renderUploadError(appeal, 'File size must be smaller than 4MB');
                         }
                     }
 
@@ -80,7 +81,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     }else if(appeal.reasons.other.attachments &&
                         appeal.reasons.other.attachments!.length >= maxNumberOfFiles){
                         return await that
-                            .renderUploadError('You can only select up to 10 files at the same time');
+                            .renderUploadError(appeal, 'You can only select up to 10 files at the same time');
                     }
 
                     let id: string;
@@ -90,7 +91,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     } catch (err) {
                         if (err.message === 'Request failed with status code 415') {
                             return await that
-                                .renderUploadError('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                                .renderUploadError( appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         } else {
                             throw new Error(err.message)
                         }
@@ -117,7 +118,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
 
                     if (!attachments || attachments.length === 0) {
-                        return await that.renderUploadError('You must add a document or click ' +
+                        return await that.renderUploadError( appeal, 'You must add a document or click ' +
                             '“Continue without adding documents”');
                     }
                     response.redirect(request.route.path);

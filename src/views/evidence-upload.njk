@@ -31,7 +31,7 @@
           {% else %}
             Add a document
           {% endif %}
-        {% endset %}
+        {% endset -%}
 
         <div class='file-upload'>
           {{
@@ -40,7 +40,7 @@
               name: 'file',
               errorMessage: Err.text,
               label: {
-                text: Err.text
+                text: uploadText
               }
             })
           }}
