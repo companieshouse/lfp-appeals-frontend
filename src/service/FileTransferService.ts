@@ -52,4 +52,24 @@ export class FileTransferService {
                 }
             });
     }
+
+    public async delete(fileId: string): Promise<void> {
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const config: AxiosRequestConfig = {
+            headers: {
+                'x-api-key': this.key,
+            }
+        };
+
+        return axios
+            .delete(`${this.url}/${fileId}`, config)
+            .then(() => {
+                return
+            }).catch((err) => {
+                throw new Error(err.message)
+            });
+    }
 }

@@ -1,5 +1,6 @@
 {% extends "layout.njk" %}
 
+{% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from 'govuk/components/input/macro.njk' import govukInput %}
 {% from 'govuk/components/radios/macro.njk' import govukRadios %}
 {% from 'govuk/components/button/macro.njk' import govukButton %}
@@ -11,12 +12,25 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem with the details you gave us',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
       <form method="post" action="?f={{ fileId }}">
         {{
           govukInput({
             type: 'hidden',
             name: 'fileId',
             value: fileId
+          })
+        }}
+        {{
+          govukInput({
+            type: 'hidden',
+            name: 'fileName',
+            value: fileName
           })
         }}
 
@@ -41,7 +55,8 @@
                 value: 'false',
                 text: 'No'
               }
-            ]
+            ],
+            errorMessage: validationResult.getErrorForField('remove') if validationResult
           })
         }}
 

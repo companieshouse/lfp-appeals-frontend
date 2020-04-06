@@ -54,6 +54,9 @@
               <dd class="ch-upload-list__value">
                 {{ attachment.name }}
               </dd>
+              <dd class="ch-upload-list__actions">
+                <a href="{{ paths.EVIDENCE_REMOVAL_PAGE_URI }}?f={{ attachment.id }}">Remove</a>
+              </dd>
             </div>
           {% endfor %}
         </dl>
