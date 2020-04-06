@@ -7,8 +7,12 @@ import { loggerInstance } from 'app/middleware/Logger';
 export class FileTransferService {
 
     constructor(private readonly url: string, private readonly key: string) {
-        this.url = url;
-        this.key = key;
+        if (url == null) {
+            throw new Error('URI for File Transfer API is missing');
+        }
+        if (key == null) {
+            throw new Error('API key for File Transfer API is missing');
+        }
     }
 
     public async upload(file: Buffer, fileName: string): Promise<string> {
