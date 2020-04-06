@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import { CREATED, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 
 import { loggerInstance } from 'app/middleware/Logger';
 
@@ -30,7 +30,7 @@ export class FileTransferService {
 
         const config: AxiosRequestConfig = {
             headers: {
-                'x-api-key': this.key,
+                ...this.prepareHeaders(),
                 ...data.getHeaders()
             }
         };
@@ -60,7 +60,7 @@ export class FileTransferService {
 
         const config: AxiosRequestConfig = {
             headers: {
-                'x-api-key': this.key,
+                ...this.prepareHeaders()
             }
         };
 
@@ -69,7 +69,16 @@ export class FileTransferService {
             .then(() => {
                 return
             }).catch((err) => {
-                throw new Error(err.message)
+                if (err.response.status === NOT_FOUND) {
+                    throw new Error(`File ${fileId} cannot be deleted because it does not exist`)
+                }
+                throw new Error(`File ${fileId} cannot be deleted due to error: ${(err.message || 'unknown error').toLowerCase()}`)
             });
+    }
+
+    private prepareHeaders(): Record<string, string> {
+        return {
+            'x-api-key': this.key
+        }
     }
 }
