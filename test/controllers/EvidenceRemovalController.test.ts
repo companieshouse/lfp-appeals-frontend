@@ -124,10 +124,10 @@ describe('EvidenceRemovalController', () => {
             });
 
             it('should redirect to file upload page when file identifier exists in session', async () => {
-                const api: SubstituteOf<FileTransferService> = createSubstituteOf<FileTransferService>();
+                const service: SubstituteOf<FileTransferService> = createSubstituteOf<FileTransferService>();
 
                 const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])), container => {
-                    container.rebind(FileTransferService).toConstantValue(api);
+                    container.rebind(FileTransferService).toConstantValue(service);
                 });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
@@ -137,7 +137,7 @@ describe('EvidenceRemovalController', () => {
                         expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)
                     });
 
-                api.received().delete(attachment.id);
+                service.received().delete(attachment.id);
             });
         })
     });
