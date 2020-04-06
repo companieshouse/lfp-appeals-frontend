@@ -1,6 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
-import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
@@ -83,7 +83,18 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                             .renderUploadError('You can only select up to 10 files at the same time');
                     }
 
-                    const id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
+                    let id: string;
+
+                    try {
+                        id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
+                    } catch (err) {
+                        if (err.code === UNSUPPORTED_MEDIA_TYPE) {
+                            return await that
+                                .renderUploadError('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                        } else {
+                            throw new Error(err.message)
+                        }
+                    }
 
                     appeal.reasons.other.attachments = [...appeal.reasons.other.attachments || [], {
                         id, name: request.file.originalname, contentType: request.file.mimetype, size: request.file.size

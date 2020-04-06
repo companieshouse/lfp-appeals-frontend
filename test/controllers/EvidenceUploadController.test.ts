@@ -2,7 +2,13 @@ import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import {
+    INTERNAL_SERVER_ERROR,
+    MOVED_TEMPORARILY,
+    OK,
+    UNPROCESSABLE_ENTITY,
+    UNSUPPORTED_MEDIA_TYPE
+} from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
 
@@ -194,6 +200,31 @@ describe('EvidenceUploadController', () => {
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
         });
+
+        it('should return 422 when unsupported media uploaded', async () => {
+
+            const app = createApp(session, container => {
+
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject({
+                                message: { message: 'unsupported file type' },
+                                code: UNSUPPORTED_MEDIA_TYPE,
+                            }));
+                    }));
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + UPLOAD_FILE_ACTION)
+                .attach('file', buffer, { filename: FILE_NAME, contentType: 'unsupported' })
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('There was a problem')
+                        .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                });
+        });
+
 
         it('should return 500 after failed upload', async () => {
 
