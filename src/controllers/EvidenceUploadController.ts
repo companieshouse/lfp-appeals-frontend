@@ -29,6 +29,10 @@ const navigation = {
     }
 };
 
+const fileTooLargeError: string = 'File size must be smaller than 4MB';
+const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
+const tooManyFilesError: string = 'You can only select up to 10 files at the same time';
+
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
@@ -73,10 +77,10 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     } catch (error) {
                         if (error.message === 'File not supported') {
                             return await that
-                                .renderUploadError(appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                                .renderUploadError(appeal, fileNotSupportedError);
                         } else if (error.message === 'File too large') {
                             return await that
-                                .renderUploadError(appeal, 'File size must be smaller than 4MB');
+                                .renderUploadError(appeal, fileTooLargeError);
                         }
                     }
 
@@ -86,7 +90,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     } else if (appeal.reasons.other.attachments &&
                         appeal.reasons.other.attachments!.length >= maxNumberOfFiles) {
                         return await that
-                            .renderUploadError(appeal, 'You can only select up to 10 files at the same time');
+                            .renderUploadError(appeal, tooManyFilesError);
                     }
 
                     let id: string;
@@ -94,9 +98,10 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
+                        console.log(err.code);
                         if (err.message === 'Request failed with status code 415') {
                             return await that
-                                .renderUploadError(appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                                .renderUploadError(appeal, fileNotSupportedError);
                         } else {
                             throw new Error(err.message)
                         }
