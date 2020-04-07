@@ -1,7 +1,7 @@
 import Joi from '@hapi/joi';
 
-import { YesNo } from 'app/models/chunks/YesNo';
-import { createSchema } from 'app/models/chunks/YesNo.schema';
+import { YesNo } from 'app/models/fields/YesNo';
+import { createSchema } from 'app/models/fields/YesNo.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';

@@ -12,7 +12,7 @@ import 'app/controllers/EvidenceRemovalController'
 import { Appeal } from 'app/models/Appeal';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
-import { YesNo } from 'app/models/chunks/YesNo';
+import { YesNo } from 'app/models/fields/YesNo';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { SubstituteOf } from '@fluffy-spoon/substitute';
