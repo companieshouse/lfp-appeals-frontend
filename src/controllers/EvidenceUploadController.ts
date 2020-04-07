@@ -29,10 +29,6 @@ const navigation = {
     }
 };
 
-const fileTooLargeError: string = 'File size must be smaller than 4MB';
-const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
-const tooManyFilesError: string = 'You can only select up to 10 files at the same time';
-
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
@@ -60,6 +56,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
 
     protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         const that = this;
+
+        const fileTooLargeError: string = 'File size must be smaller than 4MB';
+        const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
+        const tooManyFilesError: string = 'You can only select up to 10 files at the same time';
+
         return {
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
@@ -98,7 +99,6 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
-                        console.log(err.code);
                         if (err.message === 'Request failed with status code 415') {
                             return await that
                                 .renderUploadError(appeal, fileNotSupportedError);
