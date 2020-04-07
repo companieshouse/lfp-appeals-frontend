@@ -15,6 +15,8 @@ import { FileTransferService } from 'app/service/FileTransferService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { ValidationError } from 'app/utils/validation/ValidationError';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 const template = 'evidence-upload';
 
@@ -39,11 +41,15 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
 
     private async renderUploadError( appeal: Appeal, text: string ): Promise<void> {
         const that = this;
+        const validationResult: ValidationResult = new ValidationResult( [
+            new ValidationError('file', text)
+        ]);
+
         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
             that.template, {
                 ...this.prepareViewModelFromAppeal(appeal),
                 ...this.httpContext.request.body,
-                errorList: [{text, href: '#file-upload'}]
+                validationResult
             }
         );
     }

@@ -12,15 +12,12 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% if errorList.length > 0 %}
-        {{
-          govukErrorSummary({
-            titleText: 'There was a problem',
-            errorList: errorList
-          })
-        }}
-      {% endif %}
-
+      {{
+        govukErrorSummary({
+          titleText: 'There was a problem',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
 
       <h1 class="govuk-heading-xl">
         Add documents to support your application
@@ -38,9 +35,9 @@
         <div class='file-upload'>
           {{
             govukFileUpload({
-              id: 'file-upload',
+              errorMessage: validationResult.getErrorForField('file') if validationResult,
+              id: 'file',
               name: 'file',
-              errorMessage: errorList[0].text,
               label: {
                 text: uploadText
               }
