@@ -1,6 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
-import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY} from 'http-status-codes';
+import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
@@ -39,9 +39,9 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
         return appeal.reasons?.other;
     }
 
-    private async renderUploadError( appeal: Appeal, text: string ): Promise<void> {
+    private async renderUploadError(appeal: Appeal, text: string): Promise<void> {
         const that = this;
-        const validationResult: ValidationResult = new ValidationResult( [
+        const validationResult: ValidationResult = new ValidationResult([
             new ValidationError('file', text)
         ]);
 
@@ -68,24 +68,23 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                         .map(data => data.appeal)
                         .unsafeCoerce();
 
-                    try{
+                    try {
                         await parseFormData(request, response)
-                    } catch (error){
-                        if (error.message === 'File not supported'){
+                    } catch (error) {
+                        if (error.message === 'File not supported') {
                             return await that
                                 .renderUploadError(appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
-                        }
-                        else if(error.message === 'File too large'){
+                        } else if (error.message === 'File too large') {
                             return await that
                                 .renderUploadError(appeal, 'File size must be smaller than 4MB');
                         }
                     }
 
-                    if (!request.file){
+                    if (!request.file) {
                         response.redirect(MOVED_TEMPORARILY, request.route.path);
                         return;
-                    }else if(appeal.reasons.other.attachments &&
-                        appeal.reasons.other.attachments!.length >= maxNumberOfFiles){
+                    } else if (appeal.reasons.other.attachments &&
+                        appeal.reasons.other.attachments!.length >= maxNumberOfFiles) {
                         return await that
                             .renderUploadError(appeal, 'You can only select up to 10 files at the same time');
                     }
@@ -97,7 +96,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     } catch (err) {
                         if (err.message === 'Request failed with status code 415') {
                             return await that
-                                .renderUploadError( appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                                .renderUploadError(appeal, 'The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                         } else {
                             throw new Error(err.message)
                         }
@@ -124,7 +123,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
 
                     if (!attachments || attachments.length === 0) {
-                        return await that.renderUploadError( appeal, 'You must add a document or click ' +
+                        return await that.renderUploadError(appeal, 'You must add a document or click ' +
                             '“Continue without adding documents”');
                     }
                     response.redirect(request.route.path);
