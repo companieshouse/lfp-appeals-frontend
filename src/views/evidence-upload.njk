@@ -48,7 +48,7 @@
       {% if attachments and attachments.length > 0 %}
         <dl class="govuk-upload-list">
           {% for attachment in attachments | reverse %}
-            <div class="ch-upload-list__row">
+            <div class="ch-upload-list__row  uploaded-file-{{ loop.index0 }}">
               <dt class="govuk-visually-hidden">
                 Uploaded file
               </dt>
