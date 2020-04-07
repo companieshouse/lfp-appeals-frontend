@@ -59,8 +59,12 @@ describe('EvidenceDownloadController', () => {
 
     it('should start downloading the file when the file is valid', async () => {
 
+        const readable = new Readable();
+        readable.push('');
+        readable.push(null);
+
         const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(Readable.from('')));
+            fileTransferServiceProxy(Promise.resolve(readable));
 
         await request(
             createDefaultApp(fakeFileTransferProxy))

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
-import { Readable, Writable } from 'stream';
+import { Readable, Writable} from 'stream';
 
 import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/service/FileTransferService';
@@ -131,7 +131,9 @@ describe('FileTransferService', () => {
 
     describe('Download a file', () => {
         const inputText = 'This is some random text that will be converted to a buffer';
-        const fileDataBuffer = Readable.from(inputText);
+        const fileDataBuffer = new Readable();
+        fileDataBuffer.push(inputText);
+        fileDataBuffer.push(null);
 
         const downloadFileName = 'hello.txt';
         const contentDisposition = `attachment; filename=${downloadFileName}`;
