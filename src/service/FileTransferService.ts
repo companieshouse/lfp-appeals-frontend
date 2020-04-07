@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { CREATED, NOT_FOUND } from 'http-status-codes';
-import { Readable} from 'stream';
+import { Readable } from 'stream';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { FileMetadata } from 'app/models/FileMetadata';
@@ -9,8 +9,12 @@ import { FileMetadata } from 'app/models/FileMetadata';
 export class FileTransferService {
 
     constructor(private readonly url: string, private readonly key: string) {
-        this.url = url;
-        this.key = key;
+        if (url == null) {
+            throw new Error('URI for File Transfer API is missing');
+        }
+        if (key == null) {
+            throw new Error('API key for File Transfer API is missing');
+        }
     }
 
     public async upload(file: Buffer, fileName: string): Promise<string> {
@@ -28,7 +32,7 @@ export class FileTransferService {
 
         const config: AxiosRequestConfig = {
             headers: {
-                'x-api-key': this.key,
+                ...this.prepareHeaders(),
                 ...data.getHeaders()
             }
         };
@@ -52,14 +56,12 @@ export class FileTransferService {
         }
 
         const config: AxiosRequestConfig = {
-            headers: {
-                'x-api-key': this.key
-            },
+            headers: this.prepareHeaders()
         };
 
         return axios
             .get<FileMetadata>(`${this.url}/${fileId}`, config)
-            .then((axiosResponse: AxiosResponse<FileMetadata>) => axiosResponse.data)
+            .then((response: AxiosResponse<FileMetadata>) => response.data)
             .catch(err => {
                 throw this.getErrorFrom(err, fileId);
             });
@@ -71,20 +73,45 @@ export class FileTransferService {
             throw new Error('File ID is missing');
         }
 
-        const url = `${this.url}/${fileId}/download`;
         const config: AxiosRequestConfig = {
-            headers: {
-                'x-api-key': this.key
-            },
+            headers: this.prepareHeaders(),
             responseType: 'stream'
         };
 
-        return axios.get<Readable>(url, config)
-            .then(async (axiosResponse: AxiosResponse<Readable>) => axiosResponse.data)
+        return axios.get<Readable>(`${this.url}/${fileId}/download`, config)
+            .then((response: AxiosResponse<Readable>) => response.data)
             .catch(err => {
                 throw this.getErrorFrom(err, fileId);
             });
 
+    }
+
+    public async delete(fileId: string): Promise<void> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const config: AxiosRequestConfig = {
+            headers: this.prepareHeaders()
+        };
+
+        return axios
+            .delete(`${this.url}/${fileId}`, config)
+            .then(() => {
+                return
+            }).catch((err) => {
+                if (err.response.status === NOT_FOUND) {
+                    throw new Error(`File ${fileId} cannot be deleted because it does not exist`)
+                }
+                throw new Error(`File ${fileId} cannot be deleted due to error: ${(err.message || 'unknown error').toLowerCase()}`)
+            });
+    }
+
+    private prepareHeaders(): Record<string, string> {
+        return {
+            'x-api-key': this.key
+        }
     }
 
     private getErrorFrom(err: any, fileId: string): Error {
@@ -98,5 +125,4 @@ export class FileTransferService {
         return new Error(err.message);
 
     }
-
 }
