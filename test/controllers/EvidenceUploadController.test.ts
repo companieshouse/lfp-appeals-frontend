@@ -180,7 +180,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
-                })
+                });
 
             fileTransferService.didNotReceive().upload(Arg.any(), FILE_NAME);
         });
