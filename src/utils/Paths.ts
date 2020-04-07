@@ -15,3 +15,4 @@ export const OTHER_REASON_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/reason-o
 export const EVIDENCE_UPLOAD_PAGE_URI = `${ROOT_URI}/evidence-upload`;
 export const CHECK_YOUR_APPEAL_PAGE_URI = `${ROOT_URI}/check-your-answers`;
 export const CONFIRMATION_PAGE_URI = `${ROOT_URI}/confirmation`;
+export const DOWNLOAD_FILE_PAGE_URI = `${ROOT_URI}/download`
