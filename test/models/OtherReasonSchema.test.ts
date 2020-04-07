@@ -1,9 +1,9 @@
-import { expect } from 'chai';
 
 import { schema } from 'app/models/OtherReason.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+
+import { assertValidationErrors } from 'test/models/ValidationAssertions';
 
 const validator = new SchemaValidator(schema);
 
@@ -77,9 +77,3 @@ describe('OtherReason schema', () => {
     });
 });
 
-const assertValidationErrors = (result: ValidationResult, expectedErrors: ValidationError[]): void => {
-    expect(result.errors).to.have.length(expectedErrors.length);
-    expectedErrors.forEach(expectedError => {
-        expect(result.getErrorForField(expectedError.field)?.text).to.be.equal(expectedError.text);
-    });
-};

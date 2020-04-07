@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { expect } from 'chai';
 import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
@@ -93,7 +94,7 @@ describe('FileTransferService', () => {
         });
     });
 
-    describe('File Metadata', () => {
+    describe('get file metadata', () => {
 
         const fileMetadataUrl = `${URI}/${fileID}`;
 
@@ -129,7 +130,7 @@ describe('FileTransferService', () => {
         });
     });
 
-    describe('Download a file', () => {
+    describe('download file', () => {
         const inputText = 'This is some random text that will be converted to a buffer';
         const fileDataBuffer = new Readable();
         fileDataBuffer.push(inputText);
@@ -197,4 +198,67 @@ describe('FileTransferService', () => {
         });
 
     });
+
+    describe('delete file', () => {
+        it('should throw an error when file ID is not defined', () => {
+
+            [undefined, null].forEach(async evidence => {
+                try {
+                    await fileTransferService.delete(evidence!)
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('File ID is missing')
+                }
+            })
+        });
+
+        it('should throw an error when file does not exist', async () => {
+
+            const fileId = 'non-existing-file';
+
+            nock(HOST)
+                .delete(`${URI}/${fileId}`)
+                .reply(404, {
+                    message: 'file not found'
+                });
+
+            try {
+                await fileTransferService.delete(fileId);
+                assert.fail('Test should failed while it did not')
+            } catch (err) {
+                expect(err.message).to.contain(`File ${fileId} cannot be deleted because it does not exist`);
+            }
+        });
+
+        it('should throw an error when file deletion failed', async () => {
+
+            const fileId = 'malformed-file';
+
+            nock(HOST)
+                .delete(`${URI}/${fileId}`)
+                .reply(500, {
+                    message: 'failed to delete file'
+                });
+
+            try {
+                await fileTransferService.delete(fileId);
+                assert.fail('Test should failed while it did not')
+            } catch (err) {
+                expect(err.message).to.contain(`File ${fileId} cannot be deleted due to error: request failed with status code 500`);
+            }
+        });
+
+        it('should return nothing when file deletion succeeded', async () => {
+
+            const fileId = 'existing-file';
+
+            nock(HOST)
+                .delete(`${URI}/${fileId}`)
+                .reply(204);
+
+            const result = await fileTransferService.delete(fileId);
+            // tslint:disable-next-line: no-unused-expression
+            expect(result).is.undefined
+        })
+    })
 });
