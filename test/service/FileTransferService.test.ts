@@ -17,7 +17,7 @@ describe('FileTransferService', () => {
             reqheaders: { 'x-api-key': KEY }
         });
     const fileID = 'someId';
-    const expectedMetada: FileMetadata = {
+    const expectedMetadata: FileMetadata = {
         av_status: 'scanned',
         content_type: 'application/txt',
         id: fileID,
@@ -95,7 +95,7 @@ describe('FileTransferService', () => {
 
     describe('File Metadata', () => {
 
-        const fileMetadaUrl = `${URI}/${fileID}`;
+        const fileMetadataUrl = `${URI}/${fileID}`;
 
         it('should throw an error when no fileId is provided', () => {
             [undefined, null].forEach(async fileId => {
@@ -110,7 +110,7 @@ describe('FileTransferService', () => {
 
         it('should throw an error if the axios request fails', async () => {
 
-            createGetNockRequest(fileMetadaUrl).reply(NOT_FOUND);
+            createGetNockRequest(fileMetadataUrl).reply(NOT_FOUND);
 
             try {
                 await fileTransferService.getFileMetadata(fileID);
@@ -120,11 +120,11 @@ describe('FileTransferService', () => {
 
         });
 
-        it('should get file metada if it exists', async () => {
+        it('should get file metadata if it exists', async () => {
 
-            createGetNockRequest(fileMetadaUrl).reply(OK, expectedMetada);
+            createGetNockRequest(fileMetadataUrl).reply(OK, expectedMetadata);
             const fileMetadata = await fileTransferService.getFileMetadata(fileID);
-            expect(fileMetadata).to.deep.eq(expectedMetada);
+            expect(fileMetadata).to.deep.eq(expectedMetadata);
 
         });
     });

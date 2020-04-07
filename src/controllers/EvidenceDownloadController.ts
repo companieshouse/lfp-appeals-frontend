@@ -21,7 +21,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
     }
 
     @httpGet('/data/:fileId/download')
-    public async download(@requestParam('fileId') fileId: string): Promise<any> {
+    public async download(@requestParam('fileId') fileId: string): Promise<void> {
 
         const res = this.httpContext.response;
 

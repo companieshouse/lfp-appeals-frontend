@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import Substitute from '@fluffy-spoon/substitute';
+import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
 import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
@@ -35,12 +35,13 @@ describe('EvidenceDownloadController', () => {
     };
 
     const fileTransferServiceProxy = (downloadResult: Promise<Readable>): FileTransferService => {
-        return {
-            // @ts-ignore
-            download: async (fileId: string) => downloadResult,
-            // @ts-ignore
-            getFileMetadata: async (fileId: string) => Promise.resolve(metadata)
-        } as FileTransferService;
+
+        const proxy = Substitute.for<FileTransferService>();
+        // @ts-ignore
+        proxy.download(Arg.any()).mimicks(async (fileId: string) => downloadResult);
+        // @ts-ignore
+        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata))
+        return proxy;
     };
 
     it('should render the prompt page correctly', async () => {
