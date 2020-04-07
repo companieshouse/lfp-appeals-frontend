@@ -148,7 +148,6 @@ describe('EvidenceUploadController', () => {
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=' + UPLOAD_FILE_CONTINUE_ACTION)
                 .expect(response => {
-                    console.log(response);
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain('There was a problem')
                         .and.to.contain('“Continue without adding documents”');
