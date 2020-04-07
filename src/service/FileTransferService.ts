@@ -1,8 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import { CREATED } from 'http-status-codes';
+import { CREATED, NOT_FOUND } from 'http-status-codes';
+import { Readable} from 'stream';
 
 import { loggerInstance } from 'app/middleware/Logger';
+import { FileMetadata } from 'app/models/FileMetadata';
 
 export class FileTransferService {
 
@@ -42,4 +44,59 @@ export class FileTransferService {
                 }
             });
     }
+
+    async getFileMetadata(fileId: string): Promise<FileMetadata> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const config: AxiosRequestConfig = {
+            headers: {
+                'x-api-key': this.key
+            },
+        };
+
+        return axios
+            .get<FileMetadata>(`${this.url}/${fileId}`, config)
+            .then((axiosResponse: AxiosResponse<FileMetadata>) => axiosResponse.data)
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
+            });
+    }
+
+    async download(fileId: string): Promise<Readable> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const url = `${this.url}/${fileId}/download`;
+        const config: AxiosRequestConfig = {
+            headers: {
+                'x-api-key': this.key
+            },
+            responseType: 'stream'
+        };
+
+        return axios.get<Readable>(url, config)
+            .then(async (axiosResponse: AxiosResponse<Readable>) => axiosResponse.data)
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
+            });
+
+    }
+
+    private getErrorFrom(err: any, fileId: string): Error {
+
+        if (err.isAxiosError) {
+            switch (err.response.status) {
+                case NOT_FOUND:
+                    return new Error(`File ${fileId} not found.`);
+            }
+        }
+        return new Error(err.message);
+
+    }
+
 }
