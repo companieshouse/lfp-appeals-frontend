@@ -81,7 +81,7 @@ describe('EvidenceRemovalController', () => {
             const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
 
             await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                .send({ fileId: attachment.id, fileName: attachment.name })
+                .send({ id: attachment.id, name: attachment.name })
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(`Are you sure you want to remove ${attachment.name}?`)
@@ -118,7 +118,7 @@ describe('EvidenceRemovalController', () => {
                 const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: YesNo.yes, fileId: '456' })
+                    .send({ remove: YesNo.yes, id: '456' })
                     .expect(response => {
                         expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     });
@@ -132,7 +132,7 @@ describe('EvidenceRemovalController', () => {
                 });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
-                    .send({ remove: YesNo.yes, fileId: attachment.id })
+                    .send({ remove: YesNo.yes, id: attachment.id })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                         expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)

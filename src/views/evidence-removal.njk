@@ -18,19 +18,19 @@
           errorList: validationResult.errors
         }) if validationResult and validationResult.errors.length > 0
       }}
-      <form method="post" action="?f={{ fileId }}">
+      <form method="post" action="?f={{ id }}">
         {{
           govukInput({
             type: 'hidden',
-            name: 'fileId',
-            value: fileId
+            name: 'id',
+            value: id
           })
         }}
         {{
           govukInput({
             type: 'hidden',
-            name: 'fileName',
-            value: fileName
+            name: 'name',
+            value: name
           })
         }}
 
@@ -40,7 +40,7 @@
             name: 'remove',
             fieldset: {
               legend: {
-                text: 'Are you sure you want to remove ' + fileName + '?',
+                text: 'Are you sure you want to remove ' + name + '?',
                 classes: 'govuk-fieldset__legend--xl'
               }
             },

@@ -65,7 +65,7 @@ class Processor implements FormActionProcessor {
             .map(applicationData => applicationData.appeal)
             .unsafeCoerce();
 
-        const attachment = findAttachment(appeal, request.body.fileId);
+        const attachment: Attachment = findAttachment(appeal, request.body.id);
         await this.fileTransferService.delete(attachment.id);
         appeal.reasons.other.attachments!.splice(appeal.reasons.other.attachments!.indexOf(attachment), 1)
     }
@@ -79,8 +79,6 @@ export class EvidenceRemovalController extends BaseController<any> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const attachment: Attachment = findAttachment(appeal, this.httpContext.request.query.f);
-
-        return { fileId: attachment.id, fileName: attachment.name };
+        return findAttachment(appeal, this.httpContext.request.query.f);
     }
 }
