@@ -65,12 +65,21 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         return await this.render(
             this.template,
             {
-                ...this.httpContext.request.session
-                    .map(session => this.prepareViewModelFromSession(session))
-                    .orDefault({} as Record<string, any> & FORM),
+                ...this.prepareViewModel(),
                 ...this.prepareNavigationConfig()
             }
         );
+    }
+
+    /**
+     * Builds view model based of request by delegating to {@link prepareViewModelFromSession}.
+     * <p>
+     * Designed to be overridden.
+     */
+    protected prepareViewModel(): Record<string, any> & FORM {
+        return this.httpContext.request.session
+            .map(session => this.prepareViewModelFromSession(session))
+            .orDefault({} as Record<string, any> & FORM)
     }
 
     /**
