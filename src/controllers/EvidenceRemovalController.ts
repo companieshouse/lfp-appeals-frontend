@@ -73,12 +73,12 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceRemovalController extends BaseController<any> {
+export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined, [Processor]);
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+    protected prepareViewModelFromAppeal(appeal: Appeal): Attachment {
         return findAttachment(appeal, this.httpContext.request.query.f);
     }
 }
