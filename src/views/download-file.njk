@@ -1,0 +1,19 @@
+{% extends 'layout.njk' %}
+
+{% block pageTitle %}
+  Evidence Download
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Your document download will start soon</h1>
+      <p class="govuk-body-l">
+        <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ fileId }}/download" id="downloadLink" class="govuk-link">Click here to download your document</a>
+        if the download does not start in 10 seconds.</p>
+    </div>
+  </div>
+{% endblock %}
+{% block bodyEnd %}
+  {{ super() }}
+  <script src="//{{ cdn.host }}/javascripts/services/appeals/autoDownload.js"></script>
+{% endblock %}}

@@ -1,9 +1,9 @@
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
-import IORedis from 'ioredis'
-import * as kafka from 'kafka-node'
-import * as util from 'util'
+import IORedis from 'ioredis';
+import * as kafka from 'kafka-node';
+import * as util from 'util';
 import { APP_NAME } from './utils/ConfigLoader';
 
 import { EmailService } from 'app/modules/email-publisher/EmailService'
@@ -11,7 +11,7 @@ import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { FileTransferService } from 'app/service/FileTransferService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-function initiateKafkaClient (): kafka.KafkaClient {
+function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
         getEnvOrDefault('KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS', '2000'), 10
     );
@@ -30,7 +30,7 @@ function initiateKafkaClient (): kafka.KafkaClient {
             randomize: true
         },
         requestTimeout: requestTimeoutInMillis
-    })
+    });
 }
 
 export function createContainer(): Container {
@@ -47,7 +47,7 @@ export function createContainer(): Container {
         // tslint:disable-next-line: new-parens
         new class implements Producer {
             private readonly producer: kafka.Producer = new kafka.Producer(initiateKafkaClient());
-            async send (payload: Payload): Promise<void> {
+            async send(payload: Payload): Promise<void> {
                 await util.promisify(this.producer.send).call(this.producer, [{
                     topic: payload.topic,
                     messages: [payload.message]

@@ -1,8 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { Readable } from 'stream';
 
 import { loggerInstance } from 'app/middleware/Logger';
+import { FileMetadata } from 'app/models/FileMetadata';
 
 export class FileTransferService {
 
@@ -46,22 +48,58 @@ export class FileTransferService {
                 }
             }).catch((err) => {
                 if (err.code === UNSUPPORTED_MEDIA_TYPE) {
-                    throw new Error('Unsupported file type')
+                    throw new Error('Unsupported file type');
                 } else {
-                    throw new Error(err.message)
+                    throw new Error(err.message);
                 }
             });
     }
 
-    public async delete(fileId: string): Promise<void> {
+    async getFileMetadata(fileId: string): Promise<FileMetadata> {
+
         if (fileId == null) {
             throw new Error('File ID is missing');
         }
 
         const config: AxiosRequestConfig = {
-            headers: {
-                ...this.prepareHeaders()
-            }
+            headers: this.prepareHeaders()
+        };
+
+        return axios
+            .get<FileMetadata>(`${this.url}/${fileId}`, config)
+            .then((response: AxiosResponse<FileMetadata>) => response.data)
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
+            });
+    }
+
+    async download(fileId: string): Promise<Readable> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const config: AxiosRequestConfig = {
+            headers: this.prepareHeaders(),
+            responseType: 'stream'
+        };
+
+        return axios.get<Readable>(`${this.url}/${fileId}/download`, config)
+            .then((response: AxiosResponse<Readable>) => response.data)
+            .catch(err => {
+                throw this.getErrorFrom(err, fileId);
+            });
+
+    }
+
+    public async delete(fileId: string): Promise<void> {
+
+        if (fileId == null) {
+            throw new Error('File ID is missing');
+        }
+
+        const config: AxiosRequestConfig = {
+            headers: this.prepareHeaders()
         };
 
         return axios
@@ -80,5 +118,17 @@ export class FileTransferService {
         return {
             'x-api-key': this.key
         }
+    }
+
+    private getErrorFrom(err: any, fileId: string): Error {
+
+        if (err.isAxiosError) {
+            switch (err.response.status) {
+                case NOT_FOUND:
+                    return new Error(`File ${fileId} not found.`);
+            }
+        }
+        return new Error(err.message);
+
     }
 }

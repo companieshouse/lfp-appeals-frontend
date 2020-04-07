@@ -16,3 +16,4 @@ export const EVIDENCE_UPLOAD_PAGE_URI = `${ROOT_URI}/evidence-upload`;
 export const EVIDENCE_REMOVAL_PAGE_URI = `${ROOT_URI}/remove-document`;
 export const CHECK_YOUR_APPEAL_PAGE_URI = `${ROOT_URI}/check-your-answers`;
 export const CONFIRMATION_PAGE_URI = `${ROOT_URI}/confirmation`;
+export const DOWNLOAD_FILE_PAGE_URI = `${ROOT_URI}/download`
