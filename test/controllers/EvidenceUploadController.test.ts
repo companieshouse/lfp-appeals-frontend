@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 
-import {Arg} from '@fluffy-spoon/substitute';
+import { Arg } from '@fluffy-spoon/substitute';
 import { Session } from 'ch-node-session-handler';
 import { expect } from 'chai';
 import {
