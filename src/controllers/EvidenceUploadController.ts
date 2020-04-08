@@ -5,6 +5,7 @@ import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
 import { BaseController, FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { Appeal } from 'app/models/Appeal';
@@ -31,10 +32,30 @@ const navigation = {
     }
 };
 
+const continueButtonValidator: Validator = {
+
+    validate(request: Request): ValidationResult {
+
+        const appeal: Appeal = request.session
+            .chain(_ => _.getExtraData())
+            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+            .map(data => data.appeal)
+            .unsafeCoerce();
+
+        const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
+
+        if (!attachments || attachments.length === 0) {
+            return new ValidationResult([new ValidationError('file',
+                'You must add a document or click “Continue without adding documents”')]);
+        }
+        return new ValidationResult([]);
+    }
+};
+
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends BaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
-        super(template, navigation);
+        super(template, navigation, continueButtonValidator);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
@@ -111,24 +132,6 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
 
                     await that.persistSession();
 
-                    response.redirect(request.route.path);
-                }
-            },
-            'upload-file-continue': {
-                async handle(request: Request, response: Response): Promise<void> {
-
-                    const appeal: Appeal = request.session
-                        .chain(_ => _.getExtraData())
-                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-                        .map(data => data.appeal)
-                        .unsafeCoerce();
-
-                    const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
-
-                    if (!attachments || attachments.length === 0) {
-                        return await that.renderUploadError(appeal, 'You must add a document or click ' +
-                            '“Continue without adding documents”');
-                    }
                     response.redirect(request.route.path);
                 }
             }

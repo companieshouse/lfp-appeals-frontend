@@ -114,9 +114,7 @@ describe('EvidenceUploadController', () => {
         });
     });
 
-    describe('POST request: action=upload-file-continue', () => {
-
-        const UPLOAD_FILE_CONTINUE_ACTION: string = 'upload-file-continue';
+    describe('POST request: continue', () => {
 
         it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
 
@@ -128,7 +126,7 @@ describe('EvidenceUploadController', () => {
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=' + UPLOAD_FILE_CONTINUE_ACTION)
+                .query('?')
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
@@ -145,11 +143,11 @@ describe('EvidenceUploadController', () => {
             const app = createApp(session);
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
-                .query('action=' + UPLOAD_FILE_CONTINUE_ACTION)
+                .query('?')
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain('There was a problem')
-                        .and.to.contain('“Continue without adding documents”');
+                        .and.to.contain('You must add a document or click “Continue without adding documents”');
                 })
         });
     });
