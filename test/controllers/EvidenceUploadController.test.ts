@@ -203,6 +203,26 @@ describe('EvidenceUploadController', () => {
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
         });
 
+        it('should return 422 when unsupported media uploaded', async () => {
+
+            const app = createApp(session, container => {
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject('Unsupported file type'));
+                    }));
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + UPLOAD_FILE_ACTION)
+                .attach('file', buffer, { filename: FILE_NAME, contentType: 'unsupported' })
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain('There was a problem')
+                        .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                });
+        });
+
 
         it('should return 500 after failed upload', async () => {
 
@@ -225,17 +245,17 @@ describe('EvidenceUploadController', () => {
 
         it('should return 500 if no appeal in session', async () => {
 
-            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                service.upload(Arg.any()).returns(Promise.resolve('123'));
-            });
-
             applicationData = { navigation } as ApplicationData;
 
             session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData('appeals', applicationData);
 
             const app = createApp(session, container => {
-                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject('Unsupported file type'));
+                    }));
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
@@ -249,10 +269,6 @@ describe('EvidenceUploadController', () => {
 
         it('should return validation error if file not supported', async () => {
 
-            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                service.upload(Arg.any()).returns(Promise.resolve('123'));
-            });
-
             const unsupportedFileName = 'test-file.fake';
 
             applicationData = { appeal: appealWithAttachments, navigation };
@@ -261,7 +277,11 @@ describe('EvidenceUploadController', () => {
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
 
             const app = createApp(session, container => {
-                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject('Unsupported file type'));
+                    }));
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
@@ -276,17 +296,17 @@ describe('EvidenceUploadController', () => {
 
         it('should return validation error when more than 10 files uploaded', async () => {
 
-            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                service.upload(Arg.any()).returns(Promise.resolve('123'));
-            });
-
             applicationData = { appeal: appealWithMaxAttachments, navigation };
 
             session = createFakeSession([], config.cookieSecret, true)
                 .saveExtraData(APPLICATION_DATA_KEY, applicationData);
 
             const app = createApp(session, container => {
-                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject('Unsupported file type'));
+                    }));
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
@@ -301,14 +321,14 @@ describe('EvidenceUploadController', () => {
 
         it('should return validation error if too large of a file has been uploaded', async () => {
 
-            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                service.upload(Arg.any()).returns(Promise.resolve('123'));
-            });
-
             const largeBuffer = Buffer.alloc(5000000);
 
             const app = createApp(session, container => {
-                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(FileTransferService)
+                    .toConstantValue(createSubstituteOf<FileTransferService>(service => {
+                        service.upload(Arg.any(), Arg.any())
+                            .returns(Promise.reject('Unsupported file type'));
+                    }));
             });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
