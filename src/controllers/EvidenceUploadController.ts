@@ -13,6 +13,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { Attachment } from 'app/models/Attachment';
 import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
@@ -109,8 +110,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                         return;
                     } else if (appeal.reasons.other.attachments &&
                         appeal.reasons.other.attachments!.length >= maxNumberOfFiles) {
-                        return await that
-                            .renderUploadError(appeal, tooManyFilesError);
+                        return await that.renderUploadError(appeal, tooManyFilesError);
                     }
 
                     let id: string;
@@ -118,9 +118,8 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
-                        if (err.message === 'Unsupported file type') {
-                            return await that
-                                .renderUploadError(appeal, fileNotSupportedError);
+                        if (err instanceof UnsupportedFileTypeError) {
+                            return await that.renderUploadError(appeal, fileNotSupportedError);
                         } else {
                             throw err;
                         }
