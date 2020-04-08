@@ -7,8 +7,8 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { AppealStorageService } from 'app/service/AppealStorageService';
-import { FileTransferService } from 'app/service/FileTransferService';
 import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 

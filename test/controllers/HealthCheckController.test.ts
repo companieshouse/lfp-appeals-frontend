@@ -7,7 +7,7 @@ import request from 'supertest'
 
 import 'app/controllers/HealthCheckController'
 import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';

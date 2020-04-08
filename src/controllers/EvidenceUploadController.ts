@@ -9,7 +9,7 @@ import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatur
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { OtherReason } from 'app/models/OtherReason';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 

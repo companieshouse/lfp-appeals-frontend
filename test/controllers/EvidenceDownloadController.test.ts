@@ -9,7 +9,7 @@ import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
 import { FileMetadata } from 'app/models/FileMetadata';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';

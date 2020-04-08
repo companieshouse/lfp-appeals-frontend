@@ -16,7 +16,7 @@ import { YesNo } from 'app/models/fields/YesNo';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { SubstituteOf } from '@fluffy-spoon/substitute';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
