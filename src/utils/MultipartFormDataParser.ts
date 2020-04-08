@@ -15,7 +15,9 @@ export const parseFormData = util.promisify(
         fileFilter (request, file, cb) {
 
             if (!supportedFileTypes.includes(file.mimetype)) {
-                return cb(new MulterError('LIMIT_UNEXPECTED_FILE'))
+                const error = new MulterError('LIMIT_UNEXPECTED_FILE');
+                error.message = `${file.mimetype} is not a supported mime type`;
+                return cb(error)
             }
             cb(null, true)
         }
