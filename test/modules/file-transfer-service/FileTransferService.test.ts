@@ -13,7 +13,11 @@ import nock = require('nock');
 
 import { FileMetadata } from 'app/models/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { FileTransferError } from 'app/modules/file-transfer-service/errors';
+import {
+    FileNotFoundError, FileNotReadyError,
+    FileTransferError,
+    UnsupportedFileTypeError
+} from 'app/modules/file-transfer-service/errors';
 
 import {
     convertReadableToString,
@@ -75,7 +79,7 @@ describe('FileTransferService', () => {
                 await fileTransferService.upload(Buffer.from('This is a test'), filename);
                 assert.fail('Test should failed while it did not')
             } catch (err) {
-                expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
+                expect(err).to.be.instanceOf(UnsupportedFileTypeError).and.to.haveOwnProperty('message')
                     .equal(`File upload failed because type of "${filename}" file is not supported`);
             }
         });
@@ -135,7 +139,7 @@ describe('FileTransferService', () => {
                 await fileTransferService.getFileMetadata(fileId);
                 assert.fail('Test should failed while it did not')
             } catch (err) {
-                expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
+                expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty('message')
                     .equal(`File metadata retrieval failed because "${fileId}" file does not exist`);
             }
 
@@ -185,7 +189,7 @@ describe('FileTransferService', () => {
              await fileTransferService.download(fileId);
             assert.fail('Test should failed while it did not');
             } catch (err) {
-                expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
+                expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty('message')
                     .equal(`File download failed because "${fileId}" file does not exist`);
             }
         });
@@ -201,7 +205,7 @@ describe('FileTransferService', () => {
                 await fileTransferService.download(fileId);
                 assert.fail('Test should failed while it did not');
             } catch (err) {
-                expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
+                expect(err).to.be.instanceOf(FileNotReadyError).and.to.haveOwnProperty('message')
                     .equal(`File download failed because "${fileId}" file is either infected or has not been scanned yet`);
             }
         });
@@ -260,7 +264,7 @@ describe('FileTransferService', () => {
                 await fileTransferService.delete(fileId);
                 assert.fail('Test should failed while it did not')
             } catch (err) {
-                expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
+                expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty('message')
                     .equal(`File deletion failed because "${fileId}" file does not exist`);
             }
         });
