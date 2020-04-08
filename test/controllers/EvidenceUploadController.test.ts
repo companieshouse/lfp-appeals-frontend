@@ -223,7 +223,6 @@ describe('EvidenceUploadController', () => {
                 });
         });
 
-
         it('should return 500 after failed upload', async () => {
 
             const app = createApp(session, container => {
