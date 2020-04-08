@@ -157,7 +157,7 @@ describe('Safe navigation base controller', () => {
                 if (session == null) {
                     return true;
                 }
-                const applicationData: ApplicationData = session[SessionKey.ExtraData][APPLICATION_DATA_KEY];
+                const applicationData = session[SessionKey.ExtraData][APPLICATION_DATA_KEY] as ApplicationData;
                 return applicationData.navigation.permissions === ['/next'];
             }), Arg.any())
         });
