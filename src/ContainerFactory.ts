@@ -8,8 +8,8 @@ import { APP_NAME } from './utils/ConfigLoader';
 
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { AppealStorageService } from 'app/service/AppealStorageService';
-import { FileTransferService } from 'app/service/FileTransferService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(

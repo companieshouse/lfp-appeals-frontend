@@ -4,7 +4,7 @@ import { Readable, Writable } from 'stream';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 const template = 'download-file';
 

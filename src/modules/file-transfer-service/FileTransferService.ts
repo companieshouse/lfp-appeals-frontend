@@ -1,10 +1,14 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import {CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE} from 'http-status-codes';
+import { FORBIDDEN, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import { Readable } from 'stream';
 
-import { loggerInstance } from 'app/middleware/Logger';
 import { FileMetadata } from 'app/models/FileMetadata';
+import {
+    FileNotFoundError, FileNotReadyError,
+    FileTransferError,
+    UnsupportedFileTypeError
+} from 'app/modules/file-transfer-service/errors';
 
 export class FileTransferService {
 
@@ -37,22 +41,10 @@ export class FileTransferService {
             }
         };
 
-        loggerInstance()
-            .debug(`Making a POST request to ${this.url}`);
-
         return await axios
             .post(this.url, data, config)
-            .then((response: AxiosResponse) => {
-                if (response.status === CREATED && response.data.id) {
-                    return response.data.id;
-                }
-            }).catch((err) => {
-                if (err.code === UNSUPPORTED_MEDIA_TYPE) {
-                    throw new Error('Unsupported file type');
-                } else {
-                    throw new Error(err.message);
-                }
-            });
+            .then((response: AxiosResponse) => { return response.data.id })
+            .catch(this.handleResponseError('upload', fileName));
     }
 
     async getFileMetadata(fileId: string): Promise<FileMetadata> {
@@ -68,9 +60,7 @@ export class FileTransferService {
         return axios
             .get<FileMetadata>(`${this.url}/${fileId}`, config)
             .then((response: AxiosResponse<FileMetadata>) => response.data)
-            .catch(err => {
-                throw this.getErrorFrom(err, fileId);
-            });
+            .catch(this.handleResponseError('metadata retrieval', fileId));
     }
 
     async download(fileId: string): Promise<Readable> {
@@ -86,10 +76,7 @@ export class FileTransferService {
 
         return axios.get<Readable>(`${this.url}/${fileId}/download`, config)
             .then((response: AxiosResponse<Readable>) => response.data)
-            .catch(err => {
-                throw this.getErrorFrom(err, fileId);
-            });
-
+            .catch(this.handleResponseError('download', fileId));
     }
 
     public async delete(fileId: string): Promise<void> {
@@ -104,14 +91,8 @@ export class FileTransferService {
 
         return axios
             .delete(`${this.url}/${fileId}`, config)
-            .then(() => {
-                return
-            }).catch((err) => {
-                if (err.response.status === NOT_FOUND) {
-                    throw new Error(`File ${fileId} cannot be deleted because it does not exist`)
-                }
-                throw new Error(`File ${fileId} cannot be deleted due to error: ${(err.message || 'unknown error').toLowerCase()}`)
-            });
+            .then(() => { return })
+            .catch(this.handleResponseError('deletion', fileId));
     }
 
     private prepareHeaders(): Record<string, string> {
@@ -120,15 +101,22 @@ export class FileTransferService {
         }
     }
 
-    private getErrorFrom(err: any, fileId: string): Error {
-
-        if (err.isAxiosError) {
-            switch (err.response.status) {
-                case NOT_FOUND:
-                    return new Error(`File ${fileId} not found.`);
+    private handleResponseError(operation: 'upload' | 'metadata retrieval' | 'download' | 'deletion', subject: string):
+        (err: AxiosError) => never {
+        // tslint:disable: max-line-length
+        return (err: AxiosError) => {
+            if (err.isAxiosError && err.response != null) {
+                switch (err.response.status) {
+                    case FORBIDDEN:
+                        throw new FileNotReadyError(`File ${operation} failed because "${subject}" file is either infected or has not been scanned yet`);
+                    case NOT_FOUND:
+                        throw new FileNotFoundError(`File ${operation} failed because "${subject}" file does not exist`);
+                    case UNSUPPORTED_MEDIA_TYPE:
+                        throw new UnsupportedFileTypeError(`File ${operation} failed because type of "${subject}" file is not supported`)
+                }
             }
-        }
-        return new Error(err.message);
 
+            throw new FileTransferError(`File ${operation} of "${subject}" file failed due to error: ${(err.message || 'unknown error').toLowerCase()}`);
+        }
     }
 }

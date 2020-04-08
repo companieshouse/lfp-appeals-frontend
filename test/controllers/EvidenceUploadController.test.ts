@@ -16,7 +16,7 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Navigation } from 'app/models/Navigation';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
