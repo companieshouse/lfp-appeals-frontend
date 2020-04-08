@@ -105,8 +105,8 @@ export class FileTransferService {
         (err: AxiosError) => never {
         // tslint:disable: max-line-length
         return (err: AxiosError) => {
-            if (err.isAxiosError) {
-                switch (err.response!.status) {
+            if (err.isAxiosError && err.response != null) {
+                switch (err.response.status) {
                     case FORBIDDEN:
                         throw new FileNotReadyError(`File ${operation} failed because "${subject}" file is either infected or has not been scanned yet`);
                     case NOT_FOUND:
