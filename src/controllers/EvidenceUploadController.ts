@@ -122,7 +122,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                             return await that
                                 .renderUploadError(appeal, fileNotSupportedError);
                         } else {
-                            throw new Error(err.message)
+                            throw err;
                         }
                     }
 
