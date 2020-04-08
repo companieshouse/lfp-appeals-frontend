@@ -1,10 +1,14 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import { NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
+import { FORBIDDEN, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import { Readable } from 'stream';
 
 import { FileMetadata } from 'app/models/FileMetadata';
-import { FileTransferError } from 'app/modules/file-transfer-service/errors';
+import {
+    FileNotFoundError, FileNotReadyError,
+    FileTransferError,
+    UnsupportedFileTypeError
+} from 'app/modules/file-transfer-service/errors';
 
 export class FileTransferService {
 
@@ -99,20 +103,20 @@ export class FileTransferService {
 
     private handleResponseError(operation: 'upload' | 'metadata retrieval' | 'download' | 'deletion', subject: string):
         (err: AxiosError) => never {
+        // tslint:disable: max-line-length
         return (err: AxiosError) => {
-            let message;
             if (err.isAxiosError) {
                 switch (err.response!.status) {
+                    case FORBIDDEN:
+                        throw new FileNotReadyError(`File ${operation} failed because "${subject}" file is either infected or has not been scanned yet`);
                     case NOT_FOUND:
-                        message = `File ${operation} failed because "${subject}" file does not exist`;
-                        break;
+                        throw new FileNotFoundError(`File ${operation} failed because "${subject}" file does not exist`);
                     case UNSUPPORTED_MEDIA_TYPE:
-                        message = `File ${operation} failed because type of "${subject}" file is not supported`;
-                        break
+                        throw new UnsupportedFileTypeError(`File ${operation} failed because type of "${subject}" file is not supported`)
                 }
             }
 
-            throw new FileTransferError(message || `File ${operation} of "${subject}" file failed due to error: ${(err.message || 'unknown error').toLowerCase()}`);
+            throw new FileTransferError(`File ${operation} of "${subject}" file failed due to error: ${(err.message || 'unknown error').toLowerCase()}`);
         }
     }
 }

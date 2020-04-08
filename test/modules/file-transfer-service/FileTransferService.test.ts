@@ -202,7 +202,7 @@ describe('FileTransferService', () => {
                 assert.fail('Test should failed while it did not');
             } catch (err) {
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
-                    .equal(`File download of "${fileId}" file failed due to error: request failed with status code 403`);
+                    .equal(`File download failed because "${fileId}" file is either infected or has not been scanned yet`);
             }
         });
 
