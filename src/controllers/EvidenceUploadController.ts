@@ -18,6 +18,8 @@ import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
+const maxNumberOfFiles: number = Number(getEnvOrThrow('MAX_NUMBER_OF_FILES'));
+
 const template = 'evidence-upload';
 
 const navigation = {
@@ -40,13 +42,12 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
     }
 
     private async renderUploadError(appeal: Appeal, text: string): Promise<void> {
-        const that = this;
         const validationResult: ValidationResult = new ValidationResult([
             new ValidationError('file', text)
         ]);
 
-        return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
-            that.template, {
+        return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
+            this.template, {
                 ...this.prepareViewModelFromAppeal(appeal),
                 ...this.httpContext.request.body,
                 validationResult
@@ -65,8 +66,6 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
 
-                    const maxNumberOfFiles: number = Number(getEnvOrThrow('MAX_NUMBER_OF_FILES'));
-
                     const appeal: Appeal = request.session
                         .chain(_ => _.getExtraData())
                         .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
@@ -76,12 +75,11 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         await parseFormData(request, response)
                     } catch (error) {
-                        if (error.message === 'File not supported') {
-                            return await that
-                                .renderUploadError(appeal, fileNotSupportedError);
-                        } else if (error.message === 'File too large') {
-                            return await that
-                                .renderUploadError(appeal, fileTooLargeError);
+                        switch (error.code) {
+                            case 'LIMIT_FILE_SIZE':
+                                return await that.renderUploadError(appeal, fileTooLargeError);
+                            case 'LIMIT_UNEXPECTED_FILE':
+                                return await that.renderUploadError(appeal, fileNotSupportedError);
                         }
                     }
 

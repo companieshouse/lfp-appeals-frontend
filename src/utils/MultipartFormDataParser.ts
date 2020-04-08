@@ -1,4 +1,4 @@
-import multer from 'multer';
+import multer, { MulterError } from 'multer';
 import util from 'util';
 
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -13,8 +13,9 @@ export const parseFormData = util.promisify(
         // @ts-ignore
         // tslint:disable-next-line: typedef
         fileFilter (request, file, cb) {
+
             if (!supportedFileTypes.includes(file.mimetype)) {
-                return cb(new Error('File not supported'))
+                return cb(new MulterError('LIMIT_UNEXPECTED_FILE'))
             }
             cb(null, true)
         }
