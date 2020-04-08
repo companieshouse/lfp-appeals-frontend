@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { expect } from 'chai';
-import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
+import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import nock = require('nock');
 import { Readable, Writable} from 'stream';
 
@@ -68,6 +68,29 @@ describe('FileTransferService', () => {
 
             const response = await fileTransferService.upload(Buffer.from('This is a test'), 'test.supported');
             expect(response).to.equal(evidenceID);
+        });
+
+        it('should throw error when unsupported media uploaded', async () => {
+
+            nock(HOST)
+                .post(URI,
+                    new RegExp(`form-data; name="upload"; filename="test.not_supported"`, 'm'),
+                    {
+                        reqheaders: {
+                            'x-api-key': KEY
+                        },
+                    }
+                )
+                .replyWithError({
+                    message: { message: 'unsupported file type' },
+                    code: UNSUPPORTED_MEDIA_TYPE,
+                });
+
+            try {
+                await fileTransferService.upload(Buffer.from('This is a test'), 'test.not_supported');
+            } catch (err) {
+                expect(err.message).to.contain('Unsupported file type');
+            }
         });
     });
 

@@ -6,8 +6,7 @@ import {
     INTERNAL_SERVER_ERROR,
     MOVED_TEMPORARILY,
     OK,
-    UNPROCESSABLE_ENTITY,
-    UNSUPPORTED_MEDIA_TYPE
+    UNPROCESSABLE_ENTITY
 } from 'http-status-codes';
 import request from 'supertest';
 import supertest from 'supertest';
@@ -209,10 +208,7 @@ describe('EvidenceUploadController', () => {
                 container.rebind(FileTransferService)
                     .toConstantValue(createSubstituteOf<FileTransferService>(service => {
                         service.upload(Arg.any(), Arg.any())
-                            .returns(Promise.reject({
-                                message: { message: 'unsupported file type' },
-                                code: UNSUPPORTED_MEDIA_TYPE,
-                            }));
+                            .returns(Promise.reject('Unsupported file type'));
                     }));
             });
 
