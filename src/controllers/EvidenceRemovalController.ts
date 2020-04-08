@@ -15,7 +15,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
-import { FileTransferService } from 'app/service/FileTransferService';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
