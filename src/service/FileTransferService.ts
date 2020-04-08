@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import { CREATED, NOT_FOUND } from 'http-status-codes';
+import {CREATED, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE} from 'http-status-codes';
 import { Readable } from 'stream';
 
 import { loggerInstance } from 'app/middleware/Logger';
@@ -45,6 +45,12 @@ export class FileTransferService {
             .then((response: AxiosResponse) => {
                 if (response.status === CREATED && response.data.id) {
                     return response.data.id;
+                }
+            }).catch((err) => {
+                if (err.code === UNSUPPORTED_MEDIA_TYPE) {
+                    throw new Error('Unsupported file type');
+                } else {
+                    throw new Error(err.message);
                 }
             });
     }

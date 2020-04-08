@@ -97,7 +97,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
-                        if (err.message === 'Request failed with status code 415') {
+                        if (err.message === 'Unsupported file type') {
                             return await that
                                 .renderUploadError(appeal, fileNotSupportedError);
                         } else {
