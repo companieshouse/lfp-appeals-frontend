@@ -81,7 +81,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
 
         const fileTooLargeError: string = 'File size must be smaller than 4MB';
         const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
-        const tooManyFilesError: string = 'You can only select up to 10 files at the same time';
+        const tooManyFilesError: string = `You can only select up to ${maxNumberOfFiles} files at the same time`;
 
         return {
             'upload-file': {
