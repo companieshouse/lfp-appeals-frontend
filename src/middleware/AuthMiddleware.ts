@@ -40,6 +40,6 @@ export class AuthMiddleware extends BaseMiddleware {
 
         loggerInstance().debug(`${AuthMiddleware.name} - handler: userId=${userId}, Going to controller....`);
         next();
-    };
+    }
 
 }

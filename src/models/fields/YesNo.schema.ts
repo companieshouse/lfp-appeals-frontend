@@ -14,5 +14,5 @@ export const createSchema = (errorMessage: string): Joi.StringSchema => {
         })
         .options({
             abortEarly: true
-        })
+        });
 };

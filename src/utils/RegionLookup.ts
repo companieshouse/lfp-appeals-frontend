@@ -8,5 +8,5 @@ export const findRegionByCompanyNumber = (companyNumber: string): Region => {
             return Region[region as keyof typeof Region];
         }
     }
-    return Region.DEFAULT
+    return Region.DEFAULT;
 };

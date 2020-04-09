@@ -45,7 +45,7 @@ describe('FileTransferService', () => {
             [undefined, null].forEach(async file => {
                 try {
                     await fileTransferService.upload(file!, 'filename');
-                    assert.fail('Test should failed while it did not')
+                    assert.fail('Test should failed while it did not');
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty('message')
                         .equal('File is missing');
@@ -58,7 +58,7 @@ describe('FileTransferService', () => {
             [undefined, null].forEach(async filename => {
                 try {
                     await fileTransferService.upload(Buffer.from('This is a test'), filename!);
-                    assert.fail('Test should failed while it did not')
+                    assert.fail('Test should failed while it did not');
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty('message')
                         .equal('File name is missing');
@@ -77,7 +77,7 @@ describe('FileTransferService', () => {
 
             try {
                 await fileTransferService.upload(Buffer.from('This is a test'), filename);
-                assert.fail('Test should failed while it did not')
+                assert.fail('Test should failed while it did not');
             } catch (err) {
                 expect(err).to.be.instanceOf(UnsupportedFileTypeError).and.to.haveOwnProperty('message')
                     .equal(`File upload failed because type of "${filename}" file is not supported`);
@@ -95,7 +95,7 @@ describe('FileTransferService', () => {
 
             try {
                 await fileTransferService.upload(Buffer.from('This is a test'), filename);
-                assert.fail('Test should failed while it did not')
+                assert.fail('Test should failed while it did not');
             } catch (err) {
                 // tslint:disable: max-line-length
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
@@ -120,7 +120,7 @@ describe('FileTransferService', () => {
             [undefined, null].forEach(async invalidFileId => {
                 try {
                     await fileTransferService.getFileMetadata(invalidFileId!);
-                    assert.fail('Test should failed while it did not')
+                    assert.fail('Test should failed while it did not');
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty('message')
                         .equal('File ID is missing');
@@ -137,7 +137,7 @@ describe('FileTransferService', () => {
 
             try {
                 await fileTransferService.getFileMetadata(fileId);
-                assert.fail('Test should failed while it did not')
+                assert.fail('Test should failed while it did not');
             } catch (err) {
                 expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty('message')
                     .equal(`File metadata retrieval failed because "${fileId}" file does not exist`);
@@ -170,7 +170,7 @@ describe('FileTransferService', () => {
             [undefined, null].forEach(async invalidFileId => {
                 try {
                     await fileTransferService.download(invalidFileId!);
-                    assert.fail('Test should failed while it did not')
+                    assert.fail('Test should failed while it did not');
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty('message')
                         .equal('File ID is missing');
@@ -245,12 +245,12 @@ describe('FileTransferService', () => {
 
             [undefined, null].forEach(async invalidFileId => {
                 try {
-                    await fileTransferService.delete(invalidFileId!)
+                    await fileTransferService.delete(invalidFileId!);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty('message')
-                        .equal('File ID is missing')
+                        .equal('File ID is missing');
                 }
-            })
+            });
         });
 
         it('should throw error when file does not exist', async () => {
@@ -262,7 +262,7 @@ describe('FileTransferService', () => {
 
             try {
                 await fileTransferService.delete(fileId);
-                assert.fail('Test should failed while it did not')
+                assert.fail('Test should failed while it did not');
             } catch (err) {
                 expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty('message')
                     .equal(`File deletion failed because "${fileId}" file does not exist`);
@@ -278,7 +278,7 @@ describe('FileTransferService', () => {
 
             try {
                 await fileTransferService.delete(fileId);
-                assert.fail('Test should failed while it did not')
+                assert.fail('Test should failed while it did not');
             } catch (err) {
                 // tslint:disable: max-line-length
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty('message')
@@ -293,7 +293,7 @@ describe('FileTransferService', () => {
 
             const result = await fileTransferService.delete(fileId);
             // tslint:disable-next-line: no-unused-expression
-            expect(result).is.undefined
-        })
-    })
+            expect(result).is.undefined;
+        });
+    });
 });

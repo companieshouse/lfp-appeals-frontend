@@ -26,7 +26,7 @@ describe('Error Handler Middleware', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(NOT_FOUND);
                     expect(response.text).to.contain(pageHeading);
-                })
+                });
         }
     );
 
@@ -34,7 +34,7 @@ describe('Error Handler Middleware', () => {
             const app = createApp()
                 // @ts-ignore
                 .use(FAKE_PAGE_URI, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-                    throw new Error(':(')
+                    throw new Error(':(');
                 })
                 .use(defaultHandler);
 
@@ -42,7 +42,7 @@ describe('Error Handler Middleware', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     expect(response.text).to.contain(pageHeading);
-                })
+                });
         }
     );
 });

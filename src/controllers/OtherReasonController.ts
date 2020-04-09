@@ -41,7 +41,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
         } else {
             appeal.reasons = {
                 other: value
-            }
+            };
         }
         loggerInstance()
             .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);

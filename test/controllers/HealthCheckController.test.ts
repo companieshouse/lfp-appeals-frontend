@@ -1,12 +1,12 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { SessionStore } from 'ch-node-session-handler';
-import { Application } from 'express'
+import { Application } from 'express';
 import { Redis } from 'ioredis';
-import request from 'supertest'
+import request from 'supertest';
 
-import 'app/controllers/HealthCheckController'
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+import 'app/controllers/HealthCheckController';
+import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
@@ -17,7 +17,7 @@ describe('HealthCheckController', () => {
     it('should return 200 with status when redis database is up', async () => {
         const app = createAppConfigurable(container => {
             container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
-                redis.ping().returns(Promise.resolve('OK'))
+                redis.ping().returns(Promise.resolve('OK'));
             })));
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
@@ -29,7 +29,7 @@ describe('HealthCheckController', () => {
     it('should return 500 with status when redis database is down', async () => {
         const app = createAppConfigurable(container => {
             container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
-                redis.ping().returns(Promise.reject('ERROR'))
+                redis.ping().returns(Promise.reject('ERROR'));
             })));
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());

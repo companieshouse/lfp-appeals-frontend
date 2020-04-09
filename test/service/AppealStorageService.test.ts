@@ -3,7 +3,7 @@ import { INTERNAL_SERVER_ERROR, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-
 import nock = require('nock');
 
 import { Appeal} from 'app/models/Appeal';
-import { AppealStorageService } from 'app/service/AppealStorageService'
+import { AppealStorageService } from 'app/service/AppealStorageService';
 
 describe('AppealStorageService', () => {
 
@@ -31,24 +31,24 @@ describe('AppealStorageService', () => {
 
             [undefined, null].forEach(async appealData => {
                 try {
-                    await appealStorageService.save(appealData as any, BEARER_TOKEN)
+                    await appealStorageService.save(appealData as any, BEARER_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
-                        .and.to.haveOwnProperty('message').equal('Appeal is missing')
+                        .and.to.haveOwnProperty('message').equal('Appeal is missing');
                 }
-            })
+            });
         });
 
         it('should throw an error when BEARER_TOKEN not defined', () => {
 
             [undefined, null].forEach(async invalidToken => {
                 try {
-                    await appealStorageService.save(appeal as Appeal, invalidToken as any)
+                    await appealStorageService.save(appeal as Appeal, invalidToken as any);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
-                        .and.to.haveOwnProperty('message').equal('Token is missing')
+                        .and.to.haveOwnProperty('message').equal('Token is missing');
                 }
-            })
+            });
         });
 
         it('should save appeal and return location header', async () => {
@@ -69,7 +69,7 @@ describe('AppealStorageService', () => {
             await appealStorageService.save(appeal as Appeal, BEARER_TOKEN)
                 .then((response) => {
                     expect(response).to.equal(RESOURCE_LOCATION);
-                })
+                });
         });
 
 
@@ -88,7 +88,7 @@ describe('AppealStorageService', () => {
 
 
             try {
-                await appealStorageService.save(appeal as Appeal, '1')
+                await appealStorageService.save(appeal as Appeal, '1');
             } catch (err) {
                 expect(err.code).to.be.equal(UNAUTHORIZED);
             }
@@ -118,7 +118,7 @@ describe('AppealStorageService', () => {
                 });
 
             try {
-                await appealStorageService.save(invalidAppeal as Appeal, BEARER_TOKEN)
+                await appealStorageService.save(invalidAppeal as Appeal, BEARER_TOKEN);
             } catch (err) {
                 expect(err.code).to.be.equal(UNPROCESSABLE_ENTITY);
                 expect(err.message).to.contain({'reason': 'reasons must not be null'});
@@ -141,10 +141,10 @@ describe('AppealStorageService', () => {
                 });
 
             try {
-                await appealStorageService.save(appeal as Appeal, BEARER_TOKEN)
+                await appealStorageService.save(appeal as Appeal, BEARER_TOKEN);
             } catch (err) {
                 expect(err.code).to.be.equal(INTERNAL_SERVER_ERROR);
             }
-        })
-    })
+        });
+    });
 });

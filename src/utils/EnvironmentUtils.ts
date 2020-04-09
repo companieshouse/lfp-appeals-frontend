@@ -15,5 +15,5 @@ export function getEnvOrDefault(name: string, defaultValue: string): string {
 }
 
 export function getEnvOrThrow(name: string): string {
-    return getEnvOr(name, () => { throw Error(`Variable ${name} was not found`) });
+    return getEnvOr(name, () => { throw Error(`Variable ${name} was not found`); });
 }

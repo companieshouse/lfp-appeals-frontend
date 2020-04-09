@@ -1,10 +1,10 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import request from 'supertest'
+import request from 'supertest';
 
-import 'app/controllers/OtherReasonDisclaimerController'
+import 'app/controllers/OtherReasonDisclaimerController';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -32,7 +32,7 @@ describe('OtherReasonDisclaimerController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(OTHER_REASON_PAGE_URI);
-                })
+                });
         });
     });
 });

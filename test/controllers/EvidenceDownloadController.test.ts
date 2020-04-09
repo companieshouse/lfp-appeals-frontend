@@ -40,7 +40,7 @@ describe('EvidenceDownloadController', () => {
         // @ts-ignore
         proxy.download(Arg.any()).mimicks(async (fileId: string) => downloadResult);
         // @ts-ignore
-        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata))
+        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata));
         return proxy;
     };
 
