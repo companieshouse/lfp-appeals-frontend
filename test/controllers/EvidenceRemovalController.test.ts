@@ -1,20 +1,17 @@
 import 'reflect-metadata'
-// tslint:disable-next-line: ordered-imports
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
-loadEnvironmentVariablesFromFiles();
+import { SubstituteOf } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceRemovalController'
+import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
-import { SubstituteOf } from '@fluffy-spoon/substitute';
-import { Appeal } from 'app/models/Appeal';
-import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
 

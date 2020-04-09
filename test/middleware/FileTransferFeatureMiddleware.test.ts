@@ -1,11 +1,9 @@
 import 'reflect-metadata'
-// tslint:disable-next-line: ordered-imports
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
-loadEnvironmentVariablesFromFiles();
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { after, before } from 'mocha';
 import request from 'supertest';
 
@@ -13,7 +11,6 @@ import 'app/controllers/EvidenceUploadController'
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { ENTRY_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
-import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { createApp } from 'test/ApplicationFactory';
 
 let initialFileTransferFlag: string | undefined;

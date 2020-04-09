@@ -10,7 +10,6 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { AppealStorageService } from 'app/service/AppealStorageService';
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 import { createSession } from 'test/utils/session/SessionFactory';
@@ -18,7 +17,6 @@ import { createSession } from 'test/utils/session/SessionFactory';
 // tslint:disable-next-line:no-empty
 export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {
 
-    loadEnvironmentVariablesFromFiles();
     const container = new Container();
     container.load(buildProviderModule());
     configureBindings(container);
