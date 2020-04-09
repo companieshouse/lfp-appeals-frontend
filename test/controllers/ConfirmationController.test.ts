@@ -10,10 +10,7 @@ import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createSession } from 'test/utils/session/SessionFactory';
-
-const config = getDefaultConfig();
+import { createApp } from 'test/ApplicationFactory';
 
 describe('ConfirmationController', () => {
 
@@ -34,10 +31,7 @@ describe('ConfirmationController', () => {
             navigation
         } as ApplicationData;
 
-        const session = createSession(config.cookieSecret)
-            .saveExtraData('appeals', applicationData);
-        const app = createApp(session);
-
+        const app = createApp(applicationData);
 
         it('should return 200 when trying to access page', async () => {
             await request(app).get(CONFIRMATION_PAGE_URI)

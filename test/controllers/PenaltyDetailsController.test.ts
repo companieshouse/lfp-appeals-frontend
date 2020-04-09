@@ -6,18 +6,15 @@ import request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createSession } from 'test/utils/session/SessionFactory';
+import { createApp } from 'test/ApplicationFactory';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
-
-const config = getDefaultConfig();
 
 describe('PenaltyDetailsController', () => {
 
@@ -39,9 +36,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 200 when trying to access page with a session', async () => {
 
-            const session = createSession(config.cookieSecret)
-                .saveExtraData(APPLICATION_DATA_KEY, applicationData);
-            const app = createApp(session);
+            const app = createApp(applicationData);
 
             await request(app).get(PENALTY_DETAILS_PAGE_URI)
                 .expect(response => {
@@ -64,9 +59,7 @@ describe('PenaltyDetailsController', () => {
                 }
             } as Appeal;
 
-            const session = createSession(config.cookieSecret)
-                .saveExtraData(APPLICATION_DATA_KEY, { appeal });
-            const app = createApp(session);
+            const app = createApp({ appeal });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(appeal.penaltyIdentifier)
@@ -83,8 +76,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            const session = createSession(config.cookieSecret);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -101,8 +93,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            const session = createSession(config.cookieSecret);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -119,8 +110,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: ''
             };
 
-            const session = createSession(config.cookieSecret);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -137,8 +127,7 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'AB66666666'
             };
 
-            const session = createSession(config.cookieSecret);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)

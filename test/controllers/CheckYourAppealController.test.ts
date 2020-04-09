@@ -14,11 +14,8 @@ import { EmailService } from 'app/modules/email-publisher/EmailService'
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory'
-import { createSession } from 'test/utils/session/SessionFactory';
-
-const config = getDefaultConfig();
 
 const appeal = {
     penaltyIdentifier: {
@@ -45,9 +42,7 @@ describe('CheckYourAppealController', () => {
                 navigation
             } as ApplicationData;
 
-            const session = createSession(config.cookieSecret)
-                .saveExtraData('appeals', applicationData);
-            const app = createApp(session);
+            const app = createApp(applicationData);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
@@ -66,9 +61,7 @@ describe('CheckYourAppealController', () => {
                 navigation
             } as ApplicationData;
 
-            const session = createSession(config.cookieSecret)
-                .saveExtraData('appeals', applicationData);
-            const app = createApp(session);
+            const app = createApp(applicationData);
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
@@ -84,15 +77,12 @@ describe('CheckYourAppealController', () => {
             navigation
         } as ApplicationData;
 
-        const session = createSession(config.cookieSecret)
-            .saveExtraData('appeals', applicationData);
-
         it('should send email with appeal to internal team and submission confirmation to user', async () => {
             const emailService = createSubstituteOf<EmailService>(service => {
                 service.send(Arg.any()).returns(Promise.resolve());
             });
 
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
             });
 
@@ -109,7 +99,7 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should redirect to confirmation page when email sending succeeded', async () => {
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.resolve());
                 }));
@@ -126,7 +116,7 @@ describe('CheckYourAppealController', () => {
             const emailService = createSubstituteOf<EmailService>(service => {
                 service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
             });
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
             });
 
@@ -150,7 +140,7 @@ describe('CheckYourAppealController', () => {
                 })).returns(Promise.reject(Error('Unexpected error')));
             });
 
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
             });
 
@@ -162,7 +152,7 @@ describe('CheckYourAppealController', () => {
 
         it('should render error when appeal storage failed', async () => {
 
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
 
                 container.rebind(AppealStorageService)
                     .toConstantValue(createSubstituteOf<AppealStorageService>(service => {
@@ -186,7 +176,7 @@ describe('CheckYourAppealController', () => {
                 service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
             });
 
-            const app = createApp(session, container => {
+            const app = createApp(applicationData, container => {
                 container.rebind(AppealStorageService).toConstantValue(appealStorageService);
             });
 
