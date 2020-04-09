@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { Arg } from '@fluffy-spoon/substitute'
+import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import request from 'supertest';
@@ -10,12 +10,12 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { Email } from 'app/modules/email-publisher/Email';
-import { EmailService } from 'app/modules/email-publisher/EmailService'
+import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
-import { createSubstituteOf } from 'test/SubstituteFactory'
+import { createSubstituteOf } from 'test/SubstituteFactory';
 
 const appeal = {
     penaltyIdentifier: {
@@ -52,7 +52,7 @@ describe('CheckYourAppealController', () => {
                         .to.contain(appeal.penaltyIdentifier.penaltyReference).and
                         .to.contain('test').and
                         .to.contain(appeal.reasons.other.title).and
-                        .to.contain(appeal.reasons.other.description)
+                        .to.contain(appeal.reasons.other.description);
                 });
         });
 
@@ -65,7 +65,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(OK)
+                    expect(response.status).to.be.equal(OK);
                 });
         });
     });
@@ -109,7 +109,7 @@ describe('CheckYourAppealController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(CONFIRMATION_PAGE_URI);
-                })
+                });
         });
 
         it('should not send email to user and render error when internal email did not send', async () => {
@@ -122,7 +122,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                 });
 
             emailService.didNotReceive().send(Arg.is((email: Email) => {
@@ -146,8 +146,8 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
-                })
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                });
         });
 
         it('should render error when appeal storage failed', async () => {
@@ -163,8 +163,8 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR)
-                })
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                });
         });
 
         it('should store appeal', async () => {
@@ -185,5 +185,5 @@ describe('CheckYourAppealController', () => {
             appealStorageService.received().save(appeal, token);
 
         });
-    })
+    });
 });

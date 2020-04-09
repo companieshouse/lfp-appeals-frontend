@@ -6,8 +6,8 @@ import * as kafka from 'kafka-node';
 import * as util from 'util';
 import { APP_NAME } from './utils/ConfigLoader';
 
-import { EmailService } from 'app/modules/email-publisher/EmailService'
-import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer'
+import { EmailService } from 'app/modules/email-publisher/EmailService';
+import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { AppealStorageService } from 'app/service/AppealStorageService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';

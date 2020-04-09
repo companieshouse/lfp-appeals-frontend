@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import * as assert from 'assert';
@@ -68,5 +68,5 @@ describe('AppealStorageForSubmissionProcessor', () => {
         } as Request);
 
         appealStorageService.received().save(appeal, token);
-    })
+    });
 });

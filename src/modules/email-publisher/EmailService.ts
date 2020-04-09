@@ -1,17 +1,17 @@
-import * as crypto from 'crypto'
+import * as crypto from 'crypto';
 
-import { Email } from 'app/modules/email-publisher/Email'
-import { type, Message } from 'app/modules/email-publisher/message/Message'
-import { Producer } from 'app/modules/email-publisher/producer/Producer'
+import { Email } from 'app/modules/email-publisher/Email';
+import { type, Message } from 'app/modules/email-publisher/message/Message';
+import { Producer } from 'app/modules/email-publisher/producer/Producer';
 
 export class EmailService {
 
     constructor (private readonly applicationIdentifier: string, private readonly producer: Producer) {
         if (applicationIdentifier == null) {
-            throw new Error('Application identifier is required')
+            throw new Error('Application identifier is required');
         }
         if (producer == null) {
-            throw new Error('Producer is required')
+            throw new Error('Producer is required');
         }
     }
 
@@ -27,7 +27,7 @@ export class EmailService {
         await this.producer.send({
             topic: 'email-send',
             message: type.toBuffer(message)
-        })
+        });
     }
 
     private createMessageFrom(email: Email): Message {

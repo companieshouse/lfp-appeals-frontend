@@ -4,4 +4,4 @@ export type FileMetadata = {
     content_type: string;
     size: number;
     av_status: 'not-scanned' | 'clean' | 'infected';
-}
+};

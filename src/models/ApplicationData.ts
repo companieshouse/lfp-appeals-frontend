@@ -6,5 +6,5 @@ export const APPLICATION_DATA_KEY = 'appeals';
 
 export interface ApplicationData {
     appeal: Appeal;
-    navigation: Navigation
+    navigation: Navigation;
 }

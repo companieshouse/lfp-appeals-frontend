@@ -1,4 +1,4 @@
-import * as tsConfigPaths from 'tsconfig-paths'
+import * as tsConfigPaths from 'tsconfig-paths';
 
 tsConfigPaths.register({
     baseUrl: __dirname,

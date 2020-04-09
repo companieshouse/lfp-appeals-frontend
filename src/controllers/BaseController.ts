@@ -38,10 +38,10 @@ const sessionCookieSecret = getEnvOrThrow('COOKIE_SECRET');
 const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
 
 export interface FormActionHandler {
-    handle(request: Request, response: Response): void | Promise<void>
+    handle(request: Request, response: Response): void | Promise<void>;
 }
 
-export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHandler
+export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHandler;
 
 export class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
@@ -79,7 +79,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     protected prepareViewModel(): Record<string, any> & FORM {
         return this.httpContext.request.session
             .map(session => this.prepareViewModelFromSession(session))
-            .orDefault({} as Record<string, any> & FORM)
+            .orDefault({} as Record<string, any> & FORM);
     }
 
     /**
@@ -107,7 +107,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     // @ts-ignore
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
-        return {} as FORM
+        return {} as FORM;
     }
 
     /**
@@ -122,7 +122,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         if (action != null) {
             let actionHandler = this.getExtraActionHandlers()[action];
             if (actionHandler == null) {
-                throw new Error(`Action handler for action ${action} must be registered`)
+                throw new Error(`Action handler for action ${action} must be registered`);
             }
             if (typeof actionHandler === 'function') {
                 actionHandler = this.httpContext.container.get(actionHandler) as FormActionHandler;
@@ -139,7 +139,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * Designed to be overridden.
      */
     protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
-        return {}
+        return {};
     }
 
     /**
@@ -189,7 +189,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                         .orDefaultLazy(() => {
                             const value = {} as ApplicationData;
                             session.saveExtraData(APPLICATION_DATA_KEY, value);
-                            return value
+                            return value;
                         });
 
                     // tslint:disable-next-line: max-line-length
@@ -200,7 +200,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
 
                 return response.redirect(that.navigation.next(request));
             }
-        }
+        };
     }
 
     /**
@@ -231,7 +231,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
 
         result.ifLeft(_ => {
             loggerInstance().error(`${BaseController.name} - update session: failed to save session`);
-            throw new Error('Failed to save session')
+            throw new Error('Failed to save session');
         });
 
         this.httpContext.response
@@ -242,7 +242,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 secure: sessionCookieSecureFlag === 'true',
                 maxAge: sessionTimeToLiveInSeconds * 1000,
                 encode: String
-            })
+            });
     }
 
     private prepareNavigationConfig(): any {

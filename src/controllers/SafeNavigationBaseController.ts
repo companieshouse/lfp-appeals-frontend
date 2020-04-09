@@ -24,7 +24,7 @@ class Processor implements FormActionProcessor {
             .orDefaultLazy(() => {
                 const value = {} as ApplicationData;
                 session.saveExtraData(APPLICATION_DATA_KEY, value);
-                return value
+                return value;
             });
 
         const permissions = applicationData?.navigation?.permissions || [];

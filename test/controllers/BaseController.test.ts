@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
@@ -18,10 +18,10 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 const template = 'template';
 const navigation = {
     previous(): string {
-        return '/previous'
+        return '/previous';
     },
     next(): string {
-        return '/next'
+        return '/next';
     }
 };
 
@@ -35,7 +35,7 @@ type ControllerConfig = {
     formSanitizeFn?: (formBody: any) => any
     processor?: FormActionProcessorConstructor
     viewModel?: {}
-}
+};
 
 function createTestController(config: ControllerConfig): any {
     // tslint:disable-next-line:new-parens
@@ -44,12 +44,12 @@ function createTestController(config: ControllerConfig): any {
             super(template, navigation, config.formSchema ? new FormValidator(config.formSchema) : undefined,
                 config.formSanitizeFn, config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
-            this.httpContext = config.httpContext
+            this.httpContext = config.httpContext;
         }
         protected prepareViewModelFromAppeal(): any {
             return config.viewModel;
         }
-    }
+    };
 }
 
 describe('Base controller', () => {
@@ -90,7 +90,7 @@ describe('Base controller', () => {
                 ...viewModel,
                 ...navigationConfig
             } as any);
-        })
+        });
     });
 
     describe('POST handler', () => {
@@ -156,7 +156,7 @@ describe('Base controller', () => {
                         ]
                     },
                     ...navigationConfig
-                })
+                });
             }));
         });
 
@@ -173,7 +173,7 @@ describe('Base controller', () => {
             }).onPost();
 
             // @ts-ignore
-            response.received().redirect('/next')
+            response.received().redirect('/next');
         });
 
         it('should redirect to next page when processing is succeeded', async () => {
@@ -201,7 +201,7 @@ describe('Base controller', () => {
             }).onPost();
 
             // @ts-ignore
-            response.received().redirect('/next')
+            response.received().redirect('/next');
         });
 
         it('should throw error when processing failed', async () => {
@@ -228,13 +228,13 @@ describe('Base controller', () => {
                     },
                     processor: SadProcessor,
                 }).onPost();
-                assert.fail('Method should have thrown error')
+                assert.fail('Method should have thrown error');
             } catch (e) {
-                assert.equal(e.message, ':(')
+                assert.equal(e.message, ':(');
             }
 
             // @ts-ignore
-            response.didNotReceive().redirect('/next')
+            response.didNotReceive().redirect('/next');
         });
-    })
+    });
 });

@@ -30,6 +30,6 @@ describe('ValidationError', () => {
 
         it('should not hyphenise field name when it is already hyphenised', () => {
             expect(new ValidationError('longer-field', 'Unexpected error').href).to.be.equal('#longer-field-error');
-        })
+        });
     });
 });

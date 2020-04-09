@@ -56,8 +56,8 @@ export class InternalEmailFormActionProcessor implements FormActionProcessor {
 
         await this.emailService.send(email)
             .catch(_ => {
-                loggerInstance().error(`${InternalEmailFormActionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`)
-                throw _
+                loggerInstance().error(`${InternalEmailFormActionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`);
+                throw _;
             });
     }
 }

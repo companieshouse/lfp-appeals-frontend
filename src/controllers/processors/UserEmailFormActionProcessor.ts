@@ -48,7 +48,7 @@ export class UserEmailFormActionProcessor implements FormActionProcessor {
         await this.emailService.send(email)
             .catch(_ => {
                 loggerInstance().error(`${UserEmailFormActionProcessor.name} - process: email=${JSON.stringify(email)}, error=${_}`);
-                throw _
+                throw _;
             });
 
     }

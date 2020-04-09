@@ -66,7 +66,7 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
-                })
+                });
 
         });
 

@@ -1,4 +1,4 @@
-import * as avro from 'avsc'
+import * as avro from 'avsc';
 
 export const type = avro.Type.forSchema({
     type: 'record',
@@ -14,9 +14,9 @@ export const type = avro.Type.forSchema({
 });
 
 export interface Message {
-    app_id: string,
-    message_id: string,
-    message_type: string,
-    data: string,
-    created_at: string
+    app_id: string;
+    message_id: string;
+    message_type: string;
+    data: string;
+    created_at: string;
 }
