@@ -27,7 +27,10 @@ describe('EvidenceDownloadController', () => {
     const contentLength = 1000;
     const contentType = `application/json`;
 
-    const metadata: FileMetadata = {
+    const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
+    const expectedDownloadErrorMessage = 'Please try again later';
+
+    const createMetadata: FileMetadata = {
         av_status: 'clean',
         content_type: contentType,
         id: FILE_ID,
@@ -35,13 +38,14 @@ describe('EvidenceDownloadController', () => {
         size: contentLength
     };
 
-    const fileTransferServiceProxy = (downloadResult: Promise<Readable>): FileTransferService => {
+    const fileTransferServiceProxy = (downloadResult: Promise<Readable>,
+                                      metadata: FileMetadata): FileTransferService => {
 
         const proxy = Substitute.for<FileTransferService>();
         // @ts-ignore
         proxy.download(Arg.any()).mimicks(async (fileId: string) => downloadResult);
         // @ts-ignore
-        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata))
+        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata));
         return proxy;
     };
 
@@ -65,7 +69,7 @@ describe('EvidenceDownloadController', () => {
         readable.push(null);
 
         const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(readable));
+            fileTransferServiceProxy(Promise.resolve(readable), createMetadata);
 
         await request(
             createDefaultApp(fakeFileTransferProxy))
@@ -87,7 +91,7 @@ describe('EvidenceDownloadController', () => {
                     message: `An error with code ${fileDownloadStatus} occured`,
                     statusCode: fileDownloadStatus
                 };
-                return fileTransferServiceProxy(Promise.reject(fileDownloadError));
+                return fileTransferServiceProxy(Promise.reject(fileDownloadError), createMetadata);
             };
 
         const testAppWith = async (fileTransferService: FileTransferService) => {
@@ -113,20 +117,54 @@ describe('EvidenceDownloadController', () => {
 
     it('should render custom error page when the file service fails to download file with FileNotReady', async () => {
 
-        const expectedErrorHeading = 'The file can not be downloaded at this moment';
-        const expectedErrorMessage = 'Please try again later';
+        const app = createDefaultApp(fileTransferServiceProxy(Promise.reject(
+            new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)),
+            createMetadata));
 
-        const fileTransferService = fileTransferServiceProxy(
-            Promise.reject(
-                new FileNotReadyError( `File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`))
-        );
-
-        await request(createDefaultApp(fileTransferService))
+        await request(app)
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
                 expect(res.status).to.equal(FORBIDDEN);
-                expect(res.text).to.contain(expectedErrorHeading);
-                expect(res.text).to.contain(expectedErrorMessage);
+                expect(res.text).to.contain(expectedDownloadErrorHeading);
+                expect(res.text).to.contain(expectedDownloadErrorMessage);
             });
     });
+
+
+    it('should render custom error page during download when the status is "infected" or "not-scanned"', async () => {
+
+        const readable = new Readable();
+        readable.push('');
+        readable.push(null);
+
+        const createMetadataInfected: FileMetadata = {
+            av_status: 'infected',
+            content_type: contentType,
+            id: FILE_ID,
+            name: 'hello.txt',
+            size: contentLength
+        };
+
+        const createMetadataNotScanned: FileMetadata = {
+            av_status: 'not-scanned',
+            content_type: contentType,
+            id: FILE_ID,
+            name: 'hello.txt',
+            size: contentLength
+        };
+
+        for (const matadata of [createMetadataInfected, createMetadataNotScanned]) {
+
+            const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), matadata));
+
+            await request(app)
+                .get(EXPECTED_DOWNLOAD_LINK_URL)
+                .then(res => {
+                    expect(res.status).to.equal(FORBIDDEN);
+                    expect(res.text).to.contain(expectedDownloadErrorHeading);
+                    expect(res.text).to.contain(expectedDownloadErrorMessage);
+                });
+        }
+    });
+
 });
