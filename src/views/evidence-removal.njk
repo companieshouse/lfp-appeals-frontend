@@ -14,7 +14,7 @@
     <div class="govuk-grid-column-two-thirds">
       {{
         govukErrorSummary ({
-          titleText: 'There is an error on the page',
+          titleText: 'There is a problem',
           errorList: validationResult.errors
         }) if validationResult and validationResult.errors.length > 0
       }}
