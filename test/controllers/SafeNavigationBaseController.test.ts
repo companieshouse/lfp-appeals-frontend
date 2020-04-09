@@ -1,7 +1,4 @@
 import 'reflect-metadata'
-// tslint:disable-next-line: ordered-imports
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
-loadEnvironmentVariablesFromFiles();
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { EitherUtils, ISession, Maybe, Session, SessionStore } from 'ch-node-session-handler';
