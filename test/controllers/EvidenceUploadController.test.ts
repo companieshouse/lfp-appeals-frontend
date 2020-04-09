@@ -26,6 +26,8 @@ import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const pageHeading = 'Add documents to support your application';
 
+const maxNumberOfFiles = 10
+
 const appealNoAttachments: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
@@ -148,8 +150,9 @@ describe('EvidenceUploadController', () => {
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
                 .expect(response => {
-                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('Select a document to add to your application');
                 });
         });
 
@@ -246,7 +249,7 @@ describe('EvidenceUploadController', () => {
                 });
         });
 
-        it('should return validation error when more than 10 files uploaded', async () => {
+        it(`should return validation error when more than ${maxNumberOfFiles} files uploaded`, async () => {
 
             const app = createApp(createSessionWithAppeal(appealWithMaxAttachments));
 
@@ -256,7 +259,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You can only select up to 10 files at the same time');
+                        .and.to.contain(`You can only select up to ${maxNumberOfFiles} files at the same time`);
                 });
         });
 

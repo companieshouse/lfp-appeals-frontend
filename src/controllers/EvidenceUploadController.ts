@@ -1,6 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
-import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
@@ -80,6 +80,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
     protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         const that = this;
 
+        const noFileSelectedError: string = 'Select a document to add to your application';
         const fileTooLargeError: string = 'File size must be smaller than 4MB';
         const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
         const tooManyFilesError: string = `You can only select up to ${maxNumberOfFiles} files at the same time`;
@@ -106,8 +107,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                     }
 
                     if (!request.file) {
-                        response.redirect(MOVED_TEMPORARILY, request.route.path);
-                        return;
+                        return await that.renderUploadError(appeal, noFileSelectedError);
                     } else if (appeal.reasons.other.attachments &&
                         appeal.reasons.other.attachments!.length >= maxNumberOfFiles) {
                         return await that.renderUploadError(appeal, tooManyFilesError);
