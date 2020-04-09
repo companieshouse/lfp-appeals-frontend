@@ -1,25 +1,19 @@
 import 'reflect-metadata'
-// tslint:disable-next-line: ordered-imports
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
-loadEnvironmentVariablesFromFiles();
-import { Session } from 'ch-node-session-handler';
+import { SubstituteOf } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceRemovalController'
 import { Appeal } from 'app/models/Appeal';
-import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
+import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
-import { SubstituteOf } from '@fluffy-spoon/substitute';
-import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
     return {
@@ -34,13 +28,7 @@ const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
                 attachments
             }
         }
-    };
-};
-
-const createSessionWithAppeal = (appeal: Appeal): Session => {
-    const config = getDefaultConfig();
-    return createFakeSession([], config.cookieSecret, true)
-        .saveExtraData(APPLICATION_DATA_KEY, { appeal });
+    }
 };
 
 describe('EvidenceRemovalController', () => {
@@ -48,7 +36,7 @@ describe('EvidenceRemovalController', () => {
 
     describe('GET request', () => {
         it('should return 500 when file identifier is missing', async () => {
-            const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=`)
                 .expect(response => {
@@ -57,7 +45,7 @@ describe('EvidenceRemovalController', () => {
         });
 
         it('should return 500 when file identifier does not exist in session', async () => {
-            const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=456`)
                 .expect(response => {
@@ -66,7 +54,7 @@ describe('EvidenceRemovalController', () => {
         });
 
         it('should return 200 with file name when file identifier exists in session', async () => {
-            const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=${attachment.id}`)
                 .expect(response => {
@@ -78,7 +66,7 @@ describe('EvidenceRemovalController', () => {
 
     describe('POST request', () => {
         it('should render errors when no answer was provided', async () => {
-            const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
                 .send({ id: attachment.id, name: attachment.name })
@@ -92,7 +80,7 @@ describe('EvidenceRemovalController', () => {
 
         describe('when answer is NO', () => {
             it('should redirect to file upload page', async () => {
-                const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+                const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
                     .send({ remove: YesNo.no })
@@ -105,7 +93,7 @@ describe('EvidenceRemovalController', () => {
 
         describe('when answer is YES', () => {
             it('should return 500 when file identifier is missing', async () => {
-                const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+                const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
                     .send({ remove: YesNo.yes })
@@ -115,7 +103,7 @@ describe('EvidenceRemovalController', () => {
             });
 
             it('should return 500 when file identifier does not exist in session', async () => {
-                const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])));
+                const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
                 await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
                     .send({ remove: YesNo.yes, id: '456' })
@@ -127,7 +115,7 @@ describe('EvidenceRemovalController', () => {
             it('should redirect to file upload page when file identifier exists in session', async () => {
                 const service: SubstituteOf<FileTransferService> = createSubstituteOf<FileTransferService>();
 
-                const app = createApp(createSessionWithAppeal(createAppealWithAttachments([attachment])), container => {
+                const app = createApp({ appeal: createAppealWithAttachments([attachment]) }, container => {
                     container.rebind(FileTransferService).toConstantValue(service);
                 });
 

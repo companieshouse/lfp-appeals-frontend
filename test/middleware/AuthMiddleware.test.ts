@@ -2,8 +2,6 @@ import 'reflect-metadata';
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { Maybe } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
@@ -18,19 +16,8 @@ import {
     PENALTY_DETAILS_PAGE_URI
 } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
-
-const config = getDefaultConfig();
-const id = generateSessionId();
-const sig = generateSignature(id, config.cookieSecret);
-
-const session = createFakeSession(
-    [{
-        [SessionKey.Id]: id
-    }, {
-        [SessionKey.ClientSig]: sig
-    }], config.cookieSecret, true);
+import { createApp } from 'test/ApplicationFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const protectedPages = [
     PENALTY_DETAILS_PAGE_URI,
@@ -42,10 +29,9 @@ const protectedPages = [
 
 describe('Authentication Middleware', () => {
 
-    const authedApp = createApp(session);
-
     describe('Authed path', () => {
         it('should not redirect the user to the sign in page if the user is signed in', async () => {
+            const authedApp = createApp({});
 
             for (const page of protectedPages) {
                 await request(authedApp).post(page)
@@ -57,7 +43,7 @@ describe('Authentication Middleware', () => {
         it('should call next if the user is signed in', () => {
 
             const mockRequest = {
-                session: Maybe.of(session)
+                session: Maybe.of(createSession('secret'))
             } as Request;
             const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();
@@ -75,7 +61,7 @@ describe('Authentication Middleware', () => {
 
         it('should not call next if the user is not signed in', () => {
 
-            const unAuthedSession = createFakeSession([], config.cookieSecret, false);
+            const unAuthedSession = createSession('secret', false);
 
             const mockRequest = {
                 headers: {

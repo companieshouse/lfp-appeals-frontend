@@ -1,11 +1,9 @@
 import 'reflect-metadata'
-// tslint:disable-next-line: ordered-imports
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
-loadEnvironmentVariablesFromFiles();
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
+import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { after, before } from 'mocha';
 import request from 'supertest';
 
@@ -13,11 +11,7 @@ import 'app/controllers/EvidenceUploadController'
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { ENTRY_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
-import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
-
-const config = getDefaultConfig();
+import { createApp } from 'test/ApplicationFactory';
 
 let initialFileTransferFlag: string | undefined;
 
@@ -51,8 +45,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '1';
 
-            const session = createFakeSession([], config.cookieSecret, true);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)
@@ -81,8 +74,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '0';
 
-            const session = createFakeSession([], config.cookieSecret, true);
-            const app = createApp(session);
+            const app = createApp({});
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)

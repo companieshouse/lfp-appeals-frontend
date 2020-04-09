@@ -7,10 +7,7 @@ import request from 'supertest'
 import 'app/controllers/OtherReasonDisclaimerController'
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
-
-const config = getDefaultConfig();
+import { createApp } from 'test/ApplicationFactory';
 
 describe('OtherReasonDisclaimerController', () => {
 
@@ -20,9 +17,7 @@ describe('OtherReasonDisclaimerController', () => {
         }
     };
 
-    const session = createFakeSession([], config.cookieSecret, true)
-        .saveExtraData('appeals', applicationData);
-    const app = createApp(session);
+    const app = createApp(applicationData);
 
 
     describe('GET request', () => {

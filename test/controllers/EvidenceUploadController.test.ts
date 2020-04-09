@@ -1,7 +1,6 @@
 import 'reflect-metadata'
 
 import { Arg } from '@fluffy-spoon/substitute';
-import { Session } from 'ch-node-session-handler';
 import { expect } from 'chai';
 import {
     INTERNAL_SERVER_ERROR,
@@ -14,19 +13,17 @@ import supertest from 'supertest';
 
 import 'app/controllers/EvidenceUploadController'
 import { Appeal } from 'app/models/Appeal';
-import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
 
 const pageHeading = 'Add documents to support your application';
 
-const maxNumberOfFiles = 10
+const maxNumberOfFiles = 10;
 
 const appealNoAttachments: Appeal = {
     penaltyIdentifier: {
@@ -76,19 +73,13 @@ const appealWithMaxAttachments: Appeal = {
     }
 };
 
-const createSessionWithAppeal = (appeal: Appeal): Session => {
-    const config = getDefaultConfig();
-    return createFakeSession([], config.cookieSecret, true)
-        .saveExtraData(APPLICATION_DATA_KEY, { appeal });
-};
-
 describe('EvidenceUploadController', () => {
 
     describe('GET request', () => {
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments));
+            const app = createApp({ appeal: appealNoAttachments });
 
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect(response => {
@@ -98,7 +89,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with attachments in session', async () => {
 
-            const app = createApp(createSessionWithAppeal(appealWithAttachments));
+            const app = createApp({ appeal: appealWithAttachments });
 
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect((response: supertest.Response) => {
@@ -113,7 +104,7 @@ describe('EvidenceUploadController', () => {
 
         it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
 
-            const app = createApp(createSessionWithAppeal(appealWithAttachments));
+            const app = createApp({ appeal: appealWithAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('?')
@@ -125,7 +116,7 @@ describe('EvidenceUploadController', () => {
 
         it('on continue should return error when no files have been uploaded', async () => {
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments));
+            const app = createApp({ appeal: appealNoAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('?')
@@ -145,7 +136,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 302 and redirect to evidence upload page if no file chosen', async () => {
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments));
+            const app = createApp({ appeal: appealNoAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
@@ -162,7 +153,7 @@ describe('EvidenceUploadController', () => {
                 service.upload(Arg.any(), Arg.any()).returns(Promise.resolve('123'));
             });
 
-            const app = createApp(createSessionWithAppeal(appealWithAttachments), container => {
+            const app = createApp({ appeal: appealWithAttachments }, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
@@ -184,7 +175,7 @@ describe('EvidenceUploadController', () => {
                     `File upload failed because type of "${FILE_NAME}" file is not supported`)));
             });
 
-            const app = createApp(createSessionWithAppeal(appealWithAttachments), container => {
+            const app = createApp({ appeal: appealWithAttachments }, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
@@ -206,7 +197,7 @@ describe('EvidenceUploadController', () => {
                 service.upload(Arg.any(), Arg.any()).returns(Promise.reject(new Error('Unexpected error')));
             });
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments), container => {
+            const app = createApp({ appeal: appealNoAttachments }, container => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
@@ -222,7 +213,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 500 if no appeal in session', async () => {
 
-            const app = createApp(createSessionWithAppeal(undefined as any));
+            const app = createApp({ appeal: undefined });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=' + UPLOAD_FILE_ACTION)
@@ -237,7 +228,7 @@ describe('EvidenceUploadController', () => {
 
             const unsupportedFileName = 'test-file.fake';
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments));
+            const app = createApp({ appeal: appealNoAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
@@ -251,7 +242,7 @@ describe('EvidenceUploadController', () => {
 
         it(`should return validation error when more than ${maxNumberOfFiles} files uploaded`, async () => {
 
-            const app = createApp(createSessionWithAppeal(appealWithMaxAttachments));
+            const app = createApp({ appeal: appealWithMaxAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
@@ -267,7 +258,7 @@ describe('EvidenceUploadController', () => {
 
             const largeBuffer = Buffer.alloc(5000000);
 
-            const app = createApp(createSessionWithAppeal(appealNoAttachments));
+            const app = createApp({ appeal: appealNoAttachments });
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=' + UPLOAD_FILE_ACTION)

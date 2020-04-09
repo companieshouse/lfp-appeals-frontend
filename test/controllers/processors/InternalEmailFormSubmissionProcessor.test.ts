@@ -12,13 +12,10 @@ import { InternalEmailFormActionProcessor } from 'app/controllers/processors/Int
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
 describe('InternalEmailFormSubmissionProcessor', () => {
-    loadEnvironmentVariablesFromFiles();
-
     it('should throw error when session does not exist', async () => {
         const emailService = createSubstituteOf<EmailService>();
 

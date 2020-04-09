@@ -1,6 +1,7 @@
 {
   "require": [
     "ts-node/register",
-    "tsconfig-paths/register"
+    "tsconfig-paths/register",
+    "LoadConfig"
   ]
 }
