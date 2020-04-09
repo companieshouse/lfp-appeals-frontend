@@ -15,7 +15,7 @@ import { ENTRY_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const config = getDefaultConfig();
 
@@ -51,7 +51,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '1';
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            const session = createSession(config.cookieSecret);
             const app = createApp(session);
 
             await request(app)
@@ -81,7 +81,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '0';
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            const session = createSession(config.cookieSecret);
             const app = createApp(session);
 
             await request(app)

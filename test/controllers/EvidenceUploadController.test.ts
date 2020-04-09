@@ -22,7 +22,7 @@ import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const pageHeading = 'Add documents to support your application';
 
@@ -78,7 +78,7 @@ const appealWithMaxAttachments: Appeal = {
 
 const createSessionWithAppeal = (appeal: Appeal): Session => {
     const config = getDefaultConfig();
-    return createFakeSession([], config.cookieSecret, true)
+    return createSession(config.cookieSecret)
         .saveExtraData(APPLICATION_DATA_KEY, { appeal });
 };
 

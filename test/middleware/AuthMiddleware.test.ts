@@ -2,8 +2,6 @@ import 'reflect-metadata';
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { Maybe } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
@@ -19,18 +17,11 @@ import {
 } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const config = getDefaultConfig();
-const id = generateSessionId();
-const sig = generateSignature(id, config.cookieSecret);
 
-const session = createFakeSession(
-    [{
-        [SessionKey.Id]: id
-    }, {
-        [SessionKey.ClientSig]: sig
-    }], config.cookieSecret, true);
+const session = createSession(config.cookieSecret);
 
 const protectedPages = [
     PENALTY_DETAILS_PAGE_URI,
@@ -75,7 +66,7 @@ describe('Authentication Middleware', () => {
 
         it('should not call next if the user is not signed in', () => {
 
-            const unAuthedSession = createFakeSession([], config.cookieSecret, false);
+            const unAuthedSession = createSession(config.cookieSecret, false);
 
             const mockRequest = {
                 headers: {
