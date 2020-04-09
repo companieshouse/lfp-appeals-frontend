@@ -85,7 +85,7 @@ describe('EvidenceRemovalController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(`Are you sure you want to remove ${attachment.name}?`)
-                        .and.to.include('There is an error on the page')
+                        .and.to.include('There is a problem')
                         .and.to.include('You must tell us if you want to remove the document');
                 });
         });
