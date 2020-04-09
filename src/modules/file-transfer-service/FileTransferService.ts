@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import { FORBIDDEN, NOT_FOUND, UNSUPPORTED_MEDIA_TYPE } from 'http-status-codes';
 import { Readable } from 'stream';
 
-import { FileMetadata } from 'app/models/FileMetadata';
+import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import {
     FileNotFoundError, FileNotReadyError,
     FileTransferError,

@@ -11,7 +11,7 @@ import {
 } from 'http-status-codes';
 import nock = require('nock');
 
-import { FileMetadata } from 'app/models/FileMetadata';
+import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import {
     FileNotFoundError, FileNotReadyError,
@@ -148,7 +148,7 @@ describe('FileTransferService', () => {
         it('should return file metadata if when file exists', async () => {
 
             const metadata: FileMetadata = {
-                av_status: 'scanned',
+                av_status: 'clean',
                 content_type: 'application/txt',
                 id: fileId,
                 name: 'hello.txt',
