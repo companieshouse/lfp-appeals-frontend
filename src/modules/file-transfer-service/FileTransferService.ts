@@ -43,7 +43,7 @@ export class FileTransferService {
 
         return await axios
             .post(this.url, data, config)
-            .then((response: AxiosResponse) => { return response.data.id })
+            .then((response: AxiosResponse) => { return response.data.id; })
             .catch(this.handleResponseError('upload', fileName));
     }
 
@@ -91,14 +91,14 @@ export class FileTransferService {
 
         return axios
             .delete(`${this.url}/${fileId}`, config)
-            .then(() => { return })
+            .then(() => { return; })
             .catch(this.handleResponseError('deletion', fileId));
     }
 
     private prepareHeaders(): Record<string, string> {
         return {
             'x-api-key': this.key
-        }
+        };
     }
 
     private handleResponseError(operation: 'upload' | 'metadata retrieval' | 'download' | 'deletion', subject: string):
@@ -112,11 +112,11 @@ export class FileTransferService {
                     case NOT_FOUND:
                         throw new FileNotFoundError(`File ${operation} failed because "${subject}" file does not exist`);
                     case UNSUPPORTED_MEDIA_TYPE:
-                        throw new UnsupportedFileTypeError(`File ${operation} failed because type of "${subject}" file is not supported`)
+                        throw new UnsupportedFileTypeError(`File ${operation} failed because type of "${subject}" file is not supported`);
                 }
             }
 
             throw new FileTransferError(`File ${operation} of "${subject}" file failed due to error: ${(err.message || 'unknown error').toLowerCase()}`);
-        }
+        };
     }
 }

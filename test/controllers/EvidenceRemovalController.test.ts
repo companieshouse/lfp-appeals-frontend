@@ -1,11 +1,11 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { SubstituteOf } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 
-import 'app/controllers/EvidenceRemovalController'
+import 'app/controllers/EvidenceRemovalController';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
@@ -28,7 +28,7 @@ const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
                 attachments
             }
         }
-    }
+    };
 };
 
 describe('EvidenceRemovalController', () => {
@@ -86,7 +86,7 @@ describe('EvidenceRemovalController', () => {
                     .send({ remove: YesNo.no })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)
+                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                     });
             });
         });
@@ -123,11 +123,11 @@ describe('EvidenceRemovalController', () => {
                     .send({ remove: YesNo.yes, id: attachment.id })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI)
+                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                     });
 
                 service.received().delete(attachment.id);
             });
-        })
+        });
     });
 });

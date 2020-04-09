@@ -1,10 +1,10 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY  } from 'http-status-codes';
-import request from 'supertest'
+import request from 'supertest';
 
-import 'app/controllers/EntryController'
+import 'app/controllers/EntryController';
 import { ENTRY_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';

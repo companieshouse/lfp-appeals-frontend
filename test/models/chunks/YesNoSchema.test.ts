@@ -51,7 +51,7 @@ describe('YesNo schema', () => {
                 consent: 'xyz'
             });
             assertValidationError(validationResult);
-        })
+        });
     });
 
     describe('invalid values', () => {
@@ -59,16 +59,16 @@ describe('YesNo schema', () => {
             const validationResult = validator.validate({
                 consent: YesNo.yes
             });
-            assertValidationErrors(validationResult, [])
+            assertValidationErrors(validationResult, []);
         });
 
         it('should accept "no" string', () => {
             const validationResult = validator.validate({
                 consent: YesNo.no
             });
-            assertValidationErrors(validationResult, [])
+            assertValidationErrors(validationResult, []);
         });
-    })
+    });
 });
 
 

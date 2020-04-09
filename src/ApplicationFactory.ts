@@ -13,6 +13,6 @@ export class ApplicationFactory {
 
         const application: Application = server.build();
         application.use(notFoundHandler, defaultHandler);
-        return application
+        return application;
     }
 }

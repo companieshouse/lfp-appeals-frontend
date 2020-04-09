@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { EitherUtils, ISession, Maybe, Session, SessionStore } from 'ch-node-session-handler';
@@ -18,10 +18,10 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 const template = 'template';
 const navigation = {
     previous(): string {
-        return '/previous'
+        return '/previous';
     },
     next(): string {
-        return '/next'
+        return '/next';
     }
 };
 
@@ -32,7 +32,7 @@ type ControllerConfig = {
         response: Partial<Response>
     }
     processor?: new (...args:any[]) => FormActionProcessor
-}
+};
 
 function createTestController(config: ControllerConfig): any {
     // tslint:disable-next-line:new-parens
@@ -41,12 +41,12 @@ function createTestController(config: ControllerConfig): any {
             super(template, navigation , undefined, undefined,
                 config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
-            this.httpContext = config.httpContext
+            this.httpContext = config.httpContext;
         }
         protected prepareViewModelFromAppeal(): any {
             return {};
         }
-    }
+    };
 }
 
 describe('Safe navigation base controller', () => {
@@ -156,7 +156,7 @@ describe('Safe navigation base controller', () => {
                 }
                 const applicationData = session[SessionKey.ExtraData][APPLICATION_DATA_KEY] as ApplicationData;
                 return applicationData.navigation.permissions === ['/next'];
-            }), Arg.any())
+            }), Arg.any());
         });
 
         it ('should not store navigation pass for already visited page that user is about to be redirected to', () => {
@@ -188,7 +188,7 @@ describe('Safe navigation base controller', () => {
                 }
             }).onPost();
 
-            sessionStore.didNotReceive().store(Arg.any(), Arg.any())
+            sessionStore.didNotReceive().store(Arg.any(), Arg.any());
         });
 
         it ('should not store navigation pass when no redirect is about to be made', () => {
@@ -221,7 +221,7 @@ describe('Safe navigation base controller', () => {
                 processor: SadProcessor,
             }).onPost();
 
-            sessionStore.didNotReceive().store(Arg.any(), Arg.any())
+            sessionStore.didNotReceive().store(Arg.any(), Arg.any());
         });
-    })
+    });
 });

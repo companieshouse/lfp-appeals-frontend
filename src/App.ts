@@ -1,5 +1,5 @@
-import './Bootstrap'
-import './LoadConfig'
+import './Bootstrap';
+import './LoadConfig';
 
 import { Server } from 'app/Server';
 

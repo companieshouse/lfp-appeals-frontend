@@ -26,5 +26,5 @@ describe('ValidationResult', () => {
         it('should return matching error when error for given field does exist', () => {
             expect(new ValidationResult([error]).getErrorForField('field')).to.be.deep.equal(error);
         });
-    })
+    });
 });

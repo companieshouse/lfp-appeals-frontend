@@ -11,7 +11,7 @@ export const sanitize = (companyNumber: string): string => {
 };
 
 const stripWhitespaces = (companyNumber: string): string => {
-    return companyNumber.replace(/\s/g, '')
+    return companyNumber.replace(/\s/g, '');
 };
 
 const padNumber = (companyNumber: string): string => {
@@ -23,7 +23,7 @@ const padNumber = (companyNumber: string): string => {
             .substring(2, companyNumber.length)
             .padStart(6, '0');
 
-        return leadingChars + trailingChars
+        return leadingChars + trailingChars;
 
     } else {
         return companyNumber.padStart(COMPANY_NUMBER_SIZE, '0');

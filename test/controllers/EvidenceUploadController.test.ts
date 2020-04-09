@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import { expect } from 'chai';
@@ -11,7 +11,7 @@ import {
 import request from 'supertest';
 import supertest from 'supertest';
 
-import 'app/controllers/EvidenceUploadController'
+import 'app/controllers/EvidenceUploadController';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
@@ -111,7 +111,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
-                })
+                });
         });
 
         it('on continue should return error when no files have been uploaded', async () => {
@@ -124,7 +124,7 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain('There was a problem')
                         .and.to.contain('You must add a document or click “Continue without adding documents”');
-                })
+                });
         });
     });
 

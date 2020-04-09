@@ -18,7 +18,7 @@ export class SchemaValidator {
     public validate(data: any): ValidationResult {
         const { error } = this.schema.validate(data, validationOptions);
         return new ValidationResult(error ? error.details.map(item => {
-            return new ValidationError(item.path.join('.'), item.message)
-        }) : [])
+            return new ValidationError(item.path.join('.'), item.message);
+        }) : []);
     }
 }

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { schema } from 'app/models/PenaltyIdentifier.schema'
+import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 
 
@@ -12,33 +12,33 @@ describe('Penalty Details Schema Validation', () => {
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
             const validPenaltyReference = 'A12345678';
-            return { companyNumber, penaltyReference: validPenaltyReference }
+            return { companyNumber, penaltyReference: validPenaltyReference };
         }
 
         describe('Happy path', () => {
             it('should accept SC leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('SC123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept NI leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('NI123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept no leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('12123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept leading characters in lowercase', () => {
                 const result = validator.validate(createModelWithCompanyNumber('sc123123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept company numbers with less than 8 total characters', () => {
                 const result = validator.validate(createModelWithCompanyNumber('123'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
         });
 
@@ -50,7 +50,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter a company number'
                     }]
-                })
+                });
             });
 
             it('should reject company number without correct leading characters', () => {
@@ -60,7 +60,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
 
             it('should reject company numbers with letters mid-number', () => {
@@ -70,7 +70,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
 
             it('should reject empty spaces', () => {
@@ -80,7 +80,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
 
             it('should reject company numbers with leading and trailing spaces', () => {
@@ -90,7 +90,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
 
             it('should reject company numbers with spaces', () => {
@@ -100,7 +100,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
 
             it('should reject symbols in company number', () => {
@@ -110,26 +110,26 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'companyNumber',
                         text: 'You must enter your full eight character company number'
                     }]
-                })
+                });
             });
-        })
+        });
     });
 
     describe('Penalty Reference', () => {
         function createModelWithPenaltyReference(penaltyReference: string): PenaltyIdentifier {
             const validCompanyNumber = 'SC123123';
-            return { penaltyReference, companyNumber: validCompanyNumber }
+            return { penaltyReference, companyNumber: validCompanyNumber };
         }
 
         describe('Happy path', () => {
             it('should accept uppercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('Z12345678'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept lowercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('z12345678'));
-                expect(result).to.deep.equal({errors: []})
+                expect(result).to.deep.equal({errors: []});
             });
         });
 
@@ -141,7 +141,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter a penalty reference number'
                     }]
-                })
+                });
             });
 
             it('should reject penalty reference number missing leading character', () => {
@@ -151,7 +151,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
-                })
+                });
             });
 
             it('should reject penalty references with less than 9 total characters', () => {
@@ -161,7 +161,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
-                })
+                });
             });
 
             it('should reject penalty references with leading and trailing spaces', () => {
@@ -171,7 +171,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
-                })
+                });
             });
 
             it('should reject spaces in penalty references', () => {
@@ -181,7 +181,7 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
-                })
+                });
             });
 
             it('should reject symbols in penalty reference', () => {
@@ -191,8 +191,8 @@ describe('Penalty Details Schema Validation', () => {
                         field: 'penaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
-                })
+                });
             });
-        })
-    })
+        });
+    });
 });

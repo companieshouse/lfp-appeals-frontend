@@ -42,7 +42,7 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
     if (attachment == null) {
         throw new Error(`File ${fileId} does not belong to appeal`);
     }
-    return attachment
+    return attachment;
 };
 
 /**
@@ -67,7 +67,7 @@ class Processor implements FormActionProcessor {
 
         const attachment: Attachment = findAttachment(appeal, request.body.id);
         await this.fileTransferService.delete(attachment.id);
-        appeal.reasons.other.attachments!.splice(appeal.reasons.other.attachments!.indexOf(attachment), 1)
+        appeal.reasons.other.attachments!.splice(appeal.reasons.other.attachments!.indexOf(attachment), 1);
     }
 }
 

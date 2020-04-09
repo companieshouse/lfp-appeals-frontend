@@ -96,7 +96,7 @@ export class EvidenceUploadController extends BaseController<OtherReason> {
                         .unsafeCoerce();
 
                     try {
-                        await parseFormData(request, response)
+                        await parseFormData(request, response);
                     } catch (error) {
                         switch (error.code) {
                             case 'LIMIT_FILE_SIZE':

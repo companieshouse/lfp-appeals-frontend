@@ -1,12 +1,12 @@
-import { expect } from 'chai'
+import { expect } from 'chai';
 
-import { sanitize } from 'app/utils/CompanyNumberSanitizer'
+import { sanitize } from 'app/utils/CompanyNumberSanitizer';
 
 describe('CompanyNumberSanitizer', () => {
     it('should throw error when company number undefined or empty', () =>{
         [undefined, null, ''].forEach(missingValue => {
-            expect(() => sanitize(missingValue as string)).to.throw('Company number is required')
-        })
+            expect(() => sanitize(missingValue as string)).to.throw('Company number is required');
+        });
     });
 
     it('should trim whitespaces', () => {
