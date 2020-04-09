@@ -15,7 +15,7 @@
     "sass:watch": "gulp sass:watch",
     "lint": "tsc --project tsconfig.json --noEmit && tslint --project tsconfig.json --config tslint.json",
     "lint:scss": "sass-lint './src/public/sass/**/*.scss' --verbose --ignore 'node_modules/**/*.scss'",
-    "test": "NODE_ENV=local mocha 'test/**/*.test.ts'"
+    "test": "NODE_ENV=vagrant mocha 'test/**/*.test.ts'"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
