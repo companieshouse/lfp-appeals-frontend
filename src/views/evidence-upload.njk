@@ -1,5 +1,6 @@
 {% extends "layout.njk" %}
 
+{% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from "govuk/components/file-upload/macro.njk"   import govukFileUpload %}
 {% from 'govuk/components/button/macro.njk'        import govukButton %}
 {% from "govuk/components/input/macro.njk"         import govukInput %}
@@ -11,6 +12,13 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary({
+          titleText: 'There was a problem',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
+
       <h1 class="govuk-heading-xl">
         Add documents to support your application
       </h1>
@@ -27,9 +35,9 @@
         <div class='file-upload'>
           {{
             govukFileUpload({
-              id: 'file-upload',
+              errorMessage: validationResult.getErrorForField('file') if validationResult,
+              id: 'file',
               name: 'file',
-              errorMessage: Err,
               label: {
                 text: uploadText
               }
@@ -66,7 +74,10 @@
       <form method="post" action="?">
         {{
           govukButton({
-            text: 'Continue'
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
           })
         }}
       </form>
