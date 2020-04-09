@@ -34,7 +34,7 @@ const schema: Joi.AnySchema = Joi.object({
     remove: createSchema('You must tell us if you want to remove the document')
 }).unknown(true);
 
-const findAttachment = (appeal: Appeal, fileId: string): Attachment => {
+const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment => {
     if (fileId == null || fileId.trim().length < 1) {
         throw new Error('File identifier is missing');
     }
@@ -79,6 +79,6 @@ export class EvidenceRemovalController extends BaseController<Attachment> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Attachment {
-        return findAttachment(appeal, this.httpContext.request.query.f);
+        return findAttachment(appeal, this.httpContext.request.query.f as string | undefined);
     }
 }

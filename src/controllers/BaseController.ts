@@ -117,7 +117,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     @httpPost('')
     public async onPost(): Promise<void> {
-        const action: string = this.httpContext.request.query?.action;
+        const action: string | undefined = this.httpContext.request.query.action as string | undefined;
 
         if (action != null) {
             let actionHandler = this.getExtraActionHandlers()[action];
