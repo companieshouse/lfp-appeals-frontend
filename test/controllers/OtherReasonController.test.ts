@@ -9,7 +9,7 @@ import { Appeal } from 'app/models/Appeal';
 import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
@@ -29,7 +29,7 @@ describe('OtherReasonController', () => {
     describe('GET request', () => {
         it('should return 200 response', async () => {
 
-            const session = createFakeSession([], config.cookieSecret, true)
+            const session = createSession(config.cookieSecret)
                 .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
@@ -45,7 +45,7 @@ describe('OtherReasonController', () => {
     describe('POST request', () => {
         it('should return 422 response with rendered error messages when invalid data was submitted', async () => {
 
-            const session = createFakeSession([], config.cookieSecret, true);
+            const session = createSession(config.cookieSecret);
             const app = createApp(session);
 
             await request(app).post(OTHER_REASON_PAGE_URI)
@@ -70,7 +70,7 @@ describe('OtherReasonController', () => {
                 }
             } as Appeal;
 
-            let session = createFakeSession([], config.cookieSecret, true);
+            let session = createSession(config.cookieSecret);
             session = session.saveExtraData('appeals', appeal);
             const app = createApp(session);
 

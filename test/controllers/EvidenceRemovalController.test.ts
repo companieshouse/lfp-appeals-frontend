@@ -19,7 +19,7 @@ import { SubstituteOf } from '@fluffy-spoon/substitute';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
     return {
@@ -39,7 +39,7 @@ const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
 
 const createSessionWithAppeal = (appeal: Appeal): Session => {
     const config = getDefaultConfig();
-    return createFakeSession([], config.cookieSecret, true)
+    return createSession(config.cookieSecret)
         .saveExtraData(APPLICATION_DATA_KEY, { appeal });
 };
 

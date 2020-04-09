@@ -8,7 +8,7 @@ import 'app/controllers/OtherReasonDisclaimerController'
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const config = getDefaultConfig();
 
@@ -20,7 +20,7 @@ describe('OtherReasonDisclaimerController', () => {
         }
     };
 
-    const session = createFakeSession([], config.cookieSecret, true)
+    const session = createSession(config.cookieSecret)
         .saveExtraData('appeals', applicationData);
     const app = createApp(session);
 

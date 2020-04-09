@@ -11,7 +11,7 @@ import { Navigation } from 'app/models/Navigation';
 import { CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const config = getDefaultConfig();
 
@@ -34,7 +34,7 @@ describe('ConfirmationController', () => {
             navigation
         } as ApplicationData;
 
-        const session = createFakeSession([], config.cookieSecret, true)
+        const session = createSession(config.cookieSecret)
             .saveExtraData('appeals', applicationData);
         const app = createApp(session);
 

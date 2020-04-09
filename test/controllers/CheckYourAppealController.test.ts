@@ -16,7 +16,7 @@ import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Path
 
 import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory'
-import { createFakeSession } from 'test/utils/session/FakeSessionFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 const config = getDefaultConfig();
 
@@ -45,7 +45,7 @@ describe('CheckYourAppealController', () => {
                 navigation
             } as ApplicationData;
 
-            const session = createFakeSession([], config.cookieSecret, true)
+            const session = createSession(config.cookieSecret)
                 .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
@@ -66,7 +66,7 @@ describe('CheckYourAppealController', () => {
                 navigation
             } as ApplicationData;
 
-            const session = createFakeSession([], config.cookieSecret, true)
+            const session = createSession(config.cookieSecret)
                 .saveExtraData('appeals', applicationData);
             const app = createApp(session);
 
@@ -84,7 +84,7 @@ describe('CheckYourAppealController', () => {
             navigation
         } as ApplicationData;
 
-        const session = createFakeSession([], config.cookieSecret, true)
+        const session = createSession(config.cookieSecret)
             .saveExtraData('appeals', applicationData);
 
         it('should send email with appeal to internal team and submission confirmation to user', async () => {
