@@ -3,13 +3,14 @@ import 'reflect-metadata';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
-import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
+import { FORBIDDEN, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
 import { Readable } from 'stream';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
@@ -108,5 +109,24 @@ describe('EvidenceDownloadController', () => {
 
         }
 
+    });
+
+    it('should render custom error page when the file service fails to download file with FileNotReady', async () => {
+
+        const expectedErrorHeading = 'The file can not be downloaded at this moment';
+        const expectedErrorMessage = 'Please try again later';
+
+        const fileTransferService = fileTransferServiceProxy(
+            Promise.reject(
+                new FileNotReadyError( `File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`))
+        );
+
+        await request(createDefaultApp(fileTransferService))
+            .get(EXPECTED_DOWNLOAD_LINK_URL)
+            .then(res => {
+                expect(res.status).to.equal(FORBIDDEN);
+                expect(res.text).to.contain(expectedErrorHeading);
+                expect(res.text).to.contain(expectedErrorMessage);
+            });
     });
 });

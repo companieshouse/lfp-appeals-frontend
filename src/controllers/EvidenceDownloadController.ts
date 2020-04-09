@@ -1,12 +1,16 @@
+import { FORBIDDEN } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller, httpGet, requestParam } from 'inversify-express-utils';
 import { Readable, Writable } from 'stream';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
+import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 const template = 'download-file';
+const errorCustomTemplate = 'error-custom';
 
 @controller(DOWNLOAD_FILE_PAGE_URI, FileTransferFeatureMiddleware)
 export class EvidenceDownloadController extends BaseAsyncHttpController {
@@ -25,13 +29,32 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
 
         const res = this.httpContext.response;
 
-        const metadata = await this.fileTransferService.getFileMetadata(fileId);
+        const metadata: FileMetadata = await this.fileTransferService.getFileMetadata(fileId);
+
         res.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
 
-        const readable = await this.fileTransferService.download(fileId);
+        if (metadata.av_status && metadata.av_status !== 'clean') {
+            return this.renderDownloadError();
+        }
 
+        let readable = {} as Readable;
+        try {
+            readable = await this.fileTransferService.download(fileId);
+        } catch (err) {
+            if (err instanceof FileNotReadyError) {
+                return this.renderDownloadError();
+            } else {
+                throw err;
+            }
+        }
         return await this.pipeDataIntoStream(readable, res);
+    }
 
+    private async renderDownloadError(): Promise<void> {
+        return this.renderWithStatus(FORBIDDEN)(errorCustomTemplate, {
+            heading: 'The file can not be downloaded at this moment',
+            message: 'Please try again later'
+        });
     }
 
     private async pipeDataIntoStream(readable: Readable, writable: Writable): Promise<void> {
