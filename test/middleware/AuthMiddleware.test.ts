@@ -16,12 +16,8 @@ import {
     PENALTY_DETAILS_PAGE_URI
 } from 'app/utils/Paths';
 
-import { createApp, getDefaultConfig } from 'test/ApplicationFactory';
+import { createApp } from 'test/ApplicationFactory';
 import { createSession } from 'test/utils/session/SessionFactory';
-
-const config = getDefaultConfig();
-
-const session = createSession(config.cookieSecret);
 
 const protectedPages = [
     PENALTY_DETAILS_PAGE_URI,
@@ -33,10 +29,9 @@ const protectedPages = [
 
 describe('Authentication Middleware', () => {
 
-    const authedApp = createApp(session);
-
     describe('Authed path', () => {
         it('should not redirect the user to the sign in page if the user is signed in', async () => {
+            const authedApp = createApp({});
 
             for (const page of protectedPages) {
                 await request(authedApp).post(page)
@@ -48,7 +43,7 @@ describe('Authentication Middleware', () => {
         it('should call next if the user is signed in', () => {
 
             const mockRequest = {
-                session: Maybe.of(session)
+                session: Maybe.of(createSession('secret'))
             } as Request;
             const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();
@@ -66,7 +61,7 @@ describe('Authentication Middleware', () => {
 
         it('should not call next if the user is not signed in', () => {
 
-            const unAuthedSession = createSession(config.cookieSecret, false);
+            const unAuthedSession = createSession('secret', false);
 
             const mockRequest = {
                 headers: {
