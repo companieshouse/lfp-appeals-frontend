@@ -8,7 +8,7 @@ import { Readable } from 'stream';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
-import { FileMetadata } from 'app/models/FileMetadata';
+import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
@@ -27,7 +27,7 @@ describe('EvidenceDownloadController', () => {
     const contentType = `application/json`;
 
     const metadata: FileMetadata = {
-        av_status: 'scanned',
+        av_status: 'clean',
         content_type: contentType,
         id: FILE_ID,
         name: 'hello.txt',

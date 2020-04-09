@@ -1,7 +1,7 @@
 export type FileMetadata = {
-    av_status: 'scanned' | 'not-scanned';
-    content_type: string;
     id: string;
     name: string;
+    content_type: string;
     size: number;
+    av_status: 'not-scanned' | 'clean' | 'infected';
 }
