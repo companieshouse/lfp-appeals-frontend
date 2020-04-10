@@ -154,7 +154,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 attachments: [
                                     {
                                         name: 'evidence.png',
-                                        url: `http://localhost/appeal-a-penalty/download/data/123/download?a=abc&c=12345678`
+                                        url: `http://localhost/appeal-a-penalty/download/prompt/123?a=abc&c=12345678`
                                     }
                                 ]
                             }

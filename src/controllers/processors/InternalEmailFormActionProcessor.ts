@@ -35,7 +35,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string):
                         attachments: appeal.reasons.other.attachments?.map(attachment => {
                             return {
                                 name: attachment.name,
-                                url: `${baseURI}/data/${attachment.id}/download?a=${appeal.id}&c=${appeal.penaltyIdentifier.companyNumber}`
+                                url: `${baseURI}/prompt/${attachment.id}?a=${appeal.id}&c=${appeal.penaltyIdentifier.companyNumber}`
                             };
                         })
                     }
