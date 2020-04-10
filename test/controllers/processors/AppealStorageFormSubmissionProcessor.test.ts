@@ -11,15 +11,15 @@ import { Request } from 'express';
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealStorageService } from 'app/service/AppealStorageService';
+import { AppealsService } from 'app/service/AppealsService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
 describe('AppealStorageForSubmissionProcessor', () => {
 
-    const appealStorageService = createSubstituteOf<AppealStorageService>();
+    const appealsService = createSubstituteOf<AppealsService>();
 
-    const processor = new AppealStorageFormActionProcessor(appealStorageService);
+    const processor = new AppealStorageFormActionProcessor(appealsService);
 
     const appeal: Appeal = {
         penaltyIdentifier: {
@@ -45,7 +45,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
             assert.equal(err.message, 'Maybe got coerced to a null');
         }
 
-        appealStorageService.didNotReceive().save(Arg.any(), Arg.any());
+        appealsService.didNotReceive().save(Arg.any(), Arg.any());
     });
 
     it('should store appeal', async () => {
@@ -67,6 +67,6 @@ describe('AppealStorageForSubmissionProcessor', () => {
             )
         } as Request);
 
-        appealStorageService.received().save(appeal, token);
+        appealsService.received().save(appeal, token);
     });
 });

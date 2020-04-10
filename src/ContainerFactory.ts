@@ -9,7 +9,7 @@ import { APP_NAME } from './utils/ConfigLoader';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { AppealStorageService } from 'app/service/AppealStorageService';
+import { AppealsService } from 'app/service/AppealsService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -55,8 +55,8 @@ export function createContainer(): Container {
             }
         }));
 
-    container.bind(AppealStorageService).toConstantValue(
-        new AppealStorageService(getEnvOrThrow(`APPEALS_API_URL`)));
+    container.bind(AppealsService).toConstantValue(
+        new AppealsService(getEnvOrThrow(`APPEALS_API_URL`)));
 
     container.bind(FileTransferService).toConstantValue(
         new FileTransferService(getEnvOrThrow(`FILE_TRANSFER_API_URL`),
