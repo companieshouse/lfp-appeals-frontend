@@ -8,12 +8,12 @@ import { provide } from 'inversify-binding-decorators';
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealStorageService } from 'app/service/AppealStorageService';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 
 @provide(AppealStorageFormActionProcessor)
 export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
-    constructor(@inject(AppealStorageService) private readonly appealStorageService: AppealStorageService) {
+    constructor(@inject(AppealsService) private readonly appealsService: AppealsService) {
     }
 
     async process(req: Request): Promise<void> {
@@ -43,6 +43,6 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
         loggerInstance()
             .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
-        await this.appealStorageService.save(appeal, accessToken);
+        await this.appealsService.save(appeal, accessToken);
     }
 }

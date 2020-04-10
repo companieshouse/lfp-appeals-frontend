@@ -9,9 +9,9 @@ import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
-import { AppealStorageService } from 'app/service/AppealStorageService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -154,8 +154,8 @@ describe('CheckYourAppealController', () => {
 
             const app = createApp(applicationData, container => {
 
-                container.rebind(AppealStorageService)
-                    .toConstantValue(createSubstituteOf<AppealStorageService>(service => {
+                container.rebind(AppealsService)
+                    .toConstantValue(createSubstituteOf<AppealsService>(service => {
                         service.save(Arg.any(), Arg.any())
                             .returns(Promise.reject(Error('Unexpected error')));
                     }));
@@ -172,17 +172,17 @@ describe('CheckYourAppealController', () => {
             const token: string =
                 '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
 
-            const appealStorageService = createSubstituteOf<AppealStorageService>(service => {
+            const appealsService = createSubstituteOf<AppealsService>(service => {
                 service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
             });
 
             const app = createApp(applicationData, container => {
-                container.rebind(AppealStorageService).toConstantValue(appealStorageService);
+                container.rebind(AppealsService).toConstantValue(appealsService);
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
-            appealStorageService.received().save(appeal, token);
+            appealsService.received().save(appeal, token);
 
         });
     });
