@@ -7,9 +7,9 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { AppealsService } from 'app/service/AppealsService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 import { createSession } from 'test/utils/session/SessionFactory';

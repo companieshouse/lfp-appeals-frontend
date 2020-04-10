@@ -8,7 +8,7 @@ import { provide } from 'inversify-binding-decorators';
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealsService } from 'app/service/AppealsService';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 
 @provide(AppealStorageFormActionProcessor)
 export class AppealStorageFormActionProcessor implements FormActionProcessor {

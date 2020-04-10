@@ -11,7 +11,7 @@ import { Request } from 'express';
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealsService } from 'app/service/AppealsService';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 

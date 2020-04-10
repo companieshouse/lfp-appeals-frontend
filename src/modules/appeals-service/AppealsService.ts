@@ -1,5 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { CREATED } from 'http-status-codes';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -17,10 +18,13 @@ export class AppealsService {
         this.checkArgumentOrThrow(token, 'Token is missing');
 
         const uri: string = `${this.uri}/companies/${companyNumber}/appeals/${appealId}`;
+        loggerInstance()
+            .debug(`Making a GET request to ${uri}`);
 
         return await axios
             .get(uri, this.getConfig(token))
-            .then((response: AxiosResponse<Appeal>) => response.data);
+            .then((response: AxiosResponse<Appeal>) => response.data)
+            .catch(this.handleResponseError('get', appealId));
 
     }
 
@@ -42,7 +46,8 @@ export class AppealsService {
                         .info(`${AppealsService.name} - save: created resource ${response.headers.location}`);
                     return response.headers.location;
                 }
-            });
+            })
+            .catch(this.handleResponseError('save'));
     }
 
     private checkArgumentOrThrow<T>(arg: T, errorMessage: string): void {
@@ -57,6 +62,23 @@ export class AppealsService {
                 Accept: 'application/json',
                 Authorization: 'Bearer ' + token
             }
+        };
+    }
+
+    private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
+        return (err: AxiosError) => {
+            const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} `: ` ${subject} `}`: ' '}`;
+            if (err.isAxiosError && err.response != null) {
+                switch(err.response.status) {
+                    case NOT_FOUND:
+                        throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
+                    case UNAUTHORIZED:
+                        throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
+                    case UNPROCESSABLE_ENTITY:
+                        throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
+                }
+            }
+            throw new AppealServiceError(`${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `);
         };
     }
 }

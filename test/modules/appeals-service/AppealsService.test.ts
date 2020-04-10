@@ -1,15 +1,16 @@
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import nock = require('nock');
 
 import { Appeal } from 'app/models/Appeal';
-import { AppealsService } from 'app/service/AppealsService';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from 'app/modules/appeals-service/errors';
 
 describe('AppealsService', () => {
 
     const BEARER_TOKEN: string = '123';
     const HOST: string = 'http://localhost:9000';
     const APPEALS_URI: string = '/companies/00345567/appeals';
+    const APPEAL_ID: string = '123';
     const appealsService = new AppealsService(HOST);
 
     const appeal: Appeal = {
@@ -85,13 +86,14 @@ describe('AppealsService', () => {
                         },
                     }
                 )
-                .replyWithError({ code: 401 });
+                .reply(401);
 
 
             try {
                 await appealsService.save(appeal as Appeal, '1');
             } catch (err) {
-                expect(err.code).to.be.equal(UNAUTHORIZED);
+                expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
+                expect(err.message).to.contain(`save appeal unauthorised`);
             }
         });
 
@@ -113,16 +115,13 @@ describe('AppealsService', () => {
                         },
                     }
                 )
-                .replyWithError({
-                    message: { 'reason': 'reasons must not be null' },
-                    code: 422,
-                });
+                .reply(422);
 
             try {
                 await appealsService.save(invalidAppeal as Appeal, BEARER_TOKEN);
             } catch (err) {
-                expect(err.code).to.be.equal(UNPROCESSABLE_ENTITY);
-                expect(err.message).to.contain({ 'reason': 'reasons must not be null' });
+                expect(err.constructor.name).to.be.equal(AppealUnprocessableEntityError.name);
+                expect(err.message).to.contain(`save appeal on invalid appeal data`);
             }
         });
 
@@ -137,14 +136,13 @@ describe('AppealsService', () => {
                         },
                     }
                 )
-                .replyWithError({
-                    code: 500
-                });
+                .reply(500);
 
             try {
                 await appealsService.save(appeal as Appeal, BEARER_TOKEN);
             } catch (err) {
-                expect(err.code).to.be.equal(INTERNAL_SERVER_ERROR);
+                expect(err.constructor.name).eq(AppealServiceError.name);
+                expect(err.message).to.include(`save appeal failed with message`);
             }
         });
     });
@@ -186,17 +184,49 @@ describe('AppealsService', () => {
 
         it('should return an appeal when valid arguments are provided', async () => {
 
-
-            const validAppealId = '123';
-
             nock(HOST)
-                .get(APPEALS_URI, validAppealId)
+                .get(`${APPEALS_URI}/${APPEAL_ID}`)
                 .reply(200, appeal);
 
             const returnedAppeal = await appealsService
-                .getAppeal(appeal.penaltyIdentifier.companyNumber, validAppealId, BEARER_TOKEN);
+                .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
 
             expect(returnedAppeal).to.deep.eq(appeal);
+
+        });
+
+        it('should return an AppealNotFoundError when response status is 404', async () => {
+
+            nock(HOST)
+                .get(`${APPEALS_URI}/${APPEAL_ID}`)
+                .reply(404);
+
+            try {
+                await appealsService
+                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
+            } catch (err) {
+                expect(err.constructor.name).eq(AppealNotFoundError.name);
+                expect(err.message).to.contain(`get appeal failed because appeal ${APPEAL_ID} was not found`);
+
+            }
+
+        });
+
+        it('should return an AppealServiceError when response status is 500 ', async () => {
+
+
+            nock(HOST)
+                .get(`${APPEALS_URI}/${APPEAL_ID}`)
+                .reply(500);
+
+            try {
+                await appealsService
+                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
+            } catch (err) {
+                expect(err.constructor.name).eq(AppealServiceError.name);
+                expect(err.message).to.include(`get appeal failed on appeal ${APPEAL_ID} with message`);
+
+            }
 
         });
     });
