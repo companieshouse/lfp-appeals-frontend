@@ -16,7 +16,7 @@ import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
 import { newUriFactory } from 'app/utils/UriFactory';
 
-function buildEmail (userProfile: IUserProfile, appeal: Appeal, baseURI: string): Email {
+function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string): Email {
     const region = findRegionByCompanyNumber(appeal.penaltyIdentifier.companyNumber);
     return {
         to: getEnvOrThrow(`${region}_TEAM_EMAIL`),
