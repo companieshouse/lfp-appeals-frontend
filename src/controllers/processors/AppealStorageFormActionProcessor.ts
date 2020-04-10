@@ -43,6 +43,6 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
         loggerInstance()
             .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
-        await this.appealsService.save(appeal, accessToken);
+        appeal.id = await this.appealsService.save(appeal, accessToken);
     }
 }

@@ -9,10 +9,9 @@ import { loggerInstance } from './Logger';
 
 import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { newUriFactory } from 'app/utils/UriFactory';
 
-function buildReturnUri(req: Request): string {
-    return new URL(PENALTY_DETAILS_PAGE_URI, `${req.protocol}://${req.headers.host}`).href;
-}
+const buildReturnUri = (req: Request): string => newUriFactory(req).createAbsoluteUri(PENALTY_DETAILS_PAGE_URI);
 
 @provide(AuthMiddleware)
 export class AuthMiddleware extends BaseMiddleware {

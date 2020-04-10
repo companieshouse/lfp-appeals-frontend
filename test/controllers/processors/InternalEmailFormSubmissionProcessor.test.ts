@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -30,17 +31,26 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         emailService.didNotReceive().send(Arg.any());
     });
 
-    it('should send right email to the team supporting company’s region', async () => {
-        const scenarios = [
-            { companyNumber: 'SC345567', recipient: 'appeals.ch.fake+SC@gmail.com' },
-            { companyNumber: 'NI345567', recipient: 'appeals.ch.fake+NI@gmail.com' },
-            { companyNumber: '345567', recipient: 'appeals.ch.fake+DEFAULT@gmail.com' }
-        ];
-        for (const { companyNumber, recipient } of scenarios) {
-            const emailService = createSubstituteOf<EmailService>();
+    describe('processing', () => {
+        const appealWithoutAttachments: Appeal = {
+            id: 'abc',
+            penaltyIdentifier: {
+                companyNumber: '12345678'
+            } as PenaltyIdentifier,
+            reasons: {
+                other: {
+                    title: 'I have reasons',
+                    description: 'They are legit'
+                }
+            }
+        };
 
-            const processor = new InternalEmailFormActionProcessor(emailService);
-            await processor.process({
+        const createRequestWithAppealInSession = (appeal: Appeal): Request => {
+            return {
+                protocol: 'http',
+                headers: {
+                    host: 'localhost',
+                },
                 session: Maybe.of(
                     new Session({
                         [SessionKey.SignInInfo]: {
@@ -49,43 +59,109 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                             } as IUserProfile
                         } as ISignInInfo,
                         [SessionKey.ExtraData]: {
-                            [APPLICATION_DATA_KEY]: {
-                                appeal: {
-                                    penaltyIdentifier: {
-                                        companyNumber
-                                    },
-                                    reasons: {
-                                        other: {
-                                            title: 'I have reasons',
-                                            description: 'They are legit'
-                                        }
-                                    }
-                                } as Appeal
-                            } as ApplicationData
+                            [APPLICATION_DATA_KEY]: { appeal } as ApplicationData
                         }
                     })
                 )
-            } as Request);
+            } as Request;
+        };
+
+        it('should send email to the team supporting company’s region', async () => {
+            const scenarios = [
+                { companyNumber: 'SC345567', recipient: 'appeals.ch.fake+SC@gmail.com' },
+                { companyNumber: 'NI345567', recipient: 'appeals.ch.fake+NI@gmail.com' },
+                { companyNumber: '345567', recipient: 'appeals.ch.fake+DEFAULT@gmail.com' }
+            ];
+            for (const { companyNumber, recipient } of scenarios) {
+                const emailService = createSubstituteOf<EmailService>();
+
+                const processor = new InternalEmailFormActionProcessor(emailService);
+                await processor.process(createRequestWithAppealInSession({
+                    ...appealWithoutAttachments,
+                    penaltyIdentifier: {
+                        companyNumber
+                    }
+                } as Appeal));
+
+                emailService.received().send(Arg.is(arg => arg.to === recipient));
+            }
+        });
+
+        it('should send right email without attachments', async () => {
+            const emailService = createSubstituteOf<EmailService>();
+
+            const processor = new InternalEmailFormActionProcessor(emailService);
+            await processor.process(createRequestWithAppealInSession(appealWithoutAttachments));
 
             emailService.received().send({
-                to: recipient,
-                subject: `Appeal submitted - ${companyNumber}`,
+                to: 'appeals.ch.fake+DEFAULT@gmail.com',
+                subject: `Appeal submitted - 12345678`,
                 body: {
                     templateName: 'lfp-appeal-submission-internal',
                     templateData: {
-                        companyNumber,
+                        companyNumber: '12345678',
                         userProfile: {
                             email: 'user@example.com'
                         },
                         reasons: {
                             other: {
                                 title: 'I have reasons',
-                                description: 'They are legit'
+                                description: 'They are legit',
+                                attachments: undefined
                             }
                         }
                     }
                 }
             });
-        }
+        });
+
+        it('should send right email with attachments', async () => {
+            const emailService = createSubstituteOf<EmailService>();
+
+            const processor = new InternalEmailFormActionProcessor(emailService);
+            await processor.process(createRequestWithAppealInSession({
+                ...appealWithoutAttachments,
+                reasons: {
+                    ...appealWithoutAttachments.reasons,
+                    other: {
+                        ...appealWithoutAttachments.reasons.other,
+                        attachments: [
+                            {
+                                id: '123',
+                                name: 'evidence.png',
+                                contentType: 'image/png',
+                                size: 100
+                            }
+                        ]
+                    }
+                }
+            }));
+
+            emailService.received().send({
+                to: 'appeals.ch.fake+DEFAULT@gmail.com',
+                subject: `Appeal submitted - 12345678`,
+                body: {
+                    templateName: 'lfp-appeal-submission-internal',
+                    templateData: {
+                        companyNumber: '12345678',
+                        userProfile: {
+                            email: 'user@example.com'
+                        },
+                        reasons: {
+                            other: {
+                                title: 'I have reasons',
+                                description: 'They are legit',
+                                attachments: [
+                                    {
+                                        name: 'evidence.png',
+                                        url: `http://localhost/appeal-a-penalty/download/data/123/download?a=abc&c=12345678`
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            });
+        });
     });
 });
