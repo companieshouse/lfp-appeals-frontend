@@ -24,14 +24,17 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 };
 
 export const createApp = (data?: Partial<ApplicationData>,
-                          // tslint:disable-next-line:no-empty
-                          configureBindings: (container: Container) => void = () => {}) =>
+    // tslint:disable-next-line:no-empty
+    configureBindings: (container: Container) => void = () => { },
+    // tslint:disable-next-line:no-empty
+    configureSession: (session: Session) => Session = (_: Session) => _) =>
     createAppConfigurable(container => {
         const cookieName = getEnvOrThrow('COOKIE_NAME');
         const cookieSecret = getEnvOrThrow('COOKIE_SECRET');
 
-        const session: Session | undefined = data ? createSession(cookieSecret)
-            .saveExtraData(APPLICATION_DATA_KEY, data) : undefined;
+        const session: Session | undefined = data
+            ? configureSession(createSession(cookieSecret).saveExtraData(APPLICATION_DATA_KEY, data))
+            : undefined;
 
         const cookie = session ? Cookie.representationOf(session, cookieSecret) : null;
 
@@ -51,6 +54,5 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
-
         configureBindings(container);
     });
