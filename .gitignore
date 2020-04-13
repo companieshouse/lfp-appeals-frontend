@@ -6,3 +6,5 @@ node_modules/
 .vscode/
 .env.*
 !.env.vagrant
+coverage-report
+.scannerwork/

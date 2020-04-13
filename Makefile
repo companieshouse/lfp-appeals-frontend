@@ -48,5 +48,5 @@ endif
 
 .PHONY: sonar
 sonar:
-#	npm run sonarqube
+	npm run analyse-code
 
