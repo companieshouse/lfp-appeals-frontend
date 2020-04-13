@@ -45,7 +45,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '1';
 
-            const app = createApp({});
+            const app = createApp({ navigation: { permissions: [EVIDENCE_UPLOAD_PAGE_URI] } });
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)

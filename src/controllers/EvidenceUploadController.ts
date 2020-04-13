@@ -4,7 +4,8 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController, FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
@@ -54,7 +55,7 @@ const continueButtonValidator: Validator = {
 };
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceUploadController extends BaseController<OtherReason> {
+export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator);
     }
