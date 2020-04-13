@@ -49,9 +49,11 @@ const appealWithAttachments: Appeal = {
             description: 'they are legit',
             attachments: [
                 {
+                    id: '1',
                     name: 'some-file.jpeg'
                 } as Attachment,
                 {
+                    id: '2',
                     name: 'another-file.jpeg'
                 } as Attachment
             ]
@@ -96,6 +98,18 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.contain('some-file.jpeg')
                         .and.to.contain('another-file.jpeg');
+                });
+        });
+
+        it('should return 200 and render download links when attachments in session', async () => {
+
+            const app = createApp({ appeal: appealWithAttachments });
+
+            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
+                .expect((response: supertest.Response) => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.contain('/appeal-a-penalty/download/data/1/download')
+                        .and.to.contain('/appeal-a-penalty/download/data/2/download');
                 });
         });
     });
