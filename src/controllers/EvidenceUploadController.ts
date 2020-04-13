@@ -110,7 +110,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     if (!request.file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
                     } else if (appeal.reasons.other.attachments &&
-                        appeal.reasons.other.attachments!.length >= maxNumberOfFiles) {
+                        appeal.reasons.other.attachments.length >= maxNumberOfFiles) {
                         return await that.renderUploadError(appeal, tooManyFilesError);
                     }
 
