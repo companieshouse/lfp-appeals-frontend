@@ -12,9 +12,11 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
+import { newUriFactory } from 'app/utils/UriFactory';
 
-function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
+function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string): Email {
     const region = findRegionByCompanyNumber(appeal.penaltyIdentifier.companyNumber);
     return {
         to: getEnvOrThrow(`${region}_TEAM_EMAIL`),
@@ -29,7 +31,13 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
                 reasons: {
                     other: {
                         title: appeal.reasons.other.title,
-                        description: appeal.reasons.other.description
+                        description: appeal.reasons.other.description,
+                        attachments: appeal.reasons.other.attachments?.map(attachment => {
+                            return {
+                                name: attachment.name,
+                                url: `${baseURI}/prompt/${attachment.id}?a=${appeal.id}&c=${appeal.penaltyIdentifier.companyNumber}`
+                            };
+                        })
                     }
                 }
             }
@@ -52,7 +60,8 @@ export class InternalEmailFormActionProcessor implements FormActionProcessor {
             .map(data => data[APPLICATION_DATA_KEY] as ApplicationData)
             .unsafeCoerce();
 
-        const email = buildEmail(userProfile as IUserProfile, applicationData.appeal);
+        const email = buildEmail(userProfile, applicationData.appeal, newUriFactory(req)
+            .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI));
 
         await this.emailService.send(email)
             .catch(_ => {
