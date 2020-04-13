@@ -50,9 +50,11 @@ const appealWithAttachments: Appeal = {
             description: 'they are legit',
             attachments: [
                 {
+                    id: '1',
                     name: 'some-file.jpeg'
                 } as Attachment,
                 {
+                    id: '2',
                     name: 'another-file.jpeg'
                 } as Attachment
             ]
@@ -98,8 +100,11 @@ describe('EvidenceUploadController', () => {
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect((response: supertest.Response) => {
                     expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.contain('some-file.jpeg')
-                        .and.to.contain('another-file.jpeg');
+                    expect(response.text)
+                        .to.include('href="/appeal-a-penalty/download/data/1/download"')
+                        .nested.includes('some-file.jpeg')
+                        .and.to.include('href="/appeal-a-penalty/download/data/2/download"')
+                        .nested.includes('another-file.jpeg');
                 });
         });
     });

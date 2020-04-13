@@ -3,13 +3,14 @@ import 'reflect-metadata';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
 import { SessionStore } from 'ch-node-session-handler';
 import { expect } from 'chai';
-import { GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
+import { FORBIDDEN, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
 import { Readable } from 'stream';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
@@ -26,7 +27,10 @@ describe('EvidenceDownloadController', () => {
     const contentLength = 1000;
     const contentType = `application/json`;
 
-    const metadata: FileMetadata = {
+    const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
+    const expectedDownloadErrorMessage = 'Please try again later';
+
+    const metadataClean: FileMetadata = {
         av_status: 'clean',
         content_type: contentType,
         id: FILE_ID,
@@ -34,7 +38,12 @@ describe('EvidenceDownloadController', () => {
         size: contentLength
     };
 
-    const fileTransferServiceProxy = (downloadResult: Promise<Readable>): FileTransferService => {
+    const readable = new Readable();
+    readable.push('');
+    readable.push(null);
+
+    const fileTransferServiceProxy = (downloadResult: Promise<Readable>,
+                                      metadata: FileMetadata): FileTransferService => {
 
         const proxy = Substitute.for<FileTransferService>();
         // @ts-ignore
@@ -59,12 +68,8 @@ describe('EvidenceDownloadController', () => {
 
     it('should start downloading the file when the file is valid', async () => {
 
-        const readable = new Readable();
-        readable.push('');
-        readable.push(null);
-
         const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(readable));
+            fileTransferServiceProxy(Promise.resolve(readable), metadataClean);
 
         await request(
             createDefaultApp(fakeFileTransferProxy))
@@ -86,7 +91,7 @@ describe('EvidenceDownloadController', () => {
                     message: `An error with code ${fileDownloadStatus} occured`,
                     statusCode: fileDownloadStatus
                 };
-                return fileTransferServiceProxy(Promise.reject(fileDownloadError));
+                return fileTransferServiceProxy(Promise.reject(fileDownloadError), metadataClean);
             };
 
         const testAppWith = async (fileTransferService: FileTransferService) => {
@@ -109,4 +114,48 @@ describe('EvidenceDownloadController', () => {
         }
 
     });
+
+    it('should render custom error page when the file service fails to download file with FileNotReady', async () => {
+
+        const app = createDefaultApp(fileTransferServiceProxy(Promise.reject(
+            new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)),
+            metadataClean));
+
+        await request(app)
+            .get(EXPECTED_DOWNLOAD_LINK_URL)
+            .then(res => {
+                expect(res.status).to.equal(FORBIDDEN);
+                expect(res.text)
+                    .to.contain(expectedDownloadErrorHeading)
+                    .and.to.contain(expectedDownloadErrorMessage);
+            });
+    });
+
+    it('should render custom error page during download when the status is invalid', async () => {
+
+        const createMetadata = (status: string): FileMetadata => {
+            return {
+                av_status: status as any,
+                content_type: contentType,
+                id: FILE_ID,
+                name: 'hello.txt',
+                size: contentLength
+            };
+        };
+
+        for (const status of ['infected', 'not-scanned']) {
+
+            const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), createMetadata(status)));
+
+            await request(app)
+                .get(EXPECTED_DOWNLOAD_LINK_URL)
+                .then(res => {
+                    expect(res.status).to.equal(FORBIDDEN);
+                    expect(res.text)
+                        .to.contain(expectedDownloadErrorHeading)
+                        .and.to.contain(expectedDownloadErrorMessage);
+                });
+        }
+    });
+
 });
