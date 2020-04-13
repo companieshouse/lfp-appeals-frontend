@@ -37,7 +37,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
             return this.renderDownloadError();
         }
 
-        let readable = {} as Readable;
+        let readable: Readable;
         try {
             readable = await this.fileTransferService.download(fileId);
         } catch (err) {

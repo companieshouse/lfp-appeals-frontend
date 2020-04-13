@@ -125,14 +125,15 @@ describe('EvidenceDownloadController', () => {
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
                 expect(res.status).to.equal(FORBIDDEN);
-                expect(res.text).to.contain(expectedDownloadErrorHeading);
-                expect(res.text).to.contain(expectedDownloadErrorMessage);
+                expect(res.text)
+                    .to.contain(expectedDownloadErrorHeading)
+                    .and.to.contain(expectedDownloadErrorMessage);
             });
     });
 
     it('should render custom error page during download when the status is invalid', async () => {
 
-        const createMetadata = (status: undefined | null | string): FileMetadata => {
+        const createMetadata = (status: string): FileMetadata => {
             return {
                 av_status: status as any,
                 content_type: contentType,
@@ -142,7 +143,7 @@ describe('EvidenceDownloadController', () => {
             };
         };
 
-        for (const status of [undefined, null, 'infected', 'not-scanned']) {
+        for (const status of ['infected', 'not-scanned']) {
 
             const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), createMetadata(status)));
 
@@ -150,8 +151,9 @@ describe('EvidenceDownloadController', () => {
                 .get(EXPECTED_DOWNLOAD_LINK_URL)
                 .then(res => {
                     expect(res.status).to.equal(FORBIDDEN);
-                    expect(res.text).to.contain(expectedDownloadErrorHeading);
-                    expect(res.text).to.contain(expectedDownloadErrorMessage);
+                    expect(res.text)
+                        .to.contain(expectedDownloadErrorHeading)
+                        .and.to.contain(expectedDownloadErrorMessage);
                 });
         }
     });
