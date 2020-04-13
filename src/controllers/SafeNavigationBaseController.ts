@@ -1,4 +1,3 @@
-import { AnySchema } from '@hapi/joi';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
@@ -7,7 +6,7 @@ import {
     FormActionProcessor,
     FormActionProcessorConstructor
 } from 'app/controllers/processors/FormActionProcessor';
-import { FormValidator } from 'app/controllers/validators/FormValidator';
+import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
@@ -42,11 +41,11 @@ class Processor implements FormActionProcessor {
 export abstract class SafeNavigationBaseController<FORM> extends BaseController<FORM> {
     protected constructor(template: string,
                           navigation: Navigation,
-                          formSchema?: AnySchema,
+                          validator?: Validator,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           formActionProcessors?: FormActionProcessorConstructor[]) {
-        super(template, navigation, formSchema ? new FormValidator(formSchema) : undefined,
-            formSanitizeFunction, [...formActionProcessors || [], Processor
+        super(template, navigation, validator, formSanitizeFunction,
+            [...formActionProcessors || [], Processor
         ]);
     }
 
