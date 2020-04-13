@@ -98,9 +98,9 @@ describe('EvidenceUploadController', () => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
                         .to.include('href="/appeal-a-penalty/download/data/1/download"')
+                        .nested.includes('some-file.jpeg')
                         .and.to.include('href="/appeal-a-penalty/download/data/2/download"')
-                        .and.to.contain('some-file.jpeg')
-                        .and.to.contain('another-file.jpeg') ;
+                        .nested.includes('another-file.jpeg');
                 });
         });
     });
