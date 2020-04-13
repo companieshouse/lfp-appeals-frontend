@@ -14,9 +14,10 @@ import supertest from 'supertest';
 import 'app/controllers/EvidenceUploadController';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
+import { Navigation } from 'app/models/Navigation';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
-import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -76,10 +77,13 @@ const appealWithMaxAttachments: Appeal = {
 describe('EvidenceUploadController', () => {
 
     describe('GET request', () => {
+        const navigation: Navigation = {
+            permissions: [EVIDENCE_UPLOAD_PAGE_URI]
+        };
 
         it('should return 200 when trying to access the evidence-upload page', async () => {
 
-            const app = createApp({ appeal: appealNoAttachments });
+            const app = createApp({ navigation, appeal: appealNoAttachments });
 
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect(response => {
@@ -89,7 +93,7 @@ describe('EvidenceUploadController', () => {
 
         it('should return 200 when trying to access page with attachments in session', async () => {
 
-            const app = createApp({ appeal: appealWithAttachments });
+            const app = createApp({ navigation, appeal: appealWithAttachments });
 
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect((response: supertest.Response) => {
@@ -102,7 +106,7 @@ describe('EvidenceUploadController', () => {
 
     describe('POST request: continue', () => {
 
-        it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
+        it('on continue should redirect to check your appeal page', async () => {
 
             const app = createApp({ appeal: appealWithAttachments });
 
@@ -110,7 +114,7 @@ describe('EvidenceUploadController', () => {
                 .query('?')
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(CHECK_YOUR_APPEAL_PAGE_URI);
                 });
         });
 

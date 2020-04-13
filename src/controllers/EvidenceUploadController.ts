@@ -4,7 +4,8 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController, FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
@@ -16,7 +17,7 @@ import { FileTransferService } from 'app/modules/file-transfer-service/FileTrans
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
-import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -29,7 +30,7 @@ const navigation = {
         return OTHER_REASON_PAGE_URI;
     },
     next(): string {
-        return EVIDENCE_UPLOAD_PAGE_URI;
+        return CHECK_YOUR_APPEAL_PAGE_URI;
     }
 };
 
@@ -54,7 +55,7 @@ const continueButtonValidator: Validator = {
 };
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceUploadController extends BaseController<OtherReason> {
+export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator);
     }

@@ -6,7 +6,7 @@ import request from 'supertest';
 
 import 'app/controllers/OtherReasonController';
 import { Appeal } from 'app/models/Appeal';
-import { CHECK_YOUR_APPEAL_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
@@ -52,7 +52,8 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it('should return 302 response and redirect user to check your appeal page', async () => {
+        it('should redirect to check your appeal page when file transfer feature is disabled', async () => {
+            process.env.FILE_TRANSFER_FEATURE = '0';
 
             const appeal = {
                 reasons: {
@@ -70,6 +71,28 @@ describe('OtherReasonController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.header.location).to.include(CHECK_YOUR_APPEAL_PAGE_URI);
+                });
+        });
+
+        it('should redirect to evidence upload page when file transfer feature is enabled', async () => {
+            process.env.FILE_TRANSFER_FEATURE = '1';
+
+            const appeal = {
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    }
+                }
+            } as Appeal;
+
+            const app = createApp({ appeal});
+
+            await request(app).post(OTHER_REASON_PAGE_URI)
+                .send(appeal.reasons.other)
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(EVIDENCE_UPLOAD_PAGE_URI);
                 });
         });
     });
