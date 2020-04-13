@@ -33,7 +33,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
 
         res.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
 
-        if (metadata.av_status && metadata.av_status !== 'clean') {
+        if (!metadata.av_status || metadata.av_status !== 'clean') {
             return this.renderDownloadError();
         }
 

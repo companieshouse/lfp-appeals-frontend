@@ -30,13 +30,17 @@ describe('EvidenceDownloadController', () => {
     const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
     const expectedDownloadErrorMessage = 'Please try again later';
 
-    const createMetadata: FileMetadata = {
+    const metadataClean: FileMetadata = {
         av_status: 'clean',
         content_type: contentType,
         id: FILE_ID,
         name: 'hello.txt',
         size: contentLength
     };
+
+    const readable = new Readable();
+    readable.push('');
+    readable.push(null);
 
     const fileTransferServiceProxy = (downloadResult: Promise<Readable>,
                                       metadata: FileMetadata): FileTransferService => {
@@ -64,12 +68,8 @@ describe('EvidenceDownloadController', () => {
 
     it('should start downloading the file when the file is valid', async () => {
 
-        const readable = new Readable();
-        readable.push('');
-        readable.push(null);
-
         const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(readable), createMetadata);
+            fileTransferServiceProxy(Promise.resolve(readable), metadataClean);
 
         await request(
             createDefaultApp(fakeFileTransferProxy))
@@ -91,7 +91,7 @@ describe('EvidenceDownloadController', () => {
                     message: `An error with code ${fileDownloadStatus} occured`,
                     statusCode: fileDownloadStatus
                 };
-                return fileTransferServiceProxy(Promise.reject(fileDownloadError), createMetadata);
+                return fileTransferServiceProxy(Promise.reject(fileDownloadError), metadataClean);
             };
 
         const testAppWith = async (fileTransferService: FileTransferService) => {
@@ -119,7 +119,7 @@ describe('EvidenceDownloadController', () => {
 
         const app = createDefaultApp(fileTransferServiceProxy(Promise.reject(
             new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)),
-            createMetadata));
+            metadataClean));
 
         await request(app)
             .get(EXPECTED_DOWNLOAD_LINK_URL)
@@ -130,32 +130,21 @@ describe('EvidenceDownloadController', () => {
             });
     });
 
+    it('should render custom error page during download when the status is invalid', async () => {
 
-    it('should render custom error page during download when the status is "infected" or "not-scanned"', async () => {
-
-        const readable = new Readable();
-        readable.push('');
-        readable.push(null);
-
-        const createMetadataInfected: FileMetadata = {
-            av_status: 'infected',
-            content_type: contentType,
-            id: FILE_ID,
-            name: 'hello.txt',
-            size: contentLength
+        const createMetadata = (status: undefined | null | string): FileMetadata => {
+            return {
+                av_status: status as any,
+                content_type: contentType,
+                id: FILE_ID,
+                name: 'hello.txt',
+                size: contentLength
+            };
         };
 
-        const createMetadataNotScanned: FileMetadata = {
-            av_status: 'not-scanned',
-            content_type: contentType,
-            id: FILE_ID,
-            name: 'hello.txt',
-            size: contentLength
-        };
+        for (const status of [undefined, null, 'infected', 'not-scanned']) {
 
-        for (const matadata of [createMetadataInfected, createMetadataNotScanned]) {
-
-            const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), matadata));
+            const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), createMetadata(status)));
 
             await request(app)
                 .get(EXPECTED_DOWNLOAD_LINK_URL)
