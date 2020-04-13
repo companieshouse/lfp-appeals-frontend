@@ -16,7 +16,7 @@ import { FileTransferService } from 'app/modules/file-transfer-service/FileTrans
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
-import { EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -29,7 +29,7 @@ const navigation = {
         return OTHER_REASON_PAGE_URI;
     },
     next(): string {
-        return EVIDENCE_UPLOAD_PAGE_URI;
+        return CHECK_YOUR_APPEAL_PAGE_URI;
     }
 };
 

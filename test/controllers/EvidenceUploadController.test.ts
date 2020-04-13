@@ -16,7 +16,7 @@ import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
-import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -102,7 +102,7 @@ describe('EvidenceUploadController', () => {
 
     describe('POST request: continue', () => {
 
-        it('on continue should redirect to evidence upload page when files have been uploaded', async () => {
+        it('on continue should redirect to check your appeal page', async () => {
 
             const app = createApp({ appeal: appealWithAttachments });
 
@@ -110,7 +110,7 @@ describe('EvidenceUploadController', () => {
                 .query('?')
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(CHECK_YOUR_APPEAL_PAGE_URI);
                 });
         });
 
