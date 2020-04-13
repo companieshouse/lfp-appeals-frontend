@@ -96,20 +96,11 @@ describe('EvidenceUploadController', () => {
             await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect((response: supertest.Response) => {
                     expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.contain('some-file.jpeg')
-                        .and.to.contain('another-file.jpeg');
-                });
-        });
-
-        it('should return 200 and render download links when attachments in session', async () => {
-
-            const app = createApp({ appeal: appealWithAttachments });
-
-            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
-                .expect((response: supertest.Response) => {
-                    expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.contain('/appeal-a-penalty/download/data/1/download')
-                        .and.to.contain('/appeal-a-penalty/download/data/2/download');
+                    expect(response.text)
+                        .to.include('href="/appeal-a-penalty/download/data/1/download"')
+                        .and.to.include('href="/appeal-a-penalty/download/data/2/download"')
+                        .and.to.contain('some-file.jpeg')
+                        .and.to.contain('another-file.jpeg') ;
                 });
         });
     });
