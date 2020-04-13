@@ -122,7 +122,7 @@ describe('EvidenceUploadController', () => {
                 .query('?')
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
-                    expect(response.text).to.contain('There was a problem')
+                    expect(response.text).to.contain('There is a problem')
                         .and.to.contain('You must add a document or click “Continue without adding documents”');
                 });
         });
@@ -184,7 +184,7 @@ describe('EvidenceUploadController', () => {
                 .attach('file', buffer, FILE_NAME)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
-                    expect(response.text).to.contain('There was a problem')
+                    expect(response.text).to.contain('There is a problem')
                         .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
                 });
 
