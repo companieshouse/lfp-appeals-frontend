@@ -17,10 +17,10 @@ const template = 'evidence-question';
 
 const navigation: Navigation = {
     previous(): string {
-        return '#';
+        return EVIDENCE_QUESTION_URI;
     },
     next(): string {
-        return '#';
+        return EVIDENCE_QUESTION_URI;
     }
 };
 
