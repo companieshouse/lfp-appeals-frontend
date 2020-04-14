@@ -9,6 +9,7 @@ import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
+
 const template = 'download-file';
 const errorCustomTemplate = 'error-custom';
 
@@ -27,11 +28,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
     @httpGet('/data/:fileId/download')
     public async download(@requestParam('fileId') fileId: string): Promise<void> {
 
-        const res = this.httpContext.response;
-
         const metadata: FileMetadata = await this.fileTransferService.getFileMetadata(fileId);
-
-        res.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
 
         if (!metadata.av_status || metadata.av_status !== 'clean') {
             return this.renderDownloadError();
@@ -47,7 +44,9 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
                 throw err;
             }
         }
-        return await this.pipeDataIntoStream(readable, res);
+
+        this.httpContext.response.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
+        return await this.pipeDataIntoStream(readable, this.httpContext.response);
     }
 
     private async renderDownloadError(): Promise<void> {
