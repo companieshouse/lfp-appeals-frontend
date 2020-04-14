@@ -99,6 +99,8 @@ describe('EvidenceDownloadController', () => {
             await request(createDefaultApp(fileTransferService))
                 .get(EXPECTED_DOWNLOAD_LINK_URL)
                 .then(res => {
+                    // tslint:disable-next-line: no-unused-expression
+                    expect(res.header['content-disposition']).to.be.undefined;
                     expect(res.text).to.contain(expectedErrorMessage);
                 });
 
@@ -125,6 +127,8 @@ describe('EvidenceDownloadController', () => {
             .get(EXPECTED_DOWNLOAD_LINK_URL)
             .then(res => {
                 expect(res.status).to.equal(FORBIDDEN);
+                // tslint:disable-next-line: no-unused-expression
+                expect(res.header['content-disposition']).to.be.undefined;
                 expect(res.text)
                     .to.contain(expectedDownloadErrorHeading)
                     .and.to.contain(expectedDownloadErrorMessage);
@@ -151,6 +155,8 @@ describe('EvidenceDownloadController', () => {
                 .get(EXPECTED_DOWNLOAD_LINK_URL)
                 .then(res => {
                     expect(res.status).to.equal(FORBIDDEN);
+                    // tslint:disable-next-line: no-unused-expression
+                    expect(res.header['content-disposition']).to.be.undefined;
                     expect(res.text)
                         .to.contain(expectedDownloadErrorHeading)
                         .and.to.contain(expectedDownloadErrorMessage);
