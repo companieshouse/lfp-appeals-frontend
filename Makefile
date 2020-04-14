@@ -27,7 +27,7 @@ test: test-unit
 
 .PHONY: test-unit
 test-unit:
-	npm run test
+	npm run test:coverage
 
 .PHONY: package
 package: build
@@ -48,5 +48,5 @@ endif
 
 .PHONY: sonar
 sonar:
-#	npm run sonarqube
+	npm run analyse-code
 

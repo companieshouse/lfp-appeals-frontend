@@ -15,7 +15,9 @@
     "sass:watch": "gulp sass:watch",
     "lint": "tsc --project tsconfig.json --noEmit && tslint --project tsconfig.json --config tslint.json",
     "lint:scss": "sass-lint './src/public/sass/**/*.scss' --verbose --ignore 'node_modules/**/*.scss'",
-    "test": "NODE_ENV=vagrant mocha 'test/**/*.test.ts'"
+    "test": "NODE_ENV=vagrant mocha 'test/**/*.test.ts'",
+    "test:coverage": "nyc npm test",
+    "analyse-code": "sonar-scanner"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -67,7 +69,9 @@
     "mocha": "^7.1.1",
     "nock": "^12.0.3",
     "node-sass": "^4.13.1",
+    "nyc": "^15.0.1",
     "sass-lint": "^1.13.1",
+    "sonarqube-scanner": "^2.6.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",

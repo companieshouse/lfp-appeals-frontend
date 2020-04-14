@@ -6,3 +6,6 @@ node_modules/
 .vscode/
 .env.*
 !.env.vagrant
+coverage-report
+.nyc_output/
+.scannerwork/
