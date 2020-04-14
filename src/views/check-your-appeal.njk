@@ -45,6 +45,22 @@
       }}
 
       <h2 class="govuk-heading-l">Reason for appeal</h2>
+
+      {% set attachmentsHtml %}
+        {% if reasons.other.attachments and reasons.other.attachments.length > 0 %}
+          <ul class="govuk-list govuk-list--bullet">
+            {% for attachment in reasons.other.attachments | reverse %}
+              <li>
+                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download"
+                   class="govuk-link">{{ attachment.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          None
+        {% endif %}
+      {% endset %}
+
       {{
         govukSummaryList({
           rows: [
@@ -57,6 +73,11 @@
               key: { text: 'Further information' },
               value: { text: reasons.other.description },
               actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'further information') ] }
+            },
+            {
+              key: { text: 'Supporting documents' },
+              value: { html: attachmentsHtml },
+              actions: { items: [ ui.createChangeLinkConfig('#', 'supporting documents') ] }
             }
           ]
         })
