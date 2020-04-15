@@ -46,7 +46,7 @@
 
       <h2 class="govuk-heading-l">Reason for appeal</h2>
 
-      {% set attachmentsHtml %}
+      {% set attachmentsList %}
         {% if reasons.other.attachments and reasons.other.attachments.length > 0 %}
           <ul class="govuk-list govuk-list--bullet">
             {% for attachment in reasons.other.attachments | reverse %}
@@ -76,7 +76,7 @@
             },
             {
               key: { text: 'Supporting documents' },
-              value: { html: attachmentsHtml },
+              value: { html: attachmentsList },
               actions: { items: [ ui.createChangeLinkConfig('#', 'supporting documents') ] }
             }
           ]

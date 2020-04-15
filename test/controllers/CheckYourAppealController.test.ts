@@ -8,11 +8,12 @@ import request from 'supertest';
 import 'app/controllers/CheckYourAppealController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
+import { Attachment } from 'app/models/Attachment';
 import { Navigation } from 'app/models/Navigation';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI} from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -25,10 +26,23 @@ const appeal = {
     reasons: {
         other: {
             title: 'I have reasons',
-            description: 'they are legit'
+            description: 'they are legit',
+            attachments: [
+                {
+                    id: '1',
+                    name: 'some-file.jpeg'
+                } as Attachment,
+                {
+                    id: '2',
+                    name: 'another-file.jpeg'
+                } as Attachment
+            ]
         }
     }
 } as Appeal;
+
+const pageHeading: string = 'Check your appeal';
+const subHeading: string = 'Reason for appeal';
 
 describe('CheckYourAppealController', () => {
     const navigation = {
@@ -48,11 +62,17 @@ describe('CheckYourAppealController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
+                        .to.contain(pageHeading).and
                         .to.contain(appeal.penaltyIdentifier.companyNumber).and
                         .to.contain(appeal.penaltyIdentifier.penaltyReference).and
                         .to.contain('test').and
+                        .to.contain(subHeading).and
                         .to.contain(appeal.reasons.other.title).and
-                        .to.contain(appeal.reasons.other.description);
+                        .to.contain(appeal.reasons.other.description).and
+                        .to.contain('href="/appeal-a-penalty/download/data/1/download"')
+                        .nested.contain('some-file.jpeg').and
+                        .to.contain('href="/appeal-a-penalty/download/data/2/download"')
+                        .nested.contain('another-file.jpeg');
                 });
         });
 
@@ -66,6 +86,17 @@ describe('CheckYourAppealController', () => {
             await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
+                    expect(response.text)
+                        .to.contain(pageHeading).and
+                        .to.contain('Penalty details').and
+                        .to.contain('Company Number').and
+                        .to.contain('Type').and
+                        .to.contain('Contact email').and
+                        .to.contain(subHeading).and
+                        .to.contain('Reason').and
+                        .to.contain('Further information').and
+                        .to.contain('Supporting documents').and
+                        .nested.contain('None');
                 });
         });
     });
