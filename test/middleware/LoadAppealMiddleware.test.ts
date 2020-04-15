@@ -5,9 +5,8 @@ import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
-import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
 import { createSubstituteOf } from '../SubstituteFactory';
-import { createDefaultAppDataWithAttachents } from '../models/AppDataFactory';
+import { APPEAL_WITH_ATTACHMENTS } from '../models/AppDataFactory';
 import { createSession } from '../utils/session/SessionFactory';
 
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
@@ -44,7 +43,8 @@ describe('LoadAppealMiddleware', () => {
         } as Request;
     };
 
-    const expectRedirectToPageWithStatus = async (service: AppealsService, template: string, status: number) => {
+    const expectException = async (service: AppealsService,
+        exceptionName: 'AppealNotFoundError' | 'AppealServiceError') => {
 
         const request = getRequestSubsitute();
 
@@ -54,17 +54,21 @@ describe('LoadAppealMiddleware', () => {
         // @ts-ignore
         const nextFunction = createSubstituteOf<NextFunction>();
 
-        await loadAppealMiddleware.handler(request, response, nextFunction);
-        nextFunction.received(1);
-        response.received().status(status);
-        response.received().render(template);
+        try {
+            await loadAppealMiddleware.handler(request, response, nextFunction);
+        } catch (err) {
+            expect(err.constructor.name).to.eq(exceptionName);
+            nextFunction.didNotReceive();
+            response.didNotReceive();
+        }
+
     };
 
     describe('After signing in, user tries to access evidence download endpoints', () => {
 
         it('should load the appeal from API if user obtained link from other medium', async () => {
 
-            const appData = createDefaultAppDataWithAttachents();
+            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
             const request: Request = getRequestSubsitute();
 
             const appealService = createAppealService('resolves', appData.appeal!);
@@ -87,7 +91,7 @@ describe('LoadAppealMiddleware', () => {
 
         it('should call next when the user has an active session with appeal data', async () => {
 
-            const appData = createDefaultAppDataWithAttachents();
+            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
             const request: Request = getRequestSubsitute(appData);
 
             const appealService = createAppealService('resolves', appData.appeal!);
@@ -102,14 +106,15 @@ describe('LoadAppealMiddleware', () => {
 
         });
 
-        it('should redirect to the error page if the appeal id is not found', async () => {
+        it('should throw an error if the appeal id is not found', async () => {
+
             const service = createAppealService('rejects', new AppealNotFoundError('Appeal not found'));
-            await expectRedirectToPageWithStatus(service, 'error', NOT_FOUND);
+            await expectException(service, 'AppealNotFoundError');
         });
 
-        it('should redirect to error page with status 500 if appeals service fails', async () => {
-            const service = createAppealService('rejects', new AppealServiceError(500, 'Internal Server Error'));
-            await expectRedirectToPageWithStatus(service, 'error', INTERNAL_SERVER_ERROR);
+        it('should throw an error if appeals service fails', async () => {
+            const service = createAppealService('rejects', new AppealServiceError('Internal Server Error'));
+            await expectException(service, 'AppealServiceError');
         });
 
     });
