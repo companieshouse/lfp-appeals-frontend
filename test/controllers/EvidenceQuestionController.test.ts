@@ -6,8 +6,10 @@ import request from 'supertest';
 
 import 'app/controllers/EvidenceRemovalController';
 import { Appeal } from 'app/models/Appeal';
+import { ApplicationData } from 'app/models/ApplicationData';
+import { Navigation } from 'app/models/Navigation';
 import { YesNo } from 'app/models/fields/YesNo';
-import { EVIDENCE_QUESTION_URI} from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_QUESTION_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 
@@ -24,13 +26,22 @@ const appeal: Appeal = {
     }
 };
 
+const navigation: Navigation = {
+    permissions: [EVIDENCE_QUESTION_URI]
+} as Navigation;
+
 
 describe('EvidenceQuestionController', () => {
+
+    const applicationData = {
+        appeal,
+        navigation
+    } as ApplicationData;
 
     describe('GET request', () => {
 
         it('should return 200 when accessing evidence question page', async () => {
-            const app = createApp({ appeal });
+            const app = createApp(applicationData);
 
             await request(app).get(EVIDENCE_QUESTION_URI)
                 .expect(response => {
@@ -42,7 +53,7 @@ describe('EvidenceQuestionController', () => {
 
     describe('POST request', () => {
         it('should render errors when no answer was provided', async () => {
-            const app = createApp({ appeal });
+            const app = createApp(applicationData);
 
             await request(app).post(EVIDENCE_QUESTION_URI)
                 .expect(response => {
@@ -55,26 +66,26 @@ describe('EvidenceQuestionController', () => {
 
         describe('when answer is NO', () => {
             it('should refresh page', async () => {
-                const app = createApp({ appeal });
+                const app = createApp(applicationData);
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
                     .send({ evidence: YesNo.no })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                        expect(response.get('Location')).to.be.equal(EVIDENCE_QUESTION_URI);
+                        expect(response.get('Location')).to.be.equal(CHECK_YOUR_APPEAL_PAGE_URI);
                     });
             });
         });
 
         describe('when answer is YES', () => {
             it('should refresh page', async () => {
-                const app = createApp({ appeal });
+                const app = createApp(applicationData);
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
                     .send({ evidence: YesNo.yes })
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                        expect(response.get('Location')).to.be.equal(EVIDENCE_QUESTION_URI);
+                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
                     });
             });
         });

@@ -6,7 +6,11 @@ import request from 'supertest';
 
 import 'app/controllers/OtherReasonController';
 import { Appeal } from 'app/models/Appeal';
-import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_PAGE_URI } from 'app/utils/Paths';
+import {
+    CHECK_YOUR_APPEAL_PAGE_URI,
+    EVIDENCE_QUESTION_URI,
+    OTHER_REASON_PAGE_URI
+} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
@@ -92,7 +96,7 @@ describe('OtherReasonController', () => {
                 .send(appeal.reasons.other)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.header.location).to.include(EVIDENCE_UPLOAD_PAGE_URI);
+                    expect(response.header.location).to.include(EVIDENCE_QUESTION_URI);
                 });
         });
     });
