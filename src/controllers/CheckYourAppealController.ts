@@ -12,10 +12,13 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { Feature } from 'app/utils/Feature';
+import { isFeatureEnabled } from 'app/utils/FeatureChecker';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
     CONFIRMATION_PAGE_URI,
-    EVIDENCE_QUESTION_URI
+    EVIDENCE_QUESTION_URI,
+    OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
 
@@ -23,7 +26,10 @@ const template = 'check-your-appeal';
 
 const navigation = {
     previous(): string {
-        return EVIDENCE_QUESTION_URI;
+        if (isFeatureEnabled(Feature.FILE_TRANSFER)) {
+            return EVIDENCE_QUESTION_URI;
+        }
+        return OTHER_REASON_PAGE_URI;
     },
     next(): string {
         return CONFIRMATION_PAGE_URI;
