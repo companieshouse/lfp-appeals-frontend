@@ -18,22 +18,7 @@
         errorList: validationResult.errors
       }) if validationResult and validationResult.errors.length > 0
       }}
-      <form method="post" action="?f={{ id }}">
-        {{
-        govukInput({
-          type: 'hidden',
-          name: 'id',
-          value: id
-        })
-        }}
-        {{
-        govukInput({
-          type: 'hidden',
-          name: 'name',
-          value: name
-        })
-        }}
-
+      <form method="post">
         {{
         govukRadios({
           classes: 'govuk-radios--inline',

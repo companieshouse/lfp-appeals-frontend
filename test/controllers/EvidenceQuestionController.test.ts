@@ -11,19 +11,17 @@ import { EVIDENCE_QUESTION_URI} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 
-const createAppeal = (): Appeal => {
-    return {
-        penaltyIdentifier: {
-            companyNumber: '00345567',
-            penaltyReference: 'A00000001',
-        },
-        reasons: {
-            other: {
-                title: 'I have reasons',
-                description: 'They are legit',
-            }
+const appeal: Appeal = {
+    penaltyIdentifier: {
+        companyNumber: '00345567',
+        penaltyReference: 'A00000001',
+    },
+    reasons: {
+        other: {
+            title: 'I have reasons',
+            description: 'They are legit',
         }
-    };
+    }
 };
 
 
@@ -32,9 +30,9 @@ describe('EvidenceQuestionController', () => {
     describe('GET request', () => {
 
         it('should return 200 when accessing evidence question page', async () => {
-            const app = createApp({appeal: createAppeal()});
+            const app = createApp({ appeal });
 
-            await request(app).get(`${EVIDENCE_QUESTION_URI}`)
+            await request(app).get(EVIDENCE_QUESTION_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.include('Do you want to add documents to support your application?');
@@ -44,7 +42,7 @@ describe('EvidenceQuestionController', () => {
 
     describe('POST request', () => {
         it('should render errors when no answer was provided', async () => {
-            const app = createApp({appeal: createAppeal()});
+            const app = createApp({ appeal });
 
             await request(app).post(EVIDENCE_QUESTION_URI)
                 .expect(response => {
@@ -57,7 +55,7 @@ describe('EvidenceQuestionController', () => {
 
         describe('when answer is NO', () => {
             it('should refresh page', async () => {
-                const app = createApp({appeal: createAppeal()});
+                const app = createApp({ appeal });
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
                     .send({ evidence: YesNo.no })
@@ -70,7 +68,7 @@ describe('EvidenceQuestionController', () => {
 
         describe('when answer is YES', () => {
             it('should refresh page', async () => {
-                const app = createApp({appeal: createAppeal()});
+                const app = createApp({ appeal });
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
                     .send({ evidence: YesNo.yes })

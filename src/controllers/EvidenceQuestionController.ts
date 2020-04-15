@@ -28,7 +28,6 @@ const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
 
-// tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceQuestionController extends BaseController<Attachment> {
     constructor() {
