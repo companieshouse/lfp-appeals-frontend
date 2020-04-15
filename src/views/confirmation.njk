@@ -38,7 +38,7 @@
             <ul class="govuk-list govuk-list--bullet">
               {% for attachment in reasons.other.attachments | reverse %}
                 <li>
-                  <a class="govuk-link">{{ attachment.name }}</a>
+                  {{ attachment.name }}
                 </li>
               {% endfor %}
             </ul>
