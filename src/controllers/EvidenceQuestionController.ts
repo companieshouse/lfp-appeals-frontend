@@ -9,7 +9,8 @@ import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatur
 import { Attachment } from 'app/models/Attachment';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import {
-    EVIDENCE_QUESTION_URI
+    EVIDENCE_QUESTION_URI,
+    OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -17,7 +18,7 @@ const template = 'evidence-question';
 
 const navigation: Navigation = {
     previous(): string {
-        return EVIDENCE_QUESTION_URI;
+        return OTHER_REASON_PAGE_URI;
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;

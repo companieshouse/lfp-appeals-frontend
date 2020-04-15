@@ -1,5 +1,6 @@
 {% extends "layout.njk" %}
 
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
 {% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from 'govuk/components/input/macro.njk' import govukInput %}
 {% from 'govuk/components/radios/macro.njk' import govukRadios %}
@@ -7,6 +8,15 @@
 
 {% block pageTitle %}
   Do you want to add documents to support your application?
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
 {% endblock %}
 
 {% block content %}
