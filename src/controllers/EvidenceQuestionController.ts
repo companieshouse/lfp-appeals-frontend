@@ -31,6 +31,6 @@ const schema: Joi.AnySchema = Joi.object({
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceQuestionController extends BaseController<Attachment> {
     constructor() {
-        super(template, navigation, new FormValidator(schema), undefined);
+        super(template, navigation, new FormValidator(schema));
     }
 }
