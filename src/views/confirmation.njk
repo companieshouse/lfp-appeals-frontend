@@ -32,6 +32,21 @@
       </p>
       <div class="govuk-!-display-none-screen">
         <h2 class="govuk-heading-l">Reason for appeal</h2>
+
+        {% set attachmentsList %}
+          {% if reasons.other.attachments and reasons.other.attachments.length > 0 %}
+            <ul class="govuk-list govuk-list--bullet">
+              {% for attachment in reasons.other.attachments | reverse %}
+                <li>
+                  <a class="govuk-link">{{ attachment.name }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            None
+          {% endif %}
+        {% endset %}
+
         {{
           govukSummaryList({
             rows: [
@@ -42,6 +57,10 @@
               {
                 key: { text: 'Further information' },
                 value: { text: reasons.other.description }
+              },
+              {
+                key: { text: 'Supporting documents' },
+                value: { html: attachmentsList }
               }
             ]
           })
