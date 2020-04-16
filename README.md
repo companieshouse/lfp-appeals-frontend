@@ -28,4 +28,4 @@ IntelliJ does not have a Nunjuck plugin
 - `.env` is the default config file but it does not have to exist.
 - `.env.local` is the config file for running the app in a local environment.
 - If you want a different configuration create `.env.<NODE_ENV>` file with the necessary secrets and variables as described on this README. Note that the `NODE_ENV` variable has to be set with the same name as the config name pretended.
-
+# Test change in readme
