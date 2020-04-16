@@ -10,21 +10,6 @@
 {% endblock %}
 
 {% block content %}
-
-  <style>
-    .btn-link {
-      border: none;
-      outline: none;
-      background: none;
-      cursor: pointer;
-      color: #0000EE;
-      padding: 0;
-      text-decoration: underline;
-      font-family: inherit;
-      font-size: inherit;
-    }
-  </style>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{
@@ -100,11 +85,6 @@
       <p>
         <a href="{{ navigation.forward.href }}" class="govuk-link">Continue without adding documents</a>
       </p>
-      <form method="post">
-        <button type="submit" class="btn-link" >
-          This is a link that sends a POST request
-        </button>
-      </form>
     </div>
   </div>
 {% endblock %}

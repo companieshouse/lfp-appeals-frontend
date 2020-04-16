@@ -65,7 +65,7 @@ describe('EvidenceQuestionController', () => {
         });
 
         describe('when answer is NO', () => {
-            it('should refresh page', async () => {
+            it('should redirect to check your appeal page', async () => {
                 const app = createApp(applicationData);
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
@@ -78,7 +78,7 @@ describe('EvidenceQuestionController', () => {
         });
 
         describe('when answer is YES', () => {
-            it('should refresh page', async () => {
+            it('should redirect to evidence upload page', async () => {
                 const app = createApp(applicationData);
 
                 await request(app).post(EVIDENCE_QUESTION_URI)
