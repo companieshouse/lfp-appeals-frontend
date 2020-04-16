@@ -279,4 +279,31 @@ describe('EvidenceUploadController', () => {
                 });
         });
     });
+    describe('POST request: action=continue-without-upload', () => {
+        const NO_UPLOAD_ACTION = 'continue-without-upload';
+
+        it('should return 302 and redirect to check your appeals when no attachments present', async () => {
+
+            const app = createApp({ appeal: appealNoAttachments });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + NO_UPLOAD_ACTION)
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(CHECK_YOUR_APPEAL_PAGE_URI);
+                });
+        });
+
+        it('should return 302 and redirect to check your appeals when attachments present', async () => {
+
+            const app = createApp({ appeal: appealWithAttachments });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + NO_UPLOAD_ACTION)
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(CHECK_YOUR_APPEAL_PAGE_URI);
+                });
+        });
+    });
 });
