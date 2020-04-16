@@ -159,8 +159,9 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                                 return value;
                             });
 
-                        // tslint:disable-next-line: max-line-length
-                        applicationData.appeal = that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+                        applicationData.appeal =
+                            that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+
                         await that.persistSession();
                     }
 
