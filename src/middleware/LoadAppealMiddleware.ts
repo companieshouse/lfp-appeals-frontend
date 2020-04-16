@@ -9,7 +9,9 @@ import { BaseMiddleware } from 'inversify-express-utils';
 import { loggerInstance } from './Logger';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { companyNumberSchema } from 'app/models/PenaltyIdentifier.schema';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 export const APPEAL_ID_QUERY_KEY = 'a';
 export const COMPANY_NUMBER_QUERY_KEY = 'c';
 
@@ -22,18 +24,24 @@ export class LoadAppealMiddleware extends BaseMiddleware {
     // @ts-ignore
     public async handler(req: Request, res: Response, next: NextFunction): Promise<void> {
 
+        const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
+        const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
+
         const applicationData = req.session.chain(_ => _.getExtraData())
             .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
             .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve application data from session`))
             .unsafeCoerce();
 
+        try {
+            new SchemaValidator(companyNumberSchema).validate(companyNumber);
+        } catch (err) {
+            throw Error('Tried to load appeal from an invalid company number');
+
+        }
         if (applicationData?.appeal) {
             loggerInstance().debug(`${LoadAppealMiddleware.name} - handler: user's session contains appeal`);
             return next();
         }
-
-        const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
-        const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
 
         const token = req.session
             .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))

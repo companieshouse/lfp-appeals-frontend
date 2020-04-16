@@ -106,6 +106,30 @@ describe('LoadAppealMiddleware', () => {
 
         });
 
+        it('should throw an error if the company number is invalid', async () => {
+
+            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
+            const request: Request = getRequestSubsitute(appData);
+
+            request.query[COMPANY_NUMBER_QUERY_KEY] = 'abc';
+
+            const appealService = createAppealService('resolves', appData.appeal!);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+
+            const nextFunction = createSubstituteOf<NextFunction>();
+            const response = createSubstituteOf<Response>();
+
+            try {
+
+                await loadAppealMiddleware.handler(request, response, nextFunction);
+                nextFunction.didNotReceive();
+                appealService.didNotReceive().getAppeal(Arg.all());
+
+            } catch (err) {
+                expect(err.message).to.equal('Tried to load appeal from an invalid company number');
+            }
+        });
+
         it('should throw an error if the appeal id is not found', async () => {
 
             const service = createAppealService('rejects', new AppealNotFoundError('Appeal not found'));
