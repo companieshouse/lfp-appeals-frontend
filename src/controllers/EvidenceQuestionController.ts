@@ -3,7 +3,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 
-import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
+import { BaseController } from 'app/controllers/BaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
@@ -33,7 +33,7 @@ const schema: Joi.AnySchema = Joi.object({
 }).unknown(true);
 
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
+export class EvidenceQuestionController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema));
     }
