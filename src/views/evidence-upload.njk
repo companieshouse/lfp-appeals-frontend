@@ -20,28 +20,6 @@
 {% endblock %}
 
 {% block content %}
-
-  <style>
-    .btn-link {
-      border: none;
-      outline: none;
-      background: none;
-      cursor: pointer;
-      color: #0000EE;
-      padding: 0;
-      text-decoration: underline;
-      font-family: "GDS Transport", Arial, sans-serif;
-      font-size: 19px;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    .btn-link:focus{color:#0b0c0c;background-color:#fd0;box-shadow:0 -2px #fd0,0 4px #0b0c0c;text-decoration:none}
-    .btn-link:link{color:#1d70b8}
-    .btn-link:visited{color:#4c2c92}
-    .btn-link:hover{color:#003078}
-    .btn-link:active{color:#0b0c0c}
-  </style>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{
@@ -113,11 +91,6 @@
           })
         }}
       </form>
-
-      <p>
-        <a href="{{ navigation.forward.href }}" class="govuk-link">Continue without adding documents</a>
-      </p>
-
 
       <form method="post" action="?action=continue-without-upload">
         <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
