@@ -30,9 +30,16 @@
       color: #0000EE;
       padding: 0;
       text-decoration: underline;
-      font-family: inherit;
-      font-size: inherit;
+      font-family: "GDS Transport", Arial, sans-serif;
+      font-size: 19px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
+    .btn-link:focus{color:#0b0c0c;background-color:#fd0;box-shadow:0 -2px #fd0,0 4px #0b0c0c;text-decoration:none}
+    .btn-link:link{color:#1d70b8}
+    .btn-link:visited{color:#4c2c92}
+    .btn-link:hover{color:#003078}
+    .btn-link:active{color:#0b0c0c}
   </style>
 
   <div class="govuk-grid-row">
@@ -113,8 +120,8 @@
 
 
       <form method="post">
-        <button type="submit" class="btn-link" >
-          This is a link that sends a POST request
+        <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
+          Continue without adding documents
         </button>
       </form>
 
