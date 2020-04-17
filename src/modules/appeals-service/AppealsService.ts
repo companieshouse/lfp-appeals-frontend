@@ -21,7 +21,7 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        return await axios
+        return axios
             .get(uri, this.getConfig(token))
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
@@ -67,9 +67,9 @@ export class AppealsService {
 
     private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
         return (err: AxiosError) => {
-            const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} `: ` ${subject} `}`: ' '}`;
+            const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
             if (err.isAxiosError && err.response != null) {
-                switch(err.response.status) {
+                switch (err.response.status) {
                     case NOT_FOUND:
                         throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
                     case UNAUTHORIZED:
@@ -78,7 +78,9 @@ export class AppealsService {
                         throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
                 }
             }
-            throw new AppealServiceError(`${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `);
+            throw new AppealServiceError(
+                `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `
+            );
         };
     }
 }
