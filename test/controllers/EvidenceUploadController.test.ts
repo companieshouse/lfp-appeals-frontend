@@ -194,7 +194,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain('There is a problem')
-                        .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                        .and.to.contain('The selected file must be a DOCX, XLSX, PDF, JPEG, PNG or GIF');
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);
@@ -245,7 +245,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('The selected file must be a TXT, DOC, PDF, JPEG or PNG');
+                        .and.to.contain('The selected file must be a DOCX, XLSX, PDF, JPEG, PNG or GIF');
                 });
         });
 

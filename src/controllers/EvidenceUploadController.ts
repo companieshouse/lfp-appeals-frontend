@@ -87,7 +87,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
 
         const noFileSelectedError: string = 'Select a document to add to your application';
         const fileTooLargeError: string = 'File size must be smaller than 4MB';
-        const fileNotSupportedError: string = 'The selected file must be a TXT, DOC, PDF, JPEG or PNG';
+        const fileNotSupportedError: string = 'The selected file must be a DOCX, XLSX, PDF, JPEG, PNG or GIF';
         const tooManyFilesError: string = `You can only select up to ${maxNumberOfFiles} files at the same time`;
 
         return {
