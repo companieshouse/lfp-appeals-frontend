@@ -33,7 +33,15 @@
         Add documents to support your application
       </h1>
 
-      <form method="post" enctype="multipart/form-data" action="?action=upload-file">
+      {% set action %}
+        {% if navigation.back.href === paths.CHECK_YOUR_APPEAL_PAGE_URI %}
+          ?action=upload-file&cm=1
+        {% else %}
+          ?action=upload-file
+        {% endif %}
+      {% endset %}
+
+      <form method="post" enctype="multipart/form-data" action={{ action }}>
         {% set uploadText %}
           {% if attachments.length > 0 %}
             Add another document
