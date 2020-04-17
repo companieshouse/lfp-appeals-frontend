@@ -138,6 +138,35 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
 
                     response.redirect(request.route.path);
                 }
+            },
+            'continue-without-upload': {
+                async handle(request: Request, response: Response): Promise<void> {
+
+                    if (that.formActionProcessors != null) {
+                        for (const actionProcessorType of that.formActionProcessors) {
+                            const actionProcessor = that.httpContext.container.get(actionProcessorType);
+                            await actionProcessor.process(request, response);
+                        }
+                    }
+
+                    const session = request.session.extract();
+                    if (session != null) {
+                        const applicationData: ApplicationData = session.getExtraData()
+                            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
+                            .orDefaultLazy(() => {
+                                const value = {} as ApplicationData;
+                                session.saveExtraData(APPLICATION_DATA_KEY, value);
+                                return value;
+                            });
+
+                        applicationData.appeal =
+                            that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+
+                        await that.persistSession();
+                    }
+
+                    return response.redirect(that.navigation.next(request));
+                }
             }
         };
     }
