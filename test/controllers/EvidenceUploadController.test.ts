@@ -241,7 +241,7 @@ describe('EvidenceUploadController', () => {
 
             await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query('action=upload-file')
-                .attach('file', buffer, {filename: unsupportedFileName, contentType: 'application/zip'})
+                .attach('file', buffer, {filename: unsupportedFileName, contentType: 'application/json'})
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
