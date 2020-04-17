@@ -8,7 +8,7 @@ import { BaseMiddleware } from 'inversify-express-utils';
 import { loggerInstance } from './Logger';
 
 import { Appeal } from 'app/models/Appeal';
-import { AppealPermissionKeys } from 'app/models/AppealPermissionKeys';
+import { AppealsPermissionKeys } from 'app/models/AppealPermissionKeys';
 import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 
@@ -33,8 +33,8 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         if (adminPermissionFlag === '1') {
             if (permissions &&
-                permissions[AppealPermissionKeys.download] &&
-                permissions[AppealPermissionKeys.view]) {
+                permissions[AppealsPermissionKeys.download] &&
+                permissions[AppealsPermissionKeys.view]) {
                 return next();
             }
             return this.renderForbiddenError(res);
@@ -55,12 +55,12 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             }
 
             // User must be creating a new appeal.
-            if (!appeal.createBy) {
+            if (!appeal.createdBy) {
                 return next();
             }
 
             // Appeal was loaded from API
-            if (appeal.createBy?._id !== userProfile.id) {
+            if (appeal.createdBy?._id !== userProfile.id) {
 
                 return this.renderForbiddenError(res);
             }

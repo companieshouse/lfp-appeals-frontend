@@ -5,7 +5,7 @@ import { Reasons } from 'app/models/Reasons';
 
 export interface Appeal {
     id?: string;
-    createBy?: CreatedBy;
+    createdBy?: CreatedBy;
     penaltyIdentifier: PenaltyIdentifier;
     reasons: Reasons;
 }

@@ -7,17 +7,22 @@ import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';
 import { createSubstituteOf } from '../SubstituteFactory';
-import { APPEAL_WITH_ATTACHMENTS, DEFAULT_ATTACHMENTS } from '../models/AppDataFactory';
+import {
+    createDefaultAppeal,
+    createDefaultAttachments
+} from '../models/AppDataFactory';
 import { createSession } from '../utils/session/SessionFactory';
 
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { AppealPermissionKeys } from 'app/models/AppealPermissionKeys';
+import { AppealsPermissionKeys } from 'app/models/AppealPermissionKeys';
 import { ApplicationData } from 'app/models/ApplicationData';
 
 describe('FileRestrictionsMiddleware', () => {
 
     const userId = 'someUserId';
+
+    const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
     const getRequestSubsitute = (
         params: any,
@@ -42,7 +47,7 @@ describe('FileRestrictionsMiddleware', () => {
 
     describe('As a CH Internal User session', () => {
 
-        const appData: Partial<ApplicationData> = { appeal: APPEAL_WITH_ATTACHMENTS };
+        const appData: Partial<ApplicationData> = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
 
         it('should call next if the correct permissions are present in the session', () => {
@@ -51,7 +56,7 @@ describe('FileRestrictionsMiddleware', () => {
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
                 isAdmin,
                 appData,
-                { [AppealPermissionKeys.download]: 1, [AppealPermissionKeys.view]: 1 }
+                { [AppealsPermissionKeys.download]: 1, [AppealsPermissionKeys.view]: 1 }
             );
 
             const response = createSubstituteOf<Response>();
@@ -101,11 +106,11 @@ describe('FileRestrictionsMiddleware', () => {
     describe('External User', () => {
 
         const getSubmittedAppeal = (): Appeal => {
-            const { penaltyIdentifier, reasons } = APPEAL_WITH_ATTACHMENTS;
+            const { penaltyIdentifier, reasons } = createDefaultAppeal(DEFAULT_ATTACHMENTS);
             return {
                 penaltyIdentifier,
                 reasons,
-                createBy: { _id: userId }
+                createdBy: { _id: userId }
             };
         };
 
@@ -155,7 +160,7 @@ describe('FileRestrictionsMiddleware', () => {
             it('should redirect to error page if user tries to access appeal not created by the same user', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
-                appData.appeal!.createBy! = { _id: 'SomeoneElse' };
+                appData.appeal!.createdBy! = { _id: 'SomeoneElse' };
 
                 const request = getRequestSubsitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
@@ -179,7 +184,7 @@ describe('FileRestrictionsMiddleware', () => {
         describe('User still has not submitted the appeal', () => {
 
             const getWorkInProgressAppeal = (): Appeal => {
-                const { penaltyIdentifier, reasons } = APPEAL_WITH_ATTACHMENTS;
+                const { penaltyIdentifier, reasons } = createDefaultAppeal(DEFAULT_ATTACHMENTS);
                 return {
                     penaltyIdentifier,
                     reasons
@@ -189,7 +194,7 @@ describe('FileRestrictionsMiddleware', () => {
             it('should call next if user has not yet submitted the appeal and fileId is in the attachements', () => {
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
-                console.log(appData.appeal!.createBy);
+                console.log(appData.appeal!.createdBy);
 
                 const request = getRequestSubsitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
@@ -256,7 +261,7 @@ describe('FileRestrictionsMiddleware', () => {
         it('should throw an error when the profile is missing in session', () => {
             const session = createSession('secret', true, false);
             session.data[SessionKey.ExtraData] = {
-                appeals: { appeal: APPEAL_WITH_ATTACHMENTS }
+                appeals: { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) }
             };
             delete session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile];
 

@@ -6,7 +6,7 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import { createSubstituteOf } from '../SubstituteFactory';
-import { APPEAL_WITH_ATTACHMENTS } from '../models/AppDataFactory';
+import { createDefaultAppeal, createDefaultAttachments } from '../models/AppDataFactory';
 import { createSession } from '../utils/session/SessionFactory';
 
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
@@ -26,6 +26,8 @@ describe('LoadAppealMiddleware', () => {
         return service;
 
     };
+
+    const DEFAULT_ATACHMENTS = createDefaultAttachments();
 
     const getRequestSubsitute = (data?: Partial<ApplicationData>): Request => {
 
@@ -68,7 +70,7 @@ describe('LoadAppealMiddleware', () => {
 
         it('should load the appeal from API if user obtained link from other medium', async () => {
 
-            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
             const request: Request = getRequestSubsitute();
 
             const appealService = createAppealService('resolves', appData.appeal!);
@@ -91,7 +93,7 @@ describe('LoadAppealMiddleware', () => {
 
         it('should call next when the user has an active session with appeal data', async () => {
 
-            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
             const request: Request = getRequestSubsitute(appData);
 
             const appealService = createAppealService('resolves', appData.appeal!);
@@ -108,7 +110,7 @@ describe('LoadAppealMiddleware', () => {
 
         it('should throw an error if the company number is invalid', async () => {
 
-            const appData = { appeal: APPEAL_WITH_ATTACHMENTS };
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
             const request: Request = getRequestSubsitute(appData);
 
             request.query[COMPANY_NUMBER_QUERY_KEY] = 'abc';
