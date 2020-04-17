@@ -100,9 +100,12 @@
         }}
       </form>
 
-      <p>
-        <a href="{{ navigation.forward.href }}" class="govuk-link">Continue without adding documents</a>
-      </p>
+      <form method="post" action="?action=continue-without-upload">
+        <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
+          Continue without adding documents
+        </button>
+      </form>
+
     </div>
   </div>
 {% endblock %}
