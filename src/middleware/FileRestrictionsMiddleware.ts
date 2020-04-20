@@ -63,12 +63,10 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
             // Appeal was loaded from API
             if (appeal.createdBy?._id !== userProfile.id) {
-
                 return this.renderForbiddenError(res);
             }
 
         }
-
         return next();
     }
 

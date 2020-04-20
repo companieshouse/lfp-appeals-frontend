@@ -63,44 +63,46 @@ describe('FileRestrictionsMiddleware', () => {
             const next = createSubstituteOf<NextFunction>();
 
             fileRestrictionsMiddleware.handler(request, response, next);
+
             next.received();
             response.didNotReceive();
-
         });
 
-        it('should redirect to an error page if user does not have the correct permissions', () => {
+        it('should redirect to an error page if user does not have permissions', () => {
 
             const requestNoPermissions = getRequestSubsitute({ fileId: DEFAULT_ATTACHMENTS[0].id }, isAdmin, appData);
-            console.log(requestNoPermissions.session.__value.data.signin_info?.user_profile);
+            const response = createSubstituteOf<Response>();
+            const next = createSubstituteOf<NextFunction>();
+
+            fileRestrictionsMiddleware.handler(requestNoPermissions, response, next);
+
+            response.received().status(FORBIDDEN);
+            response.received().render('error-custom', {
+                heading: 'You are not authorised to download this document'
+            });
+            next.didNotReceive();
+        });
+
+        it('should redirect to an error page if user does not have the correct permission', () => {
+
             const requestInvalidPermissions = getRequestSubsitute(
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
-                true,
+                isAdmin,
                 appData,
                 { '/some-permission/not-appeals': 1 }
             );
 
-            let response = createSubstituteOf<Response>();
-            let next = createSubstituteOf<NextFunction>();
-
-            fileRestrictionsMiddleware.handler(requestNoPermissions, response, next);
-            response.received().status(FORBIDDEN);
-            response.received().render('error-custom', {
-                heading: 'You are not authorised to download this document'
-            });
-            next.didNotReceive();
-
-            response = createSubstituteOf<Response>();
-            next = createSubstituteOf<NextFunction>();
+            const response = createSubstituteOf<Response>();
+            const next = createSubstituteOf<NextFunction>();
 
             fileRestrictionsMiddleware.handler(requestInvalidPermissions, response, next);
+
             response.received().status(FORBIDDEN);
             response.received().render('error-custom', {
                 heading: 'You are not authorised to download this document'
             });
             next.didNotReceive();
-
         });
-
     });
 
     describe('External User', () => {
@@ -118,7 +120,7 @@ describe('FileRestrictionsMiddleware', () => {
 
         describe('Appeal is loaded via API', () => {
 
-            it('file id is in attachments', () => {
+            it('should call next when file id is in attachments', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
 
@@ -132,6 +134,7 @@ describe('FileRestrictionsMiddleware', () => {
                 const next = createSubstituteOf<NextFunction>();
 
                 fileRestrictionsMiddleware.handler(request, response, next);
+
                 next.received();
                 response.didNotReceive().status(FORBIDDEN);
             });
@@ -150,6 +153,7 @@ describe('FileRestrictionsMiddleware', () => {
                 const next = createSubstituteOf<NextFunction>();
 
                 fileRestrictionsMiddleware.handler(request, response, next);
+
                 response.received().status(FORBIDDEN);
                 response.received().render('error-custom', {
                     heading: 'You are not authorised to download this document'
@@ -172,6 +176,7 @@ describe('FileRestrictionsMiddleware', () => {
                 const next = createSubstituteOf<NextFunction>();
 
                 fileRestrictionsMiddleware.handler(request, response, next);
+
                 response.received().status(FORBIDDEN);
                 response.received().render('error-custom', {
                     heading: 'You are not authorised to download this document'
@@ -192,9 +197,8 @@ describe('FileRestrictionsMiddleware', () => {
             };
 
             it('should call next if user has not yet submitted the appeal and fileId is in the attachements', () => {
-                const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
-                console.log(appData.appeal!.createdBy);
+                const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
                 const request = getRequestSubsitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
@@ -206,11 +210,13 @@ describe('FileRestrictionsMiddleware', () => {
                 const next = createSubstituteOf<NextFunction>();
 
                 fileRestrictionsMiddleware.handler(request, response, next);
+
                 next.received();
                 response.didNotReceive().status(FORBIDDEN);
             });
 
             it('should redirect to error page when the user tries to access a fileId not in the attachements', () => {
+
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
                 const request = getRequestSubsitute(
@@ -223,16 +229,16 @@ describe('FileRestrictionsMiddleware', () => {
                 const next = createSubstituteOf<NextFunction>();
 
                 fileRestrictionsMiddleware.handler(request, response, next);
+
                 response.received().status(FORBIDDEN);
                 response.received().render('error-custom', {
                     heading: 'You are not authorised to download this document'
                 });
                 next.didNotReceive();
             });
-
         });
-
     });
+
     describe('Exceptional use cases', () => {
 
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
@@ -254,11 +260,13 @@ describe('FileRestrictionsMiddleware', () => {
             const response = createSubstituteOf<Response>();
             const next = createSubstituteOf<NextFunction>();
             expect(() => fileRestrictionsMiddleware.handler(request, response, next)).to.throw();
+
             next.didNotReceive();
             response.didNotReceive();
-
         });
+
         it('should throw an error when the profile is missing in session', () => {
+
             const session = createSession('secret', true, false);
             session.data[SessionKey.ExtraData] = {
                 appeals: { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) }
@@ -273,9 +281,9 @@ describe('FileRestrictionsMiddleware', () => {
             const response = createSubstituteOf<Response>();
             const next = createSubstituteOf<NextFunction>();
             expect(() => fileRestrictionsMiddleware.handler(request, response, next)).to.throw();
+
             next.didNotReceive();
             response.didNotReceive();
         });
     });
-
 });
