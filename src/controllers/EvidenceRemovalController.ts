@@ -22,13 +22,13 @@ import { Navigation } from 'app/utils/navigation/navigation';
 const template = 'evidence-removal';
 
 const navigation: Navigation = {
-    previous(request: Request): string {
+    previous(): string {
+        return EVIDENCE_UPLOAD_PAGE_URI;
+    },
+    next(request: Request): string {
         if (request.header('Referer')?.includes('cm=1')) {
             return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
         }
-        return EVIDENCE_UPLOAD_PAGE_URI;
-    },
-    next(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
     }
 };

@@ -12,7 +12,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
+import {CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI} from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -23,6 +23,9 @@ const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
         get(target: Navigation, propertyName: 'previous' | 'next'): any {
             return (req: Request) => {
                 if (req.query.cm === '1') {
+                    if (req.originalUrl.includes(EVIDENCE_REMOVAL_PAGE_URI)) {
+                        return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+                    }
                     return CHECK_YOUR_APPEAL_PAGE_URI;
                 }
                 return (target[propertyName] as (req: Request) => string).apply(this, [req]);
