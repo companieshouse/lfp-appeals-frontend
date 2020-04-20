@@ -1,4 +1,4 @@
-import { CreatedBy } from './CreateBy';
+import { CreatedBy } from './CreatedBy';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';

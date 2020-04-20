@@ -15,7 +15,7 @@ import { createSession } from '../utils/session/SessionFactory';
 
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { AppealsPermissionKeys } from 'app/models/AppealPermissionKeys';
+import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
 import { ApplicationData } from 'app/models/ApplicationData';
 
 describe('FileRestrictionsMiddleware', () => {
@@ -46,8 +46,10 @@ describe('FileRestrictionsMiddleware', () => {
     const isAdmin = true;
 
     describe('As a CH Internal User session', () => {
+        const appeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
+        appeal.createdBy = { _id: 'SomeExternalUser' };
 
-        const appData: Partial<ApplicationData> = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
+        const appData: Partial<ApplicationData> = { appeal };
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
 
         it('should call next if the correct permissions are present in the session', () => {

@@ -1,6 +1,6 @@
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
-import { CreatedBy } from 'app/models/CreateBy';
+import { CreatedBy } from 'app/models/CreatedBy';
 import { OtherReason } from 'app/models/OtherReason';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';
