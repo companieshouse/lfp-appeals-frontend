@@ -30,7 +30,10 @@ const maxNumberOfFiles: number = Number(getEnvOrThrow('MAX_NUMBER_OF_FILES'));
 const template = 'evidence-upload';
 
 const navigation = {
-    previous(): string {
+    previous(request: Request): string {
+        if (request.header('Referer')?.includes('cm=1')) {
+            return CHECK_YOUR_APPEAL_PAGE_URI;
+        }
         return EVIDENCE_QUESTION_URI;
     },
     next(): string {
