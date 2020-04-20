@@ -79,6 +79,10 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
     private getAttachmentFrom(appeal: Appeal, fileId: string): Attachment | undefined {
 
+        if (!fileId) {
+            throw Error('File id must not be null');
+        }
+
         if (appeal.reasons.other.attachments) {
             const attachment = appeal.reasons.other.attachments.find(attachement => attachement.id === fileId);
             return attachment;

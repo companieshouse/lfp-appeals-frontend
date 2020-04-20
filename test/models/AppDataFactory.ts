@@ -6,21 +6,20 @@ import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';
 
 export function createDefaultAttachments(): Attachment[] {
-    const object = Object.create([{
-        id: '123',
-        name: 'some-file.jpeg',
-        size: 1000,
-        contentType: 'image/jpeg'
-    },
-    {
-        id: '456',
-        name: 'another-file.txt',
-        contentType: 'text/plain',
-        size: 200
-    }
-    ]);
-
-    return object;
+    return [
+        {
+            id: '123',
+            name: 'some-file.jpeg',
+            size: 1000,
+            contentType: 'image/jpeg'
+        },
+        {
+            id: '456',
+            name: 'another-file.txt',
+            contentType: 'text/plain',
+            size: 200
+        }
+    ];
 
 }
 
