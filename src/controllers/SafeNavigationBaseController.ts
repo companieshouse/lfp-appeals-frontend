@@ -66,16 +66,16 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
         } else {
             const permissions = applicationData.navigation.permissions;
             if (!applicationData.navigation.permissions.includes(this.httpContext.request.path)) {
-
-                // skip safe navigation redirect
-                if (this.httpContext.request.header('Referer')?.includes(CHECK_YOUR_APPEAL_PAGE_URI)
-                    && this.httpContext.request.path === EVIDENCE_UPLOAD_PAGE_URI) {
-                    return super.onGet();
-                }
-
                 loggerInstance()
                     .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
                 if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
+
+                    // override access to Evidence Upload Page from Check your Appeal page, when skipped previously
+                    if (this.httpContext.request.path === EVIDENCE_UPLOAD_PAGE_URI &&
+                        this.httpContext.request.header('Referer')?.includes(CHECK_YOUR_APPEAL_PAGE_URI)) {
+                        return super.onGet();
+                    }
+
                     return this.httpContext.response.redirect(permissions[permissions.length - 1]);
                 }
             }
