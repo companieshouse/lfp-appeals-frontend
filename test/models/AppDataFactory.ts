@@ -44,7 +44,7 @@ export function createDefaultReasons(attachments?: Attachment[]): Reasons {
     };
 }
 
-export function createDefaultAppeal(attachments?: Attachment[], createdBy?: CreatedBy, id?: string): Readonly<Appeal> {
+export function createDefaultAppeal(attachments?: Attachment[], createdBy?: CreatedBy, id?: string): Appeal {
     return {
         penaltyIdentifier: createDefaultPenaltyIdentifier(),
         reasons: createDefaultReasons(attachments),
