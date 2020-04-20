@@ -12,7 +12,9 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import {CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI} from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI,
+    EVIDENCE_REMOVAL_PAGE_URI,
+    EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
