@@ -9,7 +9,7 @@ import {
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 type RequestWithNavigation = Request & { navigation: Navigation; };
@@ -66,6 +66,13 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
         } else {
             const permissions = applicationData.navigation.permissions;
             if (!applicationData.navigation.permissions.includes(this.httpContext.request.path)) {
+
+                // skip safe navigation redirect
+                if (this.httpContext.request.header('Referer')?.includes(CHECK_YOUR_APPEAL_PAGE_URI)
+                    && this.httpContext.request.path === EVIDENCE_UPLOAD_PAGE_URI) {
+                    return super.onGet();
+                }
+
                 loggerInstance()
                     .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
                 if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
