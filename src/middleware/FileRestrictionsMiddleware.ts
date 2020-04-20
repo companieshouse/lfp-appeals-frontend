@@ -4,6 +4,7 @@ import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserPr
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';
+import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 import { loggerInstance } from './Logger';
 
@@ -14,6 +15,7 @@ import { Attachment } from 'app/models/Attachment';
 
 const customErrorTemplate = 'error-custom';
 
+@provide(FileRestrictionsMiddleware)
 export class FileRestrictionsMiddleware extends BaseMiddleware {
 
     public handler(req: Request, res: Response, next: NextFunction): void {
