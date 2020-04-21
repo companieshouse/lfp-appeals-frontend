@@ -2,7 +2,7 @@ import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';
 import { provide } from 'inversify-binding-decorators';
@@ -33,45 +33,36 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             .chainNullable(appData => appData.appeal)
             .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`));
 
-        const fileId: string = req.params.fileId;
-
-        const hasAdminPermissions: boolean = this.hasAdminPermissions(signInInfo);
-        const hasUserPermissions: boolean = this.hasUserPermissions(fileId, signInInfo, mAppeal.unsafeCoerce());
-
-        return hasAdminPermissions || hasUserPermissions ? next() : this.renderForbiddenError(res);
-    }
-
-    private hasAdminPermissions(signInInfo: ISignInInfo): boolean {
-
-        const userProfile = signInInfo[SignInInfoKeys.UserProfile];
+        const userProfile: IUserProfile | undefined = signInInfo[SignInInfoKeys.UserProfile];
 
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
         }
-
         const adminPermissionFlag: string | undefined = signInInfo[SignInInfoKeys.AdminPermissions];
-        const permissions = userProfile[UserProfileKeys.Permissions];
+        const fileId: string = req.params.fileId;
+
+        const hasAdminPermissions = () => this.hasAdminPermissions(userProfile, adminPermissionFlag);
+        const hasUserPermissions = () => this.hasUserPermissions(fileId, userProfile, mAppeal.unsafeCoerce());
+
+        return hasAdminPermissions() || hasUserPermissions() ? next() : this.renderForbiddenError(res);
+    }
+
+    private hasAdminPermissions(userProfile: IUserProfile, adminPermissionFlag: string | undefined): boolean {
 
         if (!adminPermissionFlag || adminPermissionFlag !== '1') {
             return false;
         }
+
+        const permissions = userProfile[UserProfileKeys.Permissions];
 
         return permissions &&
             permissions[AppealsPermissionKeys.download] &&
             permissions[AppealsPermissionKeys.view];
     }
 
-    private hasUserPermissions(fileId: string, signInInfo: ISignInInfo, appeal: Appeal): boolean {
+    private hasUserPermissions(fileId: string, userProfile: IUserProfile, appeal: Appeal): boolean {
 
-        const userProfile = signInInfo[SignInInfoKeys.UserProfile];
-
-        if (!userProfile) {
-            throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
-        }
-
-        const attachment: Attachment | undefined = this.getAttachment(appeal, fileId);
-
-        if (!attachment) {
+        if (!this.getAttachment(appeal, fileId)) {
             return false;
         }
 
@@ -80,12 +71,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             return true;
         }
 
-        // Appeal was loaded from API
-        if (appeal.createdBy?._id !== userProfile.id) {
-            return false;
-        }
-
-        return true;
+        return appeal.createdBy?._id === userProfile.id;
     }
 
     private renderForbiddenError(res: Response): void {
@@ -102,7 +88,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         }
 
         const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
-        return attachments && attachments.find(attachement => attachement.id === fileId);
+        return attachments && attachments.find(attachment => attachment.id === fileId);
 
     }
 }

@@ -24,7 +24,7 @@ describe('FileRestrictionsMiddleware', () => {
 
     const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
-    const getRequestSubsitute = (
+    const getRequestSubstitute = (
         params: any,
         admin: boolean,
         data?: Partial<ApplicationData>,
@@ -45,7 +45,7 @@ describe('FileRestrictionsMiddleware', () => {
 
     const isAdmin = true;
 
-    describe('As a CH Internal User session', () => {
+    describe('As an Internal User session', () => {
         const appeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
         appeal.createdBy = { _id: 'SomeExternalUser' };
 
@@ -54,7 +54,7 @@ describe('FileRestrictionsMiddleware', () => {
 
         it('should call next if the correct permissions are present in the session', () => {
 
-            const request = getRequestSubsitute(
+            const request = getRequestSubstitute(
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
                 isAdmin,
                 appData,
@@ -72,7 +72,7 @@ describe('FileRestrictionsMiddleware', () => {
 
         it('should redirect to an error page if user does not have permissions', () => {
 
-            const requestNoPermissions = getRequestSubsitute({ fileId: DEFAULT_ATTACHMENTS[0].id }, isAdmin, appData);
+            const requestNoPermissions = getRequestSubstitute({ fileId: DEFAULT_ATTACHMENTS[0].id }, isAdmin, appData);
             const response = createSubstituteOf<Response>();
             const next = createSubstituteOf<NextFunction>();
 
@@ -87,7 +87,7 @@ describe('FileRestrictionsMiddleware', () => {
 
         it('should redirect to an error page if user does not have the correct permission', () => {
 
-            const requestInvalidPermissions = getRequestSubsitute(
+            const requestInvalidPermissions = getRequestSubstitute(
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
                 isAdmin,
                 appData,
@@ -126,7 +126,7 @@ describe('FileRestrictionsMiddleware', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
 
-                const request = getRequestSubsitute(
+                const request = getRequestSubstitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
                     !isAdmin,
                     appData
@@ -141,11 +141,11 @@ describe('FileRestrictionsMiddleware', () => {
                 response.didNotReceive().status(FORBIDDEN);
             });
 
-            it('should redirect to error page if file id is not in appeal attachements', () => {
+            it('should redirect to error page if file id is not in appeal attachments', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
 
-                const request = getRequestSubsitute(
+                const request = getRequestSubstitute(
                     { fileId: 'somethingTotallyWrong' },
                     !isAdmin,
                     appData
@@ -168,7 +168,7 @@ describe('FileRestrictionsMiddleware', () => {
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
                 appData.appeal!.createdBy! = { _id: 'SomeoneElse' };
 
-                const request = getRequestSubsitute(
+                const request = getRequestSubstitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
                     !isAdmin,
                     appData
@@ -198,11 +198,11 @@ describe('FileRestrictionsMiddleware', () => {
                 };
             };
 
-            it('should call next if user has not yet submitted the appeal and fileId is in the attachements', () => {
+            it('should call next if user has not yet submitted the appeal and fileId is in the attachments', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
-                const request = getRequestSubsitute(
+                const request = getRequestSubstitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
                     !isAdmin,
                     appData
@@ -217,11 +217,11 @@ describe('FileRestrictionsMiddleware', () => {
                 response.didNotReceive().status(FORBIDDEN);
             });
 
-            it('should redirect to error page when the user tries to access a fileId not in the attachements', () => {
+            it('should redirect to error page when the user tries to access a fileId not in the attachments', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
-                const request = getRequestSubsitute(
+                const request = getRequestSubstitute(
                     { fileId: 'somethingTotallyWrong' },
                     !isAdmin,
                     appData
