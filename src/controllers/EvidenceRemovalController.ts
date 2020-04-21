@@ -5,7 +5,7 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { BaseController, OnChangeModeDetected } from 'app/controllers/BaseController';
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -45,6 +45,8 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
     return attachment;
 };
 
+const onChangeModeDetected: OnChangeModeDetected = () => EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+
 /**
  * Processor that conditionally (if consent is given) removes file from:
  * - remote storage used by File Transfer API
@@ -75,7 +77,7 @@ class Processor implements FormActionProcessor {
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
-        super(template, navigation, new FormValidator(schema), undefined, [Processor]);
+        super(template, navigation, new FormValidator(schema), undefined, [Processor], onChangeModeDetected);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Attachment {

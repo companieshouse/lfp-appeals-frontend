@@ -4,7 +4,7 @@ import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
-import { FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
+import { FormActionHandler, FormActionHandlerConstructor, OnChangeModeDetected } from 'app/controllers/BaseController';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -22,6 +22,7 @@ import {
     EVIDENCE_QUESTION_URI,
     EVIDENCE_UPLOAD_PAGE_URI
 } from 'app/utils/Paths';
+import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -58,10 +59,27 @@ const continueButtonValidator: Validator = {
     }
 };
 
+const onChangeModeDetected: OnChangeModeDetected = (req: Request, step: keyof Navigation, defaultVal: string) => {
+
+    if (step === 'previous') {
+        return defaultVal;
+    }
+
+    if (req.originalUrl.includes(`${EVIDENCE_UPLOAD_PAGE_URI}/upload-file`)) {
+        return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+    }
+
+    if (req.originalUrl.includes(`${EVIDENCE_UPLOAD_PAGE_URI}/continue-without-upload`)) {
+        return CHECK_YOUR_APPEAL_PAGE_URI;
+    }
+
+    return defaultVal;
+};
+
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
-        super(template, navigation, continueButtonValidator);
+        super(template, navigation, continueButtonValidator, undefined, undefined, onChangeModeDetected);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
@@ -75,10 +93,10 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
 
         return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
             this.template, {
-                ...this.prepareViewModelFromAppeal(appeal),
-                ...this.httpContext.request.body,
-                validationResult
-            }
+            ...this.prepareViewModelFromAppeal(appeal),
+            ...this.httpContext.request.body,
+            validationResult
+        }
         );
     }
 
@@ -135,10 +153,6 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     }];
 
                     await that.persistSession();
-
-                    if (request.query.cm === '1') {
-                        response.redirect(request.route.path + '?cm=1');
-                    }
 
                     response.redirect(request.route.path);
                 }

@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
-import { BaseController, FormSanitizeFunction } from 'app/controllers/BaseController';
+import { defaultOnChange, BaseController, FormSanitizeFunction, OnChangeModeDetected } from 'app/controllers/BaseController';
 import {
     FormActionProcessor,
     FormActionProcessorConstructor
@@ -43,10 +43,11 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           navigation: Navigation,
                           validator?: Validator,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          formActionProcessors?: FormActionProcessorConstructor[]) {
+                          formActionProcessors?: FormActionProcessorConstructor[],
+                          onChangeModeDetected: OnChangeModeDetected = defaultOnChange) {
         super(template, navigation, validator, formSanitizeFunction,
             [...formActionProcessors || [], Processor
-        ]);
+        ], onChangeModeDetected);
     }
 
     async onGet(): Promise<void> {

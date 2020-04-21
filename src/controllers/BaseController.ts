@@ -12,29 +12,27 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { CHECK_YOUR_APPEAL_PAGE_URI,
-    EVIDENCE_REMOVAL_PAGE_URI,
-    EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T;
+export type OnChangeModeDetected = (req: Request, step: keyof Navigation, defaultAction: string) => string;
 
-const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
+const createChangeModeAwareNavigationProxy = (step: Navigation, onChange: OnChangeModeDetected): Navigation => {
     return new Proxy(step, {
-        get(target: Navigation, propertyName: 'previous' | 'next'): any {
+        get(target: Navigation, propertyName: keyof Navigation): any {
             return (req: Request) => {
                 if (req.query.cm === '1') {
-                    if (req.originalUrl.includes(EVIDENCE_REMOVAL_PAGE_URI)) {
-                        return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
-                    }
-                    return CHECK_YOUR_APPEAL_PAGE_URI;
+                    return onChange(req, propertyName, CHECK_YOUR_APPEAL_PAGE_URI);
                 }
                 return (target[propertyName] as (req: Request) => string).apply(this, [req]);
             };
         }
     });
 };
+
+export const defaultOnChange = (_: Request) => CHECK_YOUR_APPEAL_PAGE_URI;
 
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
 const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
@@ -53,9 +51,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                           @unmanaged() readonly navigation: Navigation,
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[]) {
+                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
+                          @unmanaged() readonly onChangeModeDetected: OnChangeModeDetected = defaultOnChange) {
         super();
-        this.navigation = createChangeModeAwareNavigationProxy(navigation);
+        this.navigation = createChangeModeAwareNavigationProxy(navigation, onChangeModeDetected);
     }
 
     /**
