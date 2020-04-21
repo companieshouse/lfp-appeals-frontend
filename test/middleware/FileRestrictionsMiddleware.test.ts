@@ -105,6 +105,27 @@ describe('FileRestrictionsMiddleware', () => {
             });
             next.didNotReceive();
         });
+
+        it('should throw an error if the attachment is not in the appeal object', () => {
+            const request = getRequestSubstitute(
+                { fileId: 'I do not exist' },
+                isAdmin,
+                appData,
+                { [AppealsPermissionKeys.download]: 1, [AppealsPermissionKeys.view]: 1 }
+            );
+
+            const response = createSubstituteOf<Response>();
+            const next = createSubstituteOf<NextFunction>();
+
+            fileRestrictionsMiddleware.handler(request, response, next);
+
+            response.received().status(FORBIDDEN);
+            response.received().render('error-custom', {
+                heading: 'You are not authorised to download this document'
+            });
+            next.didNotReceive();
+
+        });
     });
 
     describe('External User', () => {

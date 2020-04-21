@@ -41,10 +41,18 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         const adminPermissionFlag: string | undefined = signInInfo[SignInInfoKeys.AdminPermissions];
         const fileId: string = req.params.fileId;
 
-        const hasAdminPermissions = () => this.hasAdminPermissions(userProfile, adminPermissionFlag);
-        const hasUserPermissions = () => this.hasUserPermissions(fileId, userProfile, mAppeal.unsafeCoerce());
+        const hasSufficientPermissions = () =>
+            this.hasAdminPermissions(userProfile, adminPermissionFlag) ||
+            this.hasUserPermissions(userProfile, mAppeal.unsafeCoerce());
 
-        return hasAdminPermissions() || hasUserPermissions() ? next() : this.renderForbiddenError(res);
+        if (hasSufficientPermissions() && this.getAttachment(mAppeal.unsafeCoerce(), fileId)) {
+            return next();
+        }
+
+        loggerInstance()
+            .info(`${FileRestrictionsMiddleware.name} - user=${userProfile.id} does not have permission to download file ${fileId}`);
+
+        return this.renderForbiddenError(res);
     }
 
     private hasAdminPermissions(userProfile: IUserProfile, adminPermissionFlag: string | undefined): boolean {
@@ -60,11 +68,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             permissions[AppealsPermissionKeys.view];
     }
 
-    private hasUserPermissions(fileId: string, userProfile: IUserProfile, appeal: Appeal): boolean {
-
-        if (!this.getAttachment(appeal, fileId)) {
-            return false;
-        }
+    private hasUserPermissions(userProfile: IUserProfile, appeal: Appeal): boolean {
 
         // User must be creating a new appeal.
         if (!appeal.createdBy) {

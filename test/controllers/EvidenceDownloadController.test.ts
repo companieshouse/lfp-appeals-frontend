@@ -88,7 +88,7 @@ describe('EvidenceDownloadController', () => {
         const getBrokenFileTransferService =
             (fileDownloadStatus: number) => {
                 const fileDownloadError = {
-                    message: `An error with code ${fileDownloadStatus} occured`,
+                    message: `An error with code ${fileDownloadStatus} occurred`,
                     statusCode: fileDownloadStatus
                 };
                 return fileTransferServiceProxy(Promise.reject(fileDownloadError), metadataClean);
