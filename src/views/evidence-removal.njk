@@ -29,15 +29,7 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      {% set action %}
-        {% if navigation.back.href === paths.EVIDENCE_UPLOAD_PAGE_URI + '?cm=1' %}
-          ?f={{ id }}&cm=1
-        {% else %}
-          ?f={{ id }}
-        {% endif %}
-      {% endset %}
-
-      <form method="post" action={{ action }}>
+      <form method="post" action=?f={{ id }}>
         {{
           govukInput({
             type: 'hidden',
