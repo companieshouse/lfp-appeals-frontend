@@ -107,6 +107,20 @@ describe('EvidenceUploadController', () => {
                         .nested.includes('another-file.jpeg');
                 });
         });
+
+        it('should return 200 with rendered back button in change mode', async () => {
+
+            const app = createApp({ navigation, appeal: appealNoAttachments });
+
+            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('cm=1')
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text)
+                        .to.include('href="/appeal-a-penalty/check-your-answers"')
+                        .nested.includes('Back');
+                });
+        });
     });
 
     describe('POST request: continue', () => {
@@ -172,6 +186,28 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                });
+
+            fileTransferService.received().upload(Arg.any(), FILE_NAME);
+        });
+
+        it('should return 302 and redirect to evidence upload page in change mode', async () => {
+
+            const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                service.upload(Arg.any(), Arg.any()).returns(Promise.resolve('123'));
+            });
+
+            const app = createApp({ appeal: appealWithAttachments }, container => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+            });
+
+            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+                .query('action=' + UPLOAD_FILE_ACTION)
+                .query('cm=1')
+                .attach('file', buffer, FILE_NAME)
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI + '?cm=1');
                 });
 
             fileTransferService.received().upload(Arg.any(), FILE_NAME);

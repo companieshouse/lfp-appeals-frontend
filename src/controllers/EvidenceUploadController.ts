@@ -137,7 +137,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     await that.persistSession();
 
                     if (request.query.cm === '1') {
-                        response.redirect(request.route.path + '?cm=1');
+                        return response.redirect(request.route.path + '?cm=1');
                     }
 
                     response.redirect(request.route.path);
