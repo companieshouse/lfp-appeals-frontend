@@ -18,11 +18,14 @@ import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T;
 
-const createChangeModeAwareNavigationProxy = (step: Navigation): Navigation => {
+const createChangeModeAwareNavigationProxy = (step: Navigation, changeModeAction: string | undefined): Navigation => {
     return new Proxy(step, {
-        get(target: Navigation, propertyName: 'previous' | 'next'): any {
+        get(target: Navigation, propertyName: keyof Navigation): any {
             return (req: Request) => {
                 if (req.query.cm === '1') {
+                    if (changeModeAction) {
+                        return changeModeAction;
+                    }
                     return CHECK_YOUR_APPEAL_PAGE_URI;
                 }
                 return (target[propertyName] as (req: Request) => string).apply(this, [req]);
@@ -48,9 +51,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                           @unmanaged() readonly navigation: Navigation,
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[]) {
+                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
+                          @unmanaged() readonly changeModeAction?: string) {
         super();
-        this.navigation = createChangeModeAwareNavigationProxy(navigation);
+        this.navigation = createChangeModeAwareNavigationProxy(navigation, changeModeAction);
     }
 
     /**

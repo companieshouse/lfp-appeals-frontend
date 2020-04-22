@@ -30,6 +30,8 @@ const navigation: Navigation = {
     }
 };
 
+const changeModeAction: string = EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+
 const schema: Joi.AnySchema = Joi.object({
     remove: createSchema('You must tell us if you want to remove the document')
 }).unknown(true);
@@ -75,7 +77,8 @@ class Processor implements FormActionProcessor {
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
-        super(template, navigation, new FormValidator(schema), undefined, [Processor]);
+        super(template, navigation, new FormValidator(schema), undefined,
+            [Processor], changeModeAction);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Attachment {
