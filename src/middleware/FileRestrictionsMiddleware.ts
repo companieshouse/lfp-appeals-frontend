@@ -1,4 +1,3 @@
-import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
@@ -28,10 +27,11 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
                 .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`))
                 .unsafeCoerce();
 
-        const mAppeal: Maybe<Appeal> = session.chain(_ => _.getExtraData())
+        const appeal: Appeal = session.chain(_ => _.getExtraData())
             .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
             .chainNullable(appData => appData.appeal)
-            .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`));
+            .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`))
+            .unsafeCoerce();
 
         const userProfile: IUserProfile | undefined = signInInfo[SignInInfoKeys.UserProfile];
 
@@ -43,14 +43,14 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const hasSufficientPermissions = () =>
             this.hasAdminPermissions(userProfile, adminPermissionFlag) ||
-            this.hasUserPermissions(userProfile, mAppeal.unsafeCoerce());
+            this.hasUserPermissions(userProfile, appeal);
 
-        if (hasSufficientPermissions() && this.getAttachment(mAppeal.unsafeCoerce(), fileId)) {
+        if (hasSufficientPermissions() && this.getAttachment(appeal, fileId)) {
             return next();
         }
 
         loggerInstance()
-            .info(`${FileRestrictionsMiddleware.name} - user=${userProfile.id} does not have permission to download file ${fileId}`);
+            .error(`${FileRestrictionsMiddleware.name} - user=${userProfile.id} does not have permission to download file ${fileId}`);
 
         return this.renderForbiddenError(res);
     }
@@ -63,9 +63,9 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const permissions = userProfile[UserProfileKeys.Permissions];
 
-        return permissions &&
-            permissions[AppealsPermissionKeys.download] &&
-            permissions[AppealsPermissionKeys.view];
+        return permissions !== undefined &&
+            permissions[AppealsPermissionKeys.download] === 1 &&
+            permissions[AppealsPermissionKeys.view] === 1;
     }
 
     private hasUserPermissions(userProfile: IUserProfile, appeal: Appeal): boolean {
@@ -93,6 +93,5 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
         return attachments && attachments.find(attachment => attachment.id === fileId);
-
     }
 }
