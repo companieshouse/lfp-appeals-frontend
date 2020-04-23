@@ -13,18 +13,17 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
-import { Navigation } from 'app/utils/navigation/navigation';
+import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T;
-export type ChangeModeAction = (req: Request, step: keyof Navigation, defaultAction: string) => string;
 
-const createChangeModeAwareNavigationProxy = (step: Navigation, changeModeAction: ChangeModeAction): Navigation => {
+const createChangeModeAwareNavigationProxy = (step: NavigationControl, changeModeAction: string): NavigationControl => {
     return new Proxy(step, {
-        get(target: Navigation, propertyName: keyof Navigation): any {
+        get(target: NavigationControl, propertyName: keyof NavigationControl): any {
             return (req: Request) => {
                 if (req.query.cm === '1') {
-                    return changeModeAction(req, propertyName, CHECK_YOUR_APPEAL_PAGE_URI);
+                    return changeModeAction;
                 }
                 return (target[propertyName] as (req: Request) => string).apply(this, [req]);
             };
@@ -32,7 +31,7 @@ const createChangeModeAwareNavigationProxy = (step: Navigation, changeModeAction
     });
 };
 
-const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
+const defaultChangeModeAction = CHECK_YOUR_APPEAL_PAGE_URI;
 
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
 const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
@@ -52,9 +51,13 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
-                          @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
+                          @unmanaged() readonly changeModeAction: string = defaultChangeModeAction) {
         super();
-        this.navigation = createChangeModeAwareNavigationProxy(navigation, changeModeAction);
+        const navigationControl = createChangeModeAwareNavigationProxy(
+            { next: this.navigation.next, previous: this.navigation.previous },
+            changeModeAction
+        );
+        this.navigation = { ...navigationControl, actions: this.navigation.actions };
     }
 
     /**
@@ -250,6 +253,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     }
 
     private prepareNavigationConfig(): any {
+
+        const cmQuery = this.httpContext.request.query.cm;
+        const cm = cmQuery && cmQuery === '1' ? '1' : '0';
+
         return {
             navigation: {
                 back: {
@@ -257,7 +264,8 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 },
                 forward: {
                     href: this.navigation.next(this.httpContext.request)
-                }
+                },
+                actions: this.navigation.actions ? this.navigation.actions(cm) : {}
             }
         };
     }

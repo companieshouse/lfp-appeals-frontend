@@ -27,14 +27,14 @@ const navigation = {
 
 type ControllerConfig = {
     httpContext: {
-        container?: Container
-        request?: Partial<Request>
-        response: Partial<Response>
-    }
-    formSchema?: AnySchema
-    formSanitizeFn?: (formBody: any) => any
-    processor?: FormActionProcessorConstructor
-    viewModel?: {}
+        container?: Container;
+        request?: Partial<Request>;
+        response: Partial<Response>;
+    };
+    formSchema?: AnySchema;
+    formSanitizeFn?: (formBody: any) => any;
+    processor?: FormActionProcessorConstructor;
+    viewModel?: {};
 };
 
 function createTestController(config: ControllerConfig): any {
@@ -60,7 +60,8 @@ describe('Base controller', () => {
             },
             forward: {
                 href: '/next'
-            }
+            },
+            actions: {}
         }
     };
 

@@ -43,10 +43,11 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           navigation: Navigation,
                           validator?: Validator,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          formActionProcessors?: FormActionProcessorConstructor[]) {
+                          formActionProcessors?: FormActionProcessorConstructor[],
+                          changeModeAction?: string) {
         super(template, navigation, validator, formSanitizeFunction,
             [...formActionProcessors || [], Processor
-        ]);
+        ], changeModeAction);
     }
 
     async onGet(): Promise<void> {
@@ -75,7 +76,6 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                         this.httpContext.request.header('Referer')?.includes(CHECK_YOUR_APPEAL_PAGE_URI)) {
                         return super.onGet();
                     }
-
                     return this.httpContext.response.redirect(permissions[permissions.length - 1]);
                 }
             }

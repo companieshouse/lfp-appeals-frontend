@@ -20,8 +20,10 @@ import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
     EVIDENCE_QUESTION_URI,
+    EVIDENCE_REMOVAL_PAGE_URI,
     EVIDENCE_UPLOAD_PAGE_URI
 } from 'app/utils/Paths';
+import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -29,12 +31,19 @@ const maxNumberOfFiles: number = Number(getEnvOrThrow('MAX_NUMBER_OF_FILES'));
 
 const template = 'evidence-upload';
 
-const navigation = {
+const navigation: Navigation = {
     previous(): string {
         return EVIDENCE_QUESTION_URI;
     },
     next(): string {
         return CHECK_YOUR_APPEAL_PAGE_URI;
+    },
+    actions: (cmMode: '1' | '0') => {
+        return {
+            uploadFile: cmMode === '1' ? '?action=upload-file&cm=1' : '?action=upload-file',
+            continueWithoutUpload: '?action=continue-without-upload',
+            removeFile: cmMode === '1' ?  `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
+        };
     }
 };
 
@@ -61,7 +70,7 @@ const continueButtonValidator: Validator = {
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
-        super(template, navigation, continueButtonValidator);
+        super(template, navigation, continueButtonValidator, undefined, undefined);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
@@ -75,10 +84,10 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
 
         return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
             this.template, {
-                ...this.prepareViewModelFromAppeal(appeal),
-                ...this.httpContext.request.body,
-                validationResult
-            }
+            ...this.prepareViewModelFromAppeal(appeal),
+            ...this.httpContext.request.body,
+            validationResult
+        }
         );
     }
 

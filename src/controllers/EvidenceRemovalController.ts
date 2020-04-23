@@ -4,8 +4,8 @@ import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
+import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
-import { BaseController, ChangeModeAction } from 'app/controllers/BaseController';
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -25,15 +25,12 @@ const navigation: Navigation = {
     previous(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
     },
-    next(req: Request): string {
-        if (req.header('Referer')?.includes('cm=1')) {
-            return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
-        }
+    next(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
     }
 };
 
-const changeModeAction: ChangeModeAction = () =>  EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+const changeModeAction = EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
 
 const schema: Joi.AnySchema = Joi.object({
     remove: createSchema('You must tell us if you want to remove the document')
@@ -57,7 +54,7 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
  */
 @provide(Processor)
 class Processor implements FormActionProcessor {
-    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {}
+    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) { }
 
     async process(request: Request): Promise<void> {
         if (request.body.remove !== YesNo.yes) {
@@ -78,7 +75,7 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceRemovalController extends BaseController<Attachment> {
+export class EvidenceRemovalController extends SafeNavigationBaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined,
             [Processor], changeModeAction);

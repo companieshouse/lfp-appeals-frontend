@@ -33,15 +33,7 @@
         Add documents to support your application
       </h1>
 
-      {% set action %}
-        {% if navigation.back.href === paths.CHECK_YOUR_APPEAL_PAGE_URI %}
-          ?action=upload-file&cm=1
-        {% else %}
-          ?action=upload-file
-        {% endif %}
-      {% endset %}
-
-      <form method="post" enctype="multipart/form-data" action={{ action }}>
+      <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}"">
         {% set uploadText %}
           {% if attachments.length > 0 %}
             Add another document
@@ -81,15 +73,8 @@
               <dd class="ch-upload-list__value">
                 <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download" class="govuk-link">{{ attachment.name }}</a>
               </dd>
-              {% set href %}
-                {% if navigation.back.href === paths.CHECK_YOUR_APPEAL_PAGE_URI %}
-                  {{ paths.EVIDENCE_REMOVAL_PAGE_URI }}?f={{ attachment.id }}&cm=1
-                {% else %}
-                  {{ paths.EVIDENCE_REMOVAL_PAGE_URI }}?f={{ attachment.id }}
-                {% endif %}
-              {% endset %}
               <dd class="ch-upload-list__actions">
-                <a class="govuk-link" href={{ href }}>Remove</a>
+                <a class="govuk-link" href="{{ navigation.actions.removeFile }}f={{ attachment.id }}">Remove</a>
               </dd>
             </div>
           {% endfor %}
@@ -107,7 +92,7 @@
         }}
       </form>
 
-      <form method="post" action="?action=continue-without-upload">
+      <form method="post" action={{ navigation.actions.continueWithoutUpload }}>
         <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
           Continue without adding documents
         </button>
