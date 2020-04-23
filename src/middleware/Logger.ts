@@ -1,7 +1,7 @@
 import { createLogger } from 'ch-logging';
 import ApplicationLogger from 'ch-logging/lib/ApplicationLogger';
 
-import { APP_NAME } from 'app/utils/ConfigLoader';
+import { APP_NAME } from 'app/Constants';
 
 let logger: ApplicationLogger;
 

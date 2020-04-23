@@ -4,8 +4,8 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 import IORedis from 'ioredis';
 import * as kafka from 'kafka-node';
 import * as util from 'util';
-import { APP_NAME } from './utils/ConfigLoader';
 
+import { APP_NAME } from 'app/Constants';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
