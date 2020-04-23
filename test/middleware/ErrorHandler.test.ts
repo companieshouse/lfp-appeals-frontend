@@ -6,7 +6,7 @@ import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
 import request from 'supertest';
 
 import { defaultHandler, notFoundHandler } from 'app/middleware/ErrorHandler';
-import { getExpressAppConfig as configureApplication } from 'app/utils/ConfigLoader';
+import { createExpressConfigFunction as configureApplication } from 'app/utils/ExpressConfigFunctionFactory';
 
 const pageHeading = 'Sorry, there is a problem with the service';
 const FAKE_PAGE_URI = '/fake-page';
