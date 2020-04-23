@@ -42,7 +42,7 @@ const navigation: Navigation = {
         return {
             uploadFile: cmMode === '1' ? '?action=upload-file&cm=1' : '?action=upload-file',
             continueWithoutUpload: '?action=continue-without-upload',
-            removeFile: cmMode === '1' ?  `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
+            removeFile: cmMode === '1' ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
         };
     }
 };
@@ -83,11 +83,12 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
         ]);
 
         return await this.renderWithStatus(UNPROCESSABLE_ENTITY)(
-            this.template, {
-            ...this.prepareViewModelFromAppeal(appeal),
-            ...this.httpContext.request.body,
-            validationResult
-        }
+            this.template,
+            {
+                ...this.prepareViewModelFromAppeal(appeal),
+                ...this.httpContext.request.body,
+                validationResult
+            }
         );
     }
 
