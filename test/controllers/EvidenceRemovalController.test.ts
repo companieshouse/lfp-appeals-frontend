@@ -8,7 +8,6 @@ import request from 'supertest';
 import 'app/controllers/EvidenceRemovalController';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
-import { Navigation } from 'app/models/Navigation';
 import { YesNo } from 'app/models/fields/YesNo';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
@@ -37,12 +36,8 @@ describe('EvidenceRemovalController', () => {
 
     describe('GET request', () => {
 
-        const navigation: Navigation = {
-            permissions: [EVIDENCE_REMOVAL_PAGE_URI]
-        };
-
         it('should return 500 when file identifier is missing', async () => {
-            const app = createApp({ appeal: createAppealWithAttachments([attachment]), navigation });
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=`)
                 .expect(response => {
@@ -51,7 +46,7 @@ describe('EvidenceRemovalController', () => {
         });
 
         it('should return 500 when file identifier does not exist in session', async () => {
-            const app = createApp({ appeal: createAppealWithAttachments([attachment]), navigation });
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=456`)
                 .expect(response => {
@@ -60,7 +55,7 @@ describe('EvidenceRemovalController', () => {
         });
 
         it('should return 200 with file name when file identifier exists in session', async () => {
-            const app = createApp({ appeal: createAppealWithAttachments([attachment]), navigation });
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}?f=${attachment.id}`)
                 .expect(response => {
@@ -70,7 +65,7 @@ describe('EvidenceRemovalController', () => {
         });
 
         it('should return 200 with rendered back button in change mode', async () => {
-            const app = createApp({ appeal: createAppealWithAttachments([attachment]), navigation });
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
             await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}`)
                 .query(`f=${attachment.id}`)

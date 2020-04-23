@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
-import { BaseController, FormSanitizeFunction } from 'app/controllers/BaseController';
+import { BaseController, ChangeModeAction, FormSanitizeFunction } from 'app/controllers/BaseController';
 import {
     FormActionProcessor,
     FormActionProcessorConstructor
@@ -44,7 +44,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           validator?: Validator,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           formActionProcessors?: FormActionProcessorConstructor[],
-                          changeModeAction?: string) {
+                          changeModeAction?: ChangeModeAction) {
         super(template, navigation, validator, formSanitizeFunction,
             [...formActionProcessors || [], Processor
         ], changeModeAction);

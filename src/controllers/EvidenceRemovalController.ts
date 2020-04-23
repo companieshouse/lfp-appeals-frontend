@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
-import { SafeNavigationBaseController } from './SafeNavigationBaseController';
+import { BaseController } from './BaseController';
 
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
@@ -27,10 +27,15 @@ const navigation: Navigation = {
     },
     next(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
+    },
+    actions: (cm: '1' | '0') => {
+        return {
+            noAction: cm === '1' ? '&cm=1' : ''
+        };
     }
 };
 
-const changeModeAction = EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
+const changeModeAction = () => EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
 
 const schema: Joi.AnySchema = Joi.object({
     remove: createSchema('You must tell us if you want to remove the document')
@@ -75,7 +80,7 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
-export class EvidenceRemovalController extends SafeNavigationBaseController<Attachment> {
+export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined,
             [Processor], changeModeAction);

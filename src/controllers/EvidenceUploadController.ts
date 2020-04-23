@@ -40,6 +40,7 @@ const navigation: Navigation = {
     },
     actions: (cmMode: '1' | '0') => {
         return {
+            noAction: cmMode === '1' ? '?cm=1' : '?cm=0',
             uploadFile: cmMode === '1' ? '?action=upload-file&cm=1' : '?action=upload-file',
             continueWithoutUpload: '?action=continue-without-upload',
             removeFile: cmMode === '1' ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`

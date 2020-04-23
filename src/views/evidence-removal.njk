@@ -29,7 +29,7 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      <form method="post" action=?f={{ id }}>
+      <form method="post" action="?f={{ id }}{{ navigation.actions.noAction }}">
         {{
           govukInput({
             type: 'hidden',

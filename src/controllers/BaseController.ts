@@ -17,21 +17,23 @@ import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export type FormSanitizeFunction<T> = (body: T) => T;
+export type ChangeModeAction = (req: Request, step: keyof NavigationControl) => string;
 
-const createChangeModeAwareNavigationProxy = (step: NavigationControl, changeModeAction: string): NavigationControl => {
-    return new Proxy(step, {
-        get(target: NavigationControl, propertyName: keyof NavigationControl): any {
-            return (req: Request) => {
-                if (req.query.cm === '1') {
-                    return changeModeAction;
-                }
-                return (target[propertyName] as (req: Request) => string).apply(this, [req]);
-            };
-        }
-    });
-};
+const createChangeModeAwareNavigationProxy =
+    (step: NavigationControl, changeModeAction: ChangeModeAction): NavigationControl => {
+        return new Proxy(step, {
+            get(target: NavigationControl, propertyName: keyof NavigationControl): any {
+                return (req: Request) => {
+                    if (req.query.cm === '1') {
+                        return changeModeAction(req, propertyName);
+                    }
+                    return (target[propertyName] as (req: Request) => string).apply(this, [req]);
+                };
+            }
+        });
+    };
 
-const defaultChangeModeAction = CHECK_YOUR_APPEAL_PAGE_URI;
+const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
 
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
 const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
@@ -51,7 +53,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
                           @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
-                          @unmanaged() readonly changeModeAction: string = defaultChangeModeAction) {
+                          @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
         super();
         const navigationControl = createChangeModeAwareNavigationProxy(
             { next: this.navigation.next, previous: this.navigation.previous },

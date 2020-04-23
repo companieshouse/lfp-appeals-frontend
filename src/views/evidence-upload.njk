@@ -33,7 +33,7 @@
         Add documents to support your application
       </h1>
 
-      <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}"">
+      <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
           {% if attachments.length > 0 %}
             Add another document
@@ -81,7 +81,7 @@
         </dl>
       {% endif %}
 
-      <form method="post" action="?">
+      <form method="post" action="{{ navigation.actions.noAction }}">
         {{
           govukButton({
             text: 'Continue',
@@ -92,7 +92,7 @@
         }}
       </form>
 
-      <form method="post" action={{ navigation.actions.continueWithoutUpload }}>
+      <form method="post" action="{{ navigation.actions.continueWithoutUpload }}">
         <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
           Continue without adding documents
         </button>
