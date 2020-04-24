@@ -257,7 +257,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     private prepareNavigationConfig(): any {
 
         const cmQuery = this.httpContext.request.query.cm;
-        const cm = cmQuery && cmQuery === '1' ? '1' : '0';
+        const changeMode: boolean = cmQuery ? cmQuery === '1' : false;
 
         return {
             navigation: {
@@ -267,7 +267,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 forward: {
                     href: this.navigation.next(this.httpContext.request)
                 },
-                actions: this.navigation.actions ? this.navigation.actions(cm) : {}
+                actions: this.navigation.actions ? this.navigation.actions(changeMode) : {}
             }
         };
     }

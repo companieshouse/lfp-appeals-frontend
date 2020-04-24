@@ -28,9 +28,9 @@ const navigation: Navigation = {
     next(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
     },
-    actions: (cm: '1' | '0') => {
+    actions: (changeMode: boolean) => {
         return {
-            noAction: cm === '1' ? '&cm=1' : ''
+            noAction: changeMode ? '&cm=1' : ''
         };
     }
 };

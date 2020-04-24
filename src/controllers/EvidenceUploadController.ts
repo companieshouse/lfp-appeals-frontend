@@ -38,12 +38,12 @@ const navigation: Navigation = {
     next(): string {
         return CHECK_YOUR_APPEAL_PAGE_URI;
     },
-    actions: (cmMode: '1' | '0') => {
+    actions: (changeMode: boolean) => {
         return {
-            noAction: cmMode === '1' ? '?cm=1' : '?cm=0',
-            uploadFile: cmMode === '1' ? '?action=upload-file&cm=1' : '?action=upload-file',
+            noAction: changeMode ? '?cm=1' : '?cm=0',
+            uploadFile: changeMode ? '?action=upload-file&cm=1' : '?action=upload-file',
             continueWithoutUpload: '?action=continue-without-upload',
-            removeFile: cmMode === '1' ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
+            removeFile: changeMode ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
         };
     }
 };
