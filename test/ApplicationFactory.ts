@@ -25,7 +25,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 
 export const createApp = (data?: Partial<ApplicationData>,
     // tslint:disable-next-line:no-empty
-    configureBindings: (container: Container) => void = () => { },
+    configureBindings: (container: Container) => void = () => {},
     configureSession: (session: Session) => Session = (_: Session) => _) =>
     createAppConfigurable(container => {
         const cookieName = getEnvOrThrow('COOKIE_NAME');
