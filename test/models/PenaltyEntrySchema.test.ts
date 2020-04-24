@@ -142,13 +142,13 @@ describe('Penalty Details Schema Validation', () => {
                 expect(result).to.deep.equal({errors: []});
             });
 
-            it('should accept legacy penalty references with leading zeros', () => {
-                const result = validator.validate(createModelWithPenaltyReference('pen1A/sc123'));
+            it('should accept legacy penalty references with hidden leading zeros', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept legacy penalty references with leading zeros', () => {
-                const result = validator.validate(createModelWithPenaltyReference('pen1A/sc123'));
+                const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc000123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
@@ -164,6 +164,11 @@ describe('Penalty Details Schema Validation', () => {
 
             it(`should accept legacy penalty references with prefix number 8` , () => {
                 const result = validator.validate(createModelWithPenaltyReference(`pen8A/sc123`));
+                expect(result).to.deep.equal({errors: []});
+            });
+
+            it(`should accept legacy penalty references with only numbers as company number` , () => {
+                const result = validator.validate(createModelWithPenaltyReference(`PEN1A/12345678`));
                 expect(result).to.deep.equal({errors: []});
             });
 

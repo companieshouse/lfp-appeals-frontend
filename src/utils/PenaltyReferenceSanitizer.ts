@@ -1,10 +1,10 @@
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
-export const sanitizePenalty = (penaltyReference: string): string => {
+export const sanitizeLegacyPenalty = (penaltyReference: string): string => {
 
     penaltyReference = penaltyReference.toUpperCase();
-    const prefix = penaltyReference.substring(0,6);
-    const companyNumber = sanitizeCompany(penaltyReference.substring(6, penaltyReference.length));
+    const prefix: string = penaltyReference.substring(0,6);
+    const companyNumber: string = sanitizeCompany(penaltyReference.substring(6, penaltyReference.length));
     return prefix + companyNumber;
 
 };
