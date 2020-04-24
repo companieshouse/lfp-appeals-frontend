@@ -16,7 +16,7 @@ import {
     EVIDENCE_UPLOAD_PAGE_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
-import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
+import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'evidence-question';
 
@@ -33,13 +33,6 @@ const navigation: Navigation = {
     }
 };
 
-const changeModeAction = (req: Request, step: keyof NavigationControl) => {
-    if (step === 'next') {
-        return EVIDENCE_UPLOAD_PAGE_URI + '?cm=1';
-    }
-    return navigation.next(req);
-};
-
 const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
@@ -47,6 +40,6 @@ const schema: Joi.AnySchema = Joi.object({
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
-        super(template, navigation, new FormValidator(schema), undefined, undefined, changeModeAction);
+        super(template, navigation, new FormValidator(schema));
     }
 }
