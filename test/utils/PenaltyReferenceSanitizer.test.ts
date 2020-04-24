@@ -46,8 +46,4 @@ describe('PenaltyReferenceSanitizer', () => {
         expect(result).to.be.equal('PEN2A/NI345678213');
     });
 
-    it('should pad inputs with no digits', () =>{
-        const result = sanitizeLegacyPenalty('PEN2A/NI');
-        expect(result).to.be.equal('PEN2A/NI000000');
-    });
 });

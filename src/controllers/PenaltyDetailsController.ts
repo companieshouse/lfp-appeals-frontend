@@ -29,7 +29,9 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: penalty.startsWith(legacyPrefixChars) ? sanitizeLegacyPenalty(penalty) : penalty.toUpperCase()
+        penaltyReference: penalty.toUpperCase().startsWith(legacyPrefixChars)
+            ? sanitizeLegacyPenalty(penalty)
+            : penalty.toUpperCase()
     };
 };
 

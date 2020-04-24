@@ -132,18 +132,33 @@ describe('Penalty Details Schema Validation', () => {
                 expect(result).to.deep.equal({errors: []});
             });
 
-            it('should accept legacy penalty references', () => {
+            it('should accept SC legacy penalty references', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN1A/SC123123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
-            it('should accept lower case legacy penalty references', () => {
+            it('should accept NI legacy penalty references', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN1A/NI123123'));
+                expect(result).to.deep.equal({errors: []});
+            });
+
+            it('should accept lower case SC legacy penalty references', () => {
                 const result = validator.validate(createModelWithPenaltyReference('pen1A/sc123123'));
+                expect(result).to.deep.equal({errors: []});
+            });
+
+            it('should accept lower case NI legacy penalty references', () => {
+                const result = validator.validate(createModelWithPenaltyReference('pen1A/ni123123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
             it('should accept legacy penalty references with hidden leading zeros', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc123'));
+                expect(result).to.deep.equal({errors: []});
+            });
+
+            it('should accept NI legacy penalty references with hidden leading zeros', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN1A/ni123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
