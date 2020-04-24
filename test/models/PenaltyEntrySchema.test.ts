@@ -157,8 +157,8 @@ describe('Penalty Details Schema Validation', () => {
                     expect(result).to.deep.equal({errors: []});
             });
 
-            it(`should accept legacy penalty references with prefix number 5` , () => {
-                const result = validator.validate(createModelWithPenaltyReference(`pen5A/sc123`));
+            it(`should accept legacy penalty references with prefix number 2` , () => {
+                const result = validator.validate(createModelWithPenaltyReference(`pen2A/sc123`));
                 expect(result).to.deep.equal({errors: []});
             });
 
@@ -252,6 +252,26 @@ describe('Penalty Details Schema Validation', () => {
 
             it('should reject company number format', () => {
                 const result = validator.validate(createModelWithPenaltyReference('SC123123'));
+                expect(result).to.deep.equal({
+                    errors: [{
+                        field: 'penaltyReference',
+                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                    }]
+                });
+            });
+
+            it('should reject double digit legacy prefix', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN12A/A12345678'));
+                expect(result).to.deep.equal({
+                    errors: [{
+                        field: 'penaltyReference',
+                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                    }]
+                });
+            });
+
+            it('should reject legacy prefix number of 0', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN0A/A12345678'));
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'penaltyReference',
