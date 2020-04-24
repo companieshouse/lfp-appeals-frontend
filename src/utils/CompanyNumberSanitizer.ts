@@ -1,6 +1,6 @@
 const COMPANY_NUMBER_SIZE: number = 8;
 
-export const sanitize = (companyNumber: string): string => {
+export const sanitizeCompany = (companyNumber: string): string => {
     if (!companyNumber) {
         throw new Error('Company number is required');
     }

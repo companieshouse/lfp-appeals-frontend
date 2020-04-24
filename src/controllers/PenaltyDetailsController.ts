@@ -8,8 +8,9 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
-import { sanitize } from 'app/utils/CompanyNumberSanitizer';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
+import { sanitizePenalty } from 'app/utils/PenaltyReferenceSanitizer';
 
 const template = 'penalty-details';
 
@@ -23,9 +24,11 @@ const navigation = {
 };
 
 const sanitizeForm = (body: PenaltyIdentifier) => {
+    const penalty = body.penaltyReference;
+
     return {
-        companyNumber: sanitize(body.companyNumber),
-        penaltyReference: body.penaltyReference.toUpperCase()
+        companyNumber: sanitizeCompany(body.companyNumber),
+        penaltyReference: penalty.startsWith('PEN') ? sanitizePenalty(penalty) : penalty.toUpperCase()
     };
 };
 
