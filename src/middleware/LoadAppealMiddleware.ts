@@ -29,20 +29,18 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
             const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
 
-            const applicationData = req.session.chain(_ => _.getExtraData())
+            const session = req.session.unsafeCoerce();
+
+            const applicationData = session.getExtraData()
                 .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
-                .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve application data from session`))
-                .unsafeCoerce();
+                .ifNothing(() => session.saveExtraData(APPLICATION_DATA_KEY, {}))
+                .orDefault({} as ApplicationData);
 
             try {
                 new SchemaValidator(companyNumberSchema).validate(companyNumber);
             } catch (err) {
                 throw new Error('Tried to load appeal from an invalid company number');
 
-            }
-            if (applicationData?.appeal) {
-                loggerInstance().debug(`${LoadAppealMiddleware.name} - handler: user's session contains appeal`);
-                return next();
             }
 
             const token = req.session
@@ -52,9 +50,10 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
                 .unsafeCoerce();
 
-            if (appealId) {
+            if (appealId && !applicationData.appeal) {
                 const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
-                applicationData.appeal = appeal;
+                applicationData!.appeal = appeal;
+                session.saveExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             return next();

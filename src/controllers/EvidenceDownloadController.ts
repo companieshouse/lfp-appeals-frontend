@@ -6,7 +6,7 @@ import { controller, httpGet, requestParam } from 'inversify-express-utils';
 import { Readable, Writable } from 'stream';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { FileRestrictionsAuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
@@ -20,7 +20,7 @@ const errorCustomTemplate = 'error-custom';
 
 @controller(DOWNLOAD_FILE_PAGE_URI,
     SessionMiddleware,
-    AuthMiddleware,
+    FileRestrictionsAuthMiddleware,
     FileTransferFeatureMiddleware,
     LoadAppealMiddleware,
     FileRestrictionsMiddleware

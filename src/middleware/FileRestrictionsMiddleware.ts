@@ -75,7 +75,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             return true;
         }
 
-        return appeal.createdBy?._id === userProfile.id;
+        return appeal.createdBy?.id === userProfile.id;
     }
 
     private renderForbiddenError(res: Response): void {

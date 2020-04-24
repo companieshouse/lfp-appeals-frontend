@@ -11,10 +11,12 @@ import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { newUriFactory } from 'app/utils/UriFactory';
 
-const buildReturnUri = (req: Request): string => newUriFactory(req).createAbsoluteUri(PENALTY_DETAILS_PAGE_URI);
-
 @provide(AuthMiddleware)
 export class AuthMiddleware extends BaseMiddleware {
+
+    public getReturnToPage(req: Request): string {
+        return newUriFactory(req).createAbsoluteUri(PENALTY_DETAILS_PAGE_URI);
+    }
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
         req.session
@@ -32,7 +34,7 @@ export class AuthMiddleware extends BaseMiddleware {
             .extract();
 
         if (!signedIn) {
-            const redirectURI = `${getEnvOrDefault('ACCOUNT_WEB_URL', '')}/signin?return_to=${buildReturnUri(req)}`;
+            const redirectURI = `${getEnvOrDefault('ACCOUNT_WEB_URL', '')}/signin?return_to=${this.getReturnToPage(req)}`;
             loggerInstance().info(`${AuthMiddleware.name} - handler: userId=${userId}, Not signed in... Redirecting to: ${redirectURI}`);
             return res.redirect(redirectURI);
         }
@@ -41,4 +43,12 @@ export class AuthMiddleware extends BaseMiddleware {
         next();
     }
 
+}
+
+// tslint:disable-next-line: max-classes-per-file
+@provide(FileRestrictionsAuthMiddleware)
+export class FileRestrictionsAuthMiddleware extends AuthMiddleware {
+    public getReturnToPage(req: Request): string {
+        return newUriFactory(req).createAbsoluteUri(req.originalUrl);
+    }
 }

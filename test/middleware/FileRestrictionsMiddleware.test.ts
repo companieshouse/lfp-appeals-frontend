@@ -47,7 +47,7 @@ describe('FileRestrictionsMiddleware', () => {
 
     describe('As an Internal User session', () => {
         const appeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
-        appeal.createdBy = { _id: 'SomeExternalUser' };
+        appeal.createdBy = { id: 'SomeExternalUser' };
 
         const appData: Partial<ApplicationData> = { appeal };
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
@@ -135,7 +135,7 @@ describe('FileRestrictionsMiddleware', () => {
             return {
                 penaltyIdentifier,
                 reasons,
-                createdBy: { _id: userId }
+                createdBy: { id: userId }
             };
         };
 
@@ -187,7 +187,7 @@ describe('FileRestrictionsMiddleware', () => {
             it('should redirect to error page if user tries to access appeal not created by the same user', () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
-                appData.appeal!.createdBy! = { _id: 'SomeoneElse' };
+                appData.appeal!.createdBy! = { id: 'SomeoneElse' };
 
                 const request = getRequestSubstitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },

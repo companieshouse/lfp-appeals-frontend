@@ -32,7 +32,7 @@ describe('EvidenceDownloadController', () => {
     const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
     const internalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
-    internalUserAppeal.createdBy = { _id: DEFAULT_USER_ID };
+    internalUserAppeal.createdBy = { id: DEFAULT_USER_ID };
 
     const externalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
 
@@ -47,8 +47,7 @@ describe('EvidenceDownloadController', () => {
                 container.rebind(AppealsService).toConstantValue(appealsService);
             },
             (session: Session) => {
-                const userProfile = session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile];
-                userProfile!.id = DEFAULT_USER_ID;
+                session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = DEFAULT_USER_ID;
                 return session;
             }
         );
@@ -59,7 +58,7 @@ describe('EvidenceDownloadController', () => {
         appealsService: AppealsService): Application {
 
         return createApp(
-            { appeal: externalUserAppeal },
+            { appeal: internalUserAppeal },
             (container: Container) => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
                 container.rebind(AppealsService).toConstantValue(appealsService);
