@@ -69,9 +69,9 @@ describe('CheckYourAppealController', () => {
                         .to.contain(subHeading).and
                         .to.contain(appeal.reasons.other.title).and
                         .to.contain(appeal.reasons.other.description).and
-                        .to.contain('href="/appeal-a-penalty/download/data/1/download"')
+                        .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
                         .nested.contain('some-file.jpeg').and
-                        .to.contain('href="/appeal-a-penalty/download/data/2/download"')
+                        .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
                         .nested.contain('another-file.jpeg');
                 });
         });
