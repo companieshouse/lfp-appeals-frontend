@@ -35,7 +35,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
         try {
             new SchemaValidator(companyNumberSchema).validate(companyNumber);
         } catch (err) {
-            throw Error('Tried to load appeal from an invalid company number');
+            return next(new Error('Tried to load appeal from an invalid company number'));
 
         }
         if (applicationData?.appeal) {

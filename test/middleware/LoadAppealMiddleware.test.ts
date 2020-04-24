@@ -121,15 +121,9 @@ describe('LoadAppealMiddleware', () => {
             const nextFunction = createSubstituteOf<NextFunction>();
             const response = createSubstituteOf<Response>();
 
-            try {
-
-                await loadAppealMiddleware.handler(request, response, nextFunction);
-                nextFunction.didNotReceive();
-                appealService.didNotReceive().getAppeal(Arg.all());
-
-            } catch (err) {
-                expect(err.message).to.equal('Tried to load appeal from an invalid company number');
-            }
+            await loadAppealMiddleware.handler(request, response, nextFunction);
+            nextFunction.received(1);
+            appealService.didNotReceive().getAppeal(Arg.all());
         });
 
         it('should throw an error if the appeal id is not found', async () => {

@@ -33,7 +33,8 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
 
     @httpGet('/prompt/:fileId')
     public async renderPrompt(@requestParam('fileId') fileId: string): Promise<void> {
-        return this.render(template, { downloadPath: this.getDownloadPath(this.httpContext.request, fileId) });
+        const downloadPath = this.getDownloadPath(this.httpContext.request, fileId);
+        return this.render(template, { downloadPath });
     }
 
     @httpGet('/data/:fileId/download')
@@ -70,15 +71,10 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
         const appealId = req.query[APPEAL_ID_QUERY_KEY];
         const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY];
 
-        if (!appealId && !companyNumber) {
-            return '';
+        if (!appealId || !companyNumber) {
+            throw Error('Expected appealId and company number as query parameters but none found');
         }
-        if (appealId && !companyNumber) {
-            return `?a=${appealId}`;
-        }
-        if (!appealId) {
-            return `?c=${companyNumber}`;
-        }
+
         return `${fileId}/download?a=${appealId}&c=${companyNumber}`;
     }
 
