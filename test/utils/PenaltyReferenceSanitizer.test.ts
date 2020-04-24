@@ -50,5 +50,4 @@ describe('PenaltyReferenceSanitizer', () => {
         const result = sanitizeLegacyPenalty('PEN2A/NI');
         expect(result).to.be.equal('PEN2A/NI000000');
     });
-
 });
