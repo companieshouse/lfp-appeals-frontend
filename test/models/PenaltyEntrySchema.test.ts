@@ -16,13 +16,8 @@ describe('Penalty Details Schema Validation', () => {
         }
 
         describe('Happy path', () => {
-            it('should accept SC leading characters input', () => {
+            it('should accept leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('SC123123'));
-                expect(result).to.deep.equal({errors: []});
-            });
-
-            it('should accept NI leading characters input', () => {
-                const result = validator.validate(createModelWithCompanyNumber('NI123123'));
                 expect(result).to.deep.equal({errors: []});
             });
 
