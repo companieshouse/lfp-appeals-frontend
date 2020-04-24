@@ -9,10 +9,10 @@ import {
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-type RequestWithNavigation = Request & { navigation: Navigation; };
+export type RequestWithNavigation = Request & { navigation: Navigation; };
 
 @provide(Processor)
 class Processor implements FormActionProcessor {
@@ -70,12 +70,6 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                 loggerInstance()
                     .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
                 if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
-
-                    // override access to Evidence Upload Page from Check your Appeal page, when skipped previously
-                    if (this.httpContext.request.path === EVIDENCE_UPLOAD_PAGE_URI &&
-                        this.httpContext.request.header('Referer')?.includes(CHECK_YOUR_APPEAL_PAGE_URI)) {
-                        return super.onGet();
-                    }
                     return this.httpContext.response.redirect(permissions[permissions.length - 1]);
                 }
             }
