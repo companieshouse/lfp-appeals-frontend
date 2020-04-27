@@ -72,7 +72,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
         const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY];
 
         if (!appealId || !companyNumber) {
-            throw Error('Expected appealId and company number as query parameters but none found');
+            throw Error('Expected either appealId or company number as query parameters but none found');
         }
 
         return `${fileId}/download?a=${appealId}&c=${companyNumber}`;
