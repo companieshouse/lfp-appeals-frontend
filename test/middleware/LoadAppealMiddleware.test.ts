@@ -18,7 +18,7 @@ import { AppealNotFoundError, AppealServiceError } from 'app/modules/appeals-ser
 describe('LoadAppealMiddleware', () => {
 
     const appealId = '123';
-    const companyId = 'NI000000';
+    const companyId = 'ni123';
     // @ts-ignore
     const createAppealService = (method: 'resolves' | 'rejects', data?: Appeal | any) => {
         const service = Substitute.for<AppealsService>();
@@ -27,9 +27,9 @@ describe('LoadAppealMiddleware', () => {
 
     };
 
-    const DEFAULT_ATACHMENTS = createDefaultAttachments();
+    const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
-    const getRequestSubsitute = (data?: Partial<ApplicationData>): Request => {
+    const getRequestSubstitute = (queries: { [query: string]: string; }, data?: Partial<ApplicationData>): Request => {
 
         const session = createSession('secret');
         session.data[SessionKey.ExtraData] = {
@@ -38,17 +38,19 @@ describe('LoadAppealMiddleware', () => {
 
         return {
             session: Maybe.of(session),
-            query: {
-                [COMPANY_NUMBER_QUERY_KEY]: companyId,
-                [APPEAL_ID_QUERY_KEY]: appealId
-            } as any
+            query: queries
         } as Request;
     };
 
     const expectException = async (service: AppealsService,
         exceptionName: 'AppealNotFoundError' | 'AppealServiceError') => {
 
-        const request = getRequestSubsitute();
+        const request = getRequestSubstitute(
+            {
+                [COMPANY_NUMBER_QUERY_KEY]: companyId,
+                [APPEAL_ID_QUERY_KEY]: appealId
+            } as any
+        );
 
         const loadAppealMiddleware = new LoadAppealMiddleware(service);
 
@@ -70,8 +72,13 @@ describe('LoadAppealMiddleware', () => {
 
         it('should load the appeal from API if user obtained link from other medium', async () => {
 
-            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
-            const request: Request = getRequestSubsitute();
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
+            const request = getRequestSubstitute(
+                {
+                    [COMPANY_NUMBER_QUERY_KEY]: companyId,
+                    [APPEAL_ID_QUERY_KEY]: appealId
+                } as any
+            );
 
             const appealService = createAppealService('resolves', appData.appeal!);
             const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
@@ -93,8 +100,13 @@ describe('LoadAppealMiddleware', () => {
 
         it('should call next when the user has an active session with appeal data', async () => {
 
-            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
-            const request: Request = getRequestSubsitute(appData);
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
+            const request: Request = getRequestSubstitute(
+                {
+                    [COMPANY_NUMBER_QUERY_KEY]: companyId,
+                } as any,
+                appData
+            );
 
             const appealService = createAppealService('resolves', appData.appeal!);
             const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
@@ -108,10 +120,39 @@ describe('LoadAppealMiddleware', () => {
 
         });
 
+        it('should load the appeal in appeal id and call next', async () => {
+
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
+            const request: Request = getRequestSubstitute(
+                {
+                    [COMPANY_NUMBER_QUERY_KEY]: companyId,
+                    [APPEAL_ID_QUERY_KEY]: appealId
+                } as any,
+                appData
+            );
+
+            const appealService = createAppealService('resolves', appData.appeal!);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+
+            const nextFunction = createSubstituteOf<NextFunction>();
+            const response = createSubstituteOf<Response>();
+
+            await loadAppealMiddleware.handler(request, response, nextFunction);
+            nextFunction.received(1);
+            appealService.received(1).getAppeal(Arg.all());
+
+        });
+
         it('should throw an error if the company number is invalid', async () => {
 
-            const appData = { appeal: createDefaultAppeal(DEFAULT_ATACHMENTS) };
-            const request: Request = getRequestSubsitute(appData);
+            const appData = { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) };
+            const request = getRequestSubstitute(
+                {
+                    [COMPANY_NUMBER_QUERY_KEY]: companyId,
+                    [APPEAL_ID_QUERY_KEY]: appealId
+                } as any,
+                appData
+            );
 
             request.query[COMPANY_NUMBER_QUERY_KEY] = 'abc';
 

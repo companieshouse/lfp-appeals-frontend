@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import nock = require('nock');
 
 import { Appeal } from 'app/models/Appeal';
@@ -55,7 +55,8 @@ describe('AppealsService', () => {
 
         it('should save appeal and return location header', async () => {
 
-            const RESOURCE_LOCATION: string = '/companies/00345567/appeals/555';
+            const appealId: string = '555';
+            const RESOURCE_LOCATION: string = `/companies/00345567/appeals/${appealId}`;
 
             nock(HOST)
                 .post(APPEALS_URI,
@@ -66,14 +67,33 @@ describe('AppealsService', () => {
                         },
                     }
                 )
-                .reply(201, {}, { 'location': RESOURCE_LOCATION });
+                .reply(201, appealId, { 'location': RESOURCE_LOCATION });
 
             await appealsService.save(appeal, BEARER_TOKEN)
-                .then((response) => {
-                    expect(response).to.equal(RESOURCE_LOCATION);
+                .then((response: string) => {
+                    expect(response).to.equal(appealId);
                 });
         });
 
+        it('should throw an error if resource could not be created', async () => {
+            nock(HOST)
+                .post(APPEALS_URI,
+                    JSON.stringify(appeal),
+                    {
+                        reqheaders: {
+                            authorization: 'Bearer ' + BEARER_TOKEN,
+                        },
+                    }
+                )
+                .reply(201);
+
+            try {
+                await appealsService.save(appeal, BEARER_TOKEN);
+                assert.fail();
+            } catch (err) {
+                expect(err.message).to.contain('Could not create appeal resource');
+            }
+        });
 
         it('should return status 401 when auth header is invalid', async () => {
 

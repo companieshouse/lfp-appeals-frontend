@@ -58,7 +58,7 @@ describe('EvidenceDownloadController', () => {
         appealsService: AppealsService): Application {
 
         return createApp(
-            { appeal: internalUserAppeal },
+            {},
             (container: Container) => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
                 container.rebind(AppealsService).toConstantValue(appealsService);
@@ -68,26 +68,45 @@ describe('EvidenceDownloadController', () => {
                     [AppealsPermissionKeys.download]: 1,
                     [AppealsPermissionKeys.view]: 1
                 });
-                session.saveExtraData(APPLICATION_DATA_KEY, { appeal: externalUserAppeal });
+                session.saveExtraData(APPLICATION_DATA_KEY, { appeal: internalUserAppeal });
                 return session;
             }
         );
     }
 
+    enum User {
+        Internal = 'Internal CH user',
+        External = 'External CH user '
+    }
+
     type AppConfig = {
-        testDescription: string,
+        user: User,
+        links: string[],
         appData: Partial<ApplicationData>,
         configureApp: (fileTransferService: FileTransferService, appealsService: AppealsService) => Application;
     };
 
+
+    const FILE_ID = DEFAULT_ATTACHMENTS[0].id;
+    const APPEAL_ID = '345';
+
     const appConfigs: AppConfig[] = [
         {
-            testDescription: 'As an Internal user',
+            user: User.Internal,
+            links: [
+                `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}?a=${APPEAL_ID}&c=NI000000`,
+                `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?a=${APPEAL_ID}&c=NI000000`
+
+            ],
             appData: { appeal: internalUserAppeal },
             configureApp: createInternalUserAppConfig
         },
         {
-            testDescription: 'As an External user',
+            user: User.External,
+            links: [
+                `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}?c=NI000000`,
+                `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?c=NI000000`
+            ],
             appData: { appeal: externalUserAppeal },
             configureApp: createExternalUserAppConfig
         }
@@ -95,14 +114,9 @@ describe('EvidenceDownloadController', () => {
 
     function generateTests(appConfig: AppConfig): void {
 
-        const { testDescription, appData, configureApp } = appConfig;
+        const { user, appData, configureApp } = appConfig;
 
-        describe(`${testDescription}`, () => {
-
-            const FILE_ID = DEFAULT_ATTACHMENTS[0].id;
-            const APPEAL_ID = '345';
-            const DOWNLOAD_PROMPT_URL = `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}?a=${APPEAL_ID}&c=NI000000`;
-            const EXPECTED_DOWNLOAD_LINK_URL = `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?a=${APPEAL_ID}&c=NI000000`;
+        describe(`As a ${user}`, () => {
 
             const contentDisposition = `attachment; filename=${DEFAULT_ATTACHMENTS[0].name}`;
 
@@ -133,12 +147,22 @@ describe('EvidenceDownloadController', () => {
                     const app: Application = configureApp(fileTransferService, appealsService);
 
                     await request(app)
-                        .get(DOWNLOAD_PROMPT_URL)
+                        .get(appConfig.links[0])
                         .then(res => {
                             appealsService.received();
                             fileTransferService.received();
-                            expect(res.status).to.eq(200);
-                            expect(res.text).to.contain(`href="${EXPECTED_DOWNLOAD_LINK_URL}"`);
+
+                            switch (user) {
+                                case User.Internal: {
+                                    expect(res.status).to.eq(200);
+                                    expect(res.text).to.contain(`href="${appConfig.links[1]}"`);
+                                }
+                                    break;
+                                case User.External: {
+                                    expect(res.status).to.eq(500);
+                                }
+                                    break;
+                            }
                         });
 
                 });
@@ -193,10 +217,21 @@ describe('EvidenceDownloadController', () => {
                     const app: Application = configureApp(fileTransferService, appealsService);
 
                     await request(app)
-                        .get(EXPECTED_DOWNLOAD_LINK_URL)
+                        .get(appConfig.links[1])
                         .then(res => {
-                            fileTransferService.received();
-                            appealsService.received();
+                            switch (appConfig.user) {
+                                case User.External: {
+                                    fileTransferService.received().download(Arg.any());
+                                    appealsService.didNotReceive().getAppeal(Arg.any());
+                                }
+                                    break;
+                                case User.Internal: {
+                                    fileTransferService.received().download(Arg.any());
+                                    appealsService.received().getAppeal(Arg.any());
+                                }
+                                    break;
+                            }
+
                             expect(res.header['content-disposition']).eq(contentDisposition);
                             expect(res.status).to.eq(OK);
                         });
@@ -226,7 +261,7 @@ describe('EvidenceDownloadController', () => {
                         const app: Application = configureApp(fileTransferService, appealsService);
 
                         await request(app)
-                            .get(EXPECTED_DOWNLOAD_LINK_URL)
+                            .get(appConfig.links[1])
                             .then(res => {
                                 fileTransferService.received();
                                 appealsService.received();
@@ -260,7 +295,7 @@ describe('EvidenceDownloadController', () => {
                     const app: Application = configureApp(fileTransferService, appealsService);
 
                     await request(app)
-                        .get(EXPECTED_DOWNLOAD_LINK_URL)
+                        .get(appConfig.links[1])
                         .then(res => {
                             fileTransferService.received();
                             appealsService.received();
@@ -301,7 +336,7 @@ describe('EvidenceDownloadController', () => {
                         const app: Application = configureApp(fileTransferService, appealsService);
 
                         await request(app)
-                            .get(EXPECTED_DOWNLOAD_LINK_URL)
+                            .get(appConfig.links[1])
                             .then(res => {
                                 appealsService.received();
                                 fileTransferService.received();
