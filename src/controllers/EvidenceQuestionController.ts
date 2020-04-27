@@ -40,8 +40,8 @@ const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
 
-@provide(Processor)
-class Processor implements FormActionProcessor {
+@provide(EvidenceUploadPermissionsProcessor)
+class EvidenceUploadPermissionsProcessor implements FormActionProcessor {
     process(request: RequestWithNavigation): void {
         const session = request.session.unsafeCoerce();
         const applicationData: ApplicationData = session.getExtraData()
@@ -59,6 +59,6 @@ class Processor implements FormActionProcessor {
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, FileTransferFeatureMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
-        super(template, navigation, new FormValidator(schema), undefined, [Processor]);
+        super(template, navigation, new FormValidator(schema), undefined, [EvidenceUploadPermissionsProcessor]);
     }
 }

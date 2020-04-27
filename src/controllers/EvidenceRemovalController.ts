@@ -59,7 +59,7 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
  */
 @provide(Processor)
 class Processor implements FormActionProcessor {
-    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) { }
+    constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {}
 
     async process(request: Request): Promise<void> {
         if (request.body.remove !== YesNo.yes) {
