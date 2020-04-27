@@ -87,7 +87,7 @@ describe('EvidenceDownloadController', () => {
             configureApp: createInternalUserAppConfig
         },
         {
-            testDescription: 'As as External user',
+            testDescription: 'As an External user',
             appData: { appeal: externalUserAppeal },
             configureApp: createExternalUserAppConfig
         }

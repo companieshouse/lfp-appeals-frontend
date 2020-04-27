@@ -63,6 +63,6 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        return { ...appeal, companyNumber: appeal.penaltyIdentifier?.companyNumber };
+        return appeal;
     }
 }
