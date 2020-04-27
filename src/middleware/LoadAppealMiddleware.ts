@@ -3,7 +3,7 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import wrap from 'express-async-handler';
+import makeAsyncRequestHandler from 'express-async-handler';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
@@ -22,7 +22,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
     constructor(@inject(AppealsService) private readonly appealsService: AppealsService) {
         super();
     }
-    public handler: RequestHandler = wrap(
+    public handler: RequestHandler = makeAsyncRequestHandler(
         // @ts-ignore
         async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
@@ -40,7 +40,6 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 new SchemaValidator(companyNumberSchema).validate(companyNumber);
             } catch (err) {
                 throw new Error('Tried to load appeal from an invalid company number');
-
             }
 
             const token = req.session
