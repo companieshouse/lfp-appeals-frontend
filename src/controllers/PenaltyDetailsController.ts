@@ -24,12 +24,12 @@ const navigation = {
 };
 
 const sanitizeForm = (body: PenaltyIdentifier) => {
-    const legacyPrefixChars: string = 'PEN';
+    const legacyPrefix: string = 'PEN';
     const penalty = body.penaltyReference.toUpperCase();
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: penalty.startsWith(legacyPrefixChars) ? sanitizeLegacyPenalty(penalty) : penalty
+        penaltyReference: penalty.startsWith(legacyPrefix) ? sanitizeLegacyPenalty(penalty) : penalty
     };
 };
 
