@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
-import { BaseController, FormSanitizeFunction } from 'app/controllers/BaseController';
+import { BaseController, ChangeModeAction, FormSanitizeFunction } from 'app/controllers/BaseController';
 import {
     FormActionProcessor,
     FormActionProcessorConstructor
@@ -12,7 +12,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-type RequestWithNavigation = Request & { navigation: Navigation; };
+export type RequestWithNavigation = Request & { navigation: Navigation; };
 
 @provide(Processor)
 class Processor implements FormActionProcessor {
@@ -43,10 +43,11 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                           navigation: Navigation,
                           validator?: Validator,
                           formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          formActionProcessors?: FormActionProcessorConstructor[]) {
+                          formActionProcessors?: FormActionProcessorConstructor[],
+                          changeModeAction?: ChangeModeAction) {
         super(template, navigation, validator, formSanitizeFunction,
             [...formActionProcessors || [], Processor
-        ]);
+        ], changeModeAction);
     }
 
     async onGet(): Promise<void> {

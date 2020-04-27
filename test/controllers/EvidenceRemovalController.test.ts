@@ -35,6 +35,7 @@ describe('EvidenceRemovalController', () => {
     const attachment = { id: '123', name: 'note.txt' } as Attachment;
 
     describe('GET request', () => {
+
         it('should return 500 when file identifier is missing', async () => {
             const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
 
@@ -62,6 +63,20 @@ describe('EvidenceRemovalController', () => {
                     expect(response.text).to.include(`Are you sure you want to remove ${attachment.name}?`);
                 });
         });
+
+        it('should return 200 with rendered back button in change mode', async () => {
+            const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
+
+            await request(app).get(`${EVIDENCE_REMOVAL_PAGE_URI}`)
+                .query(`f=${attachment.id}`)
+                .query('cm=1')
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.include(`Are you sure you want to remove ${attachment.name}?`).and
+                        .to.include('href="/appeal-a-penalty/evidence-upload?cm=1"')
+                        .nested.includes('Back');
+                });
+        });
     });
 
     describe('POST request', () => {
@@ -87,6 +102,18 @@ describe('EvidenceRemovalController', () => {
                     .expect(response => {
                         expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                         expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI);
+                    });
+            });
+
+            it('should redirect to file upload page in change mode', async () => {
+                const app = createApp({ appeal: createAppealWithAttachments([attachment]) });
+
+                await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
+                    .query('cm=1')
+                    .send({ remove: YesNo.no })
+                    .expect(response => {
+                        expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                        expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI + '?cm=1');
                     });
             });
         });
@@ -128,6 +155,25 @@ describe('EvidenceRemovalController', () => {
 
                 service.received().delete(attachment.id);
             });
+
+            it('should redirect to file upload page when file identifier exists in session in change mode',
+                async () => {
+                    const service: SubstituteOf<FileTransferService> = createSubstituteOf<FileTransferService>();
+
+                    const app = createApp({ appeal: createAppealWithAttachments([attachment]) }, container => {
+                        container.rebind(FileTransferService).toConstantValue(service);
+                    });
+
+                    await request(app).post(EVIDENCE_REMOVAL_PAGE_URI)
+                        .query('cm=1')
+                        .send({ remove: YesNo.yes, id: attachment.id })
+                        .expect(response => {
+                            expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                            expect(response.get('Location')).to.be.equal(EVIDENCE_UPLOAD_PAGE_URI + '?cm=1');
+                        });
+
+                    service.received().delete(attachment.id);
+                });
         });
     });
 });
