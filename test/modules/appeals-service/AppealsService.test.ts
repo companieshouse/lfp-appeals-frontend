@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import nock = require('nock');
 
 import { Appeal } from 'app/models/Appeal';
@@ -75,6 +75,25 @@ describe('AppealsService', () => {
                 });
         });
 
+        it('should throw an error if resource could not be created', async () => {
+            nock(HOST)
+                .post(APPEALS_URI,
+                    JSON.stringify(appeal),
+                    {
+                        reqheaders: {
+                            authorization: 'Bearer ' + BEARER_TOKEN,
+                        },
+                    }
+                )
+                .reply(201);
+
+            try {
+                await appealsService.save(appeal, BEARER_TOKEN);
+                assert.fail();
+            } catch (err) {
+                expect(err.message).to.contain('Could not create appeal resource');
+            }
+        });
 
         it('should return status 401 when auth header is invalid', async () => {
 

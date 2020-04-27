@@ -43,7 +43,7 @@ export class AppealsService {
             .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
                     loggerInstance()
-                        .info(`${AppealsService.name} - save: created resource ${response.headers.location}`);
+                        .info(`${AppealsService.name} - save: created resource ${appeal.id} - ${response.headers.location}`);
                     return response.data.toString();
                 }
                 throw new Error('Could not create appeal resource');
