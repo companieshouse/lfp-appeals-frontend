@@ -12,6 +12,7 @@ import { loggerInstance } from './Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { companyNumberSchema } from 'app/models/PenaltyIdentifier.schema';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 export const APPEAL_ID_QUERY_KEY = 'a';
 export const COMPANY_NUMBER_QUERY_KEY = 'c';
@@ -37,7 +38,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 .orDefault({} as ApplicationData);
 
             try {
-                new SchemaValidator(companyNumberSchema).validate(companyNumber);
+                new SchemaValidator(companyNumberSchema).validate(sanitizeCompany(companyNumber));
             } catch (err) {
                 throw new Error('Tried to load appeal from an invalid company number');
             }
