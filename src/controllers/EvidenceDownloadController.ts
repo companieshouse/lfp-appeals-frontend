@@ -1,10 +1,15 @@
+import { SessionMiddleware } from 'ch-node-session-handler';
+import { Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller, httpGet, requestParam } from 'inversify-express-utils';
 import { Readable, Writable } from 'stream';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
+import { FileRestrictionsAuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
+import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
@@ -13,7 +18,13 @@ import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 const template = 'download-file';
 const errorCustomTemplate = 'error-custom';
 
-@controller(DOWNLOAD_FILE_PAGE_URI, FileTransferFeatureMiddleware)
+@controller(DOWNLOAD_FILE_PAGE_URI,
+    SessionMiddleware,
+    FileRestrictionsAuthMiddleware,
+    FileTransferFeatureMiddleware,
+    LoadAppealMiddleware,
+    FileRestrictionsMiddleware
+)
 export class EvidenceDownloadController extends BaseAsyncHttpController {
 
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
@@ -21,8 +32,9 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
     }
 
     @httpGet('/prompt/:fileId')
-    public renderPrompt(@requestParam('fileId') fileId: string): void {
-        this.httpContext.response.render(template, { fileId });
+    public async renderPrompt(@requestParam('fileId') fileId: string): Promise<void> {
+        const downloadPath = this.getDownloadPath(this.httpContext.request, fileId);
+        return this.render(template, { downloadPath });
     }
 
     @httpGet('/data/:fileId/download')
@@ -34,20 +46,38 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
             return this.renderDownloadError();
         }
 
-        let readable: Readable;
+        return await this.downloadAttachment(metadata, this.httpContext.response);
+    }
+
+    private async downloadAttachment(metadata: FileMetadata, res: Response): Promise<void> {
+
         try {
-            readable = await this.fileTransferService.download(fileId);
+            const downloadStream: Readable = await this.fileTransferService.download(metadata.id);
+            res.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
+            return this.pipeDataIntoStream(downloadStream, res);
+
         } catch (err) {
+
             if (err instanceof FileNotReadyError) {
                 return this.renderDownloadError();
             } else {
                 throw err;
             }
         }
-
-        this.httpContext.response.setHeader('content-disposition', `attachment; filename=${metadata.name}`);
-        return await this.pipeDataIntoStream(readable, this.httpContext.response);
     }
+
+    private getDownloadPath(req: Request, fileId: string): string {
+
+        const appealId = req.query[APPEAL_ID_QUERY_KEY];
+        const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY];
+
+        if (!appealId || !companyNumber) {
+            throw Error('Expected either appealId or company number as query parameters but none found');
+        }
+
+        return `${fileId}/download?a=${appealId}&c=${companyNumber}`;
+    }
+
 
     private async renderDownloadError(): Promise<void> {
         return this.renderWithStatus(FORBIDDEN)(errorCustomTemplate, {

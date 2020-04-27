@@ -71,7 +71,7 @@
                 Uploaded file
               </dt>
               <dd class="ch-upload-list__value">
-                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download" class="govuk-link">{{ attachment.name }}</a>
+                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download?c={{ companyNumber }}" class="govuk-link">{{ attachment.name }}</a>
               </dd>
               <dd class="ch-upload-list__actions">
                 <a class="govuk-link" href="{{ navigation.actions.removeFile }}f={{ attachment.id }}">Remove</a>

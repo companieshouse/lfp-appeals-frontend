@@ -2,7 +2,8 @@ import { AccessTokenKeys } from 'ch-node-session-handler/lib/session/keys/Access
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+import makeAsyncRequestHandler from 'express-async-handler';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
@@ -21,41 +22,41 @@ export class LoadAppealMiddleware extends BaseMiddleware {
     constructor(@inject(AppealsService) private readonly appealsService: AppealsService) {
         super();
     }
-    // @ts-ignore
-    public async handler(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public handler: RequestHandler = makeAsyncRequestHandler(
+        // @ts-ignore
+        async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
-        const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
+            const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
+            const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
 
-        const applicationData = req.session.chain(_ => _.getExtraData())
-            .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
-            .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve application data from session`))
-            .unsafeCoerce();
+            const session = req.session.unsafeCoerce();
 
-        try {
-            new SchemaValidator(companyNumberSchema).validate(companyNumber);
-        } catch (err) {
-            throw Error('Tried to load appeal from an invalid company number');
+            const applicationData = session.getExtraData()
+                .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
+                .ifNothing(() => session.saveExtraData(APPLICATION_DATA_KEY, {}))
+                .orDefault({} as ApplicationData);
 
-        }
-        if (applicationData?.appeal) {
-            loggerInstance().debug(`${LoadAppealMiddleware.name} - handler: user's session contains appeal`);
+            try {
+                new SchemaValidator(companyNumberSchema).validate(companyNumber);
+            } catch (err) {
+                throw new Error('Tried to load appeal from an invalid company number');
+            }
+
+            const token = req.session
+                .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
+                .chainNullable(signInInfo => signInInfo[SignInInfoKeys.AccessToken])
+                .chainNullable(accessToken => accessToken[AccessTokenKeys.AccessToken])
+                .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
+                .unsafeCoerce();
+
+            if (appealId && !applicationData.appeal) {
+                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
+                applicationData!.appeal = appeal;
+                session.saveExtraData(APPLICATION_DATA_KEY, applicationData);
+            }
+
             return next();
         }
-
-        const token = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .chainNullable(signInInfo => signInInfo[SignInInfoKeys.AccessToken])
-            .chainNullable(accessToken => accessToken[AccessTokenKeys.AccessToken])
-            .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
-            .unsafeCoerce();
-
-        if (appealId) {
-            const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
-            applicationData.appeal = appeal;
-        }
-
-        return next();
-    }
+    );
 
 }

@@ -51,7 +51,7 @@
           <ul class="govuk-list govuk-list--bullet">
             {% for attachment in reasons.other.attachments | reverse %}
               <li>
-                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download"
+                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download?c={{ penaltyIdentifier.companyNumber }}"
                    class="govuk-link">{{ attachment.name }}</a>
               </li>
             {% endfor %}

@@ -75,7 +75,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
-        return appeal.reasons?.other;
+        return { ...appeal.reasons?.other, companyNumber: appeal.penaltyIdentifier?.companyNumber };
     }
 
     private async renderUploadError(appeal: Appeal, text: string): Promise<void> {

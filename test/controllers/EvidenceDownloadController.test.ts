@@ -1,167 +1,327 @@
 import 'reflect-metadata';
 
-import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { SessionStore } from 'ch-node-session-handler';
+import { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
+import { Session } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { expect } from 'chai';
+import { Application } from 'express';
 import { FORBIDDEN, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
-import { Readable } from 'stream';
+import { Container } from 'inversify';
 import request from 'supertest';
+import { createSubstituteOf } from '../SubstituteFactory';
+import { createDefaultAppeal, createDefaultAttachments } from '../models/AppDataFactory';
+import { createReadable } from '../modules/file-transfer-service/StreamUtils';
+import { createSession } from '../utils/session/SessionFactory';
 
 import 'app/controllers/EvidenceDownloadController';
+import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
-import { createAppConfigurable } from 'test/ApplicationFactory';
-const createDefaultApp = (fileTransferService: FileTransferService) => createAppConfigurable(container => {
-    container.bind(SessionStore).toConstantValue(Substitute.for<SessionStore>());
-    container.bind(FileTransferService).toConstantValue(fileTransferService);
-});
+import { createApp } from 'test/ApplicationFactory';
+
+
 describe('EvidenceDownloadController', () => {
-    const FILE_ID = '123';
-    const DOWNLOAD_PROMPT_URL = `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}`;
-    const EXPECTED_DOWNLOAD_LINK_URL = `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download`;
 
-    const contentDisposition = `attachment; filename=hello.txt`;
-    const contentLength = 1000;
-    const contentType = `application/json`;
+    const DEFAULT_USER_ID = 'abc';
+    const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
-    const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
-    const expectedDownloadErrorMessage = 'Please try again later';
+    const internalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
+    internalUserAppeal.createdBy = { id: DEFAULT_USER_ID };
 
-    const metadataClean: FileMetadata = {
-        av_status: 'clean',
-        content_type: contentType,
-        id: FILE_ID,
-        name: 'hello.txt',
-        size: contentLength
+    const externalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
+
+    function createExternalUserAppConfig(
+        fileTransferService: FileTransferService,
+        appealsService: AppealsService): Application {
+
+        return createApp(
+            { appeal: externalUserAppeal },
+            (container: Container) => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(AppealsService).toConstantValue(appealsService);
+            },
+            (session: Session) => {
+                session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = DEFAULT_USER_ID;
+                return session;
+            }
+        );
+    }
+
+    function createInternalUserAppConfig(
+        fileTransferService: FileTransferService,
+        appealsService: AppealsService): Application {
+
+        return createApp(
+            { appeal: internalUserAppeal },
+            (container: Container) => {
+                container.rebind(FileTransferService).toConstantValue(fileTransferService);
+                container.rebind(AppealsService).toConstantValue(appealsService);
+            },
+            (_: Session) => {
+                const session = createSession('someSecret', true, true, {
+                    [AppealsPermissionKeys.download]: 1,
+                    [AppealsPermissionKeys.view]: 1
+                });
+                session.saveExtraData(APPLICATION_DATA_KEY, { appeal: externalUserAppeal });
+                return session;
+            }
+        );
+    }
+
+    type AppConfig = {
+        testDescription: string,
+        appData: Partial<ApplicationData>,
+        configureApp: (fileTransferService: FileTransferService, appealsService: AppealsService) => Application;
     };
 
-    const readable = new Readable();
-    readable.push('');
-    readable.push(null);
+    const appConfigs: AppConfig[] = [
+        {
+            testDescription: 'As an Internal user',
+            appData: { appeal: internalUserAppeal },
+            configureApp: createInternalUserAppConfig
+        },
+        {
+            testDescription: 'As an External user',
+            appData: { appeal: externalUserAppeal },
+            configureApp: createExternalUserAppConfig
+        }
+    ];
 
-    const fileTransferServiceProxy = (downloadResult: Promise<Readable>,
-                                      metadata: FileMetadata): FileTransferService => {
+    function generateTests(appConfig: AppConfig): void {
 
-        const proxy = Substitute.for<FileTransferService>();
-        // @ts-ignore
-        proxy.download(Arg.any()).mimicks(async (fileId: string) => downloadResult);
-        // @ts-ignore
-        proxy.getFileMetadata(Arg.any()).mimicks(async (fileId: string) => Promise.resolve(metadata));
-        return proxy;
-    };
+        const { testDescription, appData, configureApp } = appConfig;
 
-    it('should render the prompt page correctly', async () => {
+        describe(`${testDescription}`, () => {
 
-        const fileTransferService = Substitute.for<FileTransferService>();
+            const FILE_ID = DEFAULT_ATTACHMENTS[0].id;
+            const APPEAL_ID = '345';
+            const DOWNLOAD_PROMPT_URL = `${DOWNLOAD_FILE_PAGE_URI}/prompt/${FILE_ID}?a=${APPEAL_ID}&c=NI000000`;
+            const EXPECTED_DOWNLOAD_LINK_URL = `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?a=${APPEAL_ID}&c=NI000000`;
 
-        await request(createDefaultApp(fileTransferService))
-            .get(DOWNLOAD_PROMPT_URL)
-            .then(res => {
-                expect(res.status).to.eq(200);
-                expect(res.text).to.include(`href="${EXPECTED_DOWNLOAD_LINK_URL}"`);
-            });
+            const contentDisposition = `attachment; filename=${DEFAULT_ATTACHMENTS[0].name}`;
 
-    });
+            const expectedGenericErrorMessage = 'Sorry, there is a problem with the service';
+            const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
+            const expectedDownloadErrorMessage = 'Please try again later';
 
-    it('should start downloading the file when the file is valid', async () => {
-
-        const fakeFileTransferProxy =
-            fileTransferServiceProxy(Promise.resolve(readable), metadataClean);
-
-        await request(
-            createDefaultApp(fakeFileTransferProxy))
-            .get(EXPECTED_DOWNLOAD_LINK_URL)
-            .then(res => {
-                expect(res.header['content-disposition']).eq(contentDisposition);
-                expect(res.status).to.eq(OK);
-            });
-
-    });
-
-    it('should render an error page when the file service fails to download file', async () => {
-
-        const expectedErrorMessage = 'Sorry, there is a problem with the service';
-
-        const getBrokenFileTransferService =
-            (fileDownloadStatus: number) => {
-                const fileDownloadError = {
-                    message: `An error with code ${fileDownloadStatus} occurred`,
-                    statusCode: fileDownloadStatus
-                };
-                return fileTransferServiceProxy(Promise.reject(fileDownloadError), metadataClean);
+            const metadataClean: FileMetadata = {
+                av_status: 'clean',
+                content_type: DEFAULT_ATTACHMENTS[0].contentType,
+                id: DEFAULT_ATTACHMENTS[0].id,
+                name: DEFAULT_ATTACHMENTS[0].name,
+                size: DEFAULT_ATTACHMENTS[0].size
             };
+            describe('GET request: renderPrompt', () => {
 
-        const testAppWith = async (fileTransferService: FileTransferService) => {
+                it('should render the prompt page correctly', async () => {
 
-            await request(createDefaultApp(fileTransferService))
-                .get(EXPECTED_DOWNLOAD_LINK_URL)
-                .then(res => {
-                    // tslint:disable-next-line: no-unused-expression
-                    expect(res.header['content-disposition']).to.be.undefined;
-                    expect(res.text).to.contain(expectedErrorMessage);
+                    const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                        service.download(Arg.any()).resolves(createReadable(''));
+                        service.getFileMetadata(Arg.any()).resolves(metadataClean);
+                    });
+
+                    const appealsService = createSubstituteOf<AppealsService>(service => {
+                        service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                    });
+
+                    const app: Application = configureApp(fileTransferService, appealsService);
+
+                    await request(app)
+                        .get(DOWNLOAD_PROMPT_URL)
+                        .then(res => {
+                            appealsService.received();
+                            fileTransferService.received();
+                            expect(res.status).to.eq(200);
+                            expect(res.text).to.contain(`href="${EXPECTED_DOWNLOAD_LINK_URL}"`);
+                        });
+
                 });
 
-        };
+                it('should redirect to generic error page if file Id or company number is missing', async () => {
 
-        const statusFailureArray = [NOT_FOUND, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT, 0];
+                    const urls = [
+                        `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?a=${APPEAL_ID}`,
+                        `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?c=NI000000`,
+                        `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?`
+                    ];
 
-        for (const fileDownloadStatus of statusFailureArray) {
+                    for (const url of urls) {
 
-            const fileTransferService = getBrokenFileTransferService(fileDownloadStatus);
-            await testAppWith(fileTransferService);
+                        const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                            service.download(Arg.any()).resolves(createReadable(''));
+                            service.getFileMetadata(Arg.any()).resolves(metadataClean);
+                        });
 
-        }
+                        const appealsService = createSubstituteOf<AppealsService>(service => {
+                            service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                        });
 
-    });
+                        const app: Application = configureApp(fileTransferService, appealsService);
 
-    it('should render custom error page when the file service fails to download file with FileNotReady', async () => {
+                        await request(app)
+                            .get(url)
+                            .then(res => {
+                                appealsService.didNotReceive();
+                                fileTransferService.didNotReceive();
+                                expect(res.status).to.eq(500);
+                                expect(res.text).to.contain(expectedGenericErrorMessage);
+                            }).catch(console.error);
+                    }
 
-        const app = createDefaultApp(fileTransferServiceProxy(Promise.reject(
-            new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)),
-            metadataClean));
-
-        await request(app)
-            .get(EXPECTED_DOWNLOAD_LINK_URL)
-            .then(res => {
-                expect(res.status).to.equal(FORBIDDEN);
-                // tslint:disable-next-line: no-unused-expression
-                expect(res.header['content-disposition']).to.be.undefined;
-                expect(res.text)
-                    .to.contain(expectedDownloadErrorHeading)
-                    .and.to.contain(expectedDownloadErrorMessage);
-            });
-    });
-
-    it('should render custom error page during download when the status is invalid', async () => {
-
-        const createMetadata = (status: string): FileMetadata => {
-            return {
-                av_status: status as any,
-                content_type: contentType,
-                id: FILE_ID,
-                name: 'hello.txt',
-                size: contentLength
-            };
-        };
-
-        for (const status of ['infected', 'not-scanned']) {
-
-            const app = createDefaultApp(fileTransferServiceProxy(Promise.resolve(readable), createMetadata(status)));
-
-            await request(app)
-                .get(EXPECTED_DOWNLOAD_LINK_URL)
-                .then(res => {
-                    expect(res.status).to.equal(FORBIDDEN);
-                    // tslint:disable-next-line: no-unused-expression
-                    expect(res.header['content-disposition']).to.be.undefined;
-                    expect(res.text)
-                        .to.contain(expectedDownloadErrorHeading)
-                        .and.to.contain(expectedDownloadErrorMessage);
                 });
-        }
-    });
+            });
+
+            describe('GET request: download', () => {
+
+                it('should start downloading the file when the file is valid', async () => {
+
+                    const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                        service.download(Arg.any()).resolves(createReadable(''));
+                        service.getFileMetadata(Arg.any()).resolves(metadataClean);
+                    });
+
+                    const appealsService = createSubstituteOf<AppealsService>(service => {
+                        service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                    });
+
+                    const app: Application = configureApp(fileTransferService, appealsService);
+
+                    await request(app)
+                        .get(EXPECTED_DOWNLOAD_LINK_URL)
+                        .then(res => {
+                            fileTransferService.received();
+                            appealsService.received();
+                            expect(res.header['content-disposition']).eq(contentDisposition);
+                            expect(res.status).to.eq(OK);
+                        });
+
+                });
+
+                it('should render an error page when the file service fails to download file', async () => {
+
+                    const appealsService = createSubstituteOf<AppealsService>(service => {
+                        service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                    });
+
+                    const getBrokenFileTransferService =
+                        (fileDownloadStatus: number) => {
+                            const fileDownloadError = {
+                                message: `An error with code ${fileDownloadStatus} occured`,
+                                statusCode: fileDownloadStatus
+                            };
+                            return createSubstituteOf<FileTransferService>(service => {
+                                service.download(Arg.any()).rejects(fileDownloadError);
+                                service.getFileMetadata(Arg.any()).resolves(metadataClean);
+                            });
+                        };
+
+                    const testAppWith = async (fileTransferService: SubstituteOf<FileTransferService>) => {
+
+                        const app: Application = configureApp(fileTransferService, appealsService);
+
+                        await request(app)
+                            .get(EXPECTED_DOWNLOAD_LINK_URL)
+                            .then(res => {
+                                fileTransferService.received();
+                                appealsService.received();
+                                expect(res.text).to.contain(expectedGenericErrorMessage);
+                            });
+
+                    };
+
+                    const statusFailureArray = [NOT_FOUND, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT, 0];
+
+                    for (const fileDownloadStatus of statusFailureArray) {
+                        const fileTransferService = getBrokenFileTransferService(fileDownloadStatus);
+                        await testAppWith(fileTransferService);
+                    }
+                });
+
+                // tslint:disable-next-line: max-line-length
+                it('should render custom error page when file service fails to download file with FileNotReady', async () => {
+
+                    const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                        service.download(Arg.any()).rejects(
+                            new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)
+                        );
+                        service.getFileMetadata(Arg.any()).resolves(metadataClean);
+                    });
+
+                    const appealsService = createSubstituteOf<AppealsService>(service => {
+                        service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                    });
+
+                    const app: Application = configureApp(fileTransferService, appealsService);
+
+                    await request(app)
+                        .get(EXPECTED_DOWNLOAD_LINK_URL)
+                        .then(res => {
+                            fileTransferService.received();
+                            appealsService.received();
+                            expect(res.status).to.equal(FORBIDDEN);
+                            // tslint:disable-next-line: no-unused-expression
+                            expect(res.header['content-disposition']).to.be.undefined;
+                            expect(res.text)
+                                .to.contain(expectedDownloadErrorHeading)
+                                .and.to.contain(expectedDownloadErrorMessage);
+                        });
+                });
+
+                it('should render custom error page during download when the status is invalid', async () => {
+
+                    const createMetadata = (status: string): FileMetadata => {
+                        return {
+                            av_status: status as any,
+                            content_type: metadataClean.content_type,
+                            id: FILE_ID,
+                            name: metadataClean.name,
+                            size: metadataClean.size
+                        };
+                    };
+
+                    for (const status of ['infected', 'not-scanned']) {
+
+                        const fileTransferService = createSubstituteOf<FileTransferService>(service => {
+                            service.download(Arg.any()).rejects(
+                                new FileNotReadyError(`File download failed because "${FILE_ID}" file is either infected or has not been scanned yet`)
+                            );
+                            service.getFileMetadata(Arg.any()).resolves(createMetadata(status));
+                        });
+
+                        const appealsService = createSubstituteOf<AppealsService>(service => {
+                            service.getAppeal(Arg.any()).resolves(appData.appeal!);
+                        });
+
+                        const app: Application = configureApp(fileTransferService, appealsService);
+
+                        await request(app)
+                            .get(EXPECTED_DOWNLOAD_LINK_URL)
+                            .then(res => {
+                                appealsService.received();
+                                fileTransferService.received();
+                                expect(res.status).to.equal(FORBIDDEN);
+                                // tslint:disable-next-line: no-unused-expression
+                                expect(res.header['content-disposition']).to.be.undefined;
+                                expect(res.text)
+                                    .to.contain(expectedDownloadErrorHeading)
+                                    .and.to.contain(expectedDownloadErrorMessage);
+                            });
+                    }
+                });
+
+            });
+
+        });
+
+
+    }
+
+    appConfigs.forEach(generateTests);
 
 });

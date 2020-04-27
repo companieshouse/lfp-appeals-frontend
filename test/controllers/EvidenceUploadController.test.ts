@@ -101,9 +101,9 @@ describe('EvidenceUploadController', () => {
                 .expect((response: supertest.Response) => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
-                        .to.include('href="/appeal-a-penalty/download/data/1/download"')
+                        .to.include(`href="/appeal-a-penalty/download/data/1/download?c=${appealWithMaxAttachments.penaltyIdentifier.companyNumber}"`)
                         .nested.includes('some-file.jpeg')
-                        .and.to.include('href="/appeal-a-penalty/download/data/2/download"')
+                        .to.include(`href="/appeal-a-penalty/download/data/2/download?c=${appealWithMaxAttachments.penaltyIdentifier.companyNumber}"`)
                         .nested.includes('another-file.jpeg');
                 });
         });
