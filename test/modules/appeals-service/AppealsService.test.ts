@@ -55,7 +55,8 @@ describe('AppealsService', () => {
 
         it('should save appeal and return location header', async () => {
 
-            const RESOURCE_LOCATION: string = '/companies/00345567/appeals/555';
+            const appealId: string = '555';
+            const RESOURCE_LOCATION: string = `/companies/00345567/appeals/${appealId}`;
 
             nock(HOST)
                 .post(APPEALS_URI,
@@ -66,11 +67,11 @@ describe('AppealsService', () => {
                         },
                     }
                 )
-                .reply(201, {}, { 'location': RESOURCE_LOCATION });
+                .reply(201, appealId, { 'location': RESOURCE_LOCATION });
 
             await appealsService.save(appeal, BEARER_TOKEN)
-                .then((response) => {
-                    expect(response).to.equal(RESOURCE_LOCATION);
+                .then((response: string) => {
+                    expect(response).to.equal(appealId);
                 });
         });
 

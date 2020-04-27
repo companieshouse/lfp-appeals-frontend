@@ -49,7 +49,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
                 .unsafeCoerce();
 
-            if (appealId && !applicationData.appeal) {
+            if (appealId) {
                 const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
                 applicationData!.appeal = appeal;
                 session.saveExtraData(APPLICATION_DATA_KEY, applicationData);

@@ -40,12 +40,13 @@ export class AppealsService {
 
         return await axios
             .post(uri, appeal, this.getConfig(token))
-            .then((response: AxiosResponse) => {
+            .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
                     loggerInstance()
                         .info(`${AppealsService.name} - save: created resource ${response.headers.location}`);
-                    return response.headers.location;
+                    return response.data.toString();
                 }
+                throw new Error('Could not create appeal resource');
             })
             .catch(this.handleResponseError('save'));
     }
