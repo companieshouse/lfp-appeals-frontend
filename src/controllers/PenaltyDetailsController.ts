@@ -25,13 +25,13 @@ const navigation = {
 
 const sanitizeForm = (body: PenaltyIdentifier) => {
     const legacyPrefix: string = 'PEN';
-    const penalty: string  = body.penaltyReference;
+    const penalty: string  = body.penaltyReference.toUpperCase();
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: penalty.toUpperCase().startsWith(legacyPrefix)
+        penaltyReference: penalty.startsWith(legacyPrefix)
             ? sanitizeLegacyPenalty(penalty)
-            : penalty.toUpperCase()
+            : penalty
     };
 };
 
