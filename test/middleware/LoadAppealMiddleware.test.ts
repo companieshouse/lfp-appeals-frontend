@@ -18,7 +18,7 @@ import { AppealNotFoundError, AppealServiceError } from 'app/modules/appeals-ser
 describe('LoadAppealMiddleware', () => {
 
     const appealId = '123';
-    const companyId = 'NI000000';
+    const companyId = 'ni123';
     // @ts-ignore
     const createAppealService = (method: 'resolves' | 'rejects', data?: Appeal | any) => {
         const service = Substitute.for<AppealsService>();
