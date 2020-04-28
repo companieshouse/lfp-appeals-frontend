@@ -42,7 +42,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const hasSufficientPermissions = () =>
             this.hasAppealsPermissions(userProfile) ||
-            this.userCreatedAppeal(userProfile, appeal);
+            this.hasUserPermission(userProfile, appeal);
 
         if (hasSufficientPermissions() && this.getAttachment(appeal, fileId)) {
             return next();
@@ -63,7 +63,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             permissions[AppealsPermissionKeys.view] === 1;
     }
 
-    private userCreatedAppeal(userProfile: IUserProfile, appeal: Appeal): boolean {
+    private hasUserPermission(userProfile: IUserProfile, appeal: Appeal): boolean {
 
         // User must be creating a new appeal.
         if (!appeal.createdBy) {
