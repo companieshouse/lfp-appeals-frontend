@@ -49,6 +49,6 @@ export class AuthMiddleware extends BaseMiddleware {
 @provide(FileRestrictionsAuthMiddleware)
 export class FileRestrictionsAuthMiddleware extends AuthMiddleware {
     public getReturnToPage(req: Request): string {
-        return newUriFactory(req).createAbsoluteUri(req.originalUrl);
+        return encodeURIComponent(newUriFactory(req).createAbsoluteUri(req.originalUrl));
     }
 }
