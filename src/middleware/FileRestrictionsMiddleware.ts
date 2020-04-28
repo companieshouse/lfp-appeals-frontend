@@ -38,12 +38,11 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
         }
-        const adminPermissionFlag: string | undefined = signInInfo[SignInInfoKeys.AdminPermissions];
         const fileId: string = req.params.fileId;
 
         const hasSufficientPermissions = () =>
-            this.hasAdminPermissions(userProfile, adminPermissionFlag) ||
-            this.hasUserPermissions(userProfile, appeal);
+            this.hasAppealsPermissions(userProfile) ||
+            this.userCreatedAppeal(userProfile, appeal);
 
         if (hasSufficientPermissions() && this.getAttachment(appeal, fileId)) {
             return next();
@@ -55,11 +54,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         return this.renderForbiddenError(res);
     }
 
-    private hasAdminPermissions(userProfile: IUserProfile, adminPermissionFlag: string | undefined): boolean {
-
-        if (!adminPermissionFlag || adminPermissionFlag !== '1') {
-            return false;
-        }
+    private hasAppealsPermissions(userProfile: IUserProfile): boolean {
 
         const permissions = userProfile[UserProfileKeys.Permissions];
 
@@ -68,7 +63,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             permissions[AppealsPermissionKeys.view] === 1;
     }
 
-    private hasUserPermissions(userProfile: IUserProfile, appeal: Appeal): boolean {
+    private userCreatedAppeal(userProfile: IUserProfile, appeal: Appeal): boolean {
 
         // User must be creating a new appeal.
         if (!appeal.createdBy) {
