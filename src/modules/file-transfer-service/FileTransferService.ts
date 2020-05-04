@@ -34,15 +34,11 @@ export class FileTransferService {
         const data = new FormData();
         data.append('upload', file, fileName);
 
-        const config: AxiosRequestConfig = {
-            headers: {
+        return await axios
+            .post(this.url, data, this.getAxiosConfig({
                 ...this.prepareHeaders(),
                 ...data.getHeaders()
-            }
-        };
-
-        return await axios
-            .post(this.url, data, config)
+            }))
             .then((response: AxiosResponse) => { return response.data.id; })
             .catch(this.handleResponseError('upload', fileName));
     }
@@ -53,12 +49,8 @@ export class FileTransferService {
             throw new Error('File ID is missing');
         }
 
-        const config: AxiosRequestConfig = {
-            headers: this.prepareHeaders()
-        };
-
         return axios
-            .get<FileMetadata>(`${this.url}/${fileId}`, config)
+            .get<FileMetadata>(`${this.url}/${fileId}`, this.getAxiosConfig())
             .then((response: AxiosResponse<FileMetadata>) => response.data)
             .catch(this.handleResponseError('metadata retrieval', fileId));
     }
@@ -69,10 +61,8 @@ export class FileTransferService {
             throw new Error('File ID is missing');
         }
 
-        const config: AxiosRequestConfig = {
-            headers: this.prepareHeaders(),
-            responseType: 'stream'
-        };
+        const config = this.getAxiosConfig();
+        config.responseType = 'stream';
 
         return axios.get<Readable>(`${this.url}/${fileId}/download`, config)
             .then((response: AxiosResponse<Readable>) => response.data)
@@ -85,14 +75,22 @@ export class FileTransferService {
             throw new Error('File ID is missing');
         }
 
-        const config: AxiosRequestConfig = {
-            headers: this.prepareHeaders()
-        };
-
         return axios
-            .delete(`${this.url}/${fileId}`, config)
+            .delete(`${this.url}/${fileId}`, this.getAxiosConfig())
             .then(() => { return; })
             .catch(this.handleResponseError('deletion', fileId));
+    }
+
+    private getAxiosConfig(headers: any = {}): AxiosRequestConfig {
+
+        return {
+            headers: {
+                ...this.prepareHeaders(),
+                ...headers
+            },
+            proxy: false
+        };
+
     }
 
     private prepareHeaders(): Record<string, string> {
