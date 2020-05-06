@@ -88,7 +88,8 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
             {
                 ...this.prepareViewModelFromAppeal(appeal),
                 ...this.httpContext.request.body,
-                validationResult
+                ...this.prepareNavigationConfig(),
+                validationResult,
             }
         );
     }
