@@ -42,7 +42,6 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
         }
         const fileId: string = req.params.fileId;
-        console.log(applicationData);
 
         const hasSufficientPermissions = () =>
             this.hasAppealsPermissions(userProfile) ||
