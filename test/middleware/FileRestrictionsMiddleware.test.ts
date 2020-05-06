@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { expect } from 'chai';
@@ -29,10 +30,8 @@ describe('FileRestrictionsMiddleware', () => {
         data?: Partial<ApplicationData>,
         permissions?: any): Request => {
 
-        const session  = createSession('secret', true, admin, permissions);
-        session.setExtraData(APPLICATION_DATA_KEY,{
-            appeals: { ...data } || undefined
-        });
+        const session: Session = createSession('secret', true, admin, permissions);
+        session.setExtraData(APPLICATION_DATA_KEY, { ...data } || undefined );
 
         session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = userId;
 
@@ -59,7 +58,6 @@ describe('FileRestrictionsMiddleware', () => {
                 appData,
                 { [AppealsPermissionKeys.download]: 1, [AppealsPermissionKeys.view]: 1 }
             );
-
             const response = createSubstituteOf<Response>();
             const next = createSubstituteOf<NextFunction>();
 
@@ -269,7 +267,7 @@ describe('FileRestrictionsMiddleware', () => {
 
             const session = createSession('secret', true, false);
             session.setExtraData(APPLICATION_DATA_KEY, {
-                appeals: { appeal: undefined }
+                appeal: undefined
             });
 
             session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = userId;
@@ -289,10 +287,11 @@ describe('FileRestrictionsMiddleware', () => {
 
         it('should throw an error when the profile is missing in session', () => {
 
-            const session = createSession('secret', true, false);
+            const session: Session = createSession('secret', true, false);
             session.setExtraData(APPLICATION_DATA_KEY, {
-                appeals: { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) }
+                appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS)
             });
+
             delete session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile];
 
             const request: Request = {

@@ -21,8 +21,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const session = req.session;
 
-        const signInInfo: ISignInInfo | undefined = session!
-            .get<ISignInInfo>(SessionKey.SignInInfo);
+        const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (!signInInfo){
             loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`);
@@ -30,7 +29,12 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const appeal: Appeal = applicationData?.appeal || {} as Appeal;
+        const appeal = applicationData.appeal;
+
+        if (!appeal) {
+            loggerInstance()
+                .error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`);
+        }
 
         const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
 
@@ -38,6 +42,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
         }
         const fileId: string = req.params.fileId;
+        console.log(applicationData);
 
         const hasSufficientPermissions = () =>
             this.hasAppealsPermissions(userProfile) ||
@@ -85,7 +90,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             throw Error('File id must not be null');
         }
 
-        const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
+        const attachments: Attachment[] | undefined = appeal.reasons?.other?.attachments;
         return attachments && attachments.find(attachment => attachment.id === fileId);
     }
 }
