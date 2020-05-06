@@ -205,7 +205,8 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                         applicationData.appeal = that.prepareSessionModelPriorSave({} as Appeal, request.body);
                     }
 
-                    applicationData.appeal = that.prepareSessionModelPriorSave(applicationData.appeal, request.body);
+                    applicationData.appeal = that
+                        .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
 
                     await that.persistSession();
                 }
