@@ -254,7 +254,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
             });
     }
 
-    private prepareNavigationConfig(): any {
+    protected prepareNavigationConfig(): any {
 
         const cmQuery = this.httpContext.request.query.cm;
         const changeMode: boolean = cmQuery ? cmQuery === '1' : false;
