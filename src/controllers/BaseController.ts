@@ -1,4 +1,4 @@
-import { Maybe, Session, SessionStore } from 'ch-node-session-handler';
+import { Session, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
@@ -38,7 +38,6 @@ const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
 const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
 const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
-const sessionCookieSecret = getEnvOrThrow('COOKIE_SECRET');
 const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
 
 export interface FormActionHandler {
@@ -86,9 +85,15 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * Designed to be overridden.
      */
     protected prepareViewModel(): Record<string, any> & FORM {
-        return this.httpContext.request.session
-            .map(session => this.prepareViewModelFromSession(session))
-            .orDefault({} as Record<string, any> & FORM);
+        const session: Session | undefined = this.httpContext.request.session;
+        console.log(session);
+
+        if (session != null) {
+            return this.prepareViewModelFromSession(session);
+        }
+
+        return {} as Record<string, any> & FORM;
+
     }
 
     /**
@@ -100,9 +105,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     protected prepareViewModelFromSession(session: Session): Record<string, any> & FORM {
         const applicationData: ApplicationData = session
-            .getExtraData()
-            .chain<ApplicationData>(data => Maybe.fromNullable(data[APPLICATION_DATA_KEY]))
-            .orDefault({} as ApplicationData);
+            .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
         return this.prepareViewModelFromAppeal(applicationData.appeal || {});
     }
@@ -191,18 +194,18 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                     }
                 }
 
-                const session = request.session.extract();
+                const session = request.session;
                 if (session != null) {
-                    const applicationData: ApplicationData = session.getExtraData()
-                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-                        .orDefaultLazy(() => {
-                            const value = {} as ApplicationData;
-                            session.saveExtraData(APPLICATION_DATA_KEY, value);
-                            return value;
-                        });
 
-                    // tslint:disable-next-line: max-line-length
-                    applicationData.appeal = that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+                    let applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
+
+                    if (!applicationData) {
+                        applicationData = {} as ApplicationData;
+                        session.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                        applicationData.appeal = that.prepareSessionModelPriorSave({} as Appeal, request.body);
+                    }
+
+                    applicationData.appeal = that.prepareSessionModelPriorSave(applicationData.appeal, request.body);
 
                     await that.persistSession();
                 }
@@ -232,16 +235,11 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * Warning: it should not be overridden.
      */
     protected async persistSession(): Promise<void> {
-        const session = this.httpContext.request.session.unsafeCoerce();
+        const session = this.httpContext.request.session;
 
-        const result = await this.httpContext.container.get(SessionStore)
-            .store(Cookie.representationOf(session, sessionCookieSecret), session.data, sessionTimeToLiveInSeconds)
-            .run();
-
-        result.ifLeft(_ => {
-            loggerInstance().error(`${BaseController.name} - update session: failed to save session`);
-            throw new Error('Failed to save session');
-        });
+        await this.httpContext.container.get(SessionStore)
+            .store(Cookie.createFrom(this.httpContext.request.cookies[sessionCookieName]), session!.data,
+                    sessionTimeToLiveInSeconds);
 
         this.httpContext.response
             .cookie(sessionCookieName, this.httpContext.request.cookies[sessionCookieName], {

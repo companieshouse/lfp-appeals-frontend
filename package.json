@@ -1,4 +1,4 @@
-{
+git {
   "name": "lfp-appeals-frontend",
   "version": "0.0.1",
   "description": "This is a web application allowing users to appeal penalties received due to the late filling of their companies' accounts.",
@@ -25,7 +25,7 @@
     "axios": "^0.19.2",
     "body-parser": "^1.18.2",
     "ch-logging": "git+ssh://git@github.com/companieshouse/ch-structured-logging-node.git#a3e0dcc57f91f63803e02ceef2cc5e4038de9a19",
-    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#c85dad518b56374400ee48ce5340d7fbe24a4a5f",
+    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#2.1.1",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.15.5",

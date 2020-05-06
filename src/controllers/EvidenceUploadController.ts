@@ -52,11 +52,10 @@ const continueButtonValidator: Validator = {
 
     validate(request: Request): ValidationResult {
 
-        const appeal: Appeal = request.session
-            .chain(_ => _.getExtraData())
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .map(data => data.appeal)
-            .unsafeCoerce();
+        const applicationData: ApplicationData = request.session!
+            .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+        const appeal: Appeal = applicationData!.appeal;
 
         const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
 
@@ -105,11 +104,10 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
             'upload-file': {
                 async handle(request: Request, response: Response): Promise<void> {
 
-                    const appeal: Appeal = request.session
-                        .chain(_ => _.getExtraData())
-                        .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-                        .map(data => data.appeal)
-                        .unsafeCoerce();
+                    const applicationData: ApplicationData = request.session!
+                        .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+                    const appeal: Appeal = applicationData!.appeal;
 
                     try {
                         await parseFormData(request, response);
@@ -164,15 +162,15 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                         }
                     }
 
-                    const session = request.session.extract();
+                    const session = request.session;
                     if (session != null) {
-                        const applicationData: ApplicationData = session.getExtraData()
-                            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-                            .orDefaultLazy(() => {
-                                const value = {} as ApplicationData;
-                                session.saveExtraData(APPLICATION_DATA_KEY, value);
-                                return value;
-                            });
+
+                        let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+
+                        if (!applicationData) {
+                            applicationData = {} as ApplicationData;
+                            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                        }
 
                         applicationData.appeal =
                             that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);

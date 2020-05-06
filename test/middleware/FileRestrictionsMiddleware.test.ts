@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { expect } from 'chai';
@@ -16,7 +15,7 @@ import { createSession } from '../utils/session/SessionFactory';
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
-import { ApplicationData } from 'app/models/ApplicationData';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 
 describe('FileRestrictionsMiddleware', () => {
 
@@ -30,15 +29,15 @@ describe('FileRestrictionsMiddleware', () => {
         data?: Partial<ApplicationData>,
         permissions?: any): Request => {
 
-        const session = createSession('secret', true, admin, permissions);
-        session.data[SessionKey.ExtraData] = {
+        const session  = createSession('secret', true, admin, permissions);
+        session.setExtraData(APPLICATION_DATA_KEY,{
             appeals: { ...data } || undefined
-        };
+        });
 
         session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = userId;
 
         return {
-            session: Maybe.of(session),
+            session,
             params
         } as Request;
     };
@@ -269,14 +268,14 @@ describe('FileRestrictionsMiddleware', () => {
         it('should throw an error when an appeal object is not in session', () => {
 
             const session = createSession('secret', true, false);
-            session.data[SessionKey.ExtraData] = {
+            session.setExtraData(APPLICATION_DATA_KEY, {
                 appeals: { appeal: undefined }
-            };
+            });
 
             session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = userId;
 
             const request: Request = {
-                session: Maybe.of(session),
+                session,
                 params: { fileId: DEFAULT_ATTACHMENTS[0].id }
             } as any;
 
@@ -291,13 +290,13 @@ describe('FileRestrictionsMiddleware', () => {
         it('should throw an error when the profile is missing in session', () => {
 
             const session = createSession('secret', true, false);
-            session.data[SessionKey.ExtraData] = {
+            session.setExtraData(APPLICATION_DATA_KEY, {
                 appeals: { appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS) }
-            };
+            });
             delete session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile];
 
             const request: Request = {
-                session: Maybe.of(session),
+                session,
                 params: { fileId: DEFAULT_ATTACHMENTS[0].id }
             } as any;
 

@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { Maybe } from 'ch-node-session-handler';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
@@ -43,7 +42,7 @@ describe('Authentication Middleware', () => {
         it('should call next if the user is signed in', () => {
 
             const mockRequest = {
-                session: Maybe.of(createSession('secret'))
+                session: createSession('secret')
             } as Request;
             const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();
@@ -67,7 +66,7 @@ describe('Authentication Middleware', () => {
                 headers: {
                     host: 'localhost'
                 },
-                session: Maybe.of(unAuthedSession)
+                session: unAuthedSession
             } as Request;
             const mockResponse = Substitute.for<Response>();
             const mockNext = Substitute.for<NextFunction>();

@@ -1,5 +1,6 @@
 import Substitute from '@fluffy-spoon/substitute';
-import { EitherUtils, Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
@@ -31,16 +32,24 @@ export const createApp = (data?: Partial<ApplicationData>,
         const cookieName = getEnvOrThrow('COOKIE_NAME');
         const cookieSecret = getEnvOrThrow('COOKIE_SECRET');
 
-        const session: Session | undefined = data
-            ? configureSession(createSession(cookieSecret).saveExtraData(APPLICATION_DATA_KEY, data))
-            : undefined;
+        let session: Session | undefined = configureSession(createSession(cookieSecret));
 
-        const cookie = session ? Cookie.representationOf(session, cookieSecret) : null;
+        const sessionId = session!.data[SessionKey.Id];
+        const signature = session!.data[SessionKey.ClientSig];
+
+        if (data) {
+            session.setExtraData(APPLICATION_DATA_KEY, data);
+        }
+        else {
+            session = undefined;
+        }
+
+        const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
 
         const sessionStore = Substitute.for<SessionStore>();
 
         if (session && cookie) {
-            sessionStore.load(cookie).returns(EitherUtils.wrapValue(session.data));
+            sessionStore.load(cookie).resolves(session.data);
         }
 
         container.bind(SessionMiddleware).toConstantValue((req: Request, res: Response, next: NextFunction) => {

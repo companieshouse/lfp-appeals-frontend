@@ -1,6 +1,5 @@
 import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { controller } from 'inversify-express-utils';
 
@@ -48,9 +47,10 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
-        const userProfile = session.getValue<ISignInInfo>(SessionKey.SignInInfo)
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .unsafeCoerce();
+        console.log(session);
+        const signInInfo = session.get<ISignInInfo>(SessionKey.SignInInfo);
+
+        const userProfile = signInInfo?.user_profile;
 
         const model = {
             ...super.prepareViewModelFromSession(session),

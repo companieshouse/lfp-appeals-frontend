@@ -1,6 +1,4 @@
-import { AccessTokenKeys } from 'ch-node-session-handler/lib/session/keys/AccessTokenKeys';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import makeAsyncRequestHandler from 'express-async-handler';
@@ -29,12 +27,15 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
             const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
 
-            const session = req.session.unsafeCoerce();
 
-            const applicationData = session.getExtraData()
-                .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
-                .ifNothing(() => session.saveExtraData(APPLICATION_DATA_KEY, {}))
-                .orDefault({} as ApplicationData);
+            const session = req.session;
+
+            let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+
+            if (!applicationData) {
+                applicationData = {} as ApplicationData;
+                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+            }
 
             try {
                 new SchemaValidator(companyNumberSchema).validate(companyNumber);
@@ -42,17 +43,18 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Tried to load appeal from an invalid company number');
             }
 
-            const token = req.session
-                .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-                .chainNullable(signInInfo => signInInfo[SignInInfoKeys.AccessToken])
-                .chainNullable(accessToken => accessToken[AccessTokenKeys.AccessToken])
-                .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
-                .unsafeCoerce();
+            const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
+
+            const token: string | undefined = signInInfo?.access_token?.access_token;
+
+            if (!token){
+                loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`);
+            }
 
             if (appealId) {
-                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
+                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token!);
                 applicationData!.appeal = appeal;
-                session.saveExtraData(APPLICATION_DATA_KEY, applicationData);
+                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             return next();

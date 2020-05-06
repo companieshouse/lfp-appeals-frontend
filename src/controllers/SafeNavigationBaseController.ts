@@ -17,14 +17,14 @@ export type RequestWithNavigation = Request & { navigation: Navigation; };
 @provide(Processor)
 class Processor implements FormActionProcessor {
     process(request: RequestWithNavigation): void {
-        const session = request.session.unsafeCoerce();
-        const applicationData: ApplicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .orDefaultLazy(() => {
-                const value = {} as ApplicationData;
-                session.saveExtraData(APPLICATION_DATA_KEY, value);
-                return value;
-            });
+        const session = request.session;
+
+        let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+
+        if (!applicationData) {
+            applicationData = {} as ApplicationData;
+            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+        }
 
         const permissions = applicationData?.navigation?.permissions || [];
         const page = request.navigation.next(request);
@@ -51,12 +51,9 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
     }
 
     async onGet(): Promise<void> {
-        const session = this.httpContext.request.session.unsafeCoerce();
-        const applicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .orDefault({
-                navigation: {}
-            } as ApplicationData);
+        const session = this.httpContext.request.session;
+        const applicationData: ApplicationData | undefined = session!
+            .getExtraData(APPLICATION_DATA_KEY) || {navigation: {}} as ApplicationData;
 
         if (applicationData.navigation.permissions === undefined) {
             loggerInstance()

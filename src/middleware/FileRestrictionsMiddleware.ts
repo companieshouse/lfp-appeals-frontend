@@ -1,5 +1,4 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
@@ -22,18 +21,18 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
         const session = req.session;
 
-        const signInInfo: ISignInInfo =
-            session.chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-                .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`))
-                .unsafeCoerce();
+        const signInInfo: ISignInInfo | undefined = session!
+            .get<ISignInInfo>(SessionKey.SignInInfo);
 
-        const appeal: Appeal = session.chain(_ => _.getExtraData())
-            .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
-            .chainNullable(appData => appData.appeal)
-            .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`))
-            .unsafeCoerce();
+        if (!signInInfo){
+            loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`);
+        }
 
-        const userProfile: IUserProfile | undefined = signInInfo[SignInInfoKeys.UserProfile];
+        const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+        const appeal: Appeal = applicationData?.appeal || {} as Appeal;
+
+        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
 
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);

@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { Maybe } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
@@ -32,12 +31,12 @@ describe('LoadAppealMiddleware', () => {
     const getRequestSubstitute = (queries: { [query: string]: string; }, data?: Partial<ApplicationData>): Request => {
 
         const session = createSession('secret');
-        session.data[SessionKey.ExtraData] = {
+        session.setExtraData(APPLICATION_DATA_KEY, {
             appeals: { ...data } || undefined
-        };
+        });
 
         return {
-            session: Maybe.of(session),
+            session,
             query: queries
         } as Request;
     };
@@ -91,7 +90,7 @@ describe('LoadAppealMiddleware', () => {
             appealService.received().getAppeal(Arg.all());
 
             const appeal: Appeal = await request.session
-                .extract()?.data[SessionKey.ExtraData][APPLICATION_DATA_KEY].appeal;
+                ?.data[SessionKey.ExtraData][APPLICATION_DATA_KEY].appeal;
 
             expect(appeal).to.deep.equal(appData.appeal);
             nextFunction.received(1);

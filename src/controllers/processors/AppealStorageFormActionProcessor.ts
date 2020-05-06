@@ -1,5 +1,4 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 import { inject } from 'inversify';
@@ -7,6 +6,7 @@ import { provide } from 'inversify-binding-decorators';
 
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 
@@ -18,31 +18,22 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
-        const signInInfo = req.session
-            .map(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .unsafeCoerce();
+        const signInInfo: ISignInInfo | undefined = req.session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        const userId = signInInfo
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .map(userProfile => userProfile?.id as string)
-            .unsafeCoerce();
+        const userId: string | undefined = signInInfo?.user_profile?.id;
 
-        const accessToken = signInInfo
-            .map(info => info[SignInInfoKeys.AccessToken])
-            .map(token => token?.access_token as string)
-            .unsafeCoerce();
+        const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
-        const appeal = req.session
-            .chain(_ => _.getExtraData())
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .map(data => data.appeal)
-            .unsafeCoerce();
+        const applicationData: ApplicationData= req.session!
+            .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+        const appeal: Appeal = applicationData.appeal;
 
         loggerInstance()
             .debug(`${AppealStorageFormActionProcessor.name} - process: Saving appeal with data ${JSON.stringify(appeal)}`);
         loggerInstance()
             .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
-        appeal.id = await this.appealsService.save(appeal, accessToken);
+        appeal.id = await this.appealsService.save(appeal, accessToken!);
     }
 }

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import * as assert from 'assert';
-import { Maybe, Session } from 'ch-node-session-handler';
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -21,7 +21,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
 
         const processor = new UserEmailFormActionProcessor(emailService);
         try {
-            await processor.process({session: Maybe.empty() as Maybe<Session>} as Request);
+            await processor.process({session: undefined} as Request);
             assert.fail();
         } catch (err) {
             assert.equal(err.message, 'Maybe got coerced to a null');
@@ -35,7 +35,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
 
         const processor = new UserEmailFormActionProcessor(emailService);
         await processor.process({
-            session: Maybe.of(
+            session:
                 new Session({
                     [SessionKey.SignInInfo]: {
                         [SignInInfoKeys.UserProfile]: {
@@ -52,7 +52,6 @@ describe('UserEmailFormSubmissionProcessor', () => {
                         } as ApplicationData
                     }
                 })
-            )
         } as Request);
 
         emailService.received().send({

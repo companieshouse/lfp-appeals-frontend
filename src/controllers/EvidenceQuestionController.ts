@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
@@ -43,14 +43,14 @@ const schema: Joi.AnySchema = Joi.object({
 @provide(NavigationPermissionProcessor)
 class NavigationPermissionProcessor implements FormActionProcessor {
     process(request: RequestWithNavigation): void {
-        const session = request.session.unsafeCoerce();
-        const applicationData: ApplicationData = session.getExtraData()
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .orDefaultLazy(() => {
-                const value = {} as ApplicationData;
-                session.saveExtraData(APPLICATION_DATA_KEY, value);
-                return value;
-            });
+        const session: Session | undefined = request.session;
+
+        let applicationData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
+
+        if (!applicationData) {
+            applicationData = {} as ApplicationData;
+            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+        }
 
         applicationData?.navigation?.permissions.push(EVIDENCE_UPLOAD_PAGE_URI);
     }

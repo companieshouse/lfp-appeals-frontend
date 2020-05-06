@@ -66,11 +66,9 @@ class Processor implements FormActionProcessor {
             return;
         }
 
-        const appeal: Appeal = request.session
-            .chain(session => session.getExtraData())
-            .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
-            .map(applicationData => applicationData.appeal)
-            .unsafeCoerce();
+        const applicationData: ApplicationData | undefined = request.session!.getExtraData(APPLICATION_DATA_KEY);
+
+        const appeal: Appeal = applicationData!.appeal;
 
         const attachment: Attachment = findAttachment(appeal, request.body.id);
         await this.fileTransferService.delete(attachment.id);
