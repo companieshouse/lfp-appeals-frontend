@@ -35,6 +35,10 @@ export class UserEmailFormActionProcessor implements FormActionProcessor {
 
         const session = req.session;
 
+        if (!session){
+            throw new Error('Session is undefined');
+        }
+
         const signInInfo = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         const userProfile = signInInfo?.user_profile;

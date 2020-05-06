@@ -50,6 +50,10 @@ export class InternalEmailFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
+        if(req.session == null){
+            throw new Error('Session is undefined');
+        }
+
         const signInInfo = req.session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         const userProfile = signInInfo?.user_profile;

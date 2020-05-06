@@ -18,6 +18,10 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
+        if(req.session == null){
+            throw new Error('Session is undefined');
+        }
+
         const signInInfo: ISignInInfo | undefined = req.session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         const userId: string | undefined = signInInfo?.user_profile?.id;

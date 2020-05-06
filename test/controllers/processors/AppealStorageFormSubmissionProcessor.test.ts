@@ -42,7 +42,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
             await processor.process({session: undefined} as Request);
             assert.fail();
         } catch (err) {
-            assert.equal(err.message, 'Maybe got coerced to a null');
+            assert.equal(err.message, 'Session is undefined');
         }
 
         appealsService.didNotReceive().save(Arg.any(), Arg.any());

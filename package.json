@@ -1,4 +1,4 @@
-git {
+{
   "name": "lfp-appeals-frontend",
   "version": "0.0.1",
   "description": "This is a web application allowing users to appeal penalties received due to the late filling of their companies' accounts.",
