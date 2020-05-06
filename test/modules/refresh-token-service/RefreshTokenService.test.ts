@@ -3,20 +3,21 @@ import { expect } from 'chai';
 import nock = require('nock');
 
 import { GRANT_TYPE } from 'app/Constants';
+import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { RefreshTokenError } from 'app/modules/refresh-token-service/errors';
 
 describe('RefreshTokenService', () => {
 
     const HOST: string = 'http://localhost:4000';
-    const CLIENT_ID = '1';
-    const CLIENT_SECRET = 'ABC';
+    const CLIENT_ID: string = '1';
+    const CLIENT_SECRET: string = 'ABC';
     const ACCESS_TOKEN: string = '123';
     const REFRESH_TOKEN: string = '12345';
     const URI: string = `/oauth2/token?grant_type=${GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
     const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
-    const refreshTokenData = {
+    const refreshTokenData: RefreshTokenData = {
         'expires_in': 3600,
         'token_type': 'Bearer',
         'access_token': 'AycNLq8ZZoeblglCUtdZUuoui9hhKn0t2rK3PxprD4fHMS21iLDb_lQf9mnkPIK5OYcGzv_I2b6RjgK2QGbWAg'

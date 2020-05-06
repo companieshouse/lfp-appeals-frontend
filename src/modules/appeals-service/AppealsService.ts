@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
 
@@ -32,6 +32,8 @@ export class AppealsService {
 
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
 
+        this.createResponseInterceptor(accessToken, refreshToken);
+
         this.checkArgumentOrThrow(appeal, 'Appeal data is missing');
         this.checkArgumentOrThrow(accessToken, 'Token is missing');
 
@@ -49,17 +51,6 @@ export class AppealsService {
                     return response.data.toString();
                 }
                 throw new Error('Could not create appeal resource');
-            })
-            .catch(err => {
-                if (err.response != null && err.response.status === UNAUTHORIZED) {
-                    // refresh token
-                    this.refreshTokenService.refresh(accessToken,refreshToken);
-                    // retry submit appeal
-                    // update token in session
-                }
-
-                // TODO
-                return '';
             })
             .catch(this.handleResponseError('save'));
     }
@@ -96,5 +87,23 @@ export class AppealsService {
                 `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `
             );
         };
+    }
+
+    private createResponseInterceptor(accessToken: string, refreshToken: string): void {
+
+        axios.interceptors.response.use((response: AxiosResponse) => {
+            return response;
+        }, async (error: AxiosError) => {
+
+            const response = error.response;
+
+            if (response && response.status === UNAUTHORIZED) {
+
+                const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
+                response.config = this.getConfig(newAccessToken);
+                return this.createResponseInterceptor(newAccessToken, refreshToken);
+            }
+            return Promise.reject(error);
+        });
     }
 }
