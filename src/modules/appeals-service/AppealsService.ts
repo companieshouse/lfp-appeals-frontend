@@ -4,11 +4,13 @@ import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, Appea
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
+import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 
 export class AppealsService {
 
-    constructor(private readonly uri: string) {
+    constructor(private readonly uri: string, private readonly refreshTokenService: RefreshTokenService) {
         this.uri = uri;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public async getAppeal(companyNumber: string, appealId: string, token: string): Promise<Appeal> {
@@ -28,10 +30,10 @@ export class AppealsService {
 
     }
 
-    public async save(appeal: Appeal, token: string): Promise<string> {
+    public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
 
         this.checkArgumentOrThrow(appeal, 'Appeal data is missing');
-        this.checkArgumentOrThrow(token, 'Token is missing');
+        this.checkArgumentOrThrow(accessToken, 'Token is missing');
 
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
@@ -39,7 +41,7 @@ export class AppealsService {
             .debug(`Making a POST request to ${uri}`);
 
         return await axios
-            .post(uri, appeal, this.getConfig(token))
+            .post(uri, appeal, this.getConfig(accessToken))
             .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
                     loggerInstance()
@@ -47,6 +49,17 @@ export class AppealsService {
                     return response.data.toString();
                 }
                 throw new Error('Could not create appeal resource');
+            })
+            .catch(err => {
+                if (err.response != null && err.response.status === UNAUTHORIZED) {
+                    // refresh token
+                    this.refreshTokenService.refresh(accessToken,refreshToken);
+                    // retry submit appeal
+                    // update token in session
+                }
+
+                // TODO
+                return '';
             })
             .catch(this.handleResponseError('save'));
     }

@@ -32,6 +32,11 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
             .map(token => token?.access_token as string)
             .unsafeCoerce();
 
+        const refreshToken = signInInfo
+            .map(info => info[SignInInfoKeys.AccessToken])
+            .map(token => token?.refresh_token as string)
+            .unsafeCoerce();
+
         const appeal = req.session
             .chain(_ => _.getExtraData())
             .map<ApplicationData>(data => data[APPLICATION_DATA_KEY])
@@ -43,6 +48,6 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
         loggerInstance()
             .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
-        appeal.id = await this.appealsService.save(appeal, accessToken);
+        appeal.id = await this.appealsService.save(appeal, accessToken, refreshToken);
     }
 }

@@ -10,6 +10,7 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -55,8 +56,15 @@ export function createContainer(): Container {
             }
         }));
 
+    const refreshTokenService = new RefreshTokenService(getEnvOrThrow(`OAUTH2_TOKEN_URI`),
+        getEnvOrThrow(`OAUTH2_CLIENT_ID`),
+        getEnvOrThrow(`OAUTH2_CLIENT_SECRET`));
+
+    container.bind(RefreshTokenService).toConstantValue(
+        refreshTokenService);
+
     container.bind(AppealsService).toConstantValue(
-        new AppealsService(getEnvOrThrow(`APPEALS_API_URL`)));
+        new AppealsService(getEnvOrThrow(`APPEALS_API_URL`), refreshTokenService));
 
     container.bind(FileTransferService).toConstantValue(
         new FileTransferService(getEnvOrThrow(`FILE_TRANSFER_API_URL`),
