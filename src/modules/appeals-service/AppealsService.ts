@@ -29,7 +29,7 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        return axios
+        return this.axiosInstance
             .get(uri, this.getConfig(accessToken))
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
@@ -49,7 +49,7 @@ export class AppealsService {
             .debug(`Making a POST request to ${uri}`);
 
         return await this.axiosInstance
-            .post(uri, appeal, this.getConfig(accessToken))
+            .post(uri, appeal)
             .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
                     loggerInstance()
