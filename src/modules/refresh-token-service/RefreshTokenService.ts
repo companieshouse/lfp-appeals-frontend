@@ -40,8 +40,6 @@ export class RefreshTokenService {
             .post(this.uri, requestParams)
             .then((response: AxiosResponse<RefreshTokenData>) => {
                 if (response.status === OK && response.data) {
-                    loggerInstance()
-                        .info(`${RefreshTokenService.name} - refresh: token refreshed ${response.data}`);
                     return response.data.access_token;
                 }
                 throw new Error('Could not refresh token');

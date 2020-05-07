@@ -4,7 +4,6 @@ import nock = require('nock');
 import { GRANT_TYPE } from 'app/Constants';
 import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
-import { RefreshTokenError } from 'app/modules/refresh-token-service/errors';
 
 describe('RefreshTokenService', () => {
 
@@ -75,8 +74,8 @@ describe('RefreshTokenService', () => {
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
             } catch (err) {
-                expect(err).to.be.instanceOf(RefreshTokenError).and.to.haveOwnProperty('message')
-                    .equal(`Refresh token failed due to error: request failed with status code 400`);
+                expect(err).to.be.instanceOf(Error)
+                    .and.to.haveOwnProperty('message').equal('Request failed with status code 400');
             }
         });
 
@@ -89,8 +88,8 @@ describe('RefreshTokenService', () => {
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
             } catch (err) {
-                expect(err).to.be.instanceOf(RefreshTokenError).and.to.haveOwnProperty('message')
-                    .equal(`Refresh token failed due to error: request failed with status code 500`);
+                expect(err).to.be.instanceOf(Error)
+                    .and.to.haveOwnProperty('message').equal('Request failed with status code 500');
             }
         });
     });

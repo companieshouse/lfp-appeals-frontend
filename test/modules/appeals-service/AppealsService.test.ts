@@ -7,7 +7,6 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import {
     AppealNotFoundError,
     AppealServiceError,
-    AppealUnauthorisedError,
     AppealUnprocessableEntityError
 } from 'app/modules/appeals-service/errors';
 import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
@@ -159,8 +158,7 @@ describe('AppealsService', () => {
             try {
                 await appealsService.save(appeal as Appeal, '1', REFRESH_TOKEN);
             } catch (err) {
-                expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
-                expect(err.message).to.contain(`save appeal unauthorised`);
+                expect(err.constructor.name).to.be.equal(AppealServiceError.name);
             }
         });
 
