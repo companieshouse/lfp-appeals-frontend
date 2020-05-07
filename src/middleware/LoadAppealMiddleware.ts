@@ -47,7 +47,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
 
             const token: string | undefined = signInInfo?.access_token?.access_token;
 
-            if (!token){
+            if (!token) {
                 loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`);
             }
 

@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
@@ -33,7 +34,7 @@ export class UserEmailFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
-        const session = req.session;
+        const session: Session | undefined = req.session;
 
         if (!session) {
             throw new Error('Session is undefined');
