@@ -128,7 +128,7 @@ describe('Safe navigation base controller', () => {
             process.env.COOKIE_SECRET = 'super long and very secure secret';
 
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any(), Arg.any(), Arg.any());
+                substitute.store(Arg.any(), Arg.any(), Arg.any()).resolves();
             });
 
             const container = new Container();
@@ -161,7 +161,7 @@ describe('Safe navigation base controller', () => {
 
         it ('should not store navigation pass for already visited page that user is about to be redirected to', () => {
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any());
+                substitute.store(Arg.any(), Arg.any(), Arg.any()).resolves();
             });
 
             const container = new Container();
@@ -200,7 +200,7 @@ describe('Safe navigation base controller', () => {
             }
 
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any());
+                substitute.store(Arg.any(),Arg.any(),Arg.any()).resolves();
             });
 
             const container = new Container();
