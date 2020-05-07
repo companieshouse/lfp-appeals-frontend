@@ -1,4 +1,3 @@
-import * as assert from 'assert';
 import { expect } from 'chai';
 import nock = require('nock');
 
@@ -89,7 +88,6 @@ describe('RefreshTokenService', () => {
 
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
-                assert.fail('Test should failed while it did not');
             } catch (err) {
                 expect(err).to.be.instanceOf(RefreshTokenError).and.to.haveOwnProperty('message')
                     .equal(`Refresh token failed due to error: request failed with status code 500`);
