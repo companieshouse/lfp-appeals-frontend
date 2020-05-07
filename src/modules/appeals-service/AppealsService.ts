@@ -30,7 +30,7 @@ export class AppealsService {
             .debug(`Making a GET request to ${uri}`);
 
         return axios
-            .get(uri, this.getConfig(accessToken))
+            .get(uri)
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
 
@@ -49,7 +49,7 @@ export class AppealsService {
             .debug(`Making a POST request to ${uri}`);
 
         return await this.axiosInstance
-            .post(uri, appeal, this.getConfig(accessToken))
+            .post(uri, appeal)
             .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
                     loggerInstance()
@@ -96,6 +96,15 @@ export class AppealsService {
     }
 
     private refreshTokenInterceptor(accessToken: string, refreshToken: string): void {
+
+        this.axiosInstance.interceptors.request.use(
+            (config: AxiosRequestConfig) => {
+                config.headers = this.getConfig(accessToken).headers;
+                return config;
+            },
+            async (error: AxiosError) => {
+                return Promise.reject(error);
+            });
 
         this.axiosInstance.interceptors.response.use((response: AxiosResponse) => {
             return response;
