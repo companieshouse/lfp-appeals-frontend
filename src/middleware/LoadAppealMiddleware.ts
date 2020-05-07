@@ -6,7 +6,6 @@ import makeAsyncRequestHandler from 'express-async-handler';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
-import { loggerInstance } from './Logger';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { companyNumberSchema } from 'app/models/PenaltyIdentifier.schema';
@@ -30,6 +29,10 @@ export class LoadAppealMiddleware extends BaseMiddleware {
 
             const session: Session | undefined = req.session;
 
+            if (!session) {
+                throw new Error('Session is undefined');
+            }
+
             let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
 
             if (!applicationData) {
@@ -48,7 +51,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             const token: string | undefined = signInInfo?.access_token?.access_token;
 
             if (!token) {
-                loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`);
+                throw new Error('Could not retrieve token from session');
             }
 
             if (appealId) {

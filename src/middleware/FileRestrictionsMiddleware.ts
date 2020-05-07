@@ -1,5 +1,6 @@
 import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
@@ -25,7 +26,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (!signInInfo) {
-            loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`);
+            throw new Error('Sign in info was expected in session, but none found');
         }
 
         const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
@@ -33,11 +34,10 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         const appeal: Appeal = applicationData.appeal;
 
         if (!appeal) {
-            loggerInstance()
-                .error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`);
+            throw new Error('Appeal was expected in session but none found');
         }
 
-        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
+        const userProfile: IUserProfile | undefined = signInInfo![SignInInfoKeys.UserProfile];
 
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);

@@ -33,19 +33,13 @@ export const createApp = (data?: Partial<ApplicationData>,
         const cookieName = getEnvOrThrow('COOKIE_NAME');
         const cookieSecret = getEnvOrThrow('COOKIE_SECRET');
 
-        let session: Session | undefined = configureSession(createSession(cookieSecret));
+        const session: Session | undefined = data ? configureSession(createSession(cookieSecret)) : undefined;
+        session?.setExtraData(APPLICATION_DATA_KEY, data);
 
-        const sessionId: string | undefined = session!.data[SessionKey.Id];
-        const signature: string | undefined = session!.data[SessionKey.ClientSig];
+        const sessionId = session?.data[SessionKey.Id];
+        const signature = session?.data[SessionKey.ClientSig];
 
-        if (data) {
-            session.setExtraData(APPLICATION_DATA_KEY, data);
-        }
-        else {
-            session = undefined;
-        }
-
-        const cookie: Cookie | null = session ? Cookie.createFrom(sessionId! + signature) : null;
+        const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
 
         const sessionStore = Substitute.for<SessionStore>();
 

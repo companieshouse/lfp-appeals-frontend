@@ -55,7 +55,11 @@ const continueButtonValidator: Validator = {
         const applicationData: ApplicationData = request.session!
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const appeal: Appeal = applicationData!.appeal;
+        const appeal: Appeal = applicationData.appeal;
+
+        if (!appeal){
+            throw new Error('Appeal is undefined');
+        }
 
         const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
 
@@ -107,7 +111,11 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     const applicationData: ApplicationData = request.session!
                         .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-                    const appeal: Appeal = applicationData!.appeal;
+                    const appeal: Appeal = applicationData.appeal;
+
+                    if (!appeal){
+                        throw new Error('Appeal was expected in session but none found');
+                    }
 
                     try {
                         await parseFormData(request, response);

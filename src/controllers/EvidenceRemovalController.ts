@@ -70,6 +70,10 @@ class Processor implements FormActionProcessor {
 
         const appeal: Appeal = applicationData!.appeal;
 
+        if (!appeal){
+            throw new Error('Appeal was expected in session but none found');
+        }
+
         const attachment: Attachment = findAttachment(appeal, request.body.id);
         await this.fileTransferService.delete(attachment.id);
         appeal.reasons.other.attachments!.splice(appeal.reasons.other.attachments!.indexOf(attachment), 1);

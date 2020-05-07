@@ -45,6 +45,10 @@ class NavigationPermissionProcessor implements FormActionProcessor {
     process(request: RequestWithNavigation): void {
         const session: Session | undefined = request.session;
 
+        if (!session) {
+            throw new Error('Session was expected but none found');
+        }
+
         let applicationData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
 
         if (!applicationData) {

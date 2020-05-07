@@ -87,11 +87,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     protected prepareViewModel(): Record<string, any> & FORM {
         const session: Session | undefined = this.httpContext.request.session;
 
-        if (session) {
-            return this.prepareViewModelFromSession(session);
-        }
-
-        return {} as Record<string, any> & FORM;
+        return this.prepareViewModelFromSession(session || {} as Session);
 
     }
 
@@ -196,12 +192,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 const session: Session | undefined = request.session;
 
                 if (session) {
-                    let applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
+                    const applicationData: ApplicationData = session
+                        .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-                    if (!applicationData) {
-                        applicationData = {} as ApplicationData;
-                        session.setExtraData(APPLICATION_DATA_KEY, applicationData);
-                    }
+                    session.setExtraData(APPLICATION_DATA_KEY, applicationData);
 
                     applicationData.appeal = that
                         .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
@@ -235,6 +229,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     protected async persistSession(): Promise<void> {
         const session: Session | undefined = this.httpContext.request.session;
+
+        if (!session){
+            throw new Error('Session was expected but none found');
+        }
 
         await this.httpContext.container.get(SessionStore)
             .store(Cookie.createFrom(this.httpContext.request.cookies[sessionCookieName]), session!.data,

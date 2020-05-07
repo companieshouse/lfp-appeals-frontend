@@ -48,9 +48,11 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
 
-        const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
+        const userProfile: IUserProfile| undefined = session.get<ISignInInfo>(SessionKey.SignInInfo)?.user_profile;
 
-        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
+        if (!userProfile){
+            throw new Error('User profile was expected in session but none found');
+        }
 
         const model = {
             ...super.prepareViewModelFromSession(session),
