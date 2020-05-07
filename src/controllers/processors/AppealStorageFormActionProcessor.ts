@@ -27,13 +27,14 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
             .map(userProfile => userProfile?.id as string)
             .unsafeCoerce();
 
-        const accessToken = signInInfo
-            .map(info => info[SignInInfoKeys.AccessToken])
+        const accessTokenMaybe = signInInfo
+            .map(info => info[SignInInfoKeys.AccessToken]);
+
+        const accessToken: string = accessTokenMaybe
             .map(token => token?.access_token as string)
             .unsafeCoerce();
 
-        const refreshToken = signInInfo
-            .map(info => info[SignInInfoKeys.AccessToken])
+        const refreshToken: string = accessTokenMaybe
             .map(token => token?.refresh_token as string)
             .unsafeCoerce();
 

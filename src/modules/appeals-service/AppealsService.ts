@@ -16,18 +16,21 @@ export class AppealsService {
         this.axiosInstance = axios.create();
     }
 
-    public async getAppeal(companyNumber: string, appealId: string, token: string): Promise<Appeal> {
+    public async getAppeal(companyNumber: string, appealId: string, accessToken: string,
+                           refreshToken: string): Promise<Appeal> {
 
         this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
         this.checkArgumentOrThrow(appealId, 'Appeal id is missing');
-        this.checkArgumentOrThrow(token, 'Token is missing');
+        this.checkArgumentOrThrow(accessToken, 'Token is missing');
+
+        this.refreshTokenInterceptor(accessToken, refreshToken);
 
         const uri: string = `${this.uri}/companies/${companyNumber}/appeals/${appealId}`;
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
         return axios
-            .get(uri, this.getConfig(token))
+            .get(uri, this.getConfig(accessToken))
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
 
@@ -38,7 +41,8 @@ export class AppealsService {
         this.checkArgumentOrThrow(accessToken, 'Access token is missing');
         this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
 
-        this.createResponseInterceptor(accessToken, refreshToken);
+        this.refreshTokenInterceptor(accessToken, refreshToken);
+
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
         loggerInstance()
@@ -91,7 +95,7 @@ export class AppealsService {
         };
     }
 
-    private createResponseInterceptor(accessToken: string, refreshToken: string): void {
+    private refreshTokenInterceptor(accessToken: string, refreshToken: string): void {
 
         this.axiosInstance.interceptors.response.use((response: AxiosResponse) => {
             return response;

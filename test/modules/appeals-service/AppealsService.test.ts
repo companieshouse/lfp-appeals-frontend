@@ -219,7 +219,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async companyNumber => {
                 try {
-                    await appealsService.getAppeal(companyNumber!, appealId, BEARER_TOKEN);
+                    await appealsService.getAppeal(companyNumber!, appealId, BEARER_TOKEN, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Company number is missing');
@@ -228,7 +228,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async testAppealId => {
                 try {
-                    await appealsService.getAppeal(testCompanyNumber, testAppealId!, BEARER_TOKEN);
+                    await appealsService.getAppeal(testCompanyNumber, testAppealId!, BEARER_TOKEN, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Appeal id is missing');
@@ -237,7 +237,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async invalidToken => {
                 try {
-                    await appealsService.getAppeal(testCompanyNumber, appealId, invalidToken!);
+                    await appealsService.getAppeal(testCompanyNumber, appealId, invalidToken!, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Token is missing');
@@ -253,7 +253,7 @@ describe('AppealsService', () => {
                 .reply(200, appeal);
 
             const returnedAppeal = await appealsService
-                .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
+                .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
 
             expect(returnedAppeal).to.deep.eq(appeal);
 
@@ -267,7 +267,7 @@ describe('AppealsService', () => {
 
             try {
                 await appealsService
-                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
+                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealNotFoundError.name);
                 expect(err.message).to.contain(`get appeal failed because appeal ${APPEAL_ID} was not found`);
@@ -285,7 +285,7 @@ describe('AppealsService', () => {
 
             try {
                 await appealsService
-                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN);
+                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
                 expect(err.message).to.include(`get appeal failed on appeal ${APPEAL_ID} with message`);

@@ -42,15 +42,22 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Tried to load appeal from an invalid company number');
             }
 
-            const token = req.session
+            const accessTokenMaybe = req.session
                 .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-                .chainNullable(signInInfo => signInInfo[SignInInfoKeys.AccessToken])
-                .chainNullable(accessToken => accessToken[AccessTokenKeys.AccessToken])
+                .chainNullable(signInInfo => signInInfo[SignInInfoKeys.AccessToken]);
+
+            const accessToken: string = accessTokenMaybe
+                .chainNullable(accessTokenNode => accessTokenNode[AccessTokenKeys.AccessToken])
                 .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve token from session`))
                 .unsafeCoerce();
 
+            const refreshToken: string = accessTokenMaybe
+                .chainNullable(accessTokenNode => accessTokenNode[AccessTokenKeys.RefreshToken])
+                .ifNothing(() => loggerInstance().error(`${LoadAppealMiddleware.name} - Could not retrieve access token from session`))
+                .unsafeCoerce();
+
             if (appealId) {
-                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token);
+                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, accessToken, refreshToken);
                 applicationData!.appeal = appeal;
                 session.saveExtraData(APPLICATION_DATA_KEY, applicationData);
             }
