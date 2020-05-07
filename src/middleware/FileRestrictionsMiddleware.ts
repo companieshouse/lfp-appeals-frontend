@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -19,17 +20,17 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
     public handler(req: Request, res: Response, next: NextFunction): void {
 
-        const session = req.session;
+        const session: Session | undefined = req.session;
 
         const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        if (!signInInfo){
+        if (!signInInfo) {
             loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`);
         }
 
         const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const appeal = applicationData.appeal;
+        const appeal: Appeal = applicationData.appeal;
 
         if (!appeal) {
             loggerInstance()

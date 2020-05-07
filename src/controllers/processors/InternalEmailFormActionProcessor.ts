@@ -50,19 +50,18 @@ export class InternalEmailFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
-        if(req.session == null){
+        if (!req.session) {
             throw new Error('Session is undefined');
         }
 
-        const signInInfo = req.session!.get<ISignInInfo>(SessionKey.SignInInfo);
+        const signInInfo: ISignInInfo | undefined = req.session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        const userProfile = signInInfo?.user_profile;
-
+        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
 
         const applicationData: ApplicationData = req.session!
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const email = buildEmail(userProfile!, applicationData.appeal, newUriFactory(req)
+        const email: Email = buildEmail(userProfile!, applicationData.appeal, newUriFactory(req)
             .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI));
 
         await this.emailService.send(email)

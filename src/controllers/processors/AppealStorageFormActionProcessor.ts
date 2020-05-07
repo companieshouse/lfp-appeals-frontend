@@ -18,7 +18,7 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
     async process(req: Request): Promise<void> {
 
-        if(req.session == null){
+        if (!req.session) {
             throw new Error('Session is undefined');
         }
 

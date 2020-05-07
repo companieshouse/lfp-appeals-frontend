@@ -35,17 +35,17 @@ export class UserEmailFormActionProcessor implements FormActionProcessor {
 
         const session = req.session;
 
-        if (!session){
+        if (!session) {
             throw new Error('Session is undefined');
         }
 
-        const signInInfo = session!.get<ISignInInfo>(SessionKey.SignInInfo);
+        const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        const userProfile = signInInfo?.user_profile;
+        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
 
         const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const email = buildEmail(userProfile!, applicationData.appeal);
+        const email: Email = buildEmail(userProfile!, applicationData.appeal);
 
         await this.emailService.send(email)
             .catch(_ => {

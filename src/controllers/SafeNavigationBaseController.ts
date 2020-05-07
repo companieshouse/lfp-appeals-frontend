@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
@@ -51,9 +52,11 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
     }
 
     async onGet(): Promise<void> {
-        const session = this.httpContext.request.session;
+
+        const session: Session | undefined = this.httpContext.request.session;
+
         const applicationData: ApplicationData | undefined = session!
-            .getExtraData(APPLICATION_DATA_KEY) || {navigation: {}} as ApplicationData;
+            .getExtraData(APPLICATION_DATA_KEY) || { navigation: {} } as ApplicationData;
 
         if (applicationData.navigation.permissions === undefined) {
             loggerInstance()

@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
@@ -27,8 +28,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             const companyNumber = req.query[COMPANY_NUMBER_QUERY_KEY] as string;
             const appealId = req.query[APPEAL_ID_QUERY_KEY] as string;
 
-
-            const session = req.session;
+            const session: Session | undefined = req.session;
 
             let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
 
@@ -52,8 +52,8 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             }
 
             if (appealId) {
-                const appeal = await this.appealsService.getAppeal(companyNumber, appealId, token!);
-                applicationData!.appeal = appeal;
+
+                applicationData!.appeal = await this.appealsService.getAppeal(companyNumber, appealId, token!);
                 session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
