@@ -29,7 +29,7 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        return axios
+        return this.axiosInstance
             .get(uri)
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
