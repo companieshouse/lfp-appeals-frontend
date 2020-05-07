@@ -1,5 +1,5 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 import { inject } from 'inversify';
@@ -33,17 +33,20 @@ export class UserEmailFormActionProcessor implements FormActionProcessor {
     constructor(@inject(EmailService) private readonly emailService: EmailService) { }
 
     async process(req: Request): Promise<void> {
-        const userProfile = req.session
-            .chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .unsafeCoerce() as IUserProfile;
 
-        const applicationData: ApplicationData = req.session
-            .chain(_ => _.getExtraData())
-            .map(data => data[APPLICATION_DATA_KEY] as ApplicationData)
-            .unsafeCoerce();
+        const session: Session | undefined = req.session;
 
-        const email = buildEmail(userProfile, applicationData.appeal);
+        if (!session) {
+            throw new Error('Session is undefined');
+        }
+
+        const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
+
+        const userProfile: IUserProfile | undefined = signInInfo?.user_profile;
+
+        const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+        const email: Email = buildEmail(userProfile!, applicationData.appeal);
 
         await this.emailService.send(email)
             .catch(_ => {

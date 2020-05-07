@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
 import * as assert from 'assert';
-import { Maybe, Session } from 'ch-node-session-handler';
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { IAccessToken, ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -39,10 +39,10 @@ describe('AppealStorageForSubmissionProcessor', () => {
     it('should throw error when session does not exist', async () => {
 
         try {
-            await processor.process({session: Maybe.empty() as Maybe<Session>} as Request);
+            await processor.process({session: undefined} as Request);
             assert.fail();
         } catch (err) {
-            assert.equal(err.message, 'Maybe got coerced to a null');
+            assert.equal(err.message, 'Session is undefined');
         }
 
         appealsService.didNotReceive().save(Arg.any(), Arg.any());
@@ -51,7 +51,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
     it('should store appeal', async () => {
 
         await processor.process({
-            session: Maybe.of(
+            session:
                 new Session({
                     [SessionKey.SignInInfo]: {
                         [SignInInfoKeys.AccessToken]: {
@@ -64,7 +64,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
                         }
                     }
                 })
-            )
+
         } as Request);
 
         appealsService.received().save(appeal, token);

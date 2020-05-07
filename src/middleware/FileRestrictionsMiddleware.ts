@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
 import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
@@ -20,20 +21,23 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
 
     public handler(req: Request, res: Response, next: NextFunction): void {
 
-        const session = req.session;
+        const session: Session | undefined = req.session;
 
-        const signInInfo: ISignInInfo =
-            session.chain(_ => _.getValue<ISignInInfo>(SessionKey.SignInInfo))
-                .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Sign in info was expected in session but none found`))
-                .unsafeCoerce();
+        const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        const appeal: Appeal = session.chain(_ => _.getExtraData())
-            .chainNullable<ApplicationData>(extraData => extraData[APPLICATION_DATA_KEY])
-            .chainNullable(appData => appData.appeal)
-            .ifNothing(() => loggerInstance().error(`${FileRestrictionsMiddleware.name} - Appeal was expected in session but none found`))
-            .unsafeCoerce();
+        if (!signInInfo) {
+            throw new Error('Sign in info was expected in session, but none found');
+        }
 
-        const userProfile: IUserProfile | undefined = signInInfo[SignInInfoKeys.UserProfile];
+        const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+        const appeal: Appeal = applicationData.appeal;
+
+        if (!appeal) {
+            throw new Error('Appeal was expected in session but none found');
+        }
+
+        const userProfile: IUserProfile | undefined = signInInfo![SignInInfoKeys.UserProfile];
 
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
@@ -86,7 +90,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             throw Error('File id must not be null');
         }
 
-        const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
+        const attachments: Attachment[] | undefined = appeal.reasons?.other?.attachments;
         return attachments && attachments.find(attachment => attachment.id === fileId);
     }
 }

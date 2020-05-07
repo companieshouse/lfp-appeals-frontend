@@ -1,7 +1,6 @@
 import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
@@ -31,9 +30,12 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
-        const userProfile = session.getValue<ISignInInfo>(SessionKey.SignInInfo)
-            .map(info => info[SignInInfoKeys.UserProfile])
-            .unsafeCoerce();
+
+        const userProfile: IUserProfile | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo)?.user_profile;
+
+        if (!userProfile){
+            throw new Error('User profile was expected in session but none found');
+        }
 
         const model = {
             ...super.prepareViewModelFromSession(session),
