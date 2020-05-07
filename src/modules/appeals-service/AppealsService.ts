@@ -8,7 +8,7 @@ import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTo
 
 export class AppealsService {
 
-    private axiosInstance: AxiosInstance;
+    private readonly axiosInstance: AxiosInstance;
 
     constructor(private readonly uri: string, private readonly refreshTokenService: RefreshTokenService) {
         this.uri = uri;
@@ -95,8 +95,7 @@ export class AppealsService {
 
     private refreshTokenInterceptor(accessToken: string, refreshToken: string): void {
 
-        this.axiosInstance.interceptors.request.use(
-            (config: AxiosRequestConfig) => {
+        this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
                 config.headers = this.getHeaders(accessToken);
                 return config;
             },
