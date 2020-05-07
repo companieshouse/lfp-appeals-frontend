@@ -31,12 +31,11 @@ export class AppealsService {
     }
 
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
+        this.checkArgumentOrThrow(appeal, 'Appeal data is missing');
+        this.checkArgumentOrThrow(accessToken, 'Access token is missing');
+        this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
 
         this.createResponseInterceptor(accessToken, refreshToken);
-
-        this.checkArgumentOrThrow(appeal, 'Appeal data is missing');
-        this.checkArgumentOrThrow(accessToken, 'Token is missing');
-
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
 
         loggerInstance()
@@ -100,8 +99,9 @@ export class AppealsService {
             if (response && response.status === UNAUTHORIZED) {
 
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
-                response.config = this.getConfig(newAccessToken);
-                return this.createResponseInterceptor(newAccessToken, refreshToken);
+                const newConfig: AxiosRequestConfig = response.config;
+                newConfig.headers = this.getConfig(newAccessToken).headers;
+                return axios.request(newConfig);
             }
             return Promise.reject(error);
         });
