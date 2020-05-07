@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
 
@@ -8,9 +8,12 @@ import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTo
 
 export class AppealsService {
 
+    private axiosInstance: AxiosInstance;
+
     constructor(private readonly uri: string, private readonly refreshTokenService: RefreshTokenService) {
         this.uri = uri;
         this.refreshTokenService = refreshTokenService;
+        this.axiosInstance = axios.create();
     }
 
     public async getAppeal(companyNumber: string, appealId: string, token: string): Promise<Appeal> {
@@ -41,7 +44,7 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a POST request to ${uri}`);
 
-        return await axios
+        return await this.axiosInstance
             .post(uri, appeal, this.getConfig(accessToken))
             .then((response: AxiosResponse<string>) => {
                 if (response.status === CREATED && response.headers.location) {
@@ -90,7 +93,7 @@ export class AppealsService {
 
     private createResponseInterceptor(accessToken: string, refreshToken: string): void {
 
-        axios.interceptors.response.use((response: AxiosResponse) => {
+        this.axiosInstance.interceptors.response.use((response: AxiosResponse) => {
             return response;
         }, async (error: AxiosError) => {
 
@@ -101,7 +104,7 @@ export class AppealsService {
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
                 const newConfig: AxiosRequestConfig = response.config;
                 newConfig.headers = this.getConfig(newAccessToken).headers;
-                return axios.request(newConfig);
+                return this.axiosInstance.request(newConfig);
             }
             return Promise.reject(error);
         });

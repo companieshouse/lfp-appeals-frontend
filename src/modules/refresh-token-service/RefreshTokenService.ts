@@ -4,7 +4,6 @@ import { OK } from 'http-status-codes';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
-import { RefreshTokenError } from 'app/modules/refresh-token-service/errors';
 
 export class RefreshTokenService {
 
@@ -46,9 +45,6 @@ export class RefreshTokenService {
                     return response.data.access_token;
                 }
                 throw new Error('Could not refresh token');
-            }).catch(err => {
-                throw new RefreshTokenError(`Refresh token failed due to error: ${(err.message || 'unknown error')
-                    .toLowerCase()}`);
             });
     }
 }

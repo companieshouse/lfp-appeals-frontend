@@ -1,12 +1,17 @@
 import { assert, expect } from 'chai';
 import nock = require('nock');
 
-import {GRANT_TYPE} from 'app/Constants';
+import { GRANT_TYPE } from 'app/Constants';
 import { Appeal } from 'app/models/Appeal';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from 'app/modules/appeals-service/errors';
-import {RefreshTokenData} from 'app/modules/refresh-token-service/RefreshTokenData';
-import {RefreshTokenService} from 'app/modules/refresh-token-service/RefreshTokenService';
+import {
+    AppealNotFoundError,
+    AppealServiceError,
+    AppealUnauthorisedError,
+    AppealUnprocessableEntityError
+} from 'app/modules/appeals-service/errors';
+import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
+import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 
 describe('AppealsService', () => {
     const appealId: string = '555';
@@ -147,6 +152,9 @@ describe('AppealsService', () => {
                 )
                 .reply(401);
 
+            nock(REFRESH_HOST)
+                .post(REFRESH_URI)
+                .reply(401, refreshTokenData);
 
             try {
                 await appealsService.save(appeal as Appeal, '1', REFRESH_TOKEN);
@@ -209,21 +217,20 @@ describe('AppealsService', () => {
     describe('Loading appeals', () => {
         it('should throw an error when arguments are not defined', () => {
 
-            const testAppealId = '123';
             const testCompanyNumber = 'NI000000';
 
             [undefined, null].forEach(async companyNumber => {
                 try {
-                    await appealsService.getAppeal(companyNumber!, testAppealId, BEARER_TOKEN);
+                    await appealsService.getAppeal(companyNumber!, appealId, BEARER_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Company number is missing');
                 }
             });
 
-            [undefined, null].forEach(async appealId => {
+            [undefined, null].forEach(async testAppealId => {
                 try {
-                    await appealsService.getAppeal(testCompanyNumber, appealId!, BEARER_TOKEN);
+                    await appealsService.getAppeal(testCompanyNumber, testAppealId!, BEARER_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Appeal id is missing');
@@ -232,7 +239,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async invalidToken => {
                 try {
-                    await appealsService.getAppeal(testCompanyNumber, testAppealId, invalidToken!);
+                    await appealsService.getAppeal(testCompanyNumber, appealId, invalidToken!);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Token is missing');

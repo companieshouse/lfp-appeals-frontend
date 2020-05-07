@@ -187,7 +187,7 @@ describe('CheckYourAppealController', () => {
 
                 container.rebind(AppealsService)
                     .toConstantValue(createSubstituteOf<AppealsService>(service => {
-                        service.save(Arg.any(), Arg.any())
+                        service.save(Arg.any(), Arg.any(), Arg.any())
                             .returns(Promise.reject(Error('Unexpected error')));
                     }));
             });
@@ -203,8 +203,11 @@ describe('CheckYourAppealController', () => {
             const token: string =
                 '/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==';
 
+            const refreshToken: string =
+                'xUHinh19D17SQV2BYRLnGEZgeovYhcVitzLJMxpGxXW0w+30EYBb+6yF44pDWPsPejI17R5JSwy/Cw5kYQKO2A==';
+
             const appealsService = createSubstituteOf<AppealsService>(service => {
-                service.save(Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
+                service.save(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
             });
 
             const app = createApp(applicationData, container => {
@@ -213,7 +216,7 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
-            appealsService.received().save(appeal, token);
+            appealsService.received().save(appeal, token, refreshToken);
 
         });
     });

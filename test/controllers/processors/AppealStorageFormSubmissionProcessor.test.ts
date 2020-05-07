@@ -35,6 +35,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
     };
 
     const token: string = 'abc';
+    const refreshToken: string = 'xyz';
 
     it('should throw error when session does not exist', async () => {
 
@@ -45,7 +46,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
             assert.equal(err.message, 'Maybe got coerced to a null');
         }
 
-        appealsService.didNotReceive().save(Arg.any(), Arg.any());
+        appealsService.didNotReceive().save(Arg.any(), Arg.any(), Arg.any());
     });
 
     it('should store appeal', async () => {
@@ -55,7 +56,8 @@ describe('AppealStorageForSubmissionProcessor', () => {
                 new Session({
                     [SessionKey.SignInInfo]: {
                         [SignInInfoKeys.AccessToken]: {
-                            access_token: token
+                            access_token: token,
+                            refresh_token: refreshToken
                         } as IAccessToken
                     } as ISignInInfo,
                     [SessionKey.ExtraData]: {
@@ -67,6 +69,6 @@ describe('AppealStorageForSubmissionProcessor', () => {
             )
         } as Request);
 
-        appealsService.received().save(appeal, token);
+        appealsService.received().save(appeal, token, refreshToken);
     });
 });
