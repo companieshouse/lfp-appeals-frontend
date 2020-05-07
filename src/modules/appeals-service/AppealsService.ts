@@ -67,15 +67,6 @@ export class AppealsService {
         }
     }
 
-    private getConfig(token: string): AxiosRequestConfig {
-        return {
-            headers: {
-                Accept: 'application/json',
-                Authorization: 'Bearer ' + token
-            }
-        };
-    }
-
     private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
         return (err: AxiosError) => {
             const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
@@ -95,11 +86,18 @@ export class AppealsService {
         };
     }
 
+    private getHeaders(token: string): AxiosRequestConfig['headers'] {
+        return {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+        };
+    }
+
     private refreshTokenInterceptor(accessToken: string, refreshToken: string): void {
 
         this.axiosInstance.interceptors.request.use(
             (config: AxiosRequestConfig) => {
-                config.headers = this.getConfig(accessToken).headers;
+                config.headers = this.getHeaders(accessToken);
                 return config;
             },
             async (error: AxiosError) => {
@@ -115,9 +113,8 @@ export class AppealsService {
             if (response && response.status === UNAUTHORIZED) {
 
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
-                const newConfig: AxiosRequestConfig = response.config;
-                newConfig.headers = this.getConfig(newAccessToken).headers;
-                return this.axiosInstance.request(newConfig);
+                response.config.headers = this.getHeaders(newAccessToken);
+                return this.axiosInstance(response.config);
             }
             return Promise.reject(error);
         });
