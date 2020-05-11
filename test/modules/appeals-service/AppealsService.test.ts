@@ -15,7 +15,8 @@ describe('AppealsService', () => {
     const CLIENT_ID: string = '1';
     const CLIENT_SECRET: string = 'ABC';
     const REFRESH_TOKEN: string = '12345';
-    const REFRESH_URI: string = `/oauth2/token?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
+    const REFRESH_URI: string = '/oauth2/token';
+    const REFRESH_PARAMS: string = `?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
     const REFRESH_HOST: string = 'http://localhost:4000';
 
     const refreshTokenData: RefreshTokenData = {
@@ -95,7 +96,7 @@ describe('AppealsService', () => {
                 .reply(401);
 
             const refreshMock = nock(REFRESH_HOST)
-                .post(REFRESH_URI)
+                .post(REFRESH_URI + REFRESH_PARAMS)
                 .reply(200, refreshTokenData);
 
             nock(APPEALS_HOST)
@@ -150,7 +151,7 @@ describe('AppealsService', () => {
                 .reply(401);
 
             nock(REFRESH_HOST)
-                .post(REFRESH_URI)
+                .post(REFRESH_URI + REFRESH_PARAMS)
                 .reply(401);
 
             try {
@@ -274,7 +275,7 @@ describe('AppealsService', () => {
                     .reply(401);
 
                 const refreshMock = nock(REFRESH_HOST)
-                    .post(REFRESH_URI)
+                    .post(REFRESH_URI + REFRESH_PARAMS)
                     .reply(200, refreshTokenData);
 
                 nock(APPEALS_HOST)
@@ -301,7 +302,7 @@ describe('AppealsService', () => {
                 .reply(401);
 
             nock(REFRESH_HOST)
-                .post(REFRESH_URI)
+                .post(REFRESH_URI + REFRESH_PARAMS)
                 .reply(401);
 
             try {
