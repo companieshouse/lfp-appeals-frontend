@@ -272,7 +272,7 @@ describe('AppealsService', () => {
                 .get(`${APPEALS_URI}/${APPEAL_ID}`)
                 .reply(401);
 
-            nock(REFRESH_HOST)
+            const refreshMock = nock(REFRESH_HOST)
                 .post(REFRESH_URI)
                 .reply(200, refreshTokenData);
 
@@ -284,6 +284,7 @@ describe('AppealsService', () => {
                 .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
 
             expect(returnedAppeal).to.deep.eq(appeal);
+            expect(refreshMock.isDone()).to.equal(true);
 
         });
 
