@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
 import nock = require('nock');
 
 import { REFRESH_TOKEN_GRANT_TYPE } from 'app/Constants';
@@ -56,20 +57,33 @@ describe('RefreshTokenService', () => {
 
             nock(HOST)
                 .post(URI)
-                .reply(200, refreshTokenData);
+                .reply(OK, refreshTokenData);
 
             await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN)
                 .then((response: string) => {
-                    console.log(response);
                     expect(response).to.equal(refreshTokenData.access_token);
                 });
+        });
+
+        it('should throw error when response data is empty', async () => {
+
+            nock(HOST)
+                .post(URI)
+                .reply(OK, {});
+
+            try {
+                await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
+            } catch (err) {
+                expect(err).to.be.instanceOf(Error)
+                    .and.to.haveOwnProperty('message').equal('Could not refresh token');
+            }
         });
 
         it('should return status 400 when refresh token is invalid', async () => {
 
             nock(HOST)
                 .post(URI)
-                .reply(400, refreshTokenDataInvalid);
+                .reply(BAD_REQUEST, refreshTokenDataInvalid);
 
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
@@ -83,7 +97,7 @@ describe('RefreshTokenService', () => {
 
             nock(HOST)
                 .post(URI)
-                .reply(500);
+                .reply(INTERNAL_SERVER_ERROR);
 
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);

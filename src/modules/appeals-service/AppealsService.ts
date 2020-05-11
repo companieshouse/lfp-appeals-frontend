@@ -30,7 +30,7 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        return this.axiosInstance
+        return await this.axiosInstance
             .get(uri)
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
@@ -106,7 +106,7 @@ export class AppealsService {
             return response;
         }, async (error: AxiosError) => {
 
-            const response = error.response;
+            const response: AxiosResponse | undefined = error.response;
 
             if (response && response.status === UNAUTHORIZED) {
                 loggerInstance()
