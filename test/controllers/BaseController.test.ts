@@ -4,7 +4,7 @@ import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
 import * as Joi from '@hapi/joi';
 import * as assert from 'assert';
-import { Maybe, Session } from 'ch-node-session-handler';
+import { Session } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
@@ -78,7 +78,7 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
-                        session: Maybe.of(new Session())
+                        session: new Session()
                     },
                     response
                 },
@@ -108,7 +108,7 @@ describe('Base controller', () => {
                     request: {
                         query: {},
                         body: formBody,
-                        session: Maybe.empty()
+                        session: undefined
                     },
                     response
                 },
@@ -134,7 +134,7 @@ describe('Base controller', () => {
                     request: {
                         query: {},
                         body: formBody,
-                        session: Maybe.empty()
+                        session: undefined
                     },
                     response
                 },
@@ -167,7 +167,7 @@ describe('Base controller', () => {
                 httpContext: {
                     request: {
                         query: {},
-                        session: Maybe.empty()
+                        session: undefined
                     },
                     response
                 }
@@ -194,7 +194,7 @@ describe('Base controller', () => {
                     container,
                     request: {
                         query: {},
-                        session: Maybe.empty()
+                        session: undefined
                     },
                     response
                 },

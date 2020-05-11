@@ -64,11 +64,11 @@ describe('EvidenceDownloadController', () => {
                 container.rebind(AppealsService).toConstantValue(appealsService);
             },
             (_: Session) => {
-                const session = createSession('someSecret', true, true, {
+                const session = createSession(process.env.COOKIE_SECRET as string, true, true, {
                     [AppealsPermissionKeys.download]: 1,
                     [AppealsPermissionKeys.view]: 1
                 });
-                session.saveExtraData(APPLICATION_DATA_KEY, { appeal: internalUserAppeal });
+                session.setExtraData(APPLICATION_DATA_KEY, { appeal: internalUserAppeal });
                 return session;
             }
         );

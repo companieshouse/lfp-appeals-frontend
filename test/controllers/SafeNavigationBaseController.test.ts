@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
-import { EitherUtils, ISession, Maybe, Session, SessionStore } from 'ch-node-session-handler';
+import { ISession, Session, SessionStore } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { Request, Response } from 'express';
 import { OK } from 'http-status-codes';
@@ -58,7 +58,7 @@ describe('Safe navigation base controller', () => {
                 httpContext: {
                     request: {
                         url: '/summary',
-                        session: Maybe.of(new Session({}))
+                        session: new Session({})
                     },
                     response
                 }
@@ -75,7 +75,7 @@ describe('Safe navigation base controller', () => {
                 httpContext: {
                     request: {
                         url: '/summary',
-                        session: Maybe.of(new Session({
+                        session: new Session({
                             [SessionKey.ExtraData]: {
                                 [APPLICATION_DATA_KEY]: {
                                     navigation: {
@@ -83,7 +83,7 @@ describe('Safe navigation base controller', () => {
                                     }
                                 } as Partial<ApplicationData>
                             }
-                        }))
+                        })
                     },
                     response
                 }
@@ -103,7 +103,7 @@ describe('Safe navigation base controller', () => {
                     request: {
                         path: '/intro',
                         query: {},
-                        session: Maybe.of(new Session({
+                        session: new Session({
                             [SessionKey.ExtraData]: {
                                 [APPLICATION_DATA_KEY]: {
                                     navigation: {
@@ -111,7 +111,7 @@ describe('Safe navigation base controller', () => {
                                     }
                                 } as Partial<ApplicationData>
                             }
-                        }))
+                        })
                     },
                     response
                 }
@@ -128,7 +128,7 @@ describe('Safe navigation base controller', () => {
             process.env.COOKIE_SECRET = 'super long and very secure secret';
 
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any(), Arg.any(), Arg.any()).returns(EitherUtils.wrapValue('1'));
+                substitute.store(Arg.any(), Arg.any(), Arg.any()).resolves();
             });
 
             const container = new Container();
@@ -142,9 +142,9 @@ describe('Safe navigation base controller', () => {
                         url: '/intro',
                         query: {},
                         cookies: {},
-                        session: Maybe.of(new Session({
+                        session: new Session({
                             [SessionKey.Id]: 'cookie-id'
-                        }))
+                        })
                     },
                     response: createSubstituteOf<Response>()
                 }
@@ -161,7 +161,7 @@ describe('Safe navigation base controller', () => {
 
         it ('should not store navigation pass for already visited page that user is about to be redirected to', () => {
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any()).returns(EitherUtils.wrapValue('OK'));
+                substitute.store(Arg.any(), Arg.any(), Arg.any()).resolves();
             });
 
             const container = new Container();
@@ -174,7 +174,7 @@ describe('Safe navigation base controller', () => {
                     request: {
                         url: '/intro',
                         query: {},
-                        session: Maybe.of(new Session({
+                        session: new Session({
                             [SessionKey.ExtraData]: {
                                 [APPLICATION_DATA_KEY]: {
                                     navigation: {
@@ -182,7 +182,7 @@ describe('Safe navigation base controller', () => {
                                     }
                                 } as Partial<ApplicationData>
                             }
-                        }))
+                        })
                     },
                     response: createSubstituteOf<Response>()
                 }
@@ -200,7 +200,7 @@ describe('Safe navigation base controller', () => {
             }
 
             const sessionStore = createSubstituteOf<SessionStore>(substitute => {
-                substitute.store(Arg.any()).returns(EitherUtils.wrapValue('OK'));
+                substitute.store(Arg.any(),Arg.any(),Arg.any()).resolves();
             });
 
             const container = new Container();
@@ -214,7 +214,7 @@ describe('Safe navigation base controller', () => {
                     request: {
                         url: '/intro',
                         query: {},
-                        session: Maybe.of(new Session({}))
+                        session: new Session({})
                     },
                     response: createSubstituteOf<Response>()
                 },

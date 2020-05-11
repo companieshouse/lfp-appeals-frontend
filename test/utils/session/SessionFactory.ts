@@ -1,6 +1,7 @@
 import { Session } from 'ch-node-session-handler/lib/session/model/Session';
 import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 
+
 export function createSession(
     secret: string,
     signedIn: boolean = true,
@@ -12,7 +13,7 @@ export function createSession(
     return new Session({
         '.id': id,
         '.client.signature': sig,
-        '.hijacked': null,
+        '.hijacked': undefined,
         '.oauth2_nonce': 'LBvC2UC8EJ4FbpNfUlrOchBgXk//9WZYezudvWpd5txyx3ziELR7AcajZvam2XoMNBTGTgIddrdMs1ccE9seUw==',
         '.zxs_key': 'CxKb2u0GILQPQalUuIYy1ZjL3QquDuYgnedwIafZC7V3mqJ0wH988/VZUMZMvlCs7rYLVHRvEagnYT8TBb9E3w==',
         expires: Date.now() + 3600 * 1000,
@@ -35,7 +36,7 @@ export function createSession(
                 surname: 'test',
                 locale: 'GB_en',
                 permissions,
-                scope: null
+                scope: undefined
             }
         }
     });

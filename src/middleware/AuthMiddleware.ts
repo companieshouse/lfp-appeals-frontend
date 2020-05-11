@@ -1,6 +1,5 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { Session } from 'ch-node-session-handler/lib/session/model/Session';
 import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { provide } from 'inversify-binding-decorators';
@@ -19,19 +18,17 @@ export class AuthMiddleware extends BaseMiddleware {
     }
 
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
-        req.session
-            .ifNothing(() => loggerInstance().debug(`${AuthMiddleware.name} - handler: Session object is missing!`));
+        if (!req.session) {
+            loggerInstance().debug(`${AuthMiddleware.name} - handler: Session object is missing!`);
+        }
 
-        const signedIn: boolean = req.session
-            .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .map((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.SignedIn] === 1)
-            .orDefault(false);
+        const signInInfo: ISignInInfo = req.session?.get<ISignInInfo>(SessionKey.SignInInfo) || {};
 
-        const userId = req.session
-            .chain((session: Session) => session.getValue<ISignInInfo>(SessionKey.SignInInfo))
-            .chainNullable((signInInfo: ISignInInfo) => signInInfo[SignInInfoKeys.UserProfile])
-            .map((userProfile: IUserProfile) => userProfile.id)
-            .extract();
+        const signedIn: boolean = signInInfo![SignInInfoKeys.SignedIn] === 1 || false;
+
+        const userProfile: IUserProfile = signInInfo![SignInInfoKeys.UserProfile] || {};
+
+        const userId: string | undefined = userProfile?.id;
 
         if (!signedIn) {
             const redirectURI = `${getEnvOrDefault('ACCOUNT_WEB_URL', '')}/signin?return_to=${this.getReturnToPage(req)}`;
