@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import nock = require('nock');
 
-import { GRANT_TYPE } from 'app/Constants';
+import { REFRESH_TOKEN_GRANT_TYPE } from 'app/Constants';
 import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 
@@ -12,7 +12,7 @@ describe('RefreshTokenService', () => {
     const CLIENT_SECRET: string = 'ABC';
     const ACCESS_TOKEN: string = '123';
     const REFRESH_TOKEN: string = '12345';
-    const URI: string = `/oauth2/token?grant_type=${GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
+    const URI: string = `/oauth2/token?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
     const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
     const refreshTokenData: RefreshTokenData = {
@@ -52,7 +52,7 @@ describe('RefreshTokenService', () => {
             });
         });
 
-        it('should refresh token', async () => {
+        it('should refresh access token', async () => {
 
             nock(HOST)
                 .post(URI)

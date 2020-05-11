@@ -34,7 +34,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
         }
     };
 
-    const token: string = 'abc';
+    const accessToken: string = 'abc';
     const refreshToken: string = 'xyz';
 
     it('should throw error when session does not exist', async () => {
@@ -56,7 +56,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
                 new Session({
                     [SessionKey.SignInInfo]: {
                         [SignInInfoKeys.AccessToken]: {
-                            access_token: token,
+                            access_token: accessToken,
                             refresh_token: refreshToken
                         } as IAccessToken
                     } as ISignInInfo,
@@ -69,6 +69,6 @@ describe('AppealStorageForSubmissionProcessor', () => {
 
         } as Request);
 
-        appealsService.received().save(appeal, token, refreshToken);
+        appealsService.received().save(appeal, accessToken, refreshToken);
     });
 });

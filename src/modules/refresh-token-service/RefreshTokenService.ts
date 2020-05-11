@@ -1,4 +1,4 @@
-import { GRANT_TYPE } from 'Constants';
+import { REFRESH_TOKEN_GRANT_TYPE } from 'Constants';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OK } from 'http-status-codes';
 
@@ -26,7 +26,7 @@ export class RefreshTokenService {
 
         const requestParams: AxiosRequestConfig = {
             params: {
-                'grant_type': GRANT_TYPE,
+                'grant_type': REFRESH_TOKEN_GRANT_TYPE,
                 'refresh_token': refreshToken,
                 'client_id': this.clientId,
                 'client_secret': this.clientSecret
@@ -44,7 +44,7 @@ export class RefreshTokenService {
                         .debug(`${RefreshTokenService.name} - refresh: created new access token - ${response.data.access_token}`);
                     return response.data.access_token;
                 }
-                throw new Error('Could not refresh token');
+                throw new Error('Could not refresh access token');
             });
     }
 }

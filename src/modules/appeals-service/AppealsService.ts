@@ -21,7 +21,8 @@ export class AppealsService {
 
         this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
         this.checkArgumentOrThrow(appealId, 'Appeal id is missing');
-        this.checkArgumentOrThrow(accessToken, 'Token is missing');
+        this.checkArgumentOrThrow(accessToken, 'Access token is missing');
+        this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
 
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
@@ -109,7 +110,7 @@ export class AppealsService {
 
             if (response && response.status === UNAUTHORIZED) {
                 loggerInstance()
-                    .info(`${AppealsService.name} - create appeal failed with:  ${response.status} - attempting token refresh`);
+                    .info(`${AppealsService.name} - create appeal failed with: ${response.status} - attempting token refresh`);
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
                 response.config.headers = this.getHeaders(newAccessToken);
                 return this.axiosInstance(response.config);

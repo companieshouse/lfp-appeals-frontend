@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import nock = require('nock');
 
-import { GRANT_TYPE } from 'app/Constants';
+import { REFRESH_TOKEN_GRANT_TYPE } from 'app/Constants';
 import { Appeal } from 'app/models/Appeal';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { AppealNotFoundError, AppealServiceError,
@@ -15,7 +15,7 @@ describe('AppealsService', () => {
     const CLIENT_ID: string = '1';
     const CLIENT_SECRET: string = 'ABC';
     const REFRESH_TOKEN: string = '12345';
-    const REFRESH_URI: string = `/oauth2/token?grant_type=${GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
+    const REFRESH_URI: string = `/oauth2/token?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
     const REFRESH_HOST: string = 'http://localhost:4000';
 
     const refreshTokenData: RefreshTokenData = {
@@ -266,32 +266,33 @@ describe('AppealsService', () => {
 
         });
 
-        it('should return an appeal when valid arguments are provided after refreshing an expired token', async () => {
+        it('should return an appeal when valid arguments are provided after refreshing an expired access token',
+            async () => {
 
-            nock(APPEALS_HOST)
-                .get(`${APPEALS_URI}/${APPEAL_ID}`)
-                .reply(401);
+                nock(APPEALS_HOST)
+                    .get(`${APPEALS_URI}/${APPEAL_ID}`)
+                    .reply(401);
 
-            const refreshMock = nock(REFRESH_HOST)
-                .post(REFRESH_URI)
-                .reply(200, refreshTokenData);
+                const refreshMock = nock(REFRESH_HOST)
+                    .post(REFRESH_URI)
+                    .reply(200, refreshTokenData);
 
-            nock(APPEALS_HOST)
-                .get(`${APPEALS_URI}/${APPEAL_ID}`)
-                .reply(200, appeal);
+                nock(APPEALS_HOST)
+                    .get(`${APPEALS_URI}/${APPEAL_ID}`)
+                    .reply(200, appeal);
 
-            const returnedAppeal = await appealsService
-                .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
+                const returnedAppeal = await appealsService
+                    .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
 
-            expect(returnedAppeal).to.deep.eq(appeal);
-            expect(refreshMock.isDone()).to.equal(true);
+                expect(returnedAppeal).to.deep.eq(appeal);
+                expect(refreshMock.isDone()).to.equal(true);
 
-        });
+            });
 
         it('should return status 401 when auth header is invalid', async () => {
 
             nock(APPEALS_HOST)
-                .get(`${APPEALS_URI}/${APPEAL_ID}`,{},
+                .get(`${APPEALS_URI}/${APPEAL_ID}`, {},
                     {
                         reqheaders: {
                             Authorization: 'Bearer 1'
