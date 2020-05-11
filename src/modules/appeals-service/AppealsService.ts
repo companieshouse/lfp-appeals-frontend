@@ -110,7 +110,8 @@ export class AppealsService {
             const response = error.response;
 
             if (response && response.status === UNAUTHORIZED) {
-
+                loggerInstance()
+                    .info(`${AppealsService.name} - create appeal failed with:  ${response.status} - attempting token refresh`);
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
                 response.config.headers = this.getHeaders(newAccessToken);
                 return this.axiosInstance(response.config);
