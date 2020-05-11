@@ -14,6 +14,7 @@ import {
 
 import { createApp } from 'test/ApplicationFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
+const otherReasonHint = 'You should include your name and relationship to the company';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
@@ -35,6 +36,7 @@ describe('OtherReasonController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.include(pageHeading)
+                        .and.to.include(otherReasonHint)
                         .and.not.include(errorSummaryHeading);
                 });
         });
@@ -68,7 +70,7 @@ describe('OtherReasonController', () => {
                 }
             } as Appeal;
 
-            const app = createApp({ appeal});
+            const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
                 .send(appeal.reasons.other)
@@ -90,7 +92,7 @@ describe('OtherReasonController', () => {
                 }
             } as Appeal;
 
-            const app = createApp({ appeal});
+            const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
                 .send(appeal.reasons.other)
