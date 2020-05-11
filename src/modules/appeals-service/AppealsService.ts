@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
+import { AppealNotFoundError, AppealServiceError, AppealUnprocessableEntityError } from './errors';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -74,8 +74,6 @@ export class AppealsService {
                 switch (err.response.status) {
                     case NOT_FOUND:
                         throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
-                    case UNAUTHORIZED:
-                        throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
                     case UNPROCESSABLE_ENTITY:
                         throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
                 }
