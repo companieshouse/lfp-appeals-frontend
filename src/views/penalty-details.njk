@@ -54,7 +54,7 @@
               text: 'Reference number'
             },
             hint: {
-              text: 'This is the 9-character reference shown on the penalty notice.'
+              text: 'This is the reference shown on the penalty notice.'
             },
             errorMessage: validationResult.getErrorForField('penaltyReference') if validationResult,
             classes: 'govuk-input--penalty-reference',
@@ -66,10 +66,15 @@
         }}
         <div class="govuk-form-group">
           {% set detailsHTML %}
-          <p>
-            Your company number and reference number are shown at the bottom of your penalty notice.
-          </p>
-          <img src="//{{ cdn.host }}/images/late-filing-penalties/penalty-notice.png" class="call-out-image" alt=""/>
+            <p>
+              Some penalty notices will show the company number and reference number at the bottom.
+              The penalty reference will be in the format A00000000
+            </p>
+            <p>
+              Other penalty notices will show the company number and reference at the top.
+              The penalty reference will be in the format PEN1A/00000000 or PEN2A/00000000.
+            </p>
+            <img src="//{{ cdn.host }}/images/late-filing-penalties/penalty-notice.png" class="call-out-image" alt=""/>
           {% endset -%}
 
           {{
