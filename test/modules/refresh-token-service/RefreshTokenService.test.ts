@@ -15,7 +15,8 @@ describe('RefreshTokenService', () => {
     const CLIENT_SECRET: string = 'ABC';
     const ACCESS_TOKEN: string = '123';
     const REFRESH_TOKEN: string = '12345';
-    const URI: string = `/oauth2/token?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
+    const URI: string = '/oauth2/token';
+    const uriParams: string = `?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
     const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
     const refreshTokenData: RefreshTokenData = {
@@ -60,7 +61,7 @@ describe('RefreshTokenService', () => {
         it('should refresh access token', async () => {
 
             nock(HOST)
-                .post(URI)
+                .post(URI + uriParams)
                 .reply(OK, refreshTokenData);
 
             await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN)
@@ -72,12 +73,12 @@ describe('RefreshTokenService', () => {
         it('should throw error when response data is empty', async () => {
 
             nock(HOST)
-                .post(URI)
+                .post(URI + uriParams)
                 .reply(OK, {});
 
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
-                assert.fail('Should have thrown an error');
+                assert.fail('Could not refresh token');
             } catch (err) {
                 expect(err).to.be.instanceOf(Error)
                     .and.to.haveOwnProperty('message').equal('Could not refresh token');
@@ -87,7 +88,7 @@ describe('RefreshTokenService', () => {
         it('should return status 400 when refresh token is invalid', async () => {
 
             nock(HOST)
-                .post(URI)
+                .post(URI + uriParams)
                 .reply(BAD_REQUEST, refreshTokenDataInvalid);
 
             try {
@@ -102,7 +103,7 @@ describe('RefreshTokenService', () => {
         it('should return status 500 when internal server error', async () => {
 
             nock(HOST)
-                .post(URI)
+                .post(URI + uriParams)
                 .reply(INTERNAL_SERVER_ERROR);
 
             try {

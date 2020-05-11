@@ -37,7 +37,7 @@ export class RefreshTokenService {
             .debug(`Making a POST request to ${this.uri} for refreshing access token ${accessToken}`);
 
         return await axios
-            .post(this.uri, requestParams)
+            .post(this.uri, null, requestParams)
             .then((response: AxiosResponse<RefreshTokenData>) => {
                 if (response.status === OK && response.data) {
                     loggerInstance()
