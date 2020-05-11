@@ -94,7 +94,7 @@ describe('AppealsService', () => {
                 .post(APPEALS_URI)
                 .reply(401);
 
-            nock(REFRESH_HOST)
+            const refreshMock = nock(REFRESH_HOST)
                 .post(REFRESH_URI)
                 .reply(200, refreshTokenData);
 
@@ -112,6 +112,7 @@ describe('AppealsService', () => {
             await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN)
                 .then((response: string) => {
                     expect(response).to.equal(appealId);
+                    expect(refreshMock.isDone()).to.equal(true);
                 });
         });
 
