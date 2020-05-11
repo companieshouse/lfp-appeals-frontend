@@ -10,7 +10,6 @@ import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
-import { sanitizeLegacyPenalty } from 'app/utils/PenaltyReferenceSanitizer';
 
 const template = 'penalty-details';
 
@@ -24,15 +23,12 @@ const navigation = {
 };
 
 const sanitizeForm = (body: PenaltyIdentifier) => {
-    const legacyPrefix: string = 'PEN';
-    const penalty: string  = body.penaltyReference.toUpperCase();
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: penalty.startsWith(legacyPrefix)
-            ? sanitizeLegacyPenalty(penalty)
-            : penalty
+        penaltyReference: body.penaltyReference.toUpperCase()
     };
+
 };
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)

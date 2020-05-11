@@ -89,7 +89,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting invalid penalty reference', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: '12345678',
+                penaltyReference: '0',
                 companyNumber: 'SC123123'
             };
 
