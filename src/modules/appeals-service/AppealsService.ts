@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { AppealNotFoundError, AppealServiceError, AppealUnprocessableEntityError } from './errors';
+import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -75,6 +75,8 @@ export class AppealsService {
                 switch (err.response.status) {
                     case NOT_FOUND:
                         throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
+                    case UNAUTHORIZED:
+                        throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
                     case UNPROCESSABLE_ENTITY:
                         throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
                 }
@@ -95,7 +97,9 @@ export class AppealsService {
     private refreshTokenInterceptor(accessToken: string, refreshToken: string): void {
 
         this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
-                config.headers = this.getHeaders(accessToken);
+                if (!config.headers.Authorization) {
+                    config.headers = this.getHeaders(accessToken);
+                }
                 return config;
             },
             async (error: AxiosError) => {
@@ -104,16 +108,20 @@ export class AppealsService {
 
         this.axiosInstance.interceptors.response.use((response: AxiosResponse) => {
             return response;
-        }, async (error: AxiosError) => {
+        }, async (error) => {
 
+            const requestConfig = error.config;
             const response: AxiosResponse | undefined = error.response;
 
-            if (response && response.status === UNAUTHORIZED) {
+            if (response && response.status === UNAUTHORIZED && !requestConfig._isRetry) {
+                requestConfig._isRetry = true;
                 loggerInstance()
                     .info(`${AppealsService.name} - create appeal failed with: ${response.status} - attempting token refresh`);
                 const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
-                response.config.headers = this.getHeaders(newAccessToken);
-                return this.axiosInstance(response.config);
+                if (newAccessToken) {
+                    requestConfig.headers = this.getHeaders(newAccessToken);
+                    return this.axiosInstance(requestConfig);
+                }
             }
             return Promise.reject(error);
         });
