@@ -89,8 +89,9 @@ export class AppealsService {
 
     private getHeaders(token: string): AxiosRequestConfig['headers'] {
         return {
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + token
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
         };
     }
 
