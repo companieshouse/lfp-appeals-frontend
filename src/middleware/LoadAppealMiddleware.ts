@@ -33,11 +33,11 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Session is undefined');
             }
 
-            let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+            let applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
 
             if (!applicationData) {
                 applicationData = {} as ApplicationData;
-                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                session.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             try {
@@ -46,18 +46,23 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Tried to load appeal from an invalid company number');
             }
 
-            const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
+            const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
-            const token: string | undefined = signInInfo?.access_token?.access_token;
+            const accessToken: string | undefined = signInInfo?.access_token?.access_token;
+            if (!accessToken) {
+                throw new Error('Could not retrieve access token from session');
+            }
 
-            if (!token) {
-                throw new Error('Could not retrieve token from session');
+            const refreshToken: string | undefined = signInInfo?.access_token?.refresh_token;
+            if (!refreshToken) {
+                throw new Error('Could not retrieve refresh token from session');
             }
 
             if (appealId) {
 
-                applicationData!.appeal = await this.appealsService.getAppeal(companyNumber, appealId, token!);
-                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                applicationData.appeal =
+                    await this.appealsService.getAppeal(companyNumber, appealId, accessToken, refreshToken);
+                session.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             return next();

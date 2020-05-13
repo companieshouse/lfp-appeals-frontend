@@ -28,6 +28,8 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
+        const refreshToken: string | undefined = signInInfo?.access_token?.refresh_token;
+
         const applicationData: ApplicationData= req.session!
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
@@ -38,6 +40,6 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
         loggerInstance()
             .info(`${AppealStorageFormActionProcessor.name} - process: Saving appeal for userId: ${userId}`);
 
-        appeal.id = await this.appealsService.save(appeal, accessToken!);
+        appeal.id = await this.appealsService.save(appeal, accessToken!, refreshToken!);
     }
 }
