@@ -10,14 +10,13 @@ import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTo
 
 describe('RefreshTokenService', () => {
 
-    const HOST: string = 'http://localhost:4000';
     const CLIENT_ID: string = '1';
     const CLIENT_SECRET: string = 'ABC';
     const ACCESS_TOKEN: string = '123';
     const REFRESH_TOKEN: string = '12345';
+    const HOST: string = 'http://localhost:4000';
     const URI: string = '/oauth2/token';
     const uriParams: string = `?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
-    const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
     const refreshTokenData: RefreshTokenData = {
         'expires_in': 3600,
@@ -34,6 +33,8 @@ describe('RefreshTokenService', () => {
 
         it('should throw an error when access token is not defined', () => {
 
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
+
             [undefined, null].forEach(async accessToken => {
                 try {
                     await refreshTokenService.refresh(accessToken as any, REFRESH_TOKEN);
@@ -46,6 +47,8 @@ describe('RefreshTokenService', () => {
         });
 
         it('should throw an error when refresh token is not defined', () => {
+
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
             [undefined, null].forEach(async refreshToken => {
                 try {
@@ -60,6 +63,8 @@ describe('RefreshTokenService', () => {
 
         it('should refresh access token', async () => {
 
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
+
             nock(HOST)
                 .post(URI + uriParams)
                 .reply(OK, refreshTokenData);
@@ -71,6 +76,8 @@ describe('RefreshTokenService', () => {
         });
 
         it('should throw error when response data is empty', async () => {
+
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
             nock(HOST)
                 .post(URI + uriParams)
@@ -87,6 +94,8 @@ describe('RefreshTokenService', () => {
 
         it('should return status 400 when refresh token is invalid', async () => {
 
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
+
             nock(HOST)
                 .post(URI + uriParams)
                 .reply(BAD_REQUEST, refreshTokenDataInvalid);
@@ -101,6 +110,8 @@ describe('RefreshTokenService', () => {
         });
 
         it('should return status 500 when internal server error', async () => {
+
+            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
 
             nock(HOST)
                 .post(URI + uriParams)

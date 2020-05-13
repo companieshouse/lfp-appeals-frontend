@@ -1,4 +1,4 @@
-import {Arg} from '@fluffy-spoon/substitute';
+import { Arg } from '@fluffy-spoon/substitute';
 import { assert, expect } from 'chai';
 import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import nock = require('nock');
