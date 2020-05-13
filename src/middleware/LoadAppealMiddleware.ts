@@ -33,11 +33,11 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Session is undefined');
             }
 
-            let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+            let applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
 
             if (!applicationData) {
                 applicationData = {} as ApplicationData;
-                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                session.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             try {
@@ -46,7 +46,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
                 throw new Error('Tried to load appeal from an invalid company number');
             }
 
-            const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
+            const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
             const accessToken: string | undefined = signInInfo?.access_token?.access_token;
             if (!accessToken) {
@@ -60,9 +60,9 @@ export class LoadAppealMiddleware extends BaseMiddleware {
 
             if (appealId) {
 
-                applicationData!.appeal =
-                    await this.appealsService.getAppeal(companyNumber, appealId, accessToken!, refreshToken!);
-                session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+                applicationData.appeal =
+                    await this.appealsService.getAppeal(companyNumber, appealId, accessToken, refreshToken);
+                session.setExtraData(APPLICATION_DATA_KEY, applicationData);
             }
 
             return next();
