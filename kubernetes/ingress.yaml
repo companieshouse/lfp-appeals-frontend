@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: lfp-appeals-frontend
+spec:
+  rules:
+    - host: chs-dev
+      http:
+        paths:
+          - path: /appeal-a-penalty
+            backend:
+              serviceName: lfp-appeals-frontend
+              servicePort: 3000

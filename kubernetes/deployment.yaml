@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lfp-appeals-frontend
+spec:
+  selector:
+    matchLabels:
+      app: lfp-appeals-frontend
+  template:
+    metadata:
+      labels:
+        app: lfp-appeals-frontend
+    spec:
+      containers:
+        - name: lfp-appeals-frontend
+          image: lfp-appeals-frontend:1.0.0
+          env:
+            - name: NODE_ENV
+              value: vagrant
+            - name: CACHE_SERVER
+              value: 'redis'
+            - name: KAFKA_BROKER_ADDR
+              value: 'kafka:9092'
+            - name: CDN_HOST
+              value: 'cdn.chs-dev'
+            - name: ACCOUNT_WEB_URL
+              value: http://chs-dev
+            - name: FILE_TRANSFER_API_URL
+              value: 'https://localhost/cidev/files'
+            - name: FILE_TRANSFER_API_KEY
+              value: 'fake-secret'
+            - name: APPEALS_API_URL
+              value: 'http://eric:4001'
+            - name: COOKIE_DOMAIN
+              value: 'chs-dev'
+          ports:
+            - containerPort: 3000
