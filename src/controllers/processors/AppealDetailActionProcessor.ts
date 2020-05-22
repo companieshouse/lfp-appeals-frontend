@@ -1,7 +1,7 @@
 
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import {createApiClient} from 'ch-sdk-node';
+import { createApiClient } from 'ch-sdk-node';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 
@@ -15,7 +15,7 @@ export class AppealDetailActionProcessor implements FormActionProcessor {
 
     async process(request: Request): Promise<void> {
 
-        const API_URL = getEnvOrThrow(`LFP_PAY_API_URL`);
+        const API_URL = getEnvOrThrow(`API_URL`);
 
         if (!request.session) {
             throw new Error('Session is undefined');
@@ -25,9 +25,7 @@ export class AppealDetailActionProcessor implements FormActionProcessor {
 
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
-        const body: PenaltyIdentifier = request.body;
-
-        const companyNumber: string = body.companyNumber;
+        const companyNumber: string = (request.body as PenaltyIdentifier).companyNumber;
 
         try {
             const api = createApiClient(undefined, accessToken, API_URL);
@@ -40,7 +38,6 @@ export class AppealDetailActionProcessor implements FormActionProcessor {
         } catch (err) {
             loggerInstance().error(`AppealDetailProcessor: Failed to communicate with pay API: ${err}`);
         }
-
 
     }
 }
