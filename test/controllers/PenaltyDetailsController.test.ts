@@ -54,7 +54,7 @@ describe('PenaltyDetailsController', () => {
 
             const appeal = {
                 penaltyIdentifier: {
-                    companyNumber: '00345567',
+                    companyNumber: 'NI038379',
                     penaltyReference: 'A00000001',
                 }
             } as Appeal;

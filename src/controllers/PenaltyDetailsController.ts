@@ -2,8 +2,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { AppealDetailActionProcessor } from 'app/controllers/processors/AppealDetailActionProcessor';
-import { FormValidator } from 'app/controllers/validators/FormValidator';
+import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -35,7 +34,7 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor() {
-        super(template, navigation, new FormValidator(formSchema), sanitizeForm, [AppealDetailActionProcessor]);
+        super(template, navigation, new PenaltyDetailsValidator(formSchema), sanitizeForm, []);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {

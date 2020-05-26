@@ -164,7 +164,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         return {
             async handle(request: Request, response: Response): Promise<void> {
                 if (that.validator != null) {
-                    const validationResult: ValidationResult = that.validator.validate(request);
+                    const validationResult: ValidationResult = await that.validator.validate(request);
                     if (validationResult.errors.length > 0) {
                         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
                             that.template,
