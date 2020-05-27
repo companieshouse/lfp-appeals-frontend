@@ -1,0 +1,14 @@
+# exclude all by default
+
+*
+
+# exceptions from `exclude all` rule
+
+!package.json
+!package-lock.json
+
+!src
+!tsconfig.json
+!tsconfig.prod.json
+!gulpfile.js
+!.env.vagrant

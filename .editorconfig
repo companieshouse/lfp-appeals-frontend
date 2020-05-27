@@ -11,3 +11,9 @@ insert_final_newline = true
 
 [*.njk]
 indent_size = 2
+
+[*.yaml]
+indent_size = 2
+
+[Tiltfile]
+indent_size = 2

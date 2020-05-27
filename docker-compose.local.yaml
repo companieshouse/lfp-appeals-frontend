@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  lfp-appeals-frontend:
+    labels:
+      - traefik.http.routers.lfp-appeals-frontend.rule=Host(`chs-dev`) && PathPrefix(`/appeal-a-penalty/`)
+    environment:
+      - ACCOUNT_WEB_URL=http://chs-dev
+      - APPEALS_API_URL=http://eric:4001
+      - CACHE_SERVER=redis
+      - CDN_HOST=cdn.chs-dev
+      - COOKIE_DOMAIN=chs-dev
+      - FILE_TRANSFER_API_KEY=fake-secret
+      - FILE_TRANSFER_API_URL=https://localhost/cidev/files
+      - KAFKA_BROKER_ADDR=kafka:9092
+      - NODE_ENV=vagrant
+      - OAUTH2_CLIENT_ID
+      - OAUTH2_CLIENT_SECRET
+    networks:
+      - chs-dev
+
+networks:
+  chs-dev:
+    external: true
