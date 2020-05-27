@@ -11,7 +11,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
+import { RefreshOauthTokenService } from 'app/modules/refresh-token-service/RefreshOauthTokenService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 import { createSession } from 'test/utils/session/SessionFactory';
@@ -58,6 +58,6 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
-        container.bind(RefreshTokenService).toConstantValue(Substitute.for<RefreshTokenService>());
+        container.bind(RefreshOauthTokenService).toConstantValue(Substitute.for<RefreshOauthTokenService>());
         configureBindings(container);
     });

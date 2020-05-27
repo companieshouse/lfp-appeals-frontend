@@ -4,13 +4,13 @@ import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, Appea
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
-import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
+import { RefreshOauthTokenService } from 'app/modules/refresh-token-service/RefreshOauthTokenService';
 
 export class AppealsService {
 
     private readonly axiosInstance: AxiosInstance;
 
-    constructor(private readonly uri: string, private readonly refreshTokenService: RefreshTokenService) {
+    constructor(private readonly uri: string, private readonly refreshTokenService: RefreshOauthTokenService) {
         this.uri = uri;
         this.refreshTokenService = refreshTokenService;
         this.axiosInstance = axios.create();
@@ -82,7 +82,7 @@ export class AppealsService {
                 }
             }
             throw new AppealServiceError(
-                `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `
+                `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message: ${err.message || 'unknown error'}`
             );
         };
     }
@@ -118,7 +118,7 @@ export class AppealsService {
                 requestConfig._isRetry = true;
                 loggerInstance()
                     .info(`${AppealsService.name} - create appeal failed with: ${response.status} - attempting token refresh`);
-                const newAccessToken: string = await this.refreshTokenService.refresh(accessToken, refreshToken);
+                const newAccessToken: string = await this.refreshTokenService.refresh(refreshToken);
                 if (newAccessToken) {
                     requestConfig.headers = this.getHeaders(newAccessToken);
                     return this.axiosInstance(requestConfig);

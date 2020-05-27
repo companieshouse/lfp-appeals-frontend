@@ -1,58 +1,50 @@
+import { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
 import * as assert from 'assert';
+import ApiClient from 'ch-sdk-node/dist/client';
+import { RefreshTokenService } from 'ch-sdk-node/dist/services/refresh-token';
+import Resource from 'ch-sdk-node/dist/services/resource';
 import { expect } from 'chai';
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
-import nock = require('nock');
-
 
 import { REFRESH_TOKEN_GRANT_TYPE } from 'app/Constants';
+import { RefreshOauthTokenService } from 'app/modules/refresh-token-service/RefreshOauthTokenService';
 import { RefreshTokenData } from 'app/modules/refresh-token-service/RefreshTokenData';
-import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
+import {
+    RefreshTokenBadRequestError,
+    RefreshTokenServiceError,
+    RefreshTokenUnauthorisedError
+} from 'app/modules/refresh-token-service/errors';
+
+import { createSubstituteOf } from 'test/SubstituteFactory';
+
+const refreshTokenServiceSubstitute = (method: 'resolves' | 'rejects', response?: Resource<RefreshTokenData>) => {
+    return createSubstituteOf<RefreshTokenService>(service => {
+        service.refresh(Arg.any(), Arg.any(), Arg.any(), Arg.any())[method](response);
+    });
+};
+
+const apiClientSubstitute = (refreshTokenService: SubstituteOf<RefreshTokenService>) => {
+    return createSubstituteOf<ApiClient>(client => {
+        // @ts-ignore
+        client.refreshToken.returns(refreshTokenService);
+    });
+};
 
 describe('RefreshTokenService', () => {
 
     const CLIENT_ID: string = '1';
     const CLIENT_SECRET: string = 'ABC';
-    const ACCESS_TOKEN: string = '123';
     const REFRESH_TOKEN: string = '12345';
-    const HOST: string = 'http://localhost:4000';
-    const URI: string = '/oauth2/token';
-    const uriParams: string = `?grant_type=${REFRESH_TOKEN_GRANT_TYPE}&refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
-
-    const refreshTokenData: RefreshTokenData = {
-        'expires_in': 3600,
-        'token_type': 'Bearer',
-        'access_token': 'AycNLq8ZZoeblglCUtdZUuoui9hhKn0t2rK3PxprD4fHMS21iLDb_lQf9mnkPIK5OYcGzv_I2b6RjgK2QGbWAg'
-    };
-
-    const refreshTokenDataInvalid = {
-        'error_description': 'Unknown refresh_token',
-        'error': 'unauthorized_client'
-    };
 
     describe('Refreshing token', () => {
 
-        it('should throw an error when access token is not defined', () => {
-
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
-
-            [undefined, null].forEach(async accessToken => {
-                try {
-                    await refreshTokenService.refresh(accessToken as any, REFRESH_TOKEN);
-                    assert.fail('Should have thrown an error');
-                } catch (err) {
-                    expect(err).to.be.instanceOf(Error)
-                        .and.to.haveOwnProperty('message').equal('Access token is missing');
-                }
-            });
-        });
-
         it('should throw an error when refresh token is not defined', () => {
 
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
+            const refreshOauthTokenService = new RefreshOauthTokenService(createSubstituteOf<ApiClient>(),
+                CLIENT_ID, CLIENT_SECRET);
 
             [undefined, null].forEach(async refreshToken => {
                 try {
-                    await refreshTokenService.refresh(ACCESS_TOKEN, refreshToken as any);
+                    await refreshOauthTokenService.refresh(refreshToken as any);
                     assert.fail('Should have thrown an error');
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
@@ -63,66 +55,70 @@ describe('RefreshTokenService', () => {
 
         it('should refresh access token', async () => {
 
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
+            const response: Resource<RefreshTokenData> = {
+                httpStatusCode: 200,
+                resource: {
+                    'expires_in': 3600,
+                    'token_type': 'Bearer',
+                    'access_token': '123'
+                },
+            };
 
-            nock(HOST)
-                .post(URI + uriParams)
-                .reply(OK, refreshTokenData);
+            const refreshTokenService = refreshTokenServiceSubstitute('resolves', response);
+            const apiClient = apiClientSubstitute(refreshTokenService);
 
-            await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN)
-                .then((response: string) => {
-                    expect(response).to.equal(refreshTokenData.access_token);
-                });
+            const refreshOauthTokenService: RefreshOauthTokenService =
+                new RefreshOauthTokenService(apiClient, CLIENT_ID, CLIENT_SECRET);
+
+            const refreshedAccessToken: string = await refreshOauthTokenService.refresh(REFRESH_TOKEN);
+
+            expect(refreshedAccessToken).to.be.equal(response.resource?.access_token);
+
+            refreshTokenService.received().refresh(REFRESH_TOKEN, REFRESH_TOKEN_GRANT_TYPE, CLIENT_ID, CLIENT_SECRET);
         });
 
-        it('should throw error when response data is empty', async () => {
+        it('should throw error when status is not 200 and resource is empty', async () => {
 
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
-
-            nock(HOST)
-                .post(URI + uriParams)
-                .reply(OK, {});
-
+            const refreshTokenService = refreshTokenServiceSubstitute('resolves', { httpStatusCode: 200 });
+            const apiClient = apiClientSubstitute(refreshTokenService);
+            const refreshOauthTokenService = new RefreshOauthTokenService(apiClient, CLIENT_ID, CLIENT_SECRET);
             try {
-                await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
-                assert.fail('Could not refresh token');
+
+                await refreshOauthTokenService.refresh(REFRESH_TOKEN);
+                assert.fail('Should have thrown an error');
             } catch (err) {
-                expect(err).to.be.instanceOf(Error)
-                    .and.to.haveOwnProperty('message').equal('Could not refresh token');
+                expect(err.constructor.name).eq(RefreshTokenServiceError.name);
+                expect(err.message).to.include(`Refresh token failed`);
             }
         });
 
-        it('should return status 400 when refresh token is invalid', async () => {
+        it('should throw error when status is 400', async () => {
 
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
-
-            nock(HOST)
-                .post(URI + uriParams)
-                .reply(BAD_REQUEST, refreshTokenDataInvalid);
+            const refreshTokenService = refreshTokenServiceSubstitute('resolves', { httpStatusCode: 400 });
+            const apiClient = apiClientSubstitute(refreshTokenService);
+            const refreshOauthTokenService = new RefreshOauthTokenService(apiClient, CLIENT_ID, CLIENT_SECRET);
 
             try {
-                await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
+                await refreshOauthTokenService.refresh(REFRESH_TOKEN);
                 assert.fail('Should have thrown an error');
             } catch (err) {
-                expect(err).to.be.instanceOf(Error)
-                    .and.to.haveOwnProperty('message').equal('Request failed with status code 400');
+                expect(err.constructor.name).eq(RefreshTokenBadRequestError.name);
+                expect(err.message).to.include(`Refresh token failed with invalid data`);
             }
         });
 
-        it('should return status 500 when internal server error', async () => {
+        it('should throw error when status is 401', async () => {
 
-            const refreshTokenService = new RefreshTokenService(HOST + URI, CLIENT_ID, CLIENT_SECRET);
-
-            nock(HOST)
-                .post(URI + uriParams)
-                .reply(INTERNAL_SERVER_ERROR);
+            const refreshTokenService = refreshTokenServiceSubstitute('resolves', { httpStatusCode: 401 });
+            const apiClient = apiClientSubstitute(refreshTokenService);
+            const refreshOauthTokenService = new RefreshOauthTokenService(apiClient, CLIENT_ID, CLIENT_SECRET);
 
             try {
-                await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
+                await refreshOauthTokenService.refresh(REFRESH_TOKEN);
                 assert.fail('Should have thrown an error');
             } catch (err) {
-                expect(err).to.be.instanceOf(Error)
-                    .and.to.haveOwnProperty('message').equal('Request failed with status code 500');
+                expect(err.constructor.name).eq(RefreshTokenUnauthorisedError.name);
+                expect(err.message).to.include(`Refresh token unauthorised`);
             }
         });
     });

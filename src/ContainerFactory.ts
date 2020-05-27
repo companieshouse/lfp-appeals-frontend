@@ -1,4 +1,6 @@
 import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { createApiClient } from 'ch-sdk-node';
+import ApiClient from 'ch-sdk-node/dist/client';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import IORedis from 'ioredis';
@@ -10,7 +12,7 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
+import { RefreshOauthTokenService } from 'app/modules/refresh-token-service/RefreshOauthTokenService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
@@ -56,11 +58,12 @@ export function createContainer(): Container {
             }
         }));
 
-    const refreshTokenService = new RefreshTokenService(getEnvOrThrow(`OAUTH2_TOKEN_URI`),
+    const apiClient: ApiClient = createApiClient(undefined, undefined, getEnvOrThrow(`ACCOUNT_URL`));
+    const refreshTokenService = new RefreshOauthTokenService(apiClient,
         getEnvOrThrow(`OAUTH2_CLIENT_ID`),
         getEnvOrThrow(`OAUTH2_CLIENT_SECRET`));
 
-    container.bind(RefreshTokenService).toConstantValue(
+    container.bind(RefreshOauthTokenService).toConstantValue(
         refreshTokenService);
 
     container.bind(AppealsService).toConstantValue(

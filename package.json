@@ -26,6 +26,7 @@
     "body-parser": "^1.18.2",
     "ch-logging": "git+ssh://git@github.com/companieshouse/ch-structured-logging-node.git#a3e0dcc57f91f63803e02ceef2cc5e4038de9a19",
     "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#2.1.1",
+    "ch-sdk-node": "git+ssh://git@github.com/companieshouse/ch-sdk-node.git#558e71fca1a97d4471ecce258e16d6ac17b1e9f7",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.15.5",
