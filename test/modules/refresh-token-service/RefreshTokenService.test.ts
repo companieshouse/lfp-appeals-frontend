@@ -16,7 +16,7 @@ import {
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
-const refreshTokenServiceSubstitute = (method: 'resolves' | 'rejects', response?: Resource<RefreshTokenData>) => {
+const refreshTokenServiceSubstitute = (method: 'resolves' | 'rejects', response: Resource<RefreshTokenData>) => {
     return createSubstituteOf<RefreshTokenService>(service => {
         service.refresh(Arg.any(), Arg.any(), Arg.any(), Arg.any())[method](response);
     });
