@@ -24,6 +24,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string):
             templateName: 'lfp-appeal-submission-internal',
             templateData: {
                 companyNumber: appeal.penaltyIdentifier.companyNumber,
+                penaltyReference: appeal.penaltyIdentifier.penaltyReference,
                 userProfile: {
                     email: userProfile.email
                 },
