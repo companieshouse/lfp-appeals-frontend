@@ -19,8 +19,8 @@ export class PenaltyDetailsValidator implements Validator {
 
     private createValidationResult(): ValidationResult {
         return new ValidationResult([
-            new ValidationError('companyNumber', 'Penalty not found, check that the company number and penalty reference are correct'),
-            new ValidationError('penaltyReference', 'Penalty not found, check that the company number and penalty reference are correct')
+            new ValidationError('companyNumber', 'Check that you’ve entered the correct company number'),
+            new ValidationError('penaltyReference', 'Check that you’ve entered the correct reference number')
         ]);
     }
 
@@ -33,7 +33,6 @@ export class PenaltyDetailsValidator implements Validator {
             return schemaResults;
         }
 
-
         if (!request.session) {
             throw new Error('Session is undefined');
         }
@@ -43,11 +42,13 @@ export class PenaltyDetailsValidator implements Validator {
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
         const companyNumber: string = (request.body as PenaltyIdentifier).companyNumber;
+
         const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
 
         try {
             const api = createApiClient(undefined, accessToken, API_URL);
             const penalties = await api.lateFilingPenalties.getPenalties(companyNumber);
+
             if (penalties.httpStatusCode !== OK) {
                 throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
             }
