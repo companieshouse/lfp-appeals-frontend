@@ -1,6 +1,5 @@
 import { REFRESH_TOKEN_GRANT_TYPE } from 'Constants';
 import ApiClient from 'ch-sdk-node/dist/client';
-import { RefreshTokenService } from 'ch-sdk-node/dist/services/refresh-token';
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { BAD_REQUEST, OK, UNAUTHORIZED } from 'http-status-codes';
 
@@ -32,7 +31,7 @@ export class RefreshOauthTokenService {
             .then((response: Resource<RefreshTokenData>) => {
                 if (response.httpStatusCode === OK && response.resource) {
                     loggerInstance()
-                        .info(`${RefreshTokenService.name} - refresh: created new access token - ${response.resource.access_token}`);
+                        .info(`${RefreshOauthTokenService.name} - refresh: created new access token - ${response.resource.access_token}`);
                     return response.resource.access_token;
                 }
                 this.handleStatusCode(response.httpStatusCode);
