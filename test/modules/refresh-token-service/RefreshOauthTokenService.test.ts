@@ -29,7 +29,7 @@ const apiClientSubstitute = (refreshTokenService: SubstituteOf<RefreshTokenServi
     });
 };
 
-describe('RefreshTokenService', () => {
+describe('RefreshOauthTokenService', () => {
 
     const CLIENT_ID: string = '1';
     const CLIENT_SECRET: string = 'ABC';
