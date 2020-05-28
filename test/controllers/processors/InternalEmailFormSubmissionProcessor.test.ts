@@ -35,7 +35,8 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         const appealWithoutAttachments: Appeal = {
             id: 'abc',
             penaltyIdentifier: {
-                companyNumber: '12345678'
+                companyNumber: '12345678',
+                penaltyReference: 'PEN1A/12345677'
             } as PenaltyIdentifier,
             reasons: {
                 other: {
@@ -99,6 +100,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                     templateName: 'lfp-appeal-submission-internal',
                     templateData: {
                         companyNumber: '12345678',
+                        penaltyReference: 'PEN1A/12345677',
                         userProfile: {
                             email: 'user@example.com'
                         },
@@ -143,6 +145,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                     templateName: 'lfp-appeal-submission-internal',
                     templateData: {
                         companyNumber: '12345678',
+                        penaltyReference: 'PEN1A/12345677',
                         userProfile: {
                             email: 'user@example.com'
                         },
