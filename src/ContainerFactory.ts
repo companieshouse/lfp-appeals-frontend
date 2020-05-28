@@ -71,7 +71,7 @@ export function createContainer(): Container {
         new FileTransferService(getEnvOrThrow(`FILE_TRANSFER_API_URL`),
             getEnvOrThrow(`FILE_TRANSFER_API_KEY`)));
 
-    container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('CHS_INTERNAL_API_KEY')));
+    container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('API_URL')));
 
     container.load(buildProviderModule());
     return container;

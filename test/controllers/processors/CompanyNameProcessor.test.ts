@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
+import ApiClient from 'ch-sdk-node/dist/client';
 import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/service';
 import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import { assert, expect } from 'chai';
@@ -12,13 +13,14 @@ import {
     CompanyNameProcessor,
     COMPANY_NUMBER_RETRIEVAL_ERROR,
     COMPANY_NUMBER_UNDEFINED_ERROR,
-    SESSION_NOT_FOUND_ERROR
+    SESSION_NOT_FOUND_ERROR,
+    TOKEN_MISSING_ERROR
 } from 'app/controllers/processors/CompanyNameProcessor';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';
-import { CompaniesHouseSDK } from 'app/modules/Types';
+import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
 
 describe('CompanyNameProcessor', () => {
 
@@ -32,6 +34,24 @@ describe('CompanyNameProcessor', () => {
             assert.fail('Expected to throw error');
         } catch (err) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
+        }
+
+    });
+    it('should throw an error if access token is missing from session', async () => {
+
+        const companyNameProcessor = new CompanyNameProcessor(Substitute.for<CompaniesHouseSDK>());
+        const session = createSession('secret', true);
+        delete session.data.signin_info?.access_token?.access_token;
+
+        const request = {
+            session
+        } as Request;
+
+        try {
+            await companyNameProcessor.process(request);
+            assert.fail('Expected to throw error');
+        } catch (err) {
+            expect(err.message).to.equal(TOKEN_MISSING_ERROR.message);
         }
 
     });
@@ -67,7 +87,7 @@ describe('CompanyNameProcessor', () => {
             httpStatusCode: 404
         });
 
-        const companiesHouseSDK = createSubstituteOf<CompaniesHouseSDK>(sdk => {
+        const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
             sdk.companyProfile.returns!(companyProfileService);
         });
         const companyNameProcessor = new CompanyNameProcessor(companiesHouseSDK);
@@ -110,7 +130,7 @@ describe('CompanyNameProcessor', () => {
             } as CompanyProfile
         });
 
-        const companiesHouseSDK = createSubstituteOf<CompaniesHouseSDK>(sdk => {
+        const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
             sdk.companyProfile.returns!(companyProfileService);
         });
         const companyNameProcessor = new CompanyNameProcessor(companiesHouseSDK);
