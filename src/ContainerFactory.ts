@@ -4,6 +4,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 import IORedis from 'ioredis';
 import * as kafka from 'kafka-node';
 import * as util from 'util';
+import { CompaniesHouseSDK } from './modules/Types';
 
 import { APP_NAME } from 'app/Constants';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
@@ -69,6 +70,8 @@ export function createContainer(): Container {
     container.bind(FileTransferService).toConstantValue(
         new FileTransferService(getEnvOrThrow(`FILE_TRANSFER_API_URL`),
             getEnvOrThrow(`FILE_TRANSFER_API_KEY`)));
+
+    container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('API_URL')));
 
     container.load(buildProviderModule());
     return container;
