@@ -8,6 +8,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
@@ -59,5 +60,6 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
         container.bind(RefreshTokenService).toConstantValue(Substitute.for<RefreshTokenService>());
+        container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
         configureBindings(container);
     });

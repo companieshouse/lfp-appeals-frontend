@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import ApiClient from 'ch-sdk-node/dist/client';
+import { LateFilingPenaltyService, Penalty } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
@@ -9,9 +11,11 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory';
 
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
@@ -54,12 +58,36 @@ describe('PenaltyDetailsController', () => {
 
             const appeal = {
                 penaltyIdentifier: {
-                    companyNumber: 'NI038379',
-                    penaltyReference: '00538983',
+                    companyNumber: 'SC123123',
+                    penaltyReference: 'PEN1A/SC123123',
                 }
             } as Appeal;
 
-            const app = createApp({ appeal });
+            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+
+
+            lfpService.getPenalties('SC123123').resolves({
+                httpStatusCode: 200,
+                resource: {
+                    etag: '',
+                    itemsPerPage: 1,
+                    startIndex: 1,
+                    totalResults: 1,
+                    items: [{
+                        id: 'PEN1A/SC123123',
+                        type: 'penalty'
+                    }] as Penalty[]
+                }
+            });
+
+            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
+                sdk.lateFilingPenalties.returns!(lfpService);
+            });
+
+            const app = createApp({ appeal }, container => {
+                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            });
+
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(appeal.penaltyIdentifier)
@@ -68,6 +96,81 @@ describe('PenaltyDetailsController', () => {
                     expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
                 });
 
+        });
+
+        it('should return validation error if company number not in E5', async () => {
+
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'SC123123',
+                    penaltyReference: 'PEN1A/SC123123',
+                }
+            } as Appeal;
+
+            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+
+            lfpService.getPenalties('SC123123').throws(new Error('Cannot read property \'map\' of null'));
+
+            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
+                sdk.lateFilingPenalties.returns!(lfpService);
+            });
+
+            const app = createApp({ appeal }, container => {
+                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            });
+
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
+                .send(appeal.penaltyIdentifier)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('Check that you’ve entered the correct company number')
+                        .and.to.contain('Check that you’ve entered the correct reference number');
+                });
+        });
+
+        it('should return validation error if penalty number does not correspond company number in E5', async () => {
+
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'SC123123',
+                    penaltyReference: 'PEN1A/SC123123',
+                }
+            } as Appeal;
+
+            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+
+
+            lfpService.getPenalties('SC123123').resolves({
+                httpStatusCode: 200,
+                resource: {
+                    etag: '',
+                    itemsPerPage: 1,
+                    startIndex: 1,
+                    totalResults: 1,
+                    items: [{
+                        id: 'SC123123',
+                        type: 'penalty'
+                    }] as Penalty[]
+                }
+            });
+
+            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
+                sdk.lateFilingPenalties.returns!(lfpService);
+            });
+
+            const app = createApp({ appeal }, container => {
+                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            });
+
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
+                .send(appeal.penaltyIdentifier)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('Check that you’ve entered the correct company number')
+                        .and.to.contain('Check that you’ve entered the correct reference number');
+                });
         });
 
         it('should return 400 when posting empty penalty reference', async () => {
