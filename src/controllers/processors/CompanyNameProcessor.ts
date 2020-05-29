@@ -4,7 +4,6 @@ import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types'
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { OK } from 'http-status-codes';
-import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { FormActionProcessor } from './FormActionProcessor';
 
@@ -20,9 +19,8 @@ export const COMPANY_NUMBER_RETRIEVAL_ERROR = (companyNumber: string) => Error(`
 @provide(CompanyNameProcessor)
 export class CompanyNameProcessor implements FormActionProcessor {
 
-    constructor(@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDK) {
+    constructor(private readonly chSdk: CompaniesHouseSDK) { }
 
-    }
     public async process(request: Request): Promise<void> {
 
         const session = request?.session;
@@ -45,7 +43,7 @@ export class CompanyNameProcessor implements FormActionProcessor {
         }
 
         const profile: Resource<CompanyProfile> = await this
-            .chSdk(OAuth2(token))
+            .chSdk(new OAuth2(token))
             .companyProfile.getCompanyProfile(companyNumber);
 
         const companyName = profile.resource?.companyName;
