@@ -11,15 +11,11 @@ import { createSession } from '../../utils/session/SessionFactory';
 
 import {
     CompanyNameProcessor,
-    COMPANY_NUMBER_RETRIEVAL_ERROR,
+    COMPANY_NAME_RETRIEVAL_ERROR,
     COMPANY_NUMBER_UNDEFINED_ERROR,
     SESSION_NOT_FOUND_ERROR,
     TOKEN_MISSING_ERROR
 } from 'app/controllers/processors/CompanyNameProcessor';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { Navigation } from 'app/models/Navigation';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { Reasons } from 'app/models/Reasons';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
 
 describe('CompanyNameProcessor', () => {
@@ -55,21 +51,15 @@ describe('CompanyNameProcessor', () => {
         }
 
     });
-    it('should throw an error if company number is not in the session', async () => {
+    it('should throw an error if company number is not in the request body', async () => {
 
         const companyNameProcessor = new CompanyNameProcessor(createSubstituteOf<CompaniesHouseSDK>());
         const session = createSession('secret');
 
-        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
-            appeal: {
-                penaltyIdentifier: {} as PenaltyIdentifier,
-                reasons: createSubstituteOf<Reasons>()
-            },
-            navigation: createSubstituteOf<Navigation>()
-        });
-
         const request = {
-            session
+            session,
+            body: {
+            }
         } as Request;
 
         try {
@@ -95,18 +85,11 @@ describe('CompanyNameProcessor', () => {
 
         const companyNumber = 'NI000000';
 
-        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
-            appeal: {
-                penaltyIdentifier: {
-                    companyNumber
-                } as PenaltyIdentifier,
-                reasons: createSubstituteOf<Reasons>()
-            },
-            navigation: createSubstituteOf<Navigation>()
-        });
-
         const request = {
-            session
+            session,
+            body: {
+                companyNumber
+            }
         } as Request;
 
         try {
@@ -114,7 +97,7 @@ describe('CompanyNameProcessor', () => {
             assert.fail('Expected to throw error');
         } catch (err) {
             companyProfileService.received().getCompanyProfile(companyNumber);
-            expect(err.message).to.equal(COMPANY_NUMBER_RETRIEVAL_ERROR(companyNumber).message);
+            expect(err.message).to.equal(COMPANY_NAME_RETRIEVAL_ERROR(companyNumber).message);
         }
     });
     it('should add the company name to the penaltyIdentifier in the session', async () => {
@@ -136,18 +119,11 @@ describe('CompanyNameProcessor', () => {
         const companyNameProcessor = new CompanyNameProcessor(companiesHouseSDK);
         const session = createSession('secret');
 
-        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
-            appeal: {
-                penaltyIdentifier: {
-                    companyNumber
-                } as PenaltyIdentifier,
-                reasons: createSubstituteOf<Reasons>()
-            },
-            navigation: createSubstituteOf<Navigation>()
-        });
-
         const request = {
-            session
+            session,
+            body: {
+                companyNumber
+            }
         } as Request;
 
         await companyNameProcessor.process(request);
