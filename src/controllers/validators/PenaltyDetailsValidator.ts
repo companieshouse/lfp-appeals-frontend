@@ -1,23 +1,26 @@
 import { AnySchema } from '@hapi/joi';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { createApiClient } from 'ch-sdk-node';
+import { PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
+import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { OK } from 'http-status-codes';
 
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 export class PenaltyDetailsValidator implements Validator {
-    constructor(private readonly formSchema: AnySchema) {}
+    constructor(private readonly formSchema: AnySchema,
+                private readonly chSdk: CompaniesHouseSDK) {}
 
 
-    private createValidationResult(): ValidationResult {
+    private createValidationResultWithErrors(): ValidationResult {
         return new ValidationResult([
             new ValidationError('companyNumber', 'Check that you’ve entered the correct company number'),
             new ValidationError('penaltyReference', 'Check that you’ve entered the correct reference number')
@@ -46,8 +49,9 @@ export class PenaltyDetailsValidator implements Validator {
         const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
 
         try {
-            const api = createApiClient(undefined, accessToken, API_URL);
-            const penalties = await api.lateFilingPenalties.getPenalties(companyNumber);
+            // const api = createApiClient(undefined, accessToken, API_URL);
+            const penalties: Resource<PenaltyList> =
+                await this.chSdk(OAuth2(accessToken!)).lateFilingPenalties.getPenalties(companyNumber);
 
             if (penalties.httpStatusCode !== OK) {
                 throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
@@ -61,13 +65,13 @@ export class PenaltyDetailsValidator implements Validator {
 
             if (!items || items.length === 0) {
                 loggerInstance().error(`No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
-                return this.createValidationResult();
+                return this.createValidationResultWithErrors();
             }
 
         } catch (err) {
             if (err.message === 'Cannot read property \'map\' of null') {
                 loggerInstance().error(`company number ${companyNumber} could not be found: ${err}`);
-                return this.createValidationResult();
+                return this.createValidationResultWithErrors();
             }
 
             throw new Error(`Can't access API: ${err}`);
