@@ -6,8 +6,6 @@ import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/ser
 import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import { assert, expect } from 'chai';
 import { Request } from 'express';
-import { createSubstituteOf } from '../../SubstituteFactory';
-import { createSession } from '../../utils/session/SessionFactory';
 
 import {
     CompanyNameProcessor,
@@ -17,6 +15,9 @@ import {
     TOKEN_MISSING_ERROR
 } from 'app/controllers/processors/CompanyNameProcessor';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
+
+import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 describe('CompanyNameProcessor', () => {
 
