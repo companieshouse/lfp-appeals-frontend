@@ -101,7 +101,7 @@ describe('CompanyNameProcessor', () => {
             expect(err.message).to.equal(COMPANY_NAME_RETRIEVAL_ERROR(companyNumber).message);
         }
     });
-    it('should add the company name to the penaltyIdentifier in the session', async () => {
+    it('should add the company name to the penaltyIdentifier in the body of request', async () => {
 
         const companyName = 'Test&Test Ltd';
         const companyNumber = 'NI000000';
@@ -129,6 +129,8 @@ describe('CompanyNameProcessor', () => {
 
         await companyNameProcessor.process(request);
         companyProfileService.received().getCompanyProfile(companyNumber);
+
+        expect(request.body.companyName).to.equal(companyName);
 
     });
 });

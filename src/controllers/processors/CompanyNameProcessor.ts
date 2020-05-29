@@ -13,7 +13,7 @@ import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 
 
 export const SESSION_NOT_FOUND_ERROR: Error = new Error('Session Expected but was undefined');
-export const TOKEN_MISSING_ERROR: Error = new Error('Token was expected');
+export const TOKEN_MISSING_ERROR: Error = new Error('Access token missing from session');
 export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error('Company number expected but was undefined');
 export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
 
