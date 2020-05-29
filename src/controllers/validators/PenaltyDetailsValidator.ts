@@ -51,7 +51,7 @@ export class PenaltyDetailsValidator implements Validator {
         try {
             // const api = createApiClient(undefined, accessToken, API_URL);
             const penalties: Resource<PenaltyList> =
-                await this.chSdk(OAuth2(accessToken!)).lateFilingPenalties.getPenalties(companyNumber);
+                await this.chSdk(new OAuth2(accessToken!)).lateFilingPenalties.getPenalties(companyNumber);
 
             if (penalties.httpStatusCode !== OK) {
                 throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
