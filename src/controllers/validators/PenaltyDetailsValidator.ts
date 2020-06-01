@@ -79,7 +79,7 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
         } catch (err) {
-            if (err.message === 'Cannot read property \'map\' of null') {
+            if (err.message === 'Cannot read property \'map\' of null' || 'Cannot read property \'etag\' of null') {
                 loggerInstance().error(`company number ${companyNumber} could not be found: ${err}`);
                 return this.createValidationResultWithErrors();
             }
