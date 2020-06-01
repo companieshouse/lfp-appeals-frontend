@@ -44,9 +44,16 @@ export class PenaltyDetailsValidator implements Validator {
 
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
+        if (!accessToken) {
+            throw new Error('Access token is undefined in session');
+        }
+
         const companyNumber: string = (request.body as PenaltyIdentifier).companyNumber;
 
         const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
+
+        const mapErrorMessage = 'Cannot read property \'map\' of null';
+        const etagErrorMessage =  'Cannot read property \'etag\' of null';
 
         try {
 
@@ -57,20 +64,12 @@ export class PenaltyDetailsValidator implements Validator {
                 throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
             }
 
-            let items: Penalty[];
-
             const modernPenaltyReferenceRegex: RegExp = /^[A-Z][0-9]{8}$/;
 
+            let items: Penalty[] = penalties.resource!.items.filter(penalty => penalty.type === 'penalty');
+
             if (modernPenaltyReferenceRegex.test(penaltyReference)){
-                items = penalties.resource!.items
-                    .filter(penalty =>
-                        penalty.type === 'penalty' &&
-                        penalty.id === penaltyReference.substring(1)
-                    );
-            }
-            else {
-                items = penalties.resource!.items
-                    .filter(penalty => penalty.type === 'penalty');
+                items = items.filter(penalty => penalty.id === penaltyReference.substring(1));
             }
 
             if (!items || items.length === 0) {
@@ -79,7 +78,7 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
         } catch (err) {
-            if (err.message === 'Cannot read property \'map\' of null' || 'Cannot read property \'etag\' of null') {
+            if (err.message === mapErrorMessage || etagErrorMessage) {
                 loggerInstance().error(`company number ${companyNumber} could not be found: ${err}`);
                 return this.createValidationResultWithErrors();
             }
