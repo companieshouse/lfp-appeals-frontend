@@ -1,7 +1,7 @@
 import { AnySchema } from '@hapi/joi';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
+import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { OK } from 'http-status-codes';
@@ -57,11 +57,21 @@ export class PenaltyDetailsValidator implements Validator {
                 throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
             }
 
-            const items = penalties.resource!.items
-                .filter(penalty =>
-                    penalty.type === 'penalty' &&
-                    penalty.id === penaltyReference
-                );
+            let items: Penalty[];
+
+            const modernPenaltyReferenceRegex: RegExp = /^[A-Z][0-9]{8}$/;
+
+            if (modernPenaltyReferenceRegex.test(penaltyReference)){
+                items = penalties.resource!.items
+                    .filter(penalty =>
+                        penalty.type === 'penalty' &&
+                        penalty.id === penaltyReference.substring(1)
+                    );
+            }
+            else {
+                items = penalties.resource!.items
+                    .filter(penalty => penalty.type === 'penalty');
+            }
 
             if (!items || items.length === 0) {
                 loggerInstance().error(`No penalties for ${companyNumber} match the reference number ${penaltyReference}`);

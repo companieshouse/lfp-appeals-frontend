@@ -59,7 +59,7 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'PEN1A/SC123123',
+                    penaltyReference: 'A12345678',
                 }
             } as Appeal;
 
@@ -74,7 +74,7 @@ describe('PenaltyDetailsController', () => {
                     startIndex: 1,
                     totalResults: 1,
                     items: [{
-                        id: 'PEN1A/SC123123',
+                        id: '12345678',
                         type: 'penalty'
                     }] as Penalty[]
                 }
@@ -103,7 +103,7 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'PEN1A/SC123123',
+                    penaltyReference: 'A12312323',
                 }
             } as Appeal;
 
@@ -129,12 +129,13 @@ describe('PenaltyDetailsController', () => {
                 });
         });
 
-        it('should return validation error if penalty number does not correspond company number in E5', async () => {
+        // tslint:disable-next-line: max-line-length
+        it('should return validation error if modern penalty number does not correspond company number in E5', async () => {
 
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'PEN1A/SC123123',
+                    penaltyReference: 'A12312323',
                 }
             } as Appeal;
 
@@ -149,9 +150,49 @@ describe('PenaltyDetailsController', () => {
                     startIndex: 1,
                     totalResults: 1,
                     items: [{
-                        id: 'SC123123',
+                        id: '12123123',
                         type: 'penalty'
                     }] as Penalty[]
+                }
+            });
+
+            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
+                sdk.lateFilingPenalties.returns!(lfpService);
+            });
+
+            const app = createApp({ appeal }, container => {
+                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            });
+
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
+                .send(appeal.penaltyIdentifier)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('Check that you’ve entered the correct company number')
+                        .and.to.contain('Check that you’ve entered the correct reference number');
+                });
+        });
+
+        it('should return validation error if no penalties correspond to company number', async () => {
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'SC123123',
+                    penaltyReference: 'PEN1A/12312323',
+                }
+            } as Appeal;
+
+            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+
+
+            lfpService.getPenalties('SC123123').resolves({
+                httpStatusCode: 200,
+                resource: {
+                    etag: '',
+                    itemsPerPage: 1,
+                    startIndex: 1,
+                    totalResults: 1,
+                    items: [] as Penalty[]
                 }
             });
 
