@@ -12,7 +12,7 @@
     "build": "gulp build",
     "build:init": "gulp copy-descriptors copy-govukfrontend",
     "build:copy-views": "gulp copy-views",
-    "build:compile": "gulp compile-project",
+    "build:compile": "tsc --project tsconfig.prod.json --outDir dist",
     "watch": "npm run build:clean && gulp start:watch",
     "build:clean": "gulp build:clean",
     "sass:watch": "gulp sass:watch",

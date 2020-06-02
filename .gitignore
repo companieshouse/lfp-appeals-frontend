@@ -9,3 +9,4 @@ node_modules/
 coverage-report
 .nyc_output/
 .scannerwork/
+.ts-build-info
