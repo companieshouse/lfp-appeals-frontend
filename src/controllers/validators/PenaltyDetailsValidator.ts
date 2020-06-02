@@ -61,7 +61,7 @@ export class PenaltyDetailsValidator implements Validator {
                 await this.chSdk(new OAuth2(accessToken!)).lateFilingPenalties.getPenalties(companyNumber);
 
             if (penalties.httpStatusCode !== OK) {
-                throw new Error(`AppealDetailActionProcessor: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
+                throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken} and base url ${API_URL}`);
             }
 
             const modernPenaltyReferenceRegex: RegExp = /^[A-Z][0-9]{8}$/;
