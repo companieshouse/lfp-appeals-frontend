@@ -73,7 +73,7 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             if (!items || items.length === 0) {
-                loggerInstance().error(`${AppealDetailActionProcessor.name}: No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
+                loggerInstance().error(`${PenaltyDetailsValidator.name}: No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
                 return this.createValidationResultWithErrors();
             }
 
