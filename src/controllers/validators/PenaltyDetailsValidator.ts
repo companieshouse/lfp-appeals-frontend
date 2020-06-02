@@ -73,13 +73,13 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             if (!items || items.length === 0) {
-                loggerInstance().error(`No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
+                loggerInstance().error(`${AppealDetailActionProcessor.name}: No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
                 return this.createValidationResultWithErrors();
             }
 
         } catch (err) {
             if (err.message === mapErrorMessage || etagErrorMessage) {
-                loggerInstance().error(`company number ${companyNumber} could not be found: ${err}`);
+                loggerInstance().error(`${AppealDetailActionProcessor.name}: company number ${companyNumber} could not be found: ${err}`);
                 return this.createValidationResultWithErrors();
             }
 
