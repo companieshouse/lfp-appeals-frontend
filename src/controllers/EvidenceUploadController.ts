@@ -50,7 +50,7 @@ const navigation: Navigation = {
 
 const continueButtonValidator: Validator = {
 
-    validate(request: Request): ValidationResult {
+    async validate(request: Request): Promise<ValidationResult> {
 
         const applicationData: ApplicationData = request.session!
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;

@@ -6,6 +6,7 @@ import { Redis } from 'ioredis';
 import request from 'supertest';
 
 import 'app/controllers/HealthCheckController';
+import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
@@ -23,6 +24,7 @@ describe('HealthCheckController', () => {
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
+            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
         });
 
         await makeHealthCheckRequest(app).expect(200, 'Redis status: 200');
@@ -36,6 +38,7 @@ describe('HealthCheckController', () => {
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
+            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
         });
 
         await makeHealthCheckRequest(app).expect(500, 'Redis status: 500');

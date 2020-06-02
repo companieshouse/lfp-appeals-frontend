@@ -1,13 +1,15 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
+import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { FormValidator } from 'app/controllers/validators/FormValidator';
+import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
+import { CompaniesHouseSDK } from 'app/modules/Types';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
 
@@ -33,8 +35,8 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
-    constructor() {
-        super(template, navigation, new FormValidator(formSchema), sanitizeForm);
+    constructor(@inject(CompaniesHouseSDK) chSdk: CompaniesHouseSDK) {
+        super(template, navigation, new PenaltyDetailsValidator(formSchema, chSdk), sanitizeForm, []);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
