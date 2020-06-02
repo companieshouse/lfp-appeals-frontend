@@ -1,10 +1,10 @@
 local_resource(
-  name = 'lfp-appeals-frontend-init',
+  name = 'dev:lfp-appeals-frontend-init',
   cmd = 'npm --silent install && npm --silent run build:init'
 )
 
 local_resource(
-  name = 'lfp-appeals-frontend-build-views',
+  name = 'dev:lfp-appeals-frontend-build-views',
   cmd = 'npm --silent run build:copy-views',
   deps = [
     'src/views'
@@ -12,7 +12,7 @@ local_resource(
 )
 
 local_resource(
-  name = 'lfp-appeals-frontend-build-code',
+  name = 'dev:lfp-appeals-frontend-build-code',
   cmd = 'npm --silent run build:compile',
   deps = [
     'src'
