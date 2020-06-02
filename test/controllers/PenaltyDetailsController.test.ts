@@ -20,6 +20,8 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 const pageHeading = 'What are the penalty details?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 
+const mapErrorMessage = 'Cannot read property \'map\' of null';
+
 describe('PenaltyDetailsController', () => {
 
     const navigation = {} as Navigation;
@@ -109,7 +111,7 @@ describe('PenaltyDetailsController', () => {
 
             const lfpService = createSubstituteOf<LateFilingPenaltyService>();
 
-            lfpService.getPenalties('SC123123').throws(new Error('Cannot read property \'map\' of null'));
+            lfpService.getPenalties('SC123123').throws(new Error(mapErrorMessage));
 
             const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
                 sdk.lateFilingPenalties.returns!(lfpService);
