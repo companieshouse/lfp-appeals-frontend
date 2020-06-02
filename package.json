@@ -10,6 +10,9 @@
   "scripts": {
     "start": "npm run build && NODE_ENV=vagrant node dist/App.js",
     "build": "gulp build",
+    "build:init": "gulp copy-descriptors copy-govukfrontend",
+    "build:copy-views": "gulp copy-views",
+    "build:compile": "gulp compile-project",
     "watch": "npm run build:clean && gulp start:watch",
     "build:clean": "gulp build:clean",
     "sass:watch": "gulp sass:watch",
