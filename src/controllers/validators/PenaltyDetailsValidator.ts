@@ -79,7 +79,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         } catch (err) {
             if (err.message === mapErrorMessage || etagErrorMessage) {
-                loggerInstance().error(`company number ${companyNumber} could not be found: ${err}`);
+                loggerInstance().error(`${AppealDetailActionProcessor.name}: company number ${companyNumber} could not be found: ${err}`);
                 return this.createValidationResultWithErrors();
             }
 
