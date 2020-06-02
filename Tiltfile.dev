@@ -1,6 +1,6 @@
 local_resource(
   name = 'lfp-appeals-frontend-init',
-  cmd = 'npm --silent install && npm --silent run init'
+  cmd = 'npm --silent install && npm --silent run build:init'
 )
 
 local_resource(
