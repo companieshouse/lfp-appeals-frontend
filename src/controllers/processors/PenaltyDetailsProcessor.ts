@@ -1,27 +1,24 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
+import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { OK } from 'http-status-codes';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
+import { COMPANY_NUMBER_UNDEFINED_ERROR } from './CompanyNameProcessor';
 import { FormActionProcessor } from './FormActionProcessor';
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from './errors/Errors';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 
-export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error('Company number expected but was undefined');
-export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
+export const PENALTY_NOT_FOUND_ERROR = new Error('Penalty details not found');
 
-@provide(CompanyNameProcessor)
-export class CompanyNameProcessor implements FormActionProcessor {
-
+@provide(PenaltyDetailsProcessor)
+export class PenaltyDetailsProcessor implements FormActionProcessor {
     constructor(@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDK) { }
-
     public async process(request: Request): Promise<void> {
-
         const session = request?.session;
 
         if (!session) {
@@ -41,17 +38,16 @@ export class CompanyNameProcessor implements FormActionProcessor {
             throw COMPANY_NUMBER_UNDEFINED_ERROR;
         }
 
-        const profile: Resource<CompanyProfile> = await this
+        const penalties: Resource<PenaltyList> = await this
             .chSdk(new OAuth2(token))
-            .companyProfile.getCompanyProfile(companyNumber);
+            .lateFilingPenalties
+            .getPenalties(companyNumber);
 
-        const companyName: string | undefined = profile.resource?.companyName;
+        console.log(penalties);
 
-        if (profile.httpStatusCode !== OK || !companyName) {
-            throw COMPANY_NAME_RETRIEVAL_ERROR(companyNumber);
+        if (penalties.httpStatusCode !== OK) {
+            throw PENALTY_NOT_FOUND_ERROR;
         }
 
-        request.body.companyName = companyName;
     }
-
 }

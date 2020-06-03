@@ -71,7 +71,6 @@ describe('PenaltyDetailsController', () => {
             const lfpService = createSubstituteOf<LateFilingPenaltyService>();
             const companyProfileService = createSubstituteOf<CompanyProfileService>();
 
-
             lfpService.getPenalties('SC123123').resolves({
                 httpStatusCode: 200,
                 resource: {
@@ -97,6 +96,16 @@ describe('PenaltyDetailsController', () => {
                 sdk.lateFilingPenalties.returns!(lfpService);
                 sdk.companyProfile.returns!(companyProfileService);
             });
+
+            const companyName = 'ABC';
+
+            companyProfileService.getCompanyProfile(appeal.penaltyIdentifier.companyNumber)
+                    .resolves({
+                        httpStatusCode: OK,
+                        resource: {
+                            companyName
+                        } as CompanyProfile
+                    });
 
             const app = createApp({ appeal }, container => {
                 container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
