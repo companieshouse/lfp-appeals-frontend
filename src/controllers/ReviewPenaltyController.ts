@@ -1,11 +1,10 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
+import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { Penalty } from 'app/models/Penalty';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -19,9 +18,15 @@ type TableColumn = {
     text: string;
 };
 type TableRow = TableColumn[];
+type Table = {
+    caption: string,
+    header: TableRow;
+    madeUpToDate: string;
+    tableRows: TableRow[];
+};
 
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyIdentifier> {
+export class ReviewPenaltyController extends SafeNavigationBaseController<Table> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
 
@@ -29,38 +34,43 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
         super(template, navigation);
     }
 
-    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
+    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & Table {
 
-        let tableRows: TableRow[] = [];
-
-        if (appeal.penaltyIdentifier.penalty) {
-            tableRows = this.aggregatePenaltyInfo(appeal.penaltyIdentifier.penalty);
-        } else {
+        if (!appeal.penaltyIdentifier.penaltyList) {
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
-        }
 
-        return {
-            ...appeal.penaltyIdentifier,
-            tableRows
-        };
+        }
+        return this.createTable(appeal.penaltyIdentifier.penaltyList);
     }
 
-    private aggregatePenaltyInfo(penalty: Penalty): TableRow[] {
-        const total: number = penalty.relatedItems.reduce((p, c) => p + c.amount, 0);
+    private createTable(penalties: PenaltyList): Table {
+        const penalty: Penalty = penalties.items[0];
+        const madeUpToDate: string = penalty.madeUpDate;
+        const caption: string = 'Penalty reference: ' + penalty.id;
+        const header: TableRow = [
+            {
+                text: 'Fee'
+            },
+            {
+                text: 'Date'
+            },
+            {
+                text: 'Fee Amount'
+            }
+        ];
+        const penaltyRow: TableRow = [
+            {
+                text: this.mapPenaltyType(penalty.type)
+            },
+            {
+                text: penalty.transactionDate
+            },
+            {
+                text: '£' + penalty.originalAmount.toString()
+            }
+        ];
 
-        return penalty.relatedItems.map(item => {
-            return [
-                {
-                    text: item.type.title
-                },
-                {
-                    text: item.date
-                },
-                {
-                    text: '£' + item.amount.toString()
-                }
-            ];
-        }).concat([[
+        const totalRow: TableRow = [
             {
                 text: 'Total'
             },
@@ -68,8 +78,24 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
                 text: ''
             },
             {
-                text: '£' + total
+                text: '£' + penalty.originalAmount.toString()
             }
-        ]]);
+        ];
+
+        return {
+            caption,
+            header,
+            madeUpToDate,
+            tableRows: [penaltyRow, totalRow]
+        };
+    }
+
+    private mapPenaltyType(type: string): string {
+        switch(type) {
+            case 'penalty':
+                return 'Late Filing Penalty';
+            default:
+                return 'Other';
+        }
     }
 }

@@ -8,6 +8,10 @@ import 'app/controllers/ReviewPenaltyController';
 
 describe('ReviewPenaltyController', () => {
 
-    it('should throw an error ');
+    it('should show exactly one penalty');
+    it('should contain the company name');
+    it('should contain dates in the correct format');
+    it('should show the total amount of the penalty');
+    it('should go to other reasons disclaimer screen when continue is pressed');
 
 });

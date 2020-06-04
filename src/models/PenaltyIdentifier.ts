@@ -1,9 +1,9 @@
-import { Penalty } from './Penalty';
+import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 
 export interface PenaltyIdentifier {
     companyNumber: string;
     penaltyReference: string;
     companyName?: string;
-    penalty?: Penalty;
+    penaltyList?: PenaltyList;
 }
 

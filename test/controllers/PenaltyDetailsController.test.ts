@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { Arg } from '@fluffy-spoon/substitute';
 import ApiClient from 'ch-sdk-node/dist/client';
 import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/service';
 import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
@@ -10,12 +11,14 @@ import request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
 import { COMPANY_NAME_RETRIEVAL_ERROR } from 'app/controllers/processors/CompanyNameProcessor';
+import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -79,33 +82,26 @@ describe('PenaltyDetailsController', () => {
                     startIndex: 1,
                     totalResults: 1,
                     items: [{
-                        id: '12345678',
+                        id: 'A12345678',
                         type: 'penalty'
                     }] as Penalty[]
                 }
             });
 
-            companyProfileService.getCompanyProfile('SC123123').resolves({
-                httpStatusCode: 200,
-                resource: {
-                    companyName: 'company-name-test'
-                } as CompanyProfile
-            });
+            const companyName = 'ABC';
+
+            companyProfileService.getCompanyProfile(appeal.penaltyIdentifier.companyNumber)
+                .resolves({
+                    httpStatusCode: OK,
+                    resource: {
+                        companyName
+                    } as CompanyProfile
+                });
 
             const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
                 sdk.lateFilingPenalties.returns!(lfpService);
                 sdk.companyProfile.returns!(companyProfileService);
             });
-
-            const companyName = 'ABC';
-
-            companyProfileService.getCompanyProfile(appeal.penaltyIdentifier.companyNumber)
-                    .resolves({
-                        httpStatusCode: OK,
-                        resource: {
-                            companyName
-                        } as CompanyProfile
-                    });
 
             const app = createApp({ appeal }, container => {
                 container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
@@ -116,7 +112,7 @@ describe('PenaltyDetailsController', () => {
                 .send(appeal.penaltyIdentifier)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(REVIEW_PENALTY_PAGE_URI);
                 });
 
         });
@@ -210,29 +206,14 @@ describe('PenaltyDetailsController', () => {
                 }
             } as Appeal;
 
-            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
-
-
-            lfpService.getPenalties('SC123123').resolves({
-                httpStatusCode: 200,
-                resource: {
-                    etag: '',
-                    itemsPerPage: 1,
-                    startIndex: 1,
-                    totalResults: 1,
-                    items: [{
-                        id: '12123123',
-                        type: 'penalty'
-                    }] as Penalty[]
-                }
-            });
-
-            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
-                sdk.lateFilingPenalties.returns!(lfpService);
-            });
-
-            const app = createApp({ appeal }, container => {
-                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            const app = createApp({}, container => {
+                container.rebind(PenaltyDetailsValidator)
+                    .toConstantValue(createSubstituteOf<PenaltyDetailsValidator>(config => {
+                        config.validate(Arg.any()).resolves(new ValidationResult(
+                            [PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR,
+                            PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR]
+                        ));
+                    }));
             });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)

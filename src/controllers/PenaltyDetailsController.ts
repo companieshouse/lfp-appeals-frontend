@@ -1,7 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
-import { PenaltyDetailsProcessor } from './processors/PenaltyDetailsProcessor';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
@@ -10,8 +9,6 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
-import { CompaniesHouseSDK } from 'app/modules/Types';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
 
@@ -26,11 +23,12 @@ const navigation = {
     }
 };
 
-const sanitizeForm = (body: PenaltyIdentifier) => {
+const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: body.penaltyReference.toUpperCase()
+        penaltyReference: body.penaltyReference.toUpperCase(),
+        penaltyList: body.penaltyList
     };
 
 };
@@ -38,13 +36,13 @@ const sanitizeForm = (body: PenaltyIdentifier) => {
 // tslint:disable-next-line: max-classes-per-file
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
-    constructor(@inject(CompaniesHouseSDK) chSdk: CompaniesHouseSDK) {
+    constructor(@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
         super(
             template,
             navigation,
-            new PenaltyDetailsValidator(formSchema, chSdk),
+            penaltyDetailsValidator,
             sanitizeForm,
-            [CompanyNameProcessor, PenaltyDetailsProcessor]
+            [CompanyNameProcessor]
         );
     }
 
@@ -53,25 +51,10 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+        loggerInstance().info(`${PenaltyDetailsController.name} - value: ${JSON.stringify(value)}`);
         appeal.penaltyIdentifier = value;
         loggerInstance()
             .debug(`${PenaltyDetailsController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
-
-        appeal.penaltyIdentifier.penalty =
-        {
-            madeUpToDate: '12 November 2020',
-            relatedItems: [
-                {
-                    amount: 300,
-                    date: '12 November 2020',
-                    type: {
-                        title: 'Late Filling Penalty',
-                        type: 'penalty'
-                    }
-                }
-            ]
-
-        };
         return appeal;
     }
 }
