@@ -1,10 +1,10 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
-import { PenaltyDetailsValidator } from './validators/PenaltyDetailsValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
+import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
