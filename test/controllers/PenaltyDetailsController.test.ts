@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 
 import ApiClient from 'ch-sdk-node/dist/client';
+import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/service';
+import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import { LateFilingPenaltyService, Penalty } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
@@ -61,11 +63,12 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'A12345678',
+                    penaltyReference: 'A12345678'
                 }
             } as Appeal;
 
             const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+            const companyProfileService = createSubstituteOf<CompanyProfileService>();
 
 
             lfpService.getPenalties('SC123123').resolves({
@@ -82,8 +85,16 @@ describe('PenaltyDetailsController', () => {
                 }
             });
 
+            companyProfileService.getCompanyProfile('SC123123').resolves({
+                httpStatusCode: 200,
+                resource: {
+                    companyName: 'company-name-test'
+                } as CompanyProfile
+            });
+
             const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
                 sdk.lateFilingPenalties.returns!(lfpService);
+                sdk.companyProfile.returns!(companyProfileService);
             });
 
             const app = createApp({ appeal }, container => {

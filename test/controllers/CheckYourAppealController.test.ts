@@ -20,6 +20,7 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 
 const appeal = {
     penaltyIdentifier: {
+        companyName: 'company-name-test',
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
     },
@@ -63,6 +64,7 @@ describe('CheckYourAppealController', () => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
                         .to.contain(pageHeading).and
+                        .to.contain(appeal.penaltyIdentifier.companyName).and
                         .to.contain(appeal.penaltyIdentifier.companyNumber).and
                         .to.contain(appeal.penaltyIdentifier.penaltyReference).and
                         .to.contain('test').and
@@ -88,6 +90,7 @@ describe('CheckYourAppealController', () => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
                         .to.contain(pageHeading).and
+                        .to.contain('Company Name').and
                         .to.contain('Penalty details').and
                         .to.contain('Company Number').and
                         .to.contain('Type').and
