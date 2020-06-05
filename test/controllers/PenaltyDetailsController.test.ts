@@ -5,10 +5,11 @@ import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/ser
 import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import { LateFilingPenaltyService, Penalty } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
-import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/PenaltyDetailsController';
+import { COMPANY_NAME_RETRIEVAL_ERROR } from 'app/controllers/processors/CompanyNameProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
@@ -107,6 +108,54 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(OTHER_REASON_DISCLAIMER_PAGE_URI);
+                });
+
+        });
+
+        it('should render error page when company profile is unavailable ', async () => {
+
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'SC123123',
+                    penaltyReference: 'A12345678'
+                }
+            } as Appeal;
+
+            const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+            const companyProfileService = createSubstituteOf<CompanyProfileService>();
+
+            lfpService.getPenalties('SC123123').resolves({
+                httpStatusCode: 200,
+                resource: {
+                    etag: '',
+                    itemsPerPage: 1,
+                    startIndex: 1,
+                    totalResults: 1,
+                    items: [{
+                        id: '12345678',
+                        type: 'penalty'
+                    }] as Penalty[]
+                }
+            });
+
+            companyProfileService.getCompanyProfile(appeal.penaltyIdentifier.companyNumber)
+                .throws(COMPANY_NAME_RETRIEVAL_ERROR(appeal.penaltyIdentifier.companyNumber));
+
+            const companiesHouseSDK = (_: AuthMethod) => createSubstituteOf<ApiClient>(sdk => {
+                sdk.lateFilingPenalties.returns!(lfpService);
+                sdk.companyProfile.returns!(companyProfileService);
+            });
+
+            const app = createApp({ appeal }, container => {
+                container.rebind(CompaniesHouseSDK).toConstantValue(companiesHouseSDK);
+            });
+
+
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
+                .send(appeal.penaltyIdentifier)
+                .expect(response => {
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                    expect(response.text).to.contain('Sorry, there is a problem with the service');
                 });
 
         });
