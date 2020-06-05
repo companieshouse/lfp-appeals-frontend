@@ -12,10 +12,13 @@ import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
+import { DateFormat, E5DateContent } from 'app/models/dates/DateFormat';
+import { fromE5DateToPenaltyItemDate } from 'app/models/dates/DateMapper';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
+
 @provide(PenaltyDetailsValidator)
 export class PenaltyDetailsValidator implements Validator {
 
@@ -86,6 +89,17 @@ export class PenaltyDetailsValidator implements Validator {
                 loggerInstance().error(`${PenaltyDetailsValidator.name}: Multiple penalties found. This is currently unsupported`);
                 throw PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR;
             }
+
+            penalties.resource.items = penalties.resource.items.map(item => {
+                const madeUpDate = new DateFormat<'yyyy/mm/dd'>(E5DateContent(item.madeUpDate));
+                item.madeUpDate = madeUpDate.map(fromE5DateToPenaltyItemDate).content.toString();
+                console.log(item.madeUpDate);
+
+                const transactionDate = new DateFormat<'yyyy/mm/dd'>(E5DateContent(item.transactionDate));
+                item.transactionDate = transactionDate.map(fromE5DateToPenaltyItemDate).content.toString();
+                console.log(item.transactionDate);
+                return item;
+            });
 
             request.body.penaltyList = penalties.resource;
 

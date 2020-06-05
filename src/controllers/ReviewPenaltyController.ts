@@ -6,12 +6,15 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
-import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'review-penalty';
-const navigation: Navigation = {
-    next: () => OTHER_REASON_DISCLAIMER_PAGE_URI,
-    previous: () => PENALTY_DETAILS_PAGE_URI
+const navigation = {
+    previous(): string {
+        return PENALTY_DETAILS_PAGE_URI;
+    },
+    next(): string {
+        return OTHER_REASON_DISCLAIMER_PAGE_URI;
+    }
 };
 
 type TableColumn = {
@@ -40,7 +43,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Table>
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
 
         }
-        return this.createTable(appeal.penaltyIdentifier.penaltyList);
+        return { ...appeal.penaltyIdentifier, ...this.createTable(appeal.penaltyIdentifier.penaltyList) };
     }
 
     private createTable(penalties: PenaltyList): Table {
@@ -72,7 +75,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Table>
 
         const totalRow: TableRow = [
             {
-                text: 'Total'
+                text: 'Total:'
             },
             {
                 text: ''

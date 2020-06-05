@@ -29,6 +29,7 @@ describe('PenaltyDetailsValidator', () => {
             session: createSession('secret', true)
         } as Request;
     };
+
     it('should throw an error if session is undefined', async () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
         try {
@@ -38,6 +39,7 @@ describe('PenaltyDetailsValidator', () => {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
     });
+
     it('should throw an error if access token is undefined', async () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
         const session = createSession('secret', false);
@@ -52,6 +54,7 @@ describe('PenaltyDetailsValidator', () => {
             expect(err.message).to.equal(TOKEN_MISSING_ERROR.message);
         }
     });
+
     it('should throw an error if ch-sdk fails', async () => {
         const penaltyReference = 'A0000001';
 
@@ -68,6 +71,7 @@ describe('PenaltyDetailsValidator', () => {
             expect(err.message).to.equal(`Can't access API: Error: Some error`);
         }
     });
+
     it('should return a validation error if no penalty items are received', async () => {
         const penaltyReference = 'A0000001';
 
@@ -86,6 +90,7 @@ describe('PenaltyDetailsValidator', () => {
         ]);
 
     });
+
     it('should throw an error if there is more than one penalty (TEMPORARY)', async () => {
         const apiResponse = {
             httpStatusCode: 200,
@@ -93,11 +98,15 @@ describe('PenaltyDetailsValidator', () => {
                 items: [
                     {
                         id: '000000000',
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty,
                     {
                         id: '000000001',
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty
                 ]
             } as PenaltyList
@@ -111,6 +120,7 @@ describe('PenaltyDetailsValidator', () => {
         }
 
     });
+
     it('should return an error when no items match the penalty', async () => {
 
         const penaltyReference = 'A0000001';
@@ -120,7 +130,9 @@ describe('PenaltyDetailsValidator', () => {
                 items: [
                     {
                         id: 'A0000000',
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty
                 ]
             } as PenaltyList
@@ -130,53 +142,70 @@ describe('PenaltyDetailsValidator', () => {
         expect(results.errors.length).to.equal(2);
 
     });
-    it('should return no validation errors and add penalty to request body', async () => {
+
+    it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A0000001', 'A0000002'];
-        const apiResponse1 = {
+        const apiResponse = {
             httpStatusCode: 200,
             resource: {
                 items: [
                     {
                         id: penaltyReferences[0],
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty,
                     {
                         id: penaltyReferences[1],
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty
                 ]
             } as PenaltyList
         };
-        const apiResponse2 = {
+
+        const modernPenaltyReference = penaltyReferences[0];
+
+        const penaltyDetailsValidatorModern = new PenaltyDetailsValidator(createSDK(apiResponse));
+
+        const modernPenaltyRequest: Request = getRequest(modernPenaltyReference);
+
+        const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
+
+        expect(modernPenaltyReferenceResult.errors.length).to.equal(0);
+        expect(modernPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse.resource);
+
+    });
+
+    it('should return no validation errors and add penalty to request body for deprecated PR numbers', async () => {
+
+        const penaltyReferences: string[] = ['A0000001', 'A0000002'];
+
+        const apiResponse = {
             httpStatusCode: 200,
             resource: {
                 items: [
                     {
                         id: penaltyReferences[0],
-                        type: 'penalty'
+                        type: 'penalty',
+                        madeUpDate: '2020/10/10',
+                        transactionDate: '2020/11/10'
                     } as Penalty
                 ]
             } as PenaltyList
         };
         const oldPenaltyReference = `PEN1A/${companyNumber}`;
-        const modernPenaltyReference = penaltyReferences[0];
 
-        const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse2));
-        const penaltyDetailsValidatorModern = new PenaltyDetailsValidator(createSDK(apiResponse1));
+        const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
 
         const oldPenaltyRequest: Request = getRequest(oldPenaltyReference);
-        const modernPenaltyRequest: Request = getRequest(modernPenaltyReference);
 
         const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
-        const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
 
         expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(oldPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse2.resource);
-
-        expect(modernPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(modernPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse1.resource);
-
+        expect(oldPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse.resource);
 
     });
 

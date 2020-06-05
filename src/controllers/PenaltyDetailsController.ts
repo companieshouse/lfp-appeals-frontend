@@ -33,7 +33,6 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
 };
 
-// tslint:disable-next-line: max-classes-per-file
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor(@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {

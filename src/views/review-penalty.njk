@@ -30,27 +30,26 @@
             <span class="govuk-!-font-weight-bold">{{ companyName }}</span>
             </h1>
             <h2 class="govuk-heading-m">
-              Accounts period made up to
-              {{ madeUpToDate }}
+            Accounts period made up to {{ madeUpToDate }}
             </h2>
 
             {{ 
-            govukTable({
-              caption: caption,
-              firstCellIsHeader: true,
-              head: head,
-              rows: tableRows
-            }) 
-          }}
+              govukTable({
+                caption: caption,
+                firstCellIsHeader: true,
+                head: head,
+                rows: tableRows
+              }) 
+            }}
 
             {{ 
-            govukButton({
-              text: "Continue",
-              attributes: {
-                id: 'submit'
-              }
-            }) 
-          }}
+              govukButton({
+                text: "Continue",
+                attributes: {
+                  id: 'submit'
+                }
+              }) 
+            }}
           </div>
         </div>
       </main>
