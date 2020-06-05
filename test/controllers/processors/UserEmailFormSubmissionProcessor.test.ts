@@ -46,6 +46,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
                         [APPLICATION_DATA_KEY]: {
                             appeal: {
                                 penaltyIdentifier: {
+                                    companyName: 'A Company Name',
                                     companyNumber: '00345567',
                                     penaltyReference: 'PEN1A/12345677'
                                 }
@@ -61,6 +62,7 @@ describe('UserEmailFormSubmissionProcessor', () => {
             body: {
                 templateName: 'lfp-appeal-submission-confirmation',
                 templateData: {
+                    companyName: 'A Company Name',
                     companyNumber: '00345567',
                     penaltyReference: 'PEN1A/12345677',
                     userProfile: {
