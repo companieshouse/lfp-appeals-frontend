@@ -23,6 +23,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string):
         body: {
             templateName: 'lfp-appeal-submission-internal',
             templateData: {
+                companyName: appeal.penaltyIdentifier.companyName,
                 companyNumber: appeal.penaltyIdentifier.companyNumber,
                 penaltyReference: appeal.penaltyIdentifier.penaltyReference,
                 userProfile: {
