@@ -6,14 +6,13 @@ import { Request } from 'express';
 import { OK } from 'http-status-codes';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from '../processors/errors/Errors';
+import moment from 'moment';
 
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
-import { DateFormat, E5DateContent } from 'app/models/dates/DateFormat';
-import { fromE5DateToPenaltyItemDate } from 'app/models/dates/DateMapper';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
@@ -91,11 +90,8 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             penalties.resource.items = penalties.resource.items.map(item => {
-                const madeUpDate = new DateFormat<'yyyy-mm-dd'>(E5DateContent(item.madeUpDate));
-                item.madeUpDate = madeUpDate.map(fromE5DateToPenaltyItemDate).content.toString();
-
-                const transactionDate = new DateFormat<'yyyy-mm-dd'>(E5DateContent(item.transactionDate));
-                item.transactionDate = transactionDate.map(fromE5DateToPenaltyItemDate).content.toString();
+                item.madeUpDate = moment(item.madeUpDate).format('D MMMM YYYY');
+                item.transactionDate = moment(item.transactionDate).format('D MMMM YYYY');
                 return item;
             });
 

@@ -28,9 +28,7 @@
             </span>Penalty details for
             <span class="govuk-!-font-weight-bold">{{ companyName }}</span>
             </h1>
-            <h2 class="govuk-heading-m">
-            Accounts period made up to {{ madeUpToDate }}
-            </h2>
+            <h2 class="govuk-heading-m">Accounts period made up to {{ madeUpToDate }}</h2>
 
             {{ 
               govukTable({
@@ -43,7 +41,7 @@
 
             {{ 
               govukButton({
-                text: "Continue",
+                text: 'Continue',
                 attributes: {
                   id: 'submit'
                 }
@@ -54,5 +52,4 @@
       </main>
     </div>
   </form>
-
 {% endblock %}

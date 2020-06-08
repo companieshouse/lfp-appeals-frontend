@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
-import { OK } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/ReviewPenaltyController';
@@ -15,7 +15,7 @@ describe('ReviewPenaltyController', () => {
 
     const companyNumber: string = 'NI000000';
     const companyName: string = 'Test Ltd.';
-    const penaltyReference: string = 'A00000000';
+    const penaltyReference: string = 'A0000000';
     const penalty: Partial<Penalty> = {
         type: 'penalty',
         madeUpDate: '12 May 2020',
@@ -58,6 +58,7 @@ describe('ReviewPenaltyController', () => {
             });
 
     });
+
     it('should go to other reasons disclaimer screen when continue is pressed', async () => {
 
         const appeal: Partial<Appeal> = {
@@ -79,6 +80,30 @@ describe('ReviewPenaltyController', () => {
             .post(REVIEW_PENALTY_PAGE_URI)
             .expect(302)
             .expect(res => expect(res.get('Location')).to.equal(OTHER_REASON_DISCLAIMER_PAGE_URI));
+    });
+
+    it('should redirect to error page if penalty list is not found in appeal', async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                penaltyReference,
+            }
+        };
+
+        const app = createApp({
+            appeal: appeal as Appeal, navigation: {
+                permissions: [REVIEW_PENALTY_PAGE_URI]
+            }
+        });
+
+        await request(app)
+            .get(REVIEW_PENALTY_PAGE_URI)
+            .expect(response => {
+                expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                expect(response.text).to.contain('Sorry, there is a problem with the service');
+            });
     });
 
 });

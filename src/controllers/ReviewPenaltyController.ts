@@ -5,9 +5,11 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
+import { PenaltyDetailsTable, TableRow } from 'app/models/PenaltyDetailsTable';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'review-penalty';
+
 const navigation = {
     previous(): string {
         return PENALTY_DETAILS_PAGE_URI;
@@ -17,19 +19,8 @@ const navigation = {
     }
 };
 
-type TableColumn = {
-    text: string;
-};
-type TableRow = TableColumn[];
-type Table = {
-    caption: string,
-    header: TableRow;
-    madeUpToDate: string;
-    tableRows: TableRow[];
-};
-
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware)
-export class ReviewPenaltyController extends SafeNavigationBaseController<Table> {
+export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
 
@@ -37,7 +28,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Table>
         super(template, navigation);
     }
 
-    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & Table {
+    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyDetailsTable {
 
         if (!appeal.penaltyIdentifier.penaltyList) {
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
@@ -46,7 +37,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Table>
         return { ...appeal.penaltyIdentifier, ...this.createTable(appeal.penaltyIdentifier.penaltyList) };
     }
 
-    private createTable(penalties: PenaltyList): Table {
+    private createTable(penalties: PenaltyList): PenaltyDetailsTable {
         const penalty: Penalty = penalties.items[0];
         const madeUpToDate: string = penalty.madeUpDate;
         const caption: string = 'Penalty reference: ' + penalty.id;

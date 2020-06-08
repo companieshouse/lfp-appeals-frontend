@@ -48,11 +48,11 @@ export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHan
 
 export class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
-        @unmanaged() readonly navigation: Navigation,
-        @unmanaged() readonly validator?: Validator,
-        @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-        @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
-        @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
+                          @unmanaged() readonly navigation: Navigation,
+                          @unmanaged() readonly validator?: Validator,
+                          @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
+                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
+                          @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
         super();
         const navigationControl = createChangeModeAwareNavigationProxy(
             { next: this.navigation.next, previous: this.navigation.previous },
@@ -188,7 +188,6 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                             .httpContext
                             .container
                             .get<FormActionProcessor>(actionProcessorType);
-
                         await actionProcessor.process(request);
                     }
                 }

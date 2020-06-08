@@ -177,23 +177,34 @@ describe('PenaltyDetailsValidator', () => {
     it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A0000001', 'A0000002'];
+
+        const items = [
+            {
+                id: penaltyReferences[0],
+                type: 'penalty',
+                madeUpDate: '2020-10-10',
+                transactionDate: '2020-11-10'
+            } as Penalty,
+            {
+                id: penaltyReferences[1],
+                type: 'penalty',
+                madeUpDate: '2020-10-10',
+                transactionDate: '2020-11-10'
+            } as Penalty
+        ];
+        const mappedItems = [
+            {
+                id: penaltyReferences[0],
+                type: 'penalty',
+                madeUpDate: '10 October 2020',
+                transactionDate: '10 November 2020'
+            } as Penalty
+        ];
+
         const apiResponse = {
             httpStatusCode: 200,
             resource: {
-                items: [
-                    {
-                        id: penaltyReferences[0],
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty,
-                    {
-                        id: penaltyReferences[1],
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
+                items
             } as PenaltyList
         };
 
@@ -206,25 +217,33 @@ describe('PenaltyDetailsValidator', () => {
         const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
 
         expect(modernPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(modernPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse.resource);
+        expect(modernPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
 
     });
 
     it('should return no validation errors and add penalty to request body for deprecated PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A0000001', 'A0000002'];
-
+        const items = [
+            {
+                id: penaltyReferences[0],
+                type: 'penalty',
+                madeUpDate: '2020-10-10',
+                transactionDate: '2020-11-10'
+            } as Penalty
+        ];
+        const mappedItems = [
+            {
+                id: penaltyReferences[0],
+                type: 'penalty',
+                madeUpDate: '10 October 2020',
+                transactionDate: '10 November 2020'
+            } as Penalty
+        ];
         const apiResponse = {
             httpStatusCode: 200,
             resource: {
-                items: [
-                    {
-                        id: penaltyReferences[0],
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
+                items
             } as PenaltyList
         };
         const oldPenaltyReference = `PEN1A/${companyNumber}`;
@@ -236,7 +255,7 @@ describe('PenaltyDetailsValidator', () => {
         const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
 
         expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(oldPenaltyRequest.body.penaltyList).to.deep.equal(apiResponse.resource);
+        expect(oldPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
 
     });
 
