@@ -9,10 +9,8 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { schema as formSchema } from 'app/models/PenaltyIdentifier.schema';
-import { CompaniesHouseSDK } from 'app/modules/Types';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
 
 const template = 'penalty-details';
 
@@ -21,24 +19,30 @@ const navigation = {
         return ROOT_URI;
     },
     next(): string {
-        return OTHER_REASON_DISCLAIMER_PAGE_URI;
+        return REVIEW_PENALTY_PAGE_URI;
     }
 };
 
-const sanitizeForm = (body: PenaltyIdentifier) => {
+const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: body.penaltyReference.toUpperCase()
+        penaltyReference: body.penaltyReference.toUpperCase(),
+        penaltyList: body.penaltyList
     };
 
 };
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
-    constructor(@inject(CompaniesHouseSDK) chSdk: CompaniesHouseSDK) {
-        super(template, navigation, new PenaltyDetailsValidator(formSchema, chSdk), sanitizeForm,
-            [CompanyNameProcessor]);
+    constructor(@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
+        super(
+            template,
+            navigation,
+            penaltyDetailsValidator,
+            sanitizeForm,
+            [CompanyNameProcessor]
+        );
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {

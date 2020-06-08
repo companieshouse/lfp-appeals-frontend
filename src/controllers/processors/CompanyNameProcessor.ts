@@ -7,13 +7,11 @@ import { OK } from 'http-status-codes';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { FormActionProcessor } from './FormActionProcessor';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from './errors/Errors';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 
-
-export const SESSION_NOT_FOUND_ERROR: Error = new Error('Session Expected but was undefined');
-export const TOKEN_MISSING_ERROR: Error = new Error('Access token missing from session');
 export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error('Company number expected but was undefined');
 export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
 
