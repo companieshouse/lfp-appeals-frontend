@@ -1,20 +1,12 @@
 import { assertDateComponents, DateAssertion, E5DateAssertion, PenaltyDetailsDateAssertion } from './DateAsserter';
-import { E5DateSplitter, PenaltyDateSplitter } from './DateSplitters';
+import { DateComponents, E5DateSplitter, PenaltyDateSplitter, Splitter } from './DateSplitters';
 
-export type DateType = 'yyyy/mm/dd' | 'dd MM yyyy' | 'other';
+export type DateType = 'yyyy-mm-dd' | 'dd MM yyyy' | 'other';
 
-export type DateComponents = {
-    day: string,
-    month: string,
-    year: string,
-    toString: () => string;
-};
-
-export class DateContent<C = DateType> {
-    public readonly content: DateComponents;
-    constructor(public readonly type: C, value: DateComponents, dateAssertion: DateAssertion) {
-        this.content = value;
-        assertDateComponents(dateAssertion)(this.content);
+export class DateContent<A = DateType> {
+    public readonly content: DateComponents<A>;
+    constructor(public readonly type: A, value: string, split: Splitter<A>, dateAssertion: DateAssertion<A>) {
+        this.content = assertDateComponents<A>(dateAssertion)(split(value));
     }
     public toString(): string {
         return this.content.toString();
@@ -31,8 +23,8 @@ export class DateFormat<A = DateType> {
 }
 
 export const E5DateContent = (value: string) =>
-    new DateContent<'yyyy/mm/dd'>('yyyy/mm/dd', E5DateSplitter(value), E5DateAssertion);
+    new DateContent<'yyyy-mm-dd'>('yyyy-mm-dd', value, E5DateSplitter, E5DateAssertion);
 
 export const PenaltyItemContent = (value: string) =>
-    new DateContent<'dd MM yyyy'>('dd MM yyyy', PenaltyDateSplitter(value), PenaltyDetailsDateAssertion);
+    new DateContent<'dd MM yyyy'>('dd MM yyyy', value, PenaltyDateSplitter, PenaltyDetailsDateAssertion);
 

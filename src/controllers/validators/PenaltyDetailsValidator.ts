@@ -91,13 +91,11 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             penalties.resource.items = penalties.resource.items.map(item => {
-                const madeUpDate = new DateFormat<'yyyy/mm/dd'>(E5DateContent(item.madeUpDate));
+                const madeUpDate = new DateFormat<'yyyy-mm-dd'>(E5DateContent(item.madeUpDate));
                 item.madeUpDate = madeUpDate.map(fromE5DateToPenaltyItemDate).content.toString();
-                console.log(item.madeUpDate);
 
-                const transactionDate = new DateFormat<'yyyy/mm/dd'>(E5DateContent(item.transactionDate));
+                const transactionDate = new DateFormat<'yyyy-mm-dd'>(E5DateContent(item.transactionDate));
                 item.transactionDate = transactionDate.map(fromE5DateToPenaltyItemDate).content.toString();
-                console.log(item.transactionDate);
                 return item;
             });
 

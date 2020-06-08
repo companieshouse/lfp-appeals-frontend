@@ -2,12 +2,13 @@ import ApiClient from 'ch-sdk-node/dist/client';
 import { LateFilingPenaltyService, Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { assert, expect } from 'chai';
 import { Request } from 'express';
-import { createSubstituteOf } from '../../SubstituteFactory';
-import { createSession } from '../session/SessionFactory';
 
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
+
+import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createSession } from 'test/utils/session/SessionFactory';
 
 describe('PenaltyDetailsValidator', () => {
     const createSDK = (apiResponse: any): CompaniesHouseSDK => {
@@ -99,14 +100,14 @@ describe('PenaltyDetailsValidator', () => {
                     {
                         id: '000000000',
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty,
                     {
                         id: '000000001',
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty
                 ]
             } as PenaltyList
@@ -131,8 +132,8 @@ describe('PenaltyDetailsValidator', () => {
                     {
                         id: 'A0000000',
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty
                 ]
             } as PenaltyList
@@ -153,14 +154,14 @@ describe('PenaltyDetailsValidator', () => {
                     {
                         id: penaltyReferences[0],
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty,
                     {
                         id: penaltyReferences[1],
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty
                 ]
             } as PenaltyList
@@ -190,8 +191,8 @@ describe('PenaltyDetailsValidator', () => {
                     {
                         id: penaltyReferences[0],
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     } as Penalty
                 ]
             } as PenaltyList

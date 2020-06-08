@@ -50,7 +50,6 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
-        loggerInstance().info(`${PenaltyDetailsController.name} - value: ${JSON.stringify(value)}`);
         appeal.penaltyIdentifier = value;
         loggerInstance()
             .debug(`${PenaltyDetailsController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);

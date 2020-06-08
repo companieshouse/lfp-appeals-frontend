@@ -84,8 +84,8 @@ describe('PenaltyDetailsController', () => {
                     items: [{
                         id: 'A12345678',
                         type: 'penalty',
-                        madeUpDate: '2020/10/10',
-                        transactionDate: '2020/11/10'
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
                     }] as Penalty[]
                 }
             });

@@ -5,7 +5,6 @@ import IORedis from 'ioredis';
 import * as kafka from 'kafka-node';
 import { CompaniesHouseSDK } from 'modules/Types';
 import * as util from 'util';
-import { PenaltyDetailsValidator } from './controllers/validators/PenaltyDetailsValidator';
 
 import { APP_NAME } from 'app/Constants';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
@@ -73,9 +72,6 @@ export function createContainer(): Container {
             getEnvOrThrow(`FILE_TRANSFER_API_KEY`)));
 
     container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('API_URL')));
-
-    container.bind(PenaltyDetailsValidator)
-        .toConstantValue(new PenaltyDetailsValidator(container.get(CompaniesHouseSDK)));
 
     container.load(buildProviderModule());
     return container;

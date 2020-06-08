@@ -1,15 +1,13 @@
-{% extends "layout.njk" %}
+{% extends 'layout.njk' %}
 
-{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
-{% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
-{% from 'govuk/components/input/macro.njk' import govukInput %}
-{% from 'govuk/components/button/macro.njk' import govukButton %}
-{% from 'govuk/components/details/macro.njk' import govukDetails %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from 'govuk/components/back-link/macro.njk'     import govukBackLink %}
+{% from 'govuk/components/button/macro.njk'        import govukButton %}
+{% from "govuk/components/table/macro.njk"         import govukTable %}
 
 {% block pageTitle %}
   Review your penalty details
 {% endblock %}
+
 {% block backLink %}
   {{
     govukBackLink({
@@ -18,7 +16,8 @@
     })
   }}
 {% endblock %}
-{% block main %}
+
+{% block content %}
   <form method="post" action="">
     <div class="govuk-width-container">
       <main role="main" class="govuk-main-wrapper">
@@ -37,7 +36,7 @@
               govukTable({
                 caption: caption,
                 firstCellIsHeader: true,
-                head: head,
+                head: header,
                 rows: tableRows
               }) 
             }}

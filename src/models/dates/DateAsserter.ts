@@ -1,4 +1,5 @@
-import { DateComponents } from './DateFormat';
+import { DateType } from './DateFormat';
+import { DateComponents } from './DateSplitters';
 
 export const months: string[] = [
     'January',
@@ -15,19 +16,22 @@ export const months: string[] = [
     'December'
 ];
 
-export type DateAssertion = {
+export type DateAssertion<T = DateType> = {
+    type: T,
     assertYear: (year: string) => void,
     assertMonth: (month: string) => void,
     assertDay: (day: string) => void;
 };
 
-export type DateAsserter = (dateAssertions: DateAssertion) => (components: DateComponents) => void;
-export const assertDateComponents: DateAsserter = (dateAssertions: DateAssertion) =>
-    (components: DateComponents): void => {
+export type DateAssertionResult<T = DateType> = (components: DateComponents<T>) => DateComponents<T>;
+export function assertDateComponents<T = DateType>(dateAssertions: DateAssertion<T>): DateAssertionResult<T> {
+    return (components: DateComponents<T>): DateComponents<T> => {
         dateAssertions.assertDay(components.day);
         dateAssertions.assertMonth(components.month);
         dateAssertions.assertYear(components.year);
+        return components;
     };
+}
 
 const assertOrThrow = (predicate: () => boolean, message: string) => {
     if (!predicate()) {
@@ -35,7 +39,8 @@ const assertOrThrow = (predicate: () => boolean, message: string) => {
     }
 };
 
-export const E5DateAssertion: DateAssertion = {
+export const E5DateAssertion: DateAssertion<'yyyy-mm-dd'> = {
+    type: 'yyyy-mm-dd',
     assertYear: (year: string) => {
         try {
             const yearNumber = parseInt(year, 10);
@@ -65,7 +70,8 @@ export const E5DateAssertion: DateAssertion = {
     }
 };
 
-export const PenaltyDetailsDateAssertion: DateAssertion = {
+export const PenaltyDetailsDateAssertion: DateAssertion<'dd MM yyyy'> = {
+    type: 'dd MM yyyy',
     assertYear: E5DateAssertion.assertYear,
     assertMonth: (month: string) => {
         try {
