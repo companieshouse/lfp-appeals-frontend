@@ -56,6 +56,36 @@ describe('PenaltyDetailsValidator', () => {
         }
     });
 
+    it('should return validation error if company number not in E5', async () => {
+        const mapErrorMessage = 'Cannot read property \'map\' of null';
+
+        const lfpService = createSubstituteOf<LateFilingPenaltyService>();
+
+        lfpService.getPenalties('SC123123').throws(new Error(mapErrorMessage));
+
+        const apiClient = createSubstituteOf<ApiClient>(sdk => {
+            sdk.lateFilingPenalties.returns!(lfpService);
+        });
+        const companiesHouseSDK = (_: AuthMethod) => apiClient;
+
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(companiesHouseSDK);
+
+        const result = await penaltyDetailsValidator.validate({
+            session: createSession('secret', true),
+            body: {
+                companyNumber: 'SC123123',
+                penaltyReference: 'A00000000'
+            }
+        } as Request);
+
+        expect(result.errors).to.deep.equal([
+            PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR,
+            PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR
+        ]);
+
+
+    });
+
     it('should throw an error if ch-sdk fails', async () => {
         const penaltyReference = 'A0000001';
 

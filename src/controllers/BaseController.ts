@@ -6,7 +6,7 @@ import { unmanaged } from 'inversify';
 import { httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
-import { FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
+import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -48,11 +48,11 @@ export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHan
 
 export class BaseController<FORM> extends BaseAsyncHttpController {
     protected constructor(@unmanaged() readonly template: string,
-                          @unmanaged() readonly navigation: Navigation,
-                          @unmanaged() readonly validator?: Validator,
-                          @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
-                          @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
-                          @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
+        @unmanaged() readonly navigation: Navigation,
+        @unmanaged() readonly validator?: Validator,
+        @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
+        @unmanaged() readonly formActionProcessors?: FormActionProcessorConstructor[],
+        @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
         super();
         const navigationControl = createChangeModeAwareNavigationProxy(
             { next: this.navigation.next, previous: this.navigation.previous },
@@ -184,8 +184,12 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
 
                 if (that.formActionProcessors != null) {
                     for (const actionProcessorType of that.formActionProcessors) {
-                        const actionProcessor = that.httpContext.container.get(actionProcessorType);
-                        await actionProcessor.process(request, response);
+                        const actionProcessor = that
+                            .httpContext
+                            .container
+                            .get<FormActionProcessor>(actionProcessorType);
+
+                        await actionProcessor.process(request);
                     }
                 }
 
@@ -230,13 +234,13 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     protected async persistSession(): Promise<void> {
         const session: Session | undefined = this.httpContext.request.session;
 
-        if (!session){
+        if (!session) {
             throw new Error('Session was expected but none found');
         }
 
         await this.httpContext.container.get(SessionStore)
             .store(Cookie.createFrom(this.httpContext.request.cookies[sessionCookieName]), session!.data,
-                    sessionTimeToLiveInSeconds);
+                sessionTimeToLiveInSeconds);
 
         this.httpContext.response
             .cookie(sessionCookieName, this.httpContext.request.cookies[sessionCookieName], {

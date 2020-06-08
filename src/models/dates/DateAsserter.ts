@@ -75,7 +75,7 @@ export const PenaltyDetailsDateAssertion: DateAssertion<'dd MM yyyy'> = {
     assertYear: E5DateAssertion.assertYear,
     assertMonth: (month: string) => {
         try {
-            assertOrThrow(() => months.indexOf(month) !== -1, 'Month should have 2 characters');
+            assertOrThrow(() => months.indexOf(month) !== -1, 'Month should be a real month name');
         } catch (err) {
             throw new Error(`Cannot parse month with value ${month}. Err: ${err}`);
         }
