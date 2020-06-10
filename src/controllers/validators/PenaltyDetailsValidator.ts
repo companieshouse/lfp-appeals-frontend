@@ -17,6 +17,7 @@ import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
 @provide(PenaltyDetailsValidator)
 export class PenaltyDetailsValidator implements Validator {
@@ -65,7 +66,8 @@ export class PenaltyDetailsValidator implements Validator {
             const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{7}|[0-9]{9})$/;
 
             const penalties: Resource<PenaltyList> =
-                await this.chSdk(new OAuth2(accessToken)).lateFilingPenalties.getPenalties(companyNumber);
+                await this.chSdk(new OAuth2(accessToken))
+                    .lateFilingPenalties.getPenalties(sanitizeCompany(companyNumber));
 
             if (penalties.httpStatusCode !== OK || !penalties.resource) {
                 throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
