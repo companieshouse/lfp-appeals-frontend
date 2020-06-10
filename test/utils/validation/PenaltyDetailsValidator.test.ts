@@ -174,33 +174,6 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should return validation errors when the penalty reference is in the wrong format', () => {
-        const penaltyReferences = [
-            `PEN11A/${companyNumber}`,
-            `PEN1B/0000000000123`,
-            `abcd`
-        ];
-        const apiResponse = {
-            httpStatusCode: 200,
-            resource: {
-                items: [
-                    {
-                        id: 'A0000000',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
-            } as PenaltyList
-        };
-
-        penaltyReferences.forEach(async penaltyReference => {
-            const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
-            const results = await penaltyDetailsValidator.validate(getRequest(penaltyReference));
-            expect(results.errors.length).to.equal(2);
-        });
-    });
-
     it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A0000001', 'A0000002'];
@@ -244,7 +217,7 @@ describe('PenaltyDetailsValidator', () => {
         const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
 
         expect(modernPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(modernPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+        expect(modernPenaltyRequest.body.penaltyList.items[0]).to.deep.equal(mappedItems[0]);
 
     });
 
@@ -287,7 +260,8 @@ describe('PenaltyDetailsValidator', () => {
             const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
 
             expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
-            expect(oldPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+            expect(oldPenaltyRequest.body.penaltyList.items[0]).to.deep.equal(mappedItems);
+            expect(oldPenaltyRequest.body.penaltyReference).to.equal(mappedItems[0].id);
         });
 
     });
