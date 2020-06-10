@@ -42,7 +42,7 @@ export class CompanyNameProcessor implements FormActionProcessor {
             throw COMPANY_NUMBER_UNDEFINED_ERROR;
         }
 
-        const sanitizedCompanyNumber = sanitizeCompany(companyNumber);
+        const sanitizedCompanyNumber: string = sanitizeCompany(companyNumber);
 
         const profile: Resource<CompanyProfile> = await this
             .chSdk(new OAuth2(token))

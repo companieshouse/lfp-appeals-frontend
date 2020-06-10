@@ -56,6 +56,8 @@ export class PenaltyDetailsValidator implements Validator {
 
         const companyNumber: string = (request.body as PenaltyIdentifier).companyNumber;
 
+        const sanitizedCompanyNumber: string = sanitizeCompany(companyNumber);
+
         const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
 
         const mapErrorMessage = 'Cannot read property \'map\' of null';
@@ -67,7 +69,7 @@ export class PenaltyDetailsValidator implements Validator {
 
             const penalties: Resource<PenaltyList> =
                 await this.chSdk(new OAuth2(accessToken))
-                    .lateFilingPenalties.getPenalties(sanitizeCompany(companyNumber));
+                    .lateFilingPenalties.getPenalties(sanitizedCompanyNumber);
 
             if (penalties.httpStatusCode !== OK || !penalties.resource) {
                 throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
@@ -82,7 +84,7 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             if (!items || items.length === 0) {
-                loggerInstance().error(`${PenaltyDetailsValidator.name}: No penalties for ${companyNumber} match the reference number ${penaltyReference}`);
+                loggerInstance().error(`${PenaltyDetailsValidator.name}: No penalties for ${sanitizedCompanyNumber} match the reference number ${penaltyReference}`);
                 return this.createValidationResultWithErrors();
             }
 
