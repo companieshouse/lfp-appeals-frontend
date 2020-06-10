@@ -93,6 +93,8 @@ export class PenaltyDetailsValidator implements Validator {
                 throw PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR;
             }
 
+            request.body.penaltyReference = penalties.resource.items[0].id;
+
             penalties.resource.items = penalties.resource.items.map(item => {
                 item.madeUpDate = moment(item.madeUpDate).format('D MMMM YYYY');
                 item.transactionDate = moment(item.transactionDate).format('D MMMM YYYY');

@@ -217,16 +217,21 @@ describe('PenaltyDetailsValidator', () => {
         const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
 
         expect(modernPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(modernPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+        expect(modernPenaltyRequest.body.penaltyList.items[0]).to.deep.equal(mappedItems[0]);
 
     });
 
-    it('should return no validation errors and add penalty to request body for deprecated PR numbers', async () => {
+    it('should return no validation errors and add penalty to request body for deprecated PR numbers', () => {
 
-        const penaltyReferences: string[] = ['A0000001', 'A0000002'];
+        const penaltyReferences = [
+            `PEN1A/${companyNumber}`,
+            `PEN1B/${companyNumber}`,
+            `PEN0Z/00000000`
+        ];
+
         const items = [
             {
-                id: penaltyReferences[0],
+                id: 'A0000001',
                 type: 'penalty',
                 madeUpDate: '2020-10-10',
                 transactionDate: '2020-11-10'
@@ -234,7 +239,7 @@ describe('PenaltyDetailsValidator', () => {
         ];
         const mappedItems = [
             {
-                id: penaltyReferences[0],
+                id: 'A0000001',
                 type: 'penalty',
                 madeUpDate: '10 October 2020',
                 transactionDate: '10 November 2020'
@@ -246,16 +251,18 @@ describe('PenaltyDetailsValidator', () => {
                 items
             } as PenaltyList
         };
-        const oldPenaltyReference = `PEN1A/${companyNumber}`;
 
-        const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
+        penaltyReferences.forEach(async penaltyReference => {
 
-        const oldPenaltyRequest: Request = getRequest(oldPenaltyReference);
+            const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
+            const oldPenaltyRequest: Request = getRequest(penaltyReference);
 
-        const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
+            const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
 
-        expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(oldPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+            expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
+            expect(oldPenaltyRequest.body.penaltyList.items[0]).to.deep.equal(mappedItems);
+            expect(oldPenaltyRequest.body.penaltyReference).to.equal(mappedItems[0].id);
+        });
 
     });
 
