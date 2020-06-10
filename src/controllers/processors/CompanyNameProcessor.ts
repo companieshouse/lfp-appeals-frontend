@@ -11,6 +11,7 @@ import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from './errors/Errors';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
 export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error('Company number expected but was undefined');
 export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
@@ -41,14 +42,16 @@ export class CompanyNameProcessor implements FormActionProcessor {
             throw COMPANY_NUMBER_UNDEFINED_ERROR;
         }
 
+        const sanitizedCompanyNumber = sanitizeCompany(companyNumber);
+
         const profile: Resource<CompanyProfile> = await this
             .chSdk(new OAuth2(token))
-            .companyProfile.getCompanyProfile(companyNumber);
+            .companyProfile.getCompanyProfile(sanitizedCompanyNumber);
 
         const companyName: string | undefined = profile.resource?.companyName;
 
         if (profile.httpStatusCode !== OK || !companyName) {
-            throw COMPANY_NAME_RETRIEVAL_ERROR(companyNumber);
+            throw COMPANY_NAME_RETRIEVAL_ERROR(sanitizedCompanyNumber);
         }
 
         request.body.companyName = companyName;
