@@ -14,10 +14,10 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
-import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
 @provide(PenaltyDetailsValidator)
 export class PenaltyDetailsValidator implements Validator {
