@@ -174,6 +174,33 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
+    it('should return validation errors when the penalty reference is in the wrong format', () => {
+        const penaltyReferences = [
+            `PEN11A/${companyNumber}`,
+            `PEN1B/0000000000123`,
+            `abcd`
+        ];
+        const apiResponse = {
+            httpStatusCode: 200,
+            resource: {
+                items: [
+                    {
+                        id: 'A0000000',
+                        type: 'penalty',
+                        madeUpDate: '2020-10-10',
+                        transactionDate: '2020-11-10'
+                    } as Penalty
+                ]
+            } as PenaltyList
+        };
+
+        penaltyReferences.forEach(async penaltyReference => {
+            const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
+            const results = await penaltyDetailsValidator.validate(getRequest(penaltyReference));
+            expect(results.errors.length).to.equal(2);
+        });
+    });
+
     it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A0000001', 'A0000002'];
@@ -221,12 +248,17 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should return no validation errors and add penalty to request body for deprecated PR numbers', async () => {
+    it('should return no validation errors and add penalty to request body for deprecated PR numbers', () => {
 
-        const penaltyReferences: string[] = ['A0000001', 'A0000002'];
+        const penaltyReferences = [
+            `PEN1A/${companyNumber}`,
+            `PEN1B/${companyNumber}`,
+            `PEN0Z/00000000`
+        ];
+
         const items = [
             {
-                id: penaltyReferences[0],
+                id: 'A0000001',
                 type: 'penalty',
                 madeUpDate: '2020-10-10',
                 transactionDate: '2020-11-10'
@@ -234,7 +266,7 @@ describe('PenaltyDetailsValidator', () => {
         ];
         const mappedItems = [
             {
-                id: penaltyReferences[0],
+                id: 'A0000001',
                 type: 'penalty',
                 madeUpDate: '10 October 2020',
                 transactionDate: '10 November 2020'
@@ -246,16 +278,17 @@ describe('PenaltyDetailsValidator', () => {
                 items
             } as PenaltyList
         };
-        const oldPenaltyReference = `PEN1A/${companyNumber}`;
 
-        const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
+        penaltyReferences.forEach(async penaltyReference => {
 
-        const oldPenaltyRequest: Request = getRequest(oldPenaltyReference);
+            const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
+            const oldPenaltyRequest: Request = getRequest(penaltyReference);
 
-        const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
+            const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);
 
-        expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
-        expect(oldPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+            expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
+            expect(oldPenaltyRequest.body.penaltyList.items).to.deep.equal(mappedItems);
+        });
 
     });
 
