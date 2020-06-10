@@ -1,28 +1,28 @@
 {
     "compilerOptions": {
-      "module": "commonjs",
-      "strict": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "noImplicitReturns": true,
-      "noFallthroughCasesInSwitch": true,
-      "pretty": true,
-      "baseUrl": "./src",
-      "removeComments": true,
-      "experimentalDecorators": true,
-      "esModuleInterop": true,
-      "target": "es6",
-      "emitDecoratorMetadata": true,
-      "moduleResolution": "node",
-      "importHelpers": true,
-      "plugins": [
-        {
-          "name": "typescript-tslint-plugin"
+        "module": "commonjs",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "pretty": true,
+        "baseUrl": "./src",
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "target": "es6",
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "plugins": [
+            {
+                "name": "typescript-tslint-plugin"
+            }
+        ],
+        "paths": {
+            "app/*": ["./*"],
+            "test/*": ["../test/*"]
         }
-      ],
-      "paths": {
-        "app/*": ["./*"],
-        "test/*": ["../test/*"]
-      }
     }
-  }
+}
