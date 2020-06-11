@@ -11,16 +11,15 @@ import { schema as formSchema } from 'app/models/OtherReason.schema';
 import { Feature } from 'app/utils/Feature';
 import { isFeatureEnabled } from 'app/utils/FeatureChecker';
 import {
-    CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_QUESTION_URI,
-    OTHER_REASON_PAGE_URI,
-    REVIEW_PENALTY_PAGE_URI
+    CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_QUESTION_URI, OTHER_REASON_DISCLAIMER_PAGE_URI,
+    OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
 
 const template = 'other-reason';
 
 const navigation = {
     previous(): string {
-        return REVIEW_PENALTY_PAGE_URI;
+        return OTHER_REASON_DISCLAIMER_PAGE_URI;
     },
     next(): string {
         if (isFeatureEnabled(Feature.FILE_TRANSFER)) {
