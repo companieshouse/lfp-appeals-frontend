@@ -323,6 +323,200 @@ describe('AppealsService', () => {
         });
     });
 
+    describe('Loading appeals by Penalty', () => {
+        it('should throw an error when arguments are not defined', () => {
+
+            const appealsService = new AppealsService(APPEALS_URI, createSubstituteOf<RefreshTokenService>());
+
+            const testCompanyNumber = 'NI000000';
+            const testPenaltyReference = 'A1234567';
+
+            [undefined, null].forEach(async companyNumber => {
+                try {
+                    await appealsService.getAppealByPenalty(companyNumber!, testPenaltyReference,
+                        BEARER_TOKEN, REFRESH_TOKEN);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('Company number is missing');
+                }
+            });
+
+            [undefined, null].forEach(async penaltyReference => {
+                try {
+                    await appealsService.getAppealByPenalty(testCompanyNumber, penaltyReference!,
+                        BEARER_TOKEN, REFRESH_TOKEN);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('penaltyReference is missing');
+                }
+            });
+
+            [undefined, null].forEach(async invalidToken => {
+                try {
+                    await appealsService.getAppealByPenalty(testCompanyNumber, APPEAL_ID, invalidToken!, REFRESH_TOKEN);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('Access token is missing');
+                }
+            });
+
+            [undefined, null].forEach(async refreshToken => {
+                try {
+                    await appealsService.getAppealByPenalty(testCompanyNumber, APPEAL_ID, BEARER_TOKEN, refreshToken!);
+                } catch (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.haveOwnProperty('message').equal('Refresh token is missing');
+                }
+            });
+
+        });
+
+        it('should return an appeal when valid arguments are provided', async () => {
+
+            const refreshTokenService = createSubstituteOf<RefreshTokenService>();
+            const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
+
+            nock(APPEALS_HOST)
+                .get(`${APPEALS_URI}?penaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {}, {
+                    reqheaders: {
+                        Accept: 'application/json',
+                        Authorization: 'Bearer ' + BEARER_TOKEN
+                    }
+                })
+                .reply(OK, appeal);
+
+            const returnedAppeal = await appealsService
+                .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber, appeal.penaltyIdentifier.penaltyReference,
+                    BEARER_TOKEN, REFRESH_TOKEN);
+
+            expect(returnedAppeal).to.deep.eq(appeal);
+
+            refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
+        });
+
+        it('should return an appeal when valid arguments are provided after refreshing an expired access token',
+            async () => {
+
+                const refreshTokenService =
+                    new RefreshTokenService(REFRESH_HOST + REFRESH_URI, REFRESH_CLIENT_ID, REFRESH_CLIENT_SECRET);
+                const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
+
+                nock(APPEALS_HOST)
+                    .get(`${APPEALS_URI}?penaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {}, {
+                        reqheaders: {
+                            Accept: 'application/json',
+                            Authorization: 'Bearer ' + BEARER_TOKEN
+                        }
+                    })
+                    .reply(UNAUTHORIZED);
+
+                const refreshMock = nock(REFRESH_HOST)
+                    .post(REFRESH_URI + REFRESH_PARAMS)
+                    .reply(OK, refreshTokenData);
+
+                nock(APPEALS_HOST)
+                    .get(`${APPEALS_URI}?penaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {}, {
+                        reqheaders: {
+                            Accept: 'application/json',
+                            Authorization: 'Bearer ' + refreshTokenData.access_token,
+                        }
+                    })
+                    .reply(OK, appeal);
+
+                const returnedAppeal = await appealsService
+                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                        appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
+
+                expect(returnedAppeal).to.deep.eq(appeal);
+                expect(refreshMock.isDone()).to.equal(true);
+
+            });
+
+        it('should return status 401 on GET when auth header is invalid after refresh token', async () => {
+
+            const refreshTokenService =
+                new RefreshTokenService(REFRESH_HOST + REFRESH_URI, REFRESH_CLIENT_ID, REFRESH_CLIENT_SECRET);
+            const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
+
+            nock(APPEALS_HOST)
+                .get(`${APPEALS_URI}?penaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {},
+                    {
+                        reqheaders: {
+                            Accept: 'application/json',
+                            Authorization: 'Bearer ' + BEARER_TOKEN
+                        },
+                    })
+                .reply(UNAUTHORIZED);
+
+            nock(REFRESH_HOST)
+                .post(REFRESH_URI + REFRESH_PARAMS)
+                .reply(UNAUTHORIZED);
+
+            try {
+                await appealsService
+                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                        appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
+            } catch (err) {
+                expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
+                expect(err.message).to.contain(`getByPenalty appeal unauthorised`);
+            }
+        });
+
+        it('should return an AppealNotFoundError when response status is 404', async () => {
+
+            const refreshTokenService = createSubstituteOf<RefreshTokenService>();
+            const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
+
+            nock(APPEALS_HOST)
+                .get(`${APPEALS_URI}?penaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {},
+                    {
+                        reqheaders: {
+                            Accept: 'application/json',
+                            Authorization: 'Bearer ' + BEARER_TOKEN
+                        },
+                    })
+                .reply(NOT_FOUND);
+
+            try {
+                await appealsService
+                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                        appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
+            } catch (err) {
+                expect(err.constructor.name).eq(AppealNotFoundError.name);
+                expect(err.message).to.contain(`getByPenalty appeal failed because appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} was not found`);
+            }
+
+            refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
+        });
+
+        it('should return an AppealServiceError when response status is 500 ', async () => {
+
+            const refreshTokenService = createSubstituteOf<RefreshTokenService>();
+            const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
+
+            nock(APPEALS_HOST)
+                .get(`${APPEALS_URI}/?PenaltyReference=${appeal.penaltyIdentifier.penaltyReference}`, {},
+                    {
+                        reqheaders: {
+                            Accept: 'application/json',
+                            Authorization: 'Bearer ' + BEARER_TOKEN
+                        },
+                    })
+                .reply(INTERNAL_SERVER_ERROR);
+
+            try {
+                await appealsService
+                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                        appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
+            } catch (err) {
+                expect(err.constructor.name).eq(AppealServiceError.name);
+                expect(err.message).to.include(`getByPenalty appeal failed on appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} with message`);
+            }
+            refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
+        });
+
+    });
+
     describe('Loading appeals', () => {
         it('should throw an error when arguments are not defined', () => {
 

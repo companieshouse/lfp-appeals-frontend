@@ -37,6 +37,27 @@ export class AppealsService {
 
     }
 
+    public async getAppealByPenalty(companyNumber: string, penaltyReference: string, accessToken: string,
+                           refreshToken: string): Promise<Appeal> {
+
+        this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
+        this.checkArgumentOrThrow(penaltyReference, 'penalty reference is missing');
+        this.checkArgumentOrThrow(accessToken, 'Access token is missing');
+        this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
+
+        this.refreshTokenInterceptor(accessToken, refreshToken);
+
+        const uri: string = `${this.uri}/companies/${companyNumber}/appeals?penaltyReference=${penaltyReference}`;
+        loggerInstance()
+            .debug(`Making a GET request to ${uri}`);
+
+        return await this.axiosInstance
+            .get(uri)
+            .then((response: AxiosResponse<Appeal>) => response.data)
+            .catch(this.handleResponseError('getByPenalty', penaltyReference));
+
+    }
+
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
         this.checkArgumentOrThrow(appeal, 'Appeal data is missing');
         this.checkArgumentOrThrow(accessToken, 'Access token is missing');
@@ -68,18 +89,27 @@ export class AppealsService {
         }
     }
 
-    private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
+    private handleResponseError(operation: 'get' | 'save' | 'getByPenalty', subject?: string):
+        (_: AxiosError) => never {
         return (err: AxiosError) => {
             const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
             if (err.isAxiosError && err.response != null) {
                 switch (err.response.status) {
                     case NOT_FOUND:
+                        if (operation === 'getByPenalty'){
+                            throw new AppealNotFoundError(`${operation} appeal failed because appeal with penalty reference${concatPrefixToSubject('')}was not found`);
+                        }
                         throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
                     case UNAUTHORIZED:
                         throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
                     case UNPROCESSABLE_ENTITY:
                         throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
                 }
+            }
+            if (operation === 'getByPenalty'){
+                throw new AppealServiceError(
+                    `${operation} appeal failed${concatPrefixToSubject('on appeal with penalty reference')}with message ${err.message || 'unknown error'}: `
+                );
             }
             throw new AppealServiceError(
                 `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `
