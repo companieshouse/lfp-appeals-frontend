@@ -3,9 +3,9 @@ import { LateFilingPenaltyService, Penalty, PenaltyList } from 'ch-sdk-node/dist
 import { assert, expect } from 'chai';
 import { Request } from 'express';
 
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createSession } from 'test/utils/session/SessionFactory';

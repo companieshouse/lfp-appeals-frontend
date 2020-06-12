@@ -5,7 +5,7 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { PenaltyDetailsTable, TableRow } from 'app/models/PenaltyDetailsTable';
+import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'review-penalty';
