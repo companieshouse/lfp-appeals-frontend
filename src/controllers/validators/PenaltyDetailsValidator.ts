@@ -76,10 +76,9 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
-
+            console.log(items);
             if (modernPenaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
-                penalties.resource.items = items;
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
             }
 
@@ -88,18 +87,13 @@ export class PenaltyDetailsValidator implements Validator {
                 return this.createValidationResultWithErrors();
             }
 
-            if (items.length > 1) {
-                loggerInstance().error(`${PenaltyDetailsValidator.name}: Multiple penalties found. This is currently unsupported`);
-                throw PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR;
-            }
-
-            request.body.penaltyReference = penalties.resource.items[0].id;
-
-            penalties.resource.items = penalties.resource.items.map(item => {
+            items = items.map(item => {
                 item.madeUpDate = moment(item.madeUpDate).format('D MMMM YYYY');
                 item.transactionDate = moment(item.transactionDate).format('D MMMM YYYY');
                 return item;
             });
+
+            penalties.resource.items = items;
 
             request.body.penaltyList = penalties.resource;
 

@@ -11,3 +11,4 @@ import 'app/controllers/OtherReasonController';
 import 'app/controllers/OtherReasonDisclaimerController';
 import 'app/controllers/PenaltyDetailsController';
 import 'app/controllers/ReviewPenaltyController';
+import 'app/controllers/SelectYearController';

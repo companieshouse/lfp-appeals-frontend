@@ -122,36 +122,6 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should throw an error if there is more than one penalty (TEMPORARY)', async () => {
-        const apiResponse = {
-            httpStatusCode: 200,
-            resource: {
-                items: [
-                    {
-                        id: '000000000',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty,
-                    {
-                        id: '000000001',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
-            } as PenaltyList
-        };
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
-        try {
-            await penaltyDetailsValidator.validate(getRequest(`PEN1A/${companyNumber}`));
-            assert.fail('Should have thrown an error');
-        } catch (err) {
-            expect(err.message).to.equal(PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR.message);
-        }
-
-    });
-
     it('should return an error when no items match the penalty', async () => {
 
         const penaltyReference = 'A0000001';

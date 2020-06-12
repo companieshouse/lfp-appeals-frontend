@@ -12,7 +12,7 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, SELECT_YEAR_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -80,7 +80,7 @@ describe('PenaltyDetailsController', () => {
                 .send(appeal.penaltyIdentifier)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(REVIEW_PENALTY_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(SELECT_YEAR_PAGE_URI);
                 });
 
         });

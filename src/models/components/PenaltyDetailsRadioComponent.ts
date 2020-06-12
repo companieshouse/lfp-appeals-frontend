@@ -15,7 +15,7 @@ export type PenaltyRadioButton = {
 export type PenaltyDetailsRadioComponent = {
     idPrefix: 'select-penalty',
     name: 'selectPenalty',
-    fieldSet: {
+    fieldset: {
         legend:{
             text: 'Select the penalty you want to appeal',
             isPageHeading: true,
@@ -42,7 +42,7 @@ export const PenaltyDetailsRadioComponent = (penalties: Penalty[]): PenaltyDetai
     return {
         idPrefix:'select-penalty',
         name: 'selectPenalty',
-        fieldSet: {
+        fieldset: {
             legend: {
                 text: 'Select the penalty you want to appeal',
                 isPageHeading: true,
