@@ -53,8 +53,11 @@ export class AppealsService {
 
         return await this.axiosInstance
             .get(uri)
-            .then((response: AxiosResponse<Appeal>) => response.data)
-            .catch(this.handleResponseError('getByPenalty', penaltyReference));
+            .then((response: AxiosResponse<Appeal>) => {
+                console.log(response.request);
+                return response.data;
+            })
+            .catch(this.handleResponseError('get'));
 
     }
 
@@ -96,9 +99,6 @@ export class AppealsService {
             if (err.isAxiosError && err.response != null) {
                 switch (err.response.status) {
                     case NOT_FOUND:
-                        if (operation === 'getByPenalty'){
-                            throw new AppealNotFoundError(`${operation} appeal failed because appeal with penalty reference${concatPrefixToSubject('')}was not found`);
-                        }
                         throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
                     case UNAUTHORIZED:
                         throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
