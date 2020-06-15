@@ -23,6 +23,8 @@ const navigation = {
 export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
+    public static PENALTY_IDENTIFIER_EXPECTED_ERROR: string = 'Penalty identifier expected';
+    public static PENALTY_NOT_FOUND: string = 'Penalty identifier did not match any item in list of penalties expected';
 
     constructor() {
         super(template, navigation);
@@ -32,13 +34,25 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
 
         if (!appeal.penaltyIdentifier.penaltyList) {
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
-
         }
-        return { ...appeal.penaltyIdentifier, ...this.createTable(appeal.penaltyIdentifier.penaltyList) };
+
+        if (!appeal.penaltyIdentifier.penaltyReference) {
+            throw new Error(ReviewPenaltyController.PENALTY_IDENTIFIER_EXPECTED_ERROR);
+        }
+
+        const penaltyList = appeal.penaltyIdentifier.penaltyList;
+        const penaltyReference = appeal.penaltyIdentifier.penaltyReference;
+
+        return { ...appeal.penaltyIdentifier, ...this.createTable(penaltyReference, penaltyList) };
     }
 
-    private createTable(penalties: PenaltyList): PenaltyDetailsTable {
-        const penalty: Penalty = penalties.items[0];
+    private createTable(penaltyReference: string, penalties: PenaltyList): PenaltyDetailsTable {
+        const penalty: Penalty | undefined = penalties.items.find(item => item.id === penaltyReference);
+
+        if (!penalty) {
+            throw new Error(ReviewPenaltyController.PENALTY_NOT_FOUND);
+        }
+
         const madeUpToDate: string = penalty.madeUpDate;
         const caption: string = 'Penalty reference: ' + penalty.id;
         const header: TableRow = [
@@ -85,7 +99,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
     }
 
     private mapPenaltyType(type: string): string {
-        switch(type) {
+        switch (type) {
             case 'penalty':
                 return 'Late Filing Penalty';
             default:

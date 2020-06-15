@@ -1,16 +1,25 @@
 import Joi from '@hapi/joi';
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
+import { Request, Response } from 'express';
+import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
+import { BaseController, FormActionHandler, FormActionHandlerConstructor } from './BaseController';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
+import { FormActionProcessor } from './processors/FormActionProcessor';
 import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { createPenaltyRadioButton } from 'app/models/components/PenaltyRadioButton';
 import { createSchema } from 'app/models/fields/PenaltyChoice.schema';
+import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_YEAR_PAGE_URI } from 'app/utils/Paths';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 const template = 'select-the-year';
 
@@ -20,8 +29,38 @@ const navigation = {
     },
     next(): string {
         return REVIEW_PENALTY_PAGE_URI;
+    },
+    actions: (changeMode: boolean) => {
+        return {
+            continue: changeMode ? 'action=continue&cm=1' : 'action=continue'
+        };
     }
 };
+
+@provide(Processor)
+class Processor implements FormActionProcessor {
+    public process(request: Request): void | Promise<void> {
+
+        const session = request.session;
+
+        if (!session) {
+            throw SESSION_NOT_FOUND_ERROR;
+        }
+
+        const appData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
+
+        if(!appData) {
+            throw APPLICATION_DATA_UNDEFINED;
+        }
+
+        const penaltySelected: string = request.body.selectPenalty;
+
+        appData.appeal.penaltyIdentifier.penaltyReference = penaltySelected;
+
+        session.setExtraData(APPLICATION_DATA_KEY, appData);
+    }
+
+}
 
 export const errorMessage: string = 'Select the penalty you want to appeal';
 
@@ -32,9 +71,15 @@ export class SelectYearController extends SafeNavigationBaseController<any> {
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
 
     constructor() {
-        super(template, navigation, new FormValidator(Joi.object({
-            yearSelection: createSchema(errorMessage)
-        })));
+        super(
+            template,
+            navigation,
+            new FormValidator(Joi.object({
+                selectPenalty: createSchema(errorMessage)
+            })),
+            undefined,
+            [Processor]
+        );
     }
 
     public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & any {
@@ -46,5 +91,60 @@ export class SelectYearController extends SafeNavigationBaseController<any> {
         }
 
         return { penalties: penaltyList.items.map(createPenaltyRadioButton) };
+    }
+
+    protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
+        const that = this;
+        return {
+            continue: {
+                handle: async (request: Request, response: Response) => {
+                    if (that.validator != null) {
+                        const validationResult: ValidationResult = await that.validator.validate(request);
+                        if (validationResult.errors.length > 0) {
+                            return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
+                                that.template,
+                                {
+                                    ...request.body,
+                                    validationResult,
+                                    ...that.prepareViewModel(),
+                                    ...that.prepareNavigationConfig()
+                                }
+                            );
+                        }
+                    }
+
+                    if (that.formSanitizeFunction != null) {
+                        request.body = that.formSanitizeFunction(request.body);
+                        loggerInstance().debug(`${BaseController.name} - sanitized form body: ${JSON.stringify(request.body)}`);
+                    }
+
+                    if (that.formActionProcessors != null) {
+                        for (const actionProcessorType of that.formActionProcessors) {
+                            const actionProcessor = that
+                                .httpContext
+                                .container
+                                .get<FormActionProcessor>(actionProcessorType);
+                            await actionProcessor.process(request);
+                        }
+                    }
+
+                    const session: Session | undefined = request.session;
+
+                    if (session) {
+                        const applicationData: ApplicationData = session
+                            .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
+
+                        session.setExtraData(APPLICATION_DATA_KEY, applicationData);
+
+                        applicationData.appeal = that
+                            .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+
+                        await that.persistSession();
+                    }
+
+                    return response.redirect(that.navigation.next(request));
+                }
+            }
+        };
     }
 }

@@ -76,7 +76,7 @@ export class PenaltyDetailsValidator implements Validator {
             }
 
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
-            console.log(items);
+
             if (modernPenaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
