@@ -25,7 +25,21 @@
         <div class="govuk-grid-column-two-thirds">
           <form action="" method="post" id="penaltyForm">
 
-            {{ govukRadios(radioButtonComponent) }}
+            {{ 
+              govukRadios({
+                idPrefix: 'select-penalty',
+                name: 'selectPenalty',
+                fieldset: {
+                  legend: {
+                      text: 'Select the penalty you want to appeal',
+                      isPageHeading: true,
+                      classes: 'govuk-fieldset__legend--xl'
+                  }
+                },
+                errorMessage: validationResult.getErrorForField('yearSelection') if validationResult,
+                items: penalties
+              })
+            }} 
 
             {{ 
               govukButton({
