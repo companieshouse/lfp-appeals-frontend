@@ -53,7 +53,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
             .info(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference} for duplicate appeals`);
 
         const isDuplicate = await this
-            .appealsService.isDuplicateAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
+            .appealsService.hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
 
         console.log(isDuplicate);
 

@@ -1,6 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
+import {
+    AppealNotFoundError,
+    AppealServiceError,
+    AppealUnauthorisedError,
+    AppealUnprocessableEntityError
+} from './errors';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -37,8 +42,10 @@ export class AppealsService {
 
     }
 
-    public async isDuplicateAppeal(companyNumber: string, penaltyReference: string, accessToken: string,
-                                    refreshToken: string): Promise<boolean> {
+    public async hasExistingAppeal(companyNumber: string, penaltyReference: string, accessToken: string,
+                                   refreshToken: string): Promise<boolean> {
+
+        const operation = 'get';
 
         this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
         this.checkArgumentOrThrow(penaltyReference, 'penalty reference is missing');
@@ -51,15 +58,16 @@ export class AppealsService {
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        const params = { penaltyReference };
+        const params = {penaltyReference};
 
-        try{
+        try {
             await this.axiosInstance.get(uri, {params});
         } catch (err) {
-            if (err.response.status === NOT_FOUND){
+            if (err.response && err.response.status === NOT_FOUND) {
                 return false;
+            } else {
+                this.handleResponseError(operation);
             }
-            throw new Error(err.message);
         }
 
         return true;
@@ -97,7 +105,7 @@ export class AppealsService {
         }
     }
 
-    private handleResponseError(operation: 'get' | 'save' | 'getByPenalty', subject?: string):
+    private handleResponseError(operation: 'get' | 'save', subject?: string):
         (_: AxiosError) => never {
         return (err: AxiosError) => {
             const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
@@ -110,11 +118,6 @@ export class AppealsService {
                     case UNPROCESSABLE_ENTITY:
                         throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
                 }
-            }
-            if (operation === 'getByPenalty'){
-                throw new AppealServiceError(
-                    `${operation} appeal failed${concatPrefixToSubject('on appeal with penalty reference')}with message ${err.message || 'unknown error'}: `
-                );
             }
             throw new AppealServiceError(
                 `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `

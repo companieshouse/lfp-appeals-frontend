@@ -323,7 +323,7 @@ describe('AppealsService', () => {
         });
     });
 
-    describe('Loading appeals by Penalty', () => {
+    describe('hasExistingAppeal', () => {
         it('should throw an error when arguments are not defined', () => {
 
             const appealsService = new AppealsService(APPEALS_URI, createSubstituteOf<RefreshTokenService>());
@@ -333,7 +333,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async companyNumber => {
                 try {
-                    await appealsService.getAppealByPenalty(companyNumber!, testPenaltyReference,
+                    await appealsService.hasExistingAppeal(companyNumber!, testPenaltyReference,
                         BEARER_TOKEN, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
@@ -343,7 +343,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async penaltyReference => {
                 try {
-                    await appealsService.getAppealByPenalty(testCompanyNumber, penaltyReference!,
+                    await appealsService.hasExistingAppeal(testCompanyNumber, penaltyReference!,
                         BEARER_TOKEN, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
@@ -353,7 +353,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async invalidToken => {
                 try {
-                    await appealsService.getAppealByPenalty(testCompanyNumber, APPEAL_ID, invalidToken!, REFRESH_TOKEN);
+                    await appealsService.hasExistingAppeal(testCompanyNumber, APPEAL_ID, invalidToken!, REFRESH_TOKEN);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Access token is missing');
@@ -362,7 +362,7 @@ describe('AppealsService', () => {
 
             [undefined, null].forEach(async refreshToken => {
                 try {
-                    await appealsService.getAppealByPenalty(testCompanyNumber, APPEAL_ID, BEARER_TOKEN, refreshToken!);
+                    await appealsService.hasExistingAppeal(testCompanyNumber, APPEAL_ID, BEARER_TOKEN, refreshToken!);
                 } catch (err) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty('message').equal('Refresh token is missing');
@@ -371,7 +371,7 @@ describe('AppealsService', () => {
 
         });
 
-        it('should return an appeal when valid arguments are provided', async () => {
+        it('should return true when existing details are provided', async () => {
 
             const refreshTokenService = createSubstituteOf<RefreshTokenService>();
             const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
@@ -385,16 +385,16 @@ describe('AppealsService', () => {
                 })
                 .reply(OK, appeal);
 
-            const returnedAppeal = await appealsService
-                .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber, appeal.penaltyIdentifier.penaltyReference,
+            const hasExistingAppeal = await appealsService
+                .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber, appeal.penaltyIdentifier.penaltyReference,
                     BEARER_TOKEN, REFRESH_TOKEN);
 
-            expect(returnedAppeal).to.deep.eq(appeal);
+            expect(hasExistingAppeal).to.deep.eq(true);
 
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
         });
 
-        it('should return an appeal when valid arguments are provided after refreshing an expired access token',
+        it('should return true when existing details are provided after refreshing an expired access token',
             async () => {
 
                 const refreshTokenService =
@@ -423,11 +423,11 @@ describe('AppealsService', () => {
                     })
                     .reply(OK, appeal);
 
-                const returnedAppeal = await appealsService
-                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                const hasExistingAppeal = await appealsService
+                    .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
 
-                expect(returnedAppeal).to.deep.eq(appeal);
+                expect(hasExistingAppeal).to.deep.eq(true);
                 expect(refreshMock.isDone()).to.equal(true);
 
             });
@@ -454,15 +454,15 @@ describe('AppealsService', () => {
 
             try {
                 await appealsService
-                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                    .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
-                expect(err.message).to.contain(`getByPenalty appeal unauthorised`);
+                expect(err.message).to.contain(`get appeal unauthorised`);
             }
         });
 
-        it('should return an AppealNotFoundError when response status is 404', async () => {
+        it('should return false when response status is 404', async () => {
 
             const refreshTokenService = createSubstituteOf<RefreshTokenService>();
             const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
@@ -477,15 +477,11 @@ describe('AppealsService', () => {
                     })
                 .reply(NOT_FOUND);
 
-            try {
-                await appealsService
-                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+            const hasExistingAppeal: boolean = await appealsService
+                    .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
-                expect(err.constructor.name).eq(AppealNotFoundError.name);
-                expect(err.message).to.contain(`getByPenalty appeal failed because appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} was not found`);
-            }
 
+            expect(hasExistingAppeal).to.deep.eq(false);
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
         });
 
@@ -506,11 +502,11 @@ describe('AppealsService', () => {
 
             try {
                 await appealsService
-                    .getAppealByPenalty(appeal.penaltyIdentifier.companyNumber,
+                    .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
-                expect(err.message).to.include(`getByPenalty appeal failed on appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} with message`);
+                expect(err.message).to.include(`get appeal failed on appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} with message`);
             }
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
         });
