@@ -10,8 +10,6 @@ import { Reasons } from 'app/models/Reasons';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
-
-
 describe('PenaltyReferenceRouter', () => {
     it('should throw an exception if the session does not exist', () => {
 
