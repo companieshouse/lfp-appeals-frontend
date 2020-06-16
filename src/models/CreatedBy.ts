@@ -1,3 +1,4 @@
 export interface CreatedBy {
-    id: string;
+    id?: string;
+    emailAddress?: string;
 }

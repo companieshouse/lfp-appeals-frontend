@@ -35,6 +35,9 @@ export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
         const appeal: Appeal = applicationData.appeal;
 
+        appeal.createdBy = appeal.createdBy || {};
+        appeal.createdBy.emailAddress = signInInfo?.user_profile?.email;
+
         loggerInstance()
             .debug(`${AppealStorageFormActionProcessor.name} - process: Saving appeal with data ${JSON.stringify(appeal)}`);
         loggerInstance()
