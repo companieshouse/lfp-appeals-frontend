@@ -37,8 +37,8 @@ export class AppealsService {
 
     }
 
-    public async getAppealByPenalty(companyNumber: string, penaltyReference: string, accessToken: string,
-                           refreshToken: string): Promise<Appeal> {
+    public async isDuplicateAppeal(companyNumber: string, penaltyReference: string, accessToken: string,
+                                    refreshToken: string): Promise<boolean> {
 
         this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
         this.checkArgumentOrThrow(penaltyReference, 'penalty reference is missing');
@@ -47,19 +47,45 @@ export class AppealsService {
 
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
-        const uri: string = `${this.uri}/companies/${companyNumber}/appeals?penaltyReference=${penaltyReference}`;
+        const uri: string = `${this.uri}/companies/${companyNumber}/appeals?`;
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
-        return await this.axiosInstance
-            .get(uri)
-            .then((response: AxiosResponse<Appeal>) => {
-                console.log(response.request);
-                return response.data;
-            })
-            .catch(this.handleResponseError('get'));
+        const params = { penaltyReference };
+
+        await this.axiosInstance.get(uri, {params})
+            .catch((err: AxiosError) =>{
+                if (err.response?.status === NOT_FOUND){
+                    return true;
+                }
+                throw new Error(err.message);
+            });
+
+        return false;
 
     }
+
+    // public async getAppealByPenalty(companyNumber: string, penaltyReference: string, accessToken: string,
+    //                        refreshToken: string): Promise<Appeal> {
+    //
+    //     this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
+    //     this.checkArgumentOrThrow(penaltyReference, 'penalty reference is missing');
+    //     this.checkArgumentOrThrow(accessToken, 'Access token is missing');
+    //     this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
+    //
+    //     this.refreshTokenInterceptor(accessToken, refreshToken);
+    //
+    //     const uri: string = `${this.uri}/companies/${companyNumber}/appeals?`;
+    //     loggerInstance()
+    //         .debug(`Making a GET request to ${uri}`);
+    //
+    //     const params = { penaltyReference };
+    //
+    //     return await this.axiosInstance
+    //         .get(uri, {params})
+    //         .then((response: AxiosResponse<Appeal>) => response.data);
+    //
+    // }
 
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
         this.checkArgumentOrThrow(appeal, 'Appeal data is missing');

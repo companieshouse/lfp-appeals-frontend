@@ -1,7 +1,6 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
-import { NOT_FOUND } from 'http-status-codes';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
@@ -10,6 +9,7 @@ import { TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
 // const errorCustomTemplate: string = 'error-custom';
 // const enquiryEmail: string = 'enquiries@companieshouse.gov.uk';
@@ -35,22 +35,22 @@ export class CheckForDuplicateProcessor implements FormActionProcessor {
             throw TOKEN_MISSING_ERROR;
         }
 
-        const penaltyIdentifier: PenaltyIdentifier | undefined = request.body;
-        const companyNumber: string = penaltyIdentifier!.companyNumber;
-        const penaltyReference: string = penaltyIdentifier!.penaltyReference;
+        const penaltyIdentifier: PenaltyIdentifier = request.body;
+        const companyNumber: string = sanitizeCompany(penaltyIdentifier!.companyNumber);
+        const penaltyReference: string = penaltyIdentifier!.penaltyReference.toUpperCase();
 
-        loggerInstance().debug(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference}`);
+        loggerInstance()
+            .info(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference} for duplicate appeals`);
 
-        try{
-            await this.appealsService.getAppealByPenalty(companyNumber, penaltyReference, accessToken, refreshToken!);
-        } catch (err) {
-            if (err.statusCode === NOT_FOUND){
-                loggerInstance().debug(`CheckForDuplicateProcessor - duplicate appeal not found`);
-            } else {
-                throw new Error(err.message);
-            }
+        const isDuplicate = await this.appealsService
+            .isDuplicateAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
+
+        if (isDuplicate){
+            loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
+            throw new Error('custom error page should go here');
         }
 
+        loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
         return;
     }
 }
