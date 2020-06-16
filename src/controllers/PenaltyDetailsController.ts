@@ -3,7 +3,6 @@ import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { CheckForDuplicateProcessor } from 'app/controllers/processors/CheckForDuplicateProcessor';
 import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -42,7 +41,7 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
             navigation,
             penaltyDetailsValidator,
             sanitizeForm,
-            [CompanyNameProcessor, CheckForDuplicateProcessor]
+            [CompanyNameProcessor]
         );
     }
 

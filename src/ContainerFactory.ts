@@ -13,6 +13,7 @@ import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+
 function initiateKafkaClient(): kafka.KafkaClient {
     const connectionTimeoutInMillis: number = parseInt(
         getEnvOrDefault('KAFKA_BROKER_CONNECTION_TIMEOUT_IN_MILLIS', '2000'), 10

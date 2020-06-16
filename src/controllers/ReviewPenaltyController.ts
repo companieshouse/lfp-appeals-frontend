@@ -4,6 +4,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyDetailsTable, TableRow } from 'app/models/PenaltyDetailsTable';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
@@ -19,7 +20,7 @@ const navigation = {
     }
 };
 
-@controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CheckForDuplicateMiddleware)
 export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
