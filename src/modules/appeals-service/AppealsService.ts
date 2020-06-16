@@ -53,13 +53,14 @@ export class AppealsService {
 
         const params = { penaltyReference };
 
-        await this.axiosInstance.get(uri, {params})
-            .catch((err: AxiosError) =>{
-                if (err.response?.status === NOT_FOUND){
-                    return false;
-                }
-                throw new Error(err.message);
-            });
+        try{
+            await this.axiosInstance.get(uri, {params});
+        } catch (err) {
+            if (err.response.status === NOT_FOUND){
+                return false;
+            }
+            throw new Error(err.message);
+        }
 
         return true;
 

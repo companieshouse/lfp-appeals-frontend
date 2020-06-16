@@ -55,9 +55,11 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         const isDuplicate = await this
             .appealsService.isDuplicateAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
 
+        console.log(isDuplicate);
+
         if (isDuplicate) {
             loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-            response.render(errorCustomTemplate, {
+            return response.render(errorCustomTemplate, {
                 heading: customErrorHeading,
                 message: customErrorMessage
             });
