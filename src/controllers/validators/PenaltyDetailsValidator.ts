@@ -58,7 +58,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         const sanitizedCompanyNumber: string = sanitizeCompany(companyNumber);
 
-        const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
+        const penaltyReference: string = (request.body as PenaltyIdentifier).userInputPenaltyReference;
 
         const mapErrorMessage = 'Cannot read property \'map\' of null';
         const etagErrorMessage = 'Cannot read property \'etag\' of null';

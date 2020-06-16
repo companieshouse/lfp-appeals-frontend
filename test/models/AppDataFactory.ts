@@ -26,7 +26,7 @@ export function createDefaultAttachments(): Attachment[] {
 export function createDefaultPenaltyIdentifier(): PenaltyIdentifier {
     return {
         companyNumber: '00345567',
-        penaltyReference: 'A00000001',
+        userInputPenaltyReference: 'A00000001',
     };
 }
 

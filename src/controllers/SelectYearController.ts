@@ -1,27 +1,25 @@
-import Joi from '@hapi/joi';
 import { Session, SessionMiddleware } from 'ch-node-session-handler';
 import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
-import { BaseController, FormActionHandler, FormActionHandlerConstructor } from './BaseController';
+import { FormActionHandler, FormActionHandlerConstructor } from './BaseController';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 import { FormActionProcessor } from './processors/FormActionProcessor';
 import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
 import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { createPenaltyRadioButton } from 'app/models/components/PenaltyRadioButton';
-import { createSchema } from 'app/models/fields/PenaltyChoice.schema';
+import { schema } from 'app/models/fields/PenaltyChoice.schema';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_YEAR_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
-const template = 'select-the-year';
+const template = 'select-the-penalty';
 
 const navigation = {
     previous(): string {
@@ -30,9 +28,9 @@ const navigation = {
     next(): string {
         return REVIEW_PENALTY_PAGE_URI;
     },
-    actions: (changeMode: boolean) => {
+    actions: (_: boolean) => {
         return {
-            continue: changeMode ? 'action=continue&cm=1' : 'action=continue'
+            continue:'action=continue'
         };
     }
 };
@@ -53,19 +51,15 @@ class Processor implements FormActionProcessor {
             throw APPLICATION_DATA_UNDEFINED;
         }
 
-        const penaltySelected: string = request.body.selectPenalty;
-
-        appData.appeal.penaltyIdentifier.penaltyReference = penaltySelected;
+        appData.appeal.penaltyIdentifier.penaltyReference = request.body.selectPenalty;
 
         session.setExtraData(APPLICATION_DATA_KEY, appData);
     }
 
 }
 
-export const errorMessage: string = 'Select the penalty you want to appeal';
-
 // tslint:disable-next-line: max-classes-per-file
-@controller(SELECT_YEAR_PAGE_URI, SessionMiddleware, AuthMiddleware, PenaltyReferenceRouter)
+@controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, PenaltyReferenceRouter)
 export class SelectYearController extends SafeNavigationBaseController<any> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
@@ -74,9 +68,7 @@ export class SelectYearController extends SafeNavigationBaseController<any> {
         super(
             template,
             navigation,
-            new FormValidator(Joi.object({
-                selectPenalty: createSchema(errorMessage)
-            })),
+            new FormValidator(schema),
             undefined,
             [Processor]
         );
@@ -111,11 +103,6 @@ export class SelectYearController extends SafeNavigationBaseController<any> {
                                 }
                             );
                         }
-                    }
-
-                    if (that.formSanitizeFunction != null) {
-                        request.body = that.formSanitizeFunction(request.body);
-                        loggerInstance().debug(`${BaseController.name} - sanitized form body: ${JSON.stringify(request.body)}`);
                     }
 
                     if (that.formActionProcessors != null) {

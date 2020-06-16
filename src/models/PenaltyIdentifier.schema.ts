@@ -10,7 +10,7 @@ export const companyNumberSchema = Joi.string()
 
 export const schema = Joi.object({
     companyNumber: companyNumberSchema,
-    penaltyReference: Joi.string()
+    userInputPenaltyReference: Joi.string()
         .required()
         .regex(/^[a-z0-9/]{8,14}$/i)
         .messages({

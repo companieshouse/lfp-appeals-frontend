@@ -5,7 +5,7 @@ import { BaseMiddleware } from 'inversify-express-utils';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 @provide(PenaltyReferenceRouter)
 export class PenaltyReferenceRouter extends BaseMiddleware {
@@ -36,7 +36,11 @@ export class PenaltyReferenceRouter extends BaseMiddleware {
         }
 
         if (numberOfPenalties === 1) {
-            res.redirect(REVIEW_PENALTY_PAGE_URI);
+            if (req.query.back) {
+                res.redirect(PENALTY_DETAILS_PAGE_URI);
+            } else {
+                res.redirect(REVIEW_PENALTY_PAGE_URI);
+            }
         } else {
             next();
         }

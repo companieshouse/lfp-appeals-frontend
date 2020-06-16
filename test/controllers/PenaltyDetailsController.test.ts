@@ -12,7 +12,7 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { PENALTY_DETAILS_PAGE_URI, SELECT_YEAR_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -30,7 +30,7 @@ describe('PenaltyDetailsController', () => {
         const appeal = {
             penaltyIdentifier: {
                 companyNumber: '00345567',
-                penaltyReference: 'A00000001',
+                userInputPenaltyReference: 'A00000001',
             }
         } as Appeal;
 
@@ -48,7 +48,7 @@ describe('PenaltyDetailsController', () => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.contain(pageHeading)
                         .and.to.contain(appeal.penaltyIdentifier.companyNumber)
-                        .and.to.contain(appeal.penaltyIdentifier.penaltyReference)
+                        .and.to.contain(appeal.penaltyIdentifier.userInputPenaltyReference)
                         .and.not.contain(errorSummaryHeading);
                 });
         });
@@ -60,7 +60,7 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'A12345678'
+                    userInputPenaltyReference: 'A12345678'
                 }
             } as Appeal;
 
@@ -80,7 +80,7 @@ describe('PenaltyDetailsController', () => {
                 .send(appeal.penaltyIdentifier)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(SELECT_YEAR_PAGE_URI);
+                    expect(response.get('Location')).to.be.equal(SELECT_THE_PENALTY_PAGE_URI);
                 });
 
         });
@@ -90,7 +90,7 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    penaltyReference: 'A12345678'
+                    userInputPenaltyReference: 'A12345678'
                 }
             } as Appeal;
 
@@ -118,7 +118,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting empty penalty reference', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: '',
+                userInputPenaltyReference: '',
                 companyNumber: 'SC123123'
             };
 
@@ -135,7 +135,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting invalid penalty reference', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: '0',
+                userInputPenaltyReference: '0',
                 companyNumber: 'SC123123'
             };
 
@@ -152,7 +152,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting empty company number', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
+                userInputPenaltyReference: 'A12345678',
                 companyNumber: ''
             };
 
@@ -169,7 +169,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting invalid company number', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
+                userInputPenaltyReference: 'A12345678',
                 companyNumber: 'AB66666666'
             };
 

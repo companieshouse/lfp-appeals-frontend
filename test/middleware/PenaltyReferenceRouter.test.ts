@@ -55,7 +55,7 @@ describe('PenaltyReferenceRouter', () => {
                 appeal: {
                     penaltyIdentifier: {
                         companyNumber: 'NI000000',
-                        penaltyReference: 'A0000001',
+                        userInputPenaltyReference: 'A0000001',
                         companyName: 'test'
                     },
                     reasons: {} as Reasons
@@ -85,7 +85,7 @@ describe('PenaltyReferenceRouter', () => {
             appeal: {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000',
-                    penaltyReference: 'A0000001',
+                    userInputPenaltyReference: 'A0000001',
                     companyName: 'test',
                     penaltyList: {
                         items: [{ id: 'A0000001' } as Penalty]
@@ -99,7 +99,10 @@ describe('PenaltyReferenceRouter', () => {
         const nextFunction = createSubstituteOf<NextFunction>();
 
         penaltyReferenceRouter.handler(
-            { session } as Request,
+            {
+                query: {},
+                session
+            } as Request,
             response,
             nextFunction
         );
@@ -118,7 +121,7 @@ describe('PenaltyReferenceRouter', () => {
             appeal: {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000',
-                    penaltyReference: 'PEN1A/ABCEFG',
+                    userInputPenaltyReference: 'PEN1A/ABCEFG',
                     companyName: 'test',
                     penaltyList: {
                         items: [{ id: 'A0000001' } as Penalty, { id: 'A0000002' } as Penalty]
@@ -133,6 +136,44 @@ describe('PenaltyReferenceRouter', () => {
 
         penaltyReferenceRouter.handler(
             { session } as Request,
+            response,
+            nextFunction
+        );
+
+        response.didNotReceive();
+        nextFunction.received();
+    });
+
+    it('should redirect to the penalty details page when list contains 1 penalty and back button flag is set', () => {
+
+        const penaltyReferenceRouter = new PenaltyReferenceRouter();
+
+        const session = createSession('secret', true);
+
+        session.setExtraData<Partial<ApplicationData>>(APPLICATION_DATA_KEY, {
+            appeal: {
+                penaltyIdentifier: {
+                    companyNumber: 'NI000000',
+                    userInputPenaltyReference: 'PEN1A/ABCEFG',
+                    companyName: 'test',
+                    penaltyList: {
+                        items: [{ id: 'A0000001' } as Penalty]
+                    } as PenaltyList
+                },
+                reasons: {} as Reasons
+            }
+        });
+
+        const response = createSubstituteOf<Response>();
+        const nextFunction = createSubstituteOf<NextFunction>();
+
+        penaltyReferenceRouter.handler(
+            {
+                query: {
+                    back: 'true'
+                } as any,
+                session
+            } as Request,
             response,
             nextFunction
         );

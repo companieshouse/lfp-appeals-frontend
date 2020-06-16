@@ -7,7 +7,7 @@ import { createApp } from '../ApplicationFactory';
 import 'app/controllers/SelectYearController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
-import { REVIEW_PENALTY_PAGE_URI, SELECT_YEAR_PAGE_URI } from 'app/utils/Paths';
+import { REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 describe('SelectYearController', () => {
 
@@ -38,12 +38,12 @@ describe('SelectYearController', () => {
                     } as PenaltyList
                 }
             } as Appeal,
-            navigation: { permissions: [SELECT_YEAR_PAGE_URI] }
+            navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
         const app = createApp(applicationData);
 
         await request(app)
-            .get(SELECT_YEAR_PAGE_URI)
+            .get(SELECT_THE_PENALTY_PAGE_URI)
             .expect(res => expect(res.text).to.include('type="radio"'))
             .expect(res => expect(res.text).to.include('value="A0000001"'))
             .expect(res => expect(res.text).to.include('value="A0000002"'));
@@ -59,12 +59,12 @@ describe('SelectYearController', () => {
                     companyName: 'Test',
                 }
             } as Appeal,
-            navigation: { permissions: [SELECT_YEAR_PAGE_URI] }
+            navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
         const app = createApp(applicationData);
 
         await request(app)
-            .post(SELECT_YEAR_PAGE_URI)
+            .post(SELECT_THE_PENALTY_PAGE_URI)
             .expect(INTERNAL_SERVER_ERROR)
             .expect(res => expect(res.text).to.contain('Sorry, there is a problem with the service'));
     });
@@ -97,12 +97,12 @@ describe('SelectYearController', () => {
                     } as PenaltyList
                 }
             } as Appeal,
-            navigation: { permissions: [SELECT_YEAR_PAGE_URI] }
+            navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
         const app = createApp(applicationData);
 
         await request(app)
-            .post(SELECT_YEAR_PAGE_URI)
+            .post(SELECT_THE_PENALTY_PAGE_URI)
             .expect(res => expect(res.text).to.contain('Select the penalty you want to appeal'));
 
 
@@ -135,12 +135,12 @@ describe('SelectYearController', () => {
                     } as PenaltyList
                 }
             } as Appeal,
-            navigation: { permissions: [SELECT_YEAR_PAGE_URI] }
+            navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
         const app = createApp(applicationData);
 
         await request(app)
-            .post(SELECT_YEAR_PAGE_URI + '?action=continue')
+            .post(SELECT_THE_PENALTY_PAGE_URI + '?action=continue')
             .send({ selectPenalty: 'A0000001' })
             .expect(302)
             .expect(res => expect(res.get('Location')).to.equal(REVIEW_PENALTY_PAGE_URI));

@@ -21,11 +21,11 @@ describe('PenaltyDetailsValidator', () => {
         return (_: AuthMethod) => chApi;
     };
     const companyNumber = 'NI000000';
-    const getRequest = (penaltyReference: string): Request => {
+    const getRequest = (userInputPenaltyReference: string): Request => {
         return {
             body: {
                 companyNumber,
-                penaltyReference
+                userInputPenaltyReference
             },
             session: createSession('secret', true)
         } as Request;
@@ -74,7 +74,7 @@ describe('PenaltyDetailsValidator', () => {
             session: createSession('secret', true),
             body: {
                 companyNumber: 'SC123123',
-                penaltyReference: 'A00000000'
+                userInputPenaltyReference: 'A00000000'
             }
         } as Request);
 

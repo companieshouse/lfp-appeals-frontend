@@ -12,7 +12,7 @@ describe('Penalty Details Schema Validation', () => {
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
             const validPenaltyReference = 'A12345678';
-            return { companyNumber, penaltyReference: validPenaltyReference };
+            return { companyNumber, userInputPenaltyReference: validPenaltyReference };
         }
 
         describe('Happy path', () => {
@@ -116,9 +116,9 @@ describe('Penalty Details Schema Validation', () => {
     });
 
     describe('Penalty Reference', () => {
-        function createModelWithPenaltyReference(penaltyReference: string): PenaltyIdentifier {
+        function createModelWithPenaltyReference(userInputPenaltyReference: string): PenaltyIdentifier {
             const validCompanyNumber = 'SC123123';
-            return { penaltyReference, companyNumber: validCompanyNumber };
+            return { userInputPenaltyReference, companyNumber: validCompanyNumber };
         }
 
         describe('Happy path', () => {
@@ -189,7 +189,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference(''));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter a penalty reference number'
                     }]
                 });
@@ -199,7 +199,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L123456'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -209,7 +209,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN12A/SC123123'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -219,7 +219,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference(' L12345678 '));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -229,7 +229,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L12 34 56 78'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -239,7 +239,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L12*45678'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });

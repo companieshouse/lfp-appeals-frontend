@@ -56,11 +56,11 @@
             hint: {
               text: 'This is the reference shown on the penalty notice.'
             },
-            errorMessage: validationResult.getErrorForField('penaltyReference') if validationResult,
+            errorMessage: validationResult.getErrorForField('userInputPenaltyReference') if validationResult,
             classes: 'govuk-input--penalty-reference',
             id: 'penalty-reference',
-            name: 'penaltyReference',
-            value: penaltyReference,
+            name: 'userInputPenaltyReference',
+            value: userInputPenaltyReference,
             autocomplete: 'off'
           })
         }}

@@ -6,13 +6,17 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import {
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    REVIEW_PENALTY_PAGE_URI,
+    SELECT_THE_PENALTY_PAGE_URI
+} from 'app/utils/Paths';
 
 const template = 'review-penalty';
 
 const navigation = {
     previous(): string {
-        return PENALTY_DETAILS_PAGE_URI;
+        return `${SELECT_THE_PENALTY_PAGE_URI}?back=true`;
     },
     next(): string {
         return OTHER_REASON_DISCLAIMER_PAGE_URI;
@@ -23,7 +27,7 @@ const navigation = {
 export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
-    public static PENALTY_IDENTIFIER_EXPECTED_ERROR: string = 'Penalty identifier expected';
+    public static PENALTY_IDENTIFIER_EXPECTED_ERROR: string = 'User input penalty identifier expected';
     public static PENALTY_NOT_FOUND: string = 'Penalty identifier did not match any item in list of penalties expected';
 
     constructor() {
@@ -32,16 +36,24 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
 
     public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyDetailsTable {
 
-        if (!appeal.penaltyIdentifier.penaltyList) {
+        const penaltyList = appeal.penaltyIdentifier.penaltyList;
+
+        if (!penaltyList) {
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
         }
 
-        if (!appeal.penaltyIdentifier.penaltyReference) {
-            throw new Error(ReviewPenaltyController.PENALTY_IDENTIFIER_EXPECTED_ERROR);
+        let penaltyReference: string | undefined;
+
+        if (penaltyList.items.length === 1) {
+            penaltyReference = appeal.penaltyIdentifier.userInputPenaltyReference;
+        } else {
+            penaltyReference = appeal.penaltyIdentifier.penaltyReference;
         }
 
-        const penaltyList = appeal.penaltyIdentifier.penaltyList;
-        const penaltyReference = appeal.penaltyIdentifier.penaltyReference;
+        if (!penaltyReference) {
+            throw new Error(ReviewPenaltyController.PENALTY_IDENTIFIER_EXPECTED_ERROR);
+
+        }
 
         return { ...appeal.penaltyIdentifier, ...this.createTable(penaltyReference, penaltyList) };
     }
