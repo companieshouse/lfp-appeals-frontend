@@ -51,18 +51,22 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         loggerInstance()
             .info(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference} for duplicate appeals`);
 
-        const isDuplicate = await this
-            .appealsService.hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
+        this.appealsService
+            .hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!)
+            .then((isDuplicate:boolean) => {
+                if (isDuplicate) {
+                    loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
+                    return response.render(errorCustomTemplate, {
+                        heading: customErrorHeading,
+                        message: customErrorMessage
+                    });
+                }
 
-        if (isDuplicate) {
-            loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-            return response.render(errorCustomTemplate, {
-                heading: customErrorHeading,
-                message: customErrorMessage
+                loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
+                return next();
+            })
+            .catch((err: Error) => {
+                throw err;
             });
-        }
-
-        loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-        return next();
     };
 }
