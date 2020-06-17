@@ -1,7 +1,6 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import makeAsyncRequestHandler from 'express-async-handler';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
@@ -25,9 +24,9 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         super();
     }
 
-    public handler: RequestHandler = makeAsyncRequestHandler(
-
+    public handler: RequestHandler =
         async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+
 
         if (!request.session) {
             throw new Error('Session is undefined');
@@ -43,7 +42,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
             throw TOKEN_MISSING_ERROR;
         }
 
-        const applicationData: ApplicationData = request.session!
+        const applicationData: ApplicationData = request.session
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
         const companyNumber: string = sanitizeCompany(applicationData.appeal.penaltyIdentifier.companyNumber);
@@ -55,8 +54,6 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         const isDuplicate = await this
             .appealsService.hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
 
-        console.log(isDuplicate);
-
         if (isDuplicate) {
             loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
             return response.render(errorCustomTemplate, {
@@ -67,5 +64,5 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
 
         loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
         return next();
-    });
+    };
 }
