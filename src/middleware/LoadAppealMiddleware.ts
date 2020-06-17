@@ -8,7 +8,7 @@ import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { companyNumberSchema } from 'app/models/PenaltyIdentifier.schema';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 export const APPEAL_ID_QUERY_KEY = 'a';
@@ -17,7 +17,9 @@ export const COMPANY_NUMBER_QUERY_KEY = 'c';
 @provide(LoadAppealMiddleware)
 export class LoadAppealMiddleware extends BaseMiddleware {
 
-    constructor(@inject(AppealsService) private readonly appealsService: AppealsService) {
+    constructor(
+        @inject(AppealsService) private readonly appealsService: AppealsService,
+        @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory) {
         super();
     }
     public handler: RequestHandler = makeAsyncRequestHandler(
@@ -41,7 +43,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             }
 
             try {
-                new SchemaValidator(companyNumberSchema).validate(companyNumber);
+                new SchemaValidator(this.schemaFactory.getCompanyNumberSchema()).validate(companyNumber);
             } catch (err) {
                 throw new Error('Tried to load appeal from an invalid company number');
             }

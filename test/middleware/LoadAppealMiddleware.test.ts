@@ -11,11 +11,15 @@ import { createSession } from '../utils/session/SessionFactory';
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { AppealNotFoundError, AppealServiceError } from 'app/modules/appeals-service/errors';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 describe('LoadAppealMiddleware', () => {
 
+    const allowedCompanies: string = getEnvOrThrow('ALLOWED_COMPANY_PREFIXES');
+    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory(allowedCompanies);
     const appealId = '123';
     const companyId = 'ni123';
     // @ts-ignore
@@ -51,8 +55,7 @@ describe('LoadAppealMiddleware', () => {
             } as any
         );
 
-        const loadAppealMiddleware = new LoadAppealMiddleware(service);
-
+        const loadAppealMiddleware = new LoadAppealMiddleware(service, companyNumberSchemaFactory);
         const response = createSubstituteOf<Response>();
         // @ts-ignore
         const nextFunction = createSubstituteOf<NextFunction>();
@@ -80,7 +83,7 @@ describe('LoadAppealMiddleware', () => {
             );
 
             const appealService = createAppealService('resolves', appData.appeal!);
-            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService, companyNumberSchemaFactory);
 
             const nextFunction = createSubstituteOf<NextFunction>();
             const response = createSubstituteOf<Response>();
@@ -108,7 +111,7 @@ describe('LoadAppealMiddleware', () => {
             );
 
             const appealService = createAppealService('resolves', appData.appeal!);
-            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService, companyNumberSchemaFactory);
 
             const nextFunction = createSubstituteOf<NextFunction>();
             const response = createSubstituteOf<Response>();
@@ -131,7 +134,7 @@ describe('LoadAppealMiddleware', () => {
             );
 
             const appealService = createAppealService('resolves', appData.appeal!);
-            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService, companyNumberSchemaFactory);
 
             const nextFunction = createSubstituteOf<NextFunction>();
             const response = createSubstituteOf<Response>();
@@ -156,7 +159,7 @@ describe('LoadAppealMiddleware', () => {
             request.query[COMPANY_NUMBER_QUERY_KEY] = 'abc';
 
             const appealService = createAppealService('resolves', appData.appeal!);
-            const loadAppealMiddleware = new LoadAppealMiddleware(appealService);
+            const loadAppealMiddleware = new LoadAppealMiddleware(appealService, companyNumberSchemaFactory);
 
             const nextFunction = createSubstituteOf<NextFunction>();
             const response = createSubstituteOf<Response>();

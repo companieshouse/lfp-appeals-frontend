@@ -1,13 +1,15 @@
 import { expect } from 'chai';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { schema } from 'app/models/PenaltyIdentifier.schema';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 
 
-describe('Penalty Details Schema Validation', () => {
+describe('PenaltyIdentifierSchemaFactory', () => {
 
-    const validator = new SchemaValidator(schema);
+    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory('SC,NI,OC,SO,R');
+
+    const validator = new SchemaValidator(companyNumberSchemaFactory.getPenaltyIdentifierSchema());
 
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
@@ -19,30 +21,25 @@ describe('Penalty Details Schema Validation', () => {
             };
         }
 
+        const upperCaseValidCompanyNumbers = [
+            'NI000000',
+            'SC123123',
+            'OC123123',
+            'SO123123',
+            'R000000',
+            '123'
+        ];
+
         describe('Happy path', () => {
-            it('should accept SC leading characters input', () => {
-                const result = validator.validate(createModelWithCompanyNumber('SC123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
+            it('should accept valid company numbers as input (upper and lower case)', () => {
 
-            it('should accept NI leading characters input', () => {
-                const result = validator.validate(createModelWithCompanyNumber('NI123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
+                const lowerCaseValidCompanyNumbers = upperCaseValidCompanyNumbers.map(value => value.toLowerCase());
+                const validCompanyNumbers = lowerCaseValidCompanyNumbers.concat(upperCaseValidCompanyNumbers);
 
-            it('should accept no leading characters input', () => {
-                const result = validator.validate(createModelWithCompanyNumber('12123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept leading characters in lowercase', () => {
-                const result = validator.validate(createModelWithCompanyNumber('sc123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept company numbers with less than 8 total characters', () => {
-                const result = validator.validate(createModelWithCompanyNumber('123'));
-                expect(result).to.deep.equal({ errors: [] });
+                validCompanyNumbers.forEach(companyNumber => {
+                    const result = validator.validate(createModelWithCompanyNumber(companyNumber));
+                    expect(result).to.deep.equal({ errors: [] });
+                });
             });
         });
 
@@ -129,65 +126,30 @@ describe('Penalty Details Schema Validation', () => {
             };
         }
 
+        const upperCaseValidPenaltyReferences = [
+            'Z12345678',
+            '12345678',
+            'SC123123',
+            'SO123123',
+            'PEN1A/SC123123',
+            'PEN1A/SC000123',
+            'PEN1A/12345678',
+            'PEN1A/12345'
+        ];
+
         describe('Happy path', () => {
-            it('should accept uppercase leading character', () => {
-                const result = validator.validate(createModelWithPenaltyReference('Z12345678'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
+            it('should accept valid penalty references (upper and lower case)', () => {
 
-            it('should accept lowercase leading character', () => {
-                const result = validator.validate(createModelWithPenaltyReference('z12345678'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
+                const lowerCaseValidPenaltyReferences = upperCaseValidPenaltyReferences
+                    .map(value => value.toLowerCase());
 
-            it('should accept only digits', () => {
-                const result = validator.validate(createModelWithPenaltyReference('12345678'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
+                const validPenaltyReferences = lowerCaseValidPenaltyReferences
+                    .concat(upperCaseValidPenaltyReferences);
 
-            it('should accept company number format', () => {
-                const result = validator.validate(createModelWithPenaltyReference('SC123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept legacy penalty references', () => {
-                const result = validator.validate(createModelWithPenaltyReference('PEN1A/SC123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept lower case legacy penalty references', () => {
-                const result = validator.validate(createModelWithPenaltyReference('pen1A/sc123123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept legacy penalty references with hidden leading zeros', () => {
-                const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it('should accept legacy penalty references with leading zeros', () => {
-                const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc000123'));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it(`should accept legacy penalty references with prefix number 1`, () => {
-                const result = validator.validate(createModelWithPenaltyReference(`pen1A/sc123`));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it(`should accept legacy penalty references with prefix number 2`, () => {
-                const result = validator.validate(createModelWithPenaltyReference(`pen2A/sc123`));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it(`should accept legacy penalty references with prefix number 8`, () => {
-                const result = validator.validate(createModelWithPenaltyReference(`pen8A/sc123`));
-                expect(result).to.deep.equal({ errors: [] });
-            });
-
-            it(`should accept legacy penalty references with only numbers as company number`, () => {
-                const result = validator.validate(createModelWithPenaltyReference(`PEN1A/12345678`));
-                expect(result).to.deep.equal({ errors: [] });
+                validPenaltyReferences.forEach(penaltyReference => {
+                    const result = validator.validate(createModelWithPenaltyReference(penaltyReference));
+                    expect(result).to.deep.equal({ errors: [] });
+                });
             });
 
         });
