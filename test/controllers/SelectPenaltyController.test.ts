@@ -140,7 +140,7 @@ describe('SelectPenaltyController', () => {
         const app = createApp(applicationData);
 
         await request(app)
-            .post(SELECT_THE_PENALTY_PAGE_URI + '?action=continue')
+            .post(SELECT_THE_PENALTY_PAGE_URI)
             .send({ selectPenalty: 'A0000001' })
             .expect(302)
             .expect(res => expect(res.get('Location')).to.equal(REVIEW_PENALTY_PAGE_URI));

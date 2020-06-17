@@ -11,11 +11,12 @@ import moment from 'moment';
 
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
-import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
@@ -51,11 +52,8 @@ export class PenaltyDetailsValidator implements Validator {
             throw SESSION_NOT_FOUND_ERROR;
         }
 
-        const appData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
-
-        if (!appData) {
-            throw APPLICATION_DATA_UNDEFINED;
-        }
+        const appData: ApplicationData = session.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)
+            ||{ appeal: {} as Appeal, navigation: { permissions: [] } } as ApplicationData;
 
         const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 

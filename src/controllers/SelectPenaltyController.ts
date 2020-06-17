@@ -1,23 +1,19 @@
-import { Session, SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
-import { Request, Response } from 'express';
-import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
-import { FormActionHandler, FormActionHandlerConstructor } from './BaseController';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 import { FormActionProcessor } from './processors/FormActionProcessor';
-import { FormValidator } from './validators/FormValidator';
+import { MultiplePenaltiesValidator } from './validators/MultipePenaltiesValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { createPenaltyRadioButton } from 'app/models/components/PenaltyRadioButton';
-import { schema } from 'app/models/fields/PenaltyChoice.schema';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 const template = 'select-the-penalty';
 
@@ -66,7 +62,7 @@ export class SelectPenaltyController extends SafeNavigationBaseController<any> {
         super(
             template,
             navigation,
-            new FormValidator(schema),
+            new MultiplePenaltiesValidator(),
             undefined,
             [Processor]
         );
@@ -83,53 +79,4 @@ export class SelectPenaltyController extends SafeNavigationBaseController<any> {
         return { penalties: penaltyList.items.map(createPenaltyRadioButton) };
     }
 
-    protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
-        const that = this;
-        return {
-            continue: {
-                handle: async (request: Request, response: Response) => {
-                    if (that.validator != null) {
-                        const validationResult: ValidationResult = await that.validator.validate(request);
-                        if (validationResult.errors.length > 0) {
-                            return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                                that.template,
-                                {
-                                    ...request.body,
-                                    validationResult,
-                                    ...that.prepareViewModel(),
-                                    ...that.prepareNavigationConfig()
-                                }
-                            );
-                        }
-                    }
-
-                    if (that.formActionProcessors != null) {
-                        for (const actionProcessorType of that.formActionProcessors) {
-                            const actionProcessor = that
-                                .httpContext
-                                .container
-                                .get<FormActionProcessor>(actionProcessorType);
-                            await actionProcessor.process(request);
-                        }
-                    }
-
-                    const session: Session | undefined = request.session;
-
-                    if (session) {
-                        const applicationData: ApplicationData = session
-                            .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
-
-                        session.setExtraData(APPLICATION_DATA_KEY, applicationData);
-
-                        applicationData.appeal = that
-                            .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
-
-                        await that.persistSession();
-                    }
-
-                    return response.redirect(that.navigation.next(request));
-                }
-            }
-        };
-    }
 }
