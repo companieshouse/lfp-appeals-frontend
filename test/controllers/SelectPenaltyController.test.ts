@@ -4,12 +4,12 @@ import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
 import request from 'supertest';
 import { createApp } from '../ApplicationFactory';
 
-import 'app/controllers/SelectYearController';
+import 'app/controllers/SelectPenaltyController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
-describe('SelectYearController', () => {
+describe('SelectPenaltyController', () => {
 
     it('GET: should render the radio buttons', async () => {
         const applicationData: Partial<ApplicationData> = {

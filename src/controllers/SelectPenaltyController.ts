@@ -60,9 +60,7 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, PenaltyReferenceRouter)
-export class SelectYearController extends SafeNavigationBaseController<any> {
-
-    public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
+export class SelectPenaltyController extends SafeNavigationBaseController<any> {
 
     constructor() {
         super(
@@ -79,7 +77,7 @@ export class SelectYearController extends SafeNavigationBaseController<any> {
         const penaltyList: PenaltyList | undefined = appeal.penaltyIdentifier.penaltyList;
 
         if (!penaltyList || !penaltyList.items) {
-            throw new Error(SelectYearController.PENALTY_EXPECTED_ERROR);
+            throw new Error('Penalty object expected but none found');
         }
 
         return { penalties: penaltyList.items.map(createPenaltyRadioButton) };
