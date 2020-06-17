@@ -4,6 +4,8 @@ import { assert, expect } from 'chai';
 import { Request } from 'express';
 
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
+import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 
@@ -22,12 +24,19 @@ describe('PenaltyDetailsValidator', () => {
     };
     const companyNumber = 'NI000000';
     const getRequest = (userInputPenaltyReference: string): Request => {
+        const session = createSession('secret', true);
+
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
+
         return {
             body: {
                 companyNumber,
                 userInputPenaltyReference
             },
-            session: createSession('secret', true)
+            session
         } as Request;
     };
 
@@ -45,6 +54,11 @@ describe('PenaltyDetailsValidator', () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
         const session = createSession('secret', false);
         delete session.data.signin_info?.access_token?.access_token;
+
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
 
         try {
             await penaltyDetailsValidator.validate({
@@ -70,8 +84,14 @@ describe('PenaltyDetailsValidator', () => {
 
         const penaltyDetailsValidator = new PenaltyDetailsValidator(companiesHouseSDK);
 
+        const session = createSession('secret', true);
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
+
         const result = await penaltyDetailsValidator.validate({
-            session: createSession('secret', true),
+            session,
             body: {
                 companyNumber: 'SC123123',
                 userInputPenaltyReference: 'A00000000'
@@ -139,8 +159,12 @@ describe('PenaltyDetailsValidator', () => {
             } as PenaltyList
         };
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
-        const results = await penaltyDetailsValidator.validate(getRequest(penaltyReference));
+        const request = getRequest(penaltyReference);
+        const results = await penaltyDetailsValidator.validate(request);
         expect(results.errors.length).to.equal(2);
+
+        const navigation = request.session!.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)?.navigation;
+        expect(navigation?.permissions).to.deep.equal([]);
 
     });
 

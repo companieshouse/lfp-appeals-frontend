@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
@@ -10,11 +11,13 @@ import moment from 'moment';
 
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
+import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
+import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -42,11 +45,19 @@ export class PenaltyDetailsValidator implements Validator {
             return schemaResults;
         }
 
-        if (!request.session) {
+        const session: Session | undefined = request.session;
+
+        if (!session) {
             throw SESSION_NOT_FOUND_ERROR;
         }
 
-        const signInInfo: ISignInInfo | undefined = request.session.get<ISignInInfo>(SessionKey.SignInInfo);
+        const appData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
+
+        if (!appData) {
+            throw APPLICATION_DATA_UNDEFINED;
+        }
+
+        const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
@@ -85,6 +96,11 @@ export class PenaltyDetailsValidator implements Validator {
             if (!items || items.length === 0) {
                 loggerInstance().error(`${PenaltyDetailsValidator.name}: No penalties for ${sanitizedCompanyNumber} match the reference number ${penaltyReference}`);
                 return this.createValidationResultWithErrors();
+            }
+
+            if (items.length === 1) {
+                appData.navigation.permissions.push(REVIEW_PENALTY_PAGE_URI);
+                session.setExtraData(APPLICATION_DATA_KEY, appData);
             }
 
             items = items.map(item => {
