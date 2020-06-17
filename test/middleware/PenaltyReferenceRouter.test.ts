@@ -54,6 +54,7 @@ describe('PenaltyReferenceRouter', () => {
                     penaltyIdentifier: {
                         companyNumber: 'NI000000',
                         userInputPenaltyReference: 'A0000001',
+                        penaltyReference: 'A0000001',
                         companyName: 'test'
                     },
                     reasons: {} as Reasons
@@ -84,6 +85,7 @@ describe('PenaltyReferenceRouter', () => {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000',
                     userInputPenaltyReference: 'A0000001',
+                    penaltyReference: 'A0000001',
                     companyName: 'test',
                     penaltyList: {
                         items: [{ id: 'A0000001' } as Penalty]
@@ -120,6 +122,7 @@ describe('PenaltyReferenceRouter', () => {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000',
                     userInputPenaltyReference: 'PEN1A/ABCEFG',
+                    penaltyReference: 'PEN1A/ABCEFG',
                     companyName: 'test',
                     penaltyList: {
                         items: [{ id: 'A0000001' } as Penalty, { id: 'A0000002' } as Penalty]
@@ -153,6 +156,7 @@ describe('PenaltyReferenceRouter', () => {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000',
                     userInputPenaltyReference: 'PEN1A/ABCEFG',
+                    penaltyReference: 'PEN1A/ABCEFG',
                     companyName: 'test',
                     penaltyList: {
                         items: [{ id: 'A0000001' } as Penalty]

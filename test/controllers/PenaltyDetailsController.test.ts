@@ -118,6 +118,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting empty penalty reference', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
+                penaltyReference: '',
                 userInputPenaltyReference: '',
                 companyNumber: 'SC123123'
             };
@@ -135,6 +136,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting invalid penalty reference', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
+                penaltyReference: '0',
                 userInputPenaltyReference: '0',
                 companyNumber: 'SC123123'
             };
@@ -152,6 +154,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting empty company number', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
+                penaltyReference: 'A12345678',
                 userInputPenaltyReference: 'A12345678',
                 companyNumber: ''
             };
@@ -169,6 +172,7 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when posting invalid company number', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
+                penaltyReference: 'A12345678',
                 userInputPenaltyReference: 'A12345678',
                 companyNumber: 'AB66666666'
             };

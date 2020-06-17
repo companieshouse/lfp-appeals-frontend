@@ -28,6 +28,7 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
         userInputPenaltyReference: body.userInputPenaltyReference.toUpperCase(),
+        penaltyReference: body.userInputPenaltyReference.toUpperCase(),
         penaltyList: body.penaltyList
     };
 

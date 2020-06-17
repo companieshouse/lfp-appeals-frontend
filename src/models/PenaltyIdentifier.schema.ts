@@ -16,7 +16,8 @@ export const schema = Joi.object({
         .messages({
             'string.empty': 'You must enter a penalty reference number',
             'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
-        })
+        }),
+    penaltyReference: Joi.allow()
 });
 
 
