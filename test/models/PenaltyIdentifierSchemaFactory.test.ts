@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
@@ -26,9 +26,61 @@ describe('PenaltyIdentifierSchemaFactory', () => {
             'SC123123',
             'OC123123',
             'SO123123',
-            'R000000',
+            'R0000000',
             '123'
         ];
+
+        describe('Config changes', () => {
+
+            it('should throw an error if no prefix is provided', () => {
+                try {
+                    new PenaltyIdentifierSchemaFactory('').getPenaltyIdentifierSchema();
+                    assert.fail('It should have thrown an error');
+                } catch (err) {
+                    expect(err.message).to.equal('Company prefixes must not be empty. e.g. NI,SC,SO');
+                }
+            });
+
+            it('should allow validation of SC only', () => {
+
+                const configChangeValidator = new SchemaValidator(
+                    new PenaltyIdentifierSchemaFactory('SC').getPenaltyIdentifierSchema()
+                );
+
+                const pass = configChangeValidator.validate(createModelWithCompanyNumber('SC123123'));
+                expect(pass).to.deep.equal({ errors: [] });
+
+                const fail = configChangeValidator.validate(createModelWithCompanyNumber('NI123123'));
+                expect(fail).to.deep.equal({
+                    errors: [{
+                        field: 'companyNumber',
+                        text: 'You must enter your full eight character company number'
+                    }]
+                });
+            });
+
+            it('should allow validation of SC and R only', () => {
+
+                const configChangeValidator = new SchemaValidator(
+                    new PenaltyIdentifierSchemaFactory('SC,R').getPenaltyIdentifierSchema()
+                );
+
+                const passSC = configChangeValidator.validate(createModelWithCompanyNumber('SC123123'));
+                expect(passSC).to.deep.equal({ errors: [] });
+
+                const passR = configChangeValidator.validate(createModelWithCompanyNumber('R0000001'));
+                expect(passR).to.deep.equal({ errors: [] });
+
+                const fail = configChangeValidator.validate(createModelWithCompanyNumber('NI123123'));
+                expect(fail).to.deep.equal({
+                    errors: [{
+                        field: 'companyNumber',
+                        text: 'You must enter your full eight character company number'
+                    }]
+                });
+            });
+
+        });
 
         describe('Happy path', () => {
             it('should accept valid company numbers as input (upper and lower case)', () => {

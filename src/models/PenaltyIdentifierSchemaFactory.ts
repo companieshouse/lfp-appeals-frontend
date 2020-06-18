@@ -1,5 +1,8 @@
 import Joi from '@hapi/joi';
 
+type PrefixVariation = { upperCase: string[]; lowerCase: string[]; };
+type PrefixMap = { singleCharacter: PrefixVariation, doubleCharacter: PrefixVariation; };
+
 export class PenaltyIdentifierSchemaFactory {
 
     public readonly companyNumberRegex: RegExp;
@@ -7,19 +10,47 @@ export class PenaltyIdentifierSchemaFactory {
     public readonly penaltyReferenceRegex: RegExp;
 
     constructor(companyNumberPrefixes: string) {
+
+        if (companyNumberPrefixes.length === 0) {
+            throw new Error('Company prefixes must not be empty. e.g. NI,SC,SO');
+        }
+
         if (companyNumberPrefixes === '*') {
             this.companyNumberRegex = /^[A-Za-z0-9]{8}$/i;
         }
 
-        const upperCasePrefixArray: string[] = companyNumberPrefixes.split(',').map(prefix => prefix.toUpperCase());
-        const lowerCasePrefix: string[] = upperCasePrefixArray.map(prefix => prefix.toLowerCase());
+        const prefixesArray: string[] = companyNumberPrefixes.split(',');
 
-        const upperCaseRegexPrefixes = upperCasePrefixArray.reduceRight((p, c) => `${p}|${c}`, '');
-        const lowerCaseRegexPrefixes = lowerCasePrefix.reduceRight((p, c) => `${p}|${c}`, '').substr(1);
+        const singleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 1);
+        const doubleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 2);
 
-        const regexPrefixes = `(${lowerCaseRegexPrefixes}${upperCaseRegexPrefixes})`;
+        const prefixes: PrefixMap = {
+            singleCharacter: {
+                lowerCase: this.makeLowerCase(singleCharacterPrefixArray),
+                upperCase: this.makeUpperCase(singleCharacterPrefixArray)
+            },
+            doubleCharacter: {
+                lowerCase: this.makeLowerCase(doubleCharacterPrefixArray),
+                upperCase: this.makeUpperCase(doubleCharacterPrefixArray)
+            }
+        };
 
-        this.companyNumberRegex = new RegExp(`^(${regexPrefixes}[0-9]{1,6}|[0-9]{1,8})$`);
+        const singleCharacterRegex = `(${[
+            prefixes.singleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
+            prefixes.singleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
+        ].join('')})[0-9]{1,7}`;
+
+        const doubleCharacterRegex = `(${[
+            prefixes.doubleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
+            prefixes.doubleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
+        ].join('')})[0-9]{1,6}`;
+
+        const onlyNumbersRegex = '[0-9]{1,8}';
+
+        this.companyNumberRegex = new RegExp(`^(${
+            [singleCharacterRegex, doubleCharacterRegex, onlyNumbersRegex].join('|')
+            })$`);
+
         this.penaltyReferenceRegex = /^[a-z0-9/]{8,14}$/i;
 
     }
@@ -49,5 +80,13 @@ export class PenaltyIdentifierSchemaFactory {
             companyNumber: this.getCompanyNumberSchema(),
             penaltyReference: this.getPenaltyReferenceSchema()
         });
+    }
+
+    private makeUpperCase(array: string[]): string[] {
+        return array.map(prefix => prefix.toUpperCase());
+    }
+
+    private makeLowerCase(array: string[]): string[] {
+        return array.map(prefix => prefix.toLowerCase());
     }
 }
