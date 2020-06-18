@@ -27,8 +27,9 @@ import { ValidationResult } from 'app/utils/validation/ValidationResult';
 export class PenaltyDetailsValidator implements Validator {
 
     public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError('companyNumber', 'Check that you’ve entered the correct company number');
-    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('penaltyReference', 'Check that you’ve entered the correct reference number');
+    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('userInputPenaltyReference', 'Check that you’ve entered the correct reference number');
     public static MULTIPLE_PENALTIES_FOUND_ERROR: Error = new Error(`Multiple penalties found. This is currently unsupported`);
+
     constructor(@inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK) { }
 
 
@@ -53,7 +54,7 @@ export class PenaltyDetailsValidator implements Validator {
         }
 
         const appData: ApplicationData = session.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)
-            ||{ appeal: {} as Appeal, navigation: { permissions: [] } } as ApplicationData;
+            || { appeal: {} as Appeal, navigation: { permissions: [] } } as ApplicationData;
 
         const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
