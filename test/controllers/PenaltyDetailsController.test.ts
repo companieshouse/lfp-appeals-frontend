@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 
 import { Arg } from '@fluffy-spoon/substitute';
+import ApiClient from 'ch-sdk-node/dist/client';
+import { LateFilingPenaltyService } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
@@ -12,6 +14,7 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { AuthMethod } from 'app/modules/Types';
 import { PENALTY_DETAILS_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -187,5 +190,37 @@ describe('PenaltyDetailsController', () => {
                         .and.to.contain('You must enter your full eight character company number');
                 });
         });
+
+        it('should return 400 when late filling penalty service fails', async () => {
+            const penaltyIdentifier: PenaltyIdentifier = {
+                penaltyReference: 'A12345678',
+                userInputPenaltyReference: 'A12345678',
+                companyNumber: 'NI123456'
+            };
+
+            const app = createApp({}, container => {
+
+                const lateFillingPenaltiesService = createSubstituteOf<LateFilingPenaltyService>(config => {
+                    config.getPenalties('NI123456').rejects(new Error('Cannot read property \'map\' of null'));
+                });
+
+                const api = createSubstituteOf<ApiClient>(config => {
+                    config.lateFilingPenalties.returns!(lateFillingPenaltiesService);
+                });
+
+                container.rebind(PenaltyDetailsValidator)
+                    .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api));
+            });
+
+            await request(app).post(PENALTY_DETAILS_PAGE_URI)
+                .send(penaltyIdentifier)
+                .expect(response => {
+                    expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain(PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR.text)
+                        .and.to.contain(PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR.text);
+                });
+        });
+
     });
 });
