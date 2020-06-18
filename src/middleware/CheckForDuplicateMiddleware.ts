@@ -1,6 +1,7 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
+import { UNAUTHORIZED } from 'http-status-codes';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
@@ -11,7 +12,6 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { UNAUTHORIZED } from 'http-status-codes';
 
 const errorCustomTemplate: string = 'error-custom';
 const enquiryEmail: string = getEnvOrThrow('INQUIRY_EMAIL');
