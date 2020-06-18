@@ -2,12 +2,13 @@ import { assert, expect } from 'chai';
 
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 
 
 describe('PenaltyIdentifierSchemaFactory', () => {
 
-    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory('SC,NI,OC,SO,R');
+    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES'));
 
     const validator = new SchemaValidator(companyNumberSchemaFactory.getPenaltyIdentifierSchema());
 
@@ -27,7 +28,8 @@ describe('PenaltyIdentifierSchemaFactory', () => {
             'OC123123',
             'SO123123',
             'R0000000',
-            '123'
+            '123',
+            'AP123456'
         ];
 
         describe('Config changes', () => {
@@ -90,7 +92,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
 
                 validCompanyNumbers.forEach(companyNumber => {
                     const result = validator.validate(createModelWithCompanyNumber(companyNumber));
-                    expect(result).to.deep.equal({ errors: [] });
+                    expect(result, `Company Number: ${companyNumber}`).to.deep.equal({ errors: [] });
                 });
             });
         });
