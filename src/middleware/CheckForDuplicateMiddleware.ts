@@ -10,9 +10,10 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 const errorCustomTemplate: string = 'error-custom';
-const enquiryEmail: string = 'enquiries@companieshouse.gov.uk';
+const enquiryEmail: string = getEnvOrThrow('INQUIRY_EMAIL');
 
 const customErrorHeading = 'An Appeal has already been submitted for this penalty';
 const customErrorMessage = `If you think this is a mistake, email ${enquiryEmail}.`;
