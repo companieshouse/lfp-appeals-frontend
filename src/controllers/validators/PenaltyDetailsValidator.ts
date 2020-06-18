@@ -1,3 +1,4 @@
+import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
@@ -8,13 +9,16 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import moment from 'moment';
 
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { schema } from 'app/models/PenaltyIdentifier.schema';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
+import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -42,11 +46,16 @@ export class PenaltyDetailsValidator implements Validator {
             return schemaResults;
         }
 
-        if (!request.session) {
+        const session: Session | undefined = request.session;
+
+        if (!session) {
             throw SESSION_NOT_FOUND_ERROR;
         }
 
-        const signInInfo: ISignInInfo | undefined = request.session.get<ISignInInfo>(SessionKey.SignInInfo);
+        const appData: ApplicationData = session.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)
+            ||{ appeal: {} as Appeal, navigation: { permissions: [] } } as ApplicationData;
+
+        const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         const accessToken: string | undefined = signInInfo?.access_token?.access_token;
 
@@ -58,7 +67,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         const sanitizedCompanyNumber: string = sanitizeCompany(companyNumber);
 
-        const penaltyReference: string = (request.body as PenaltyIdentifier).penaltyReference;
+        const penaltyReference: string = (request.body as PenaltyIdentifier).userInputPenaltyReference;
 
         const mapErrorMessage = 'Cannot read property \'map\' of null';
         const etagErrorMessage = 'Cannot read property \'etag\' of null';
@@ -79,7 +88,6 @@ export class PenaltyDetailsValidator implements Validator {
 
             if (modernPenaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
-                penalties.resource.items = items;
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
             }
 
@@ -88,18 +96,18 @@ export class PenaltyDetailsValidator implements Validator {
                 return this.createValidationResultWithErrors();
             }
 
-            if (items.length > 1) {
-                loggerInstance().error(`${PenaltyDetailsValidator.name}: Multiple penalties found. This is currently unsupported`);
-                throw PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR;
+            if (items.length === 1) {
+                appData.navigation.permissions.push(REVIEW_PENALTY_PAGE_URI);
+                session.setExtraData(APPLICATION_DATA_KEY, appData);
             }
 
-            request.body.penaltyReference = penalties.resource.items[0].id;
-
-            penalties.resource.items = penalties.resource.items.map(item => {
+            items = items.map(item => {
                 item.madeUpDate = moment(item.madeUpDate).format('D MMMM YYYY');
                 item.transactionDate = moment(item.transactionDate).format('D MMMM YYYY');
                 return item;
             });
+
+            penalties.resource.items = items;
 
             request.body.penaltyList = penalties.resource;
 

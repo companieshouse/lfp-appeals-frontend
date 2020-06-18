@@ -24,7 +24,8 @@ describe('AppealStorageForSubmissionProcessor', () => {
     const appeal: Appeal = {
         penaltyIdentifier: {
             companyNumber: '00345567',
-            penaltyReference: 'A00000001',
+            penaltyReference: 'A0000001',
+            userInputPenaltyReference:'A0000001'
         },
         reasons: {
             other: {

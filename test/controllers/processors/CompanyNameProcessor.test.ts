@@ -12,8 +12,8 @@ import {
     COMPANY_NAME_RETRIEVAL_ERROR,
     COMPANY_NUMBER_UNDEFINED_ERROR,
 } from 'app/controllers/processors/CompanyNameProcessor';
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createSession } from 'test/utils/session/SessionFactory';

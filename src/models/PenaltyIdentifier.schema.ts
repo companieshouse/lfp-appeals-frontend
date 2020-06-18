@@ -10,13 +10,14 @@ export const companyNumberSchema = Joi.string()
 
 export const schema = Joi.object({
     companyNumber: companyNumberSchema,
-    penaltyReference: Joi.string()
+    userInputPenaltyReference: Joi.string()
         .required()
         .regex(/^[a-z0-9/]{8,14}$/i)
         .messages({
             'string.empty': 'You must enter a penalty reference number',
             'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
-        })
+        }),
+    penaltyReference: Joi.allow()
 });
 
 
