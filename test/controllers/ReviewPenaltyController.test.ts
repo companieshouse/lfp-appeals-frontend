@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Arg } from '@fluffy-spoon/substitute';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from 'http-status-codes';
 import request from 'supertest';
 import { createSubstituteOf } from '../SubstituteFactory';
 
@@ -184,6 +184,35 @@ describe('ReviewPenaltyController', () => {
             .expect(response => {
                 expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                 expect(response.text).to.contain('Sorry, there is a problem with the service');
+            });
+    });
+
+    it('should redirect to error page if appeal for penalty number already exists', async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                penaltyReference,
+                penaltyList: { items: [{ id: 'A0000001' }, { id: 'A0000002' }] }
+            } as PenaltyIdentifier
+        };
+
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(true)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
+
+        await request(app)
+            .get(REVIEW_PENALTY_PAGE_URI)
+            .expect(response => {
+                expect(response.status).to.be.equal(UNAUTHORIZED);
+                expect(response.text).to.contain('An Appeal has already been submitted for this penalty');
             });
     });
 

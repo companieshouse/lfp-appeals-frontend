@@ -11,6 +11,7 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { UNAUTHORIZED } from 'http-status-codes';
 
 const errorCustomTemplate: string = 'error-custom';
 const enquiryEmail: string = getEnvOrThrow('INQUIRY_EMAIL');
@@ -58,7 +59,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
 
             if (isDuplicate) {
                 loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-                return response.render(errorCustomTemplate, {
+                return response.status(UNAUTHORIZED).render(errorCustomTemplate, {
                     heading: customErrorHeading,
                     message: customErrorMessage
                 });
