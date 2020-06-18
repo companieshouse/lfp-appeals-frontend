@@ -5,6 +5,7 @@ import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
 import request from 'supertest';
+import { createSubstituteOf } from '../SubstituteFactory';
 
 import 'app/controllers/ReviewPenaltyController';
 import { Appeal } from 'app/models/Appeal';
@@ -13,7 +14,6 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
-import { createSubstituteOf } from 'test/SubstituteFactory';
 
 describe('ReviewPenaltyController', () => {
 
@@ -46,21 +46,20 @@ describe('ReviewPenaltyController', () => {
         const total: number = penaltyList.items!
             .reduce((previous: number, current: Penalty) => previous + current.originalAmount, 0);
 
-        const appealService = createSubstituteOf<AppealsService>(config => {
-            config.hasExistingAppeal(Arg.any()).resolves(false);
-        });
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
 
-
-        const app = createApp({ appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
-                container => {
-            container.rebind(AppealsService).toConstantValue(appealService);
-        });
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
 
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)
             .expect(OK)
             .expect(res => {
-                expect(appealService.received);
                 expect(res.text).to.contain(companyName)
                     .and.to.contain(penaltyReference)
                     .and.to.contain('12 May 2020')
@@ -85,11 +84,15 @@ describe('ReviewPenaltyController', () => {
             }
         };
 
-        const app = createApp({
-            appeal: appeal as Appeal, navigation: {
-                permissions: [REVIEW_PENALTY_PAGE_URI]
-            }
-        });
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
 
         await request(app)
             .post(REVIEW_PENALTY_PAGE_URI)
@@ -108,11 +111,15 @@ describe('ReviewPenaltyController', () => {
             }
         };
 
-        const app = createApp({
-            appeal: appeal as Appeal, navigation: {
-                permissions: [REVIEW_PENALTY_PAGE_URI]
-            }
-        });
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
 
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)
@@ -133,11 +140,15 @@ describe('ReviewPenaltyController', () => {
             } as PenaltyIdentifier
         };
 
-        const app = createApp({
-            appeal: appeal as Appeal, navigation: {
-                permissions: [REVIEW_PENALTY_PAGE_URI]
-            }
-        });
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
 
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)
@@ -153,16 +164,20 @@ describe('ReviewPenaltyController', () => {
             penaltyIdentifier: {
                 companyNumber,
                 companyName,
-                userInputPenaltyReference: penaltyReference,
+                penaltyReference,
                 penaltyList: { items: [{ id: 'A0000001' }, { id: 'A0000002' }] }
             } as PenaltyIdentifier
         };
 
-        const app = createApp({
-            appeal: appeal as Appeal, navigation: {
-                permissions: [REVIEW_PENALTY_PAGE_URI]
-            }
-        });
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
 
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)

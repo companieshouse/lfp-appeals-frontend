@@ -1,7 +1,6 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import makeAsyncRequestHandler from 'express-async-handler';
+import { NextFunction, Request, Response } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
@@ -25,12 +24,10 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         super();
     }
 
-    public handler: RequestHandler = makeAsyncRequestHandler(
-        async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-
+    public async handler(request: Request, response: Response, next: NextFunction): Promise<void> {
 
         if (!request.session) {
-            throw new Error('Session is undefined');
+            return next(new Error('Session is undefined'));
         }
 
         const signInInfo: ISignInInfo | undefined = request.session!.get<ISignInInfo>(SessionKey.SignInInfo);
@@ -40,7 +37,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         const refreshToken: string | undefined = signInInfo?.access_token?.refresh_token;
 
         if (!accessToken) {
-            throw TOKEN_MISSING_ERROR;
+            return next(TOKEN_MISSING_ERROR);
         }
 
         const applicationData: ApplicationData = request.session
@@ -52,7 +49,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         loggerInstance()
             .info(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference} for duplicate appeals`);
 
-        try{
+        try {
             const isDuplicate: boolean = await this.appealsService
                 .hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
 
@@ -65,11 +62,11 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
                     message: customErrorMessage
                 });
             }
-        } catch(err) {
-            next(err);
+        } catch (err) {
+            return next(err);
         }
 
         loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
         return next();
-    });
+    }
 }

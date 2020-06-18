@@ -1,5 +1,4 @@
 import Substitute, { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
-import * as assert from 'assert';
 import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
@@ -56,21 +55,16 @@ describe('CheckForDuplicateMiddleware', () => {
         } as Request;
     };
 
-    it('should throw an error when session is undefined', async () => {
-        const appealService = createAppealService('rejects');
+    it('should call next with an error when session is undefined', async () => {
+        const appealService = createAppealService('rejects', new Error('Something failed'));
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
-        const request = {session: undefined} as Request;
+        const request = { session: undefined } as Request;
 
-        try {
-            console.log(await checkForDuplicateMiddleware.handler(request, response, nextFunction));
-            assert.fail();
-        } catch (err) {
-            assert.equal(err.message, 'Session is undefined');
-        }
-
+        await checkForDuplicateMiddleware.handler(request, response, nextFunction);
+        nextFunction.received(1);
         appealService.didNotReceive().hasExistingAppeal(Arg.all());
 
     });
@@ -79,20 +73,15 @@ describe('CheckForDuplicateMiddleware', () => {
 
         const appData = { appeal };
 
-        const appealService = createAppealService('resolves', {});
+        const appealService = createAppealService('resolves', true);
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
         const request = getRequestSubstitute(appData, {});
 
-        try {
-            await checkForDuplicateMiddleware.handler(request, response, nextFunction);
-            assert.fail();
-        } catch (err) {
-            assert.equal(err.message, 'Access token missing from session');
-        }
-
+        await checkForDuplicateMiddleware.handler(request, response, nextFunction);
+        nextFunction.received(1);
         appealService.didNotReceive().hasExistingAppeal(Arg.all());
 
     });
@@ -123,7 +112,7 @@ describe('CheckForDuplicateMiddleware', () => {
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
-        const request = getRequestSubstitute(appData,accessTokenData);
+        const request = getRequestSubstitute(appData, accessTokenData);
 
         await checkForDuplicateMiddleware.handler(request, response, nextFunction);
         appealService.received().hasExistingAppeal(Arg.all());
