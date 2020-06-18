@@ -221,8 +221,7 @@ describe('PenaltyDetailsController', () => {
                 });
 
                 container.rebind(PenaltyDetailsValidator)
-                    .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api,
-                        new PenaltyIdentifierSchemaFactory('')));
+                    .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api, companyNumberSchemaFactory));
 
             });
 

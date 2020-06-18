@@ -17,39 +17,40 @@ export class PenaltyIdentifierSchemaFactory {
 
         if (companyNumberPrefixes === '*') {
             this.companyNumberRegex = /^[A-Za-z0-9]{8}$/i;
+        } else {
+
+            const prefixesArray: string[] = companyNumberPrefixes.split(',');
+
+            const singleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 1);
+            const doubleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 2);
+
+            const prefixes: PrefixMap = {
+                singleCharacter: {
+                    lowerCase: this.makeLowerCase(singleCharacterPrefixArray),
+                    upperCase: this.makeUpperCase(singleCharacterPrefixArray)
+                },
+                doubleCharacter: {
+                    lowerCase: this.makeLowerCase(doubleCharacterPrefixArray),
+                    upperCase: this.makeUpperCase(doubleCharacterPrefixArray)
+                }
+            };
+
+            const singleCharacterRegex = `(${[
+                prefixes.singleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
+                prefixes.singleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
+            ].join('')})[0-9]{1,7}`;
+
+            const doubleCharacterRegex = `(${[
+                prefixes.doubleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
+                prefixes.doubleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
+            ].join('')})[0-9]{1,6}`;
+
+            const onlyNumbersRegex = '[0-9]{1,8}';
+
+            this.companyNumberRegex = new RegExp(`^(${
+                [singleCharacterRegex, doubleCharacterRegex, onlyNumbersRegex].join('|')
+                })$`);
         }
-
-        const prefixesArray: string[] = companyNumberPrefixes.split(',');
-
-        const singleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 1);
-        const doubleCharacterPrefixArray: string[] = prefixesArray.filter(prefix => prefix.length === 2);
-
-        const prefixes: PrefixMap = {
-            singleCharacter: {
-                lowerCase: this.makeLowerCase(singleCharacterPrefixArray),
-                upperCase: this.makeUpperCase(singleCharacterPrefixArray)
-            },
-            doubleCharacter: {
-                lowerCase: this.makeLowerCase(doubleCharacterPrefixArray),
-                upperCase: this.makeUpperCase(doubleCharacterPrefixArray)
-            }
-        };
-
-        const singleCharacterRegex = `(${[
-            prefixes.singleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
-            prefixes.singleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
-        ].join('')})[0-9]{1,7}`;
-
-        const doubleCharacterRegex = `(${[
-            prefixes.doubleCharacter.lowerCase.reduceRight((p, c) => `${p}|${c}`, '').substr(1),
-            prefixes.doubleCharacter.upperCase.reduceRight((p, c) => `${p}|${c}`, '')
-        ].join('')})[0-9]{1,6}`;
-
-        const onlyNumbersRegex = '[0-9]{1,8}';
-
-        this.companyNumberRegex = new RegExp(`^(${
-            [singleCharacterRegex, doubleCharacterRegex, onlyNumbersRegex].join('|')
-            })$`);
 
         this.penaltyReferenceRegex = /^[a-z0-9/]{8,14}$/i;
 
@@ -78,7 +79,8 @@ export class PenaltyIdentifierSchemaFactory {
     public getPenaltyIdentifierSchema(): Joi.ObjectSchema {
         return Joi.object({
             companyNumber: this.getCompanyNumberSchema(),
-            penaltyReference: this.getPenaltyReferenceSchema()
+            userInputPenaltyReference: this.getPenaltyReferenceSchema(),
+            penaltyReference: Joi.allow()
         });
     }
 
