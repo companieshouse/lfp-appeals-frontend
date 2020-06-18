@@ -1,14 +1,15 @@
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
+import makeAsyncRequestHandler from 'express-async-handler';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
-import { TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
 
 const errorCustomTemplate: string = 'error-custom';
@@ -24,7 +25,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         super();
     }
 
-    public handler: RequestHandler =
+    public handler: RequestHandler = makeAsyncRequestHandler(
         async (request: Request, response: Response, next: NextFunction): Promise<void> => {
 
 
@@ -51,22 +52,24 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
         loggerInstance()
             .info(`CheckForDuplicateProcessor - Checking penalty ${penaltyReference} for duplicate appeals`);
 
-        this.appealsService
-            .hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!)
-            .then((isDuplicate:boolean) => {
-                if (isDuplicate) {
-                    loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-                    return response.render(errorCustomTemplate, {
-                        heading: customErrorHeading,
-                        message: customErrorMessage
-                    });
-                }
+        try{
+            const isDuplicate: boolean = await this.appealsService
+                .hasExistingAppeal(companyNumber, penaltyReference, accessToken, refreshToken!);
 
-                loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
-                return next();
-            })
-            .catch((err: Error) => {
-                throw err;
-            });
-    };
+            console.log(isDuplicate);
+
+            if (isDuplicate) {
+                loggerInstance().error(`CheckForDuplicateProcessor - Duplicate appeal found for company ${companyNumber} and reference ${penaltyReference}`);
+                return response.render(errorCustomTemplate, {
+                    heading: customErrorHeading,
+                    message: customErrorMessage
+                });
+            }
+        } catch(err) {
+            next(err);
+        }
+
+        loggerInstance().debug(`CheckForDuplicateProcessor - No appeal found for company ${companyNumber} and reference ${penaltyReference}`);
+        return next();
+    });
 }

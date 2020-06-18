@@ -23,6 +23,7 @@ describe('CheckForDuplicateMiddleware', () => {
     const appeal: Appeal = {
         penaltyIdentifier: {
             companyNumber: 'SC123123',
+            userInputPenaltyReference: 'A1231234',
             penaltyReference: 'A1231234'
         },
         reasons: {
