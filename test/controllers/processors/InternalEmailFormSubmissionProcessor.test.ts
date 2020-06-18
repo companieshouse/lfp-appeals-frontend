@@ -133,7 +133,8 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 id: '123',
                                 name: 'evidence.png',
                                 contentType: 'image/png',
-                                size: 100
+                                size: 100,
+                                url: 'http://localhost/appeal-a-penalty/download/prompt/123?c=12345678'
                             }
                         ]
                     }
@@ -159,7 +160,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 attachments: [
                                     {
                                         name: 'evidence.png',
-                                        url: `http://localhost/appeal-a-penalty/download/prompt/123?a=abc&c=12345678`
+                                        url: `http://localhost/appeal-a-penalty/download/prompt/123?c=12345678&a=abc`
                                     }
                                 ]
                             }

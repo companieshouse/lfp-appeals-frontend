@@ -53,11 +53,13 @@ const appealWithAttachments: Appeal = {
             attachments: [
                 {
                     id: '1',
-                    name: 'some-file.jpeg'
+                    name: 'some-file.jpeg',
+                    url: 'http://localhost/appeal-a-penalty/download/prompt/1?c=00345567'
                 } as Attachment,
                 {
                     id: '2',
-                    name: 'another-file.jpeg'
+                    name: 'another-file.jpeg',
+                    url: 'http://localhost/appeal-a-penalty/download/prompt/2?c=00345567'
                 } as Attachment
             ]
         }

@@ -19,10 +19,12 @@ import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
+    DOWNLOAD_FILE_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     EVIDENCE_REMOVAL_PAGE_URI,
     EVIDENCE_UPLOAD_PAGE_URI
 } from 'app/utils/Paths';
+import { newUriFactory } from 'app/utils/UriFactory';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -148,8 +150,15 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                         }
                     }
 
+                    const downloadBaseURI: string = newUriFactory(request)
+                        .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI);
+
                     appeal.reasons.other.attachments = [...appeal.reasons.other.attachments || [], {
-                        id, name: request.file.originalname, contentType: request.file.mimetype, size: request.file.size
+                        id,
+                        name: request.file.originalname,
+                        contentType: request.file.mimetype,
+                        size: request.file.size,
+                        url: `${downloadBaseURI}/prompt/${id}?c=${appeal.penaltyIdentifier.companyNumber}`
                     }];
 
                     await that.persistSession();

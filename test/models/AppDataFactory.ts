@@ -11,13 +11,15 @@ export function createDefaultAttachments(): Attachment[] {
             id: '123',
             name: 'some-file.jpeg',
             size: 1000,
-            contentType: 'image/jpeg'
+            contentType: 'image/jpeg',
+            url: 'http://localhost/appeal-a-penalty/download/prompt/123?c=00345567'
         },
         {
             id: '456',
             name: 'another-file.txt',
             contentType: 'text/plain',
-            size: 200
+            size: 200,
+            url: 'http://localhost/appeal-a-penalty/download/prompt/456?c=00345567'
         }
     ];
 

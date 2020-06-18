@@ -11,11 +11,9 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
-import { newUriFactory } from 'app/utils/UriFactory';
 
-function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string): Email {
+function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
     const region = findRegionByCompanyNumber(appeal.penaltyIdentifier.companyNumber);
     return {
         to: getEnvOrThrow(`${region}_TEAM_EMAIL`),
@@ -36,7 +34,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal, baseURI: string):
                         attachments: appeal.reasons.other.attachments?.map(attachment => {
                             return {
                                 name: attachment.name,
-                                url: `${baseURI}/prompt/${attachment.id}?a=${appeal.id}&c=${appeal.penaltyIdentifier.companyNumber}`
+                                url: attachment.url + `&a=${appeal.id}`
                             };
                         })
                     }
@@ -63,8 +61,7 @@ export class InternalEmailFormActionProcessor implements FormActionProcessor {
         const applicationData: ApplicationData = req.session!
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const email: Email = buildEmail(userProfile!, applicationData.appeal, newUriFactory(req)
-            .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI));
+        const email: Email = buildEmail(userProfile!, applicationData.appeal);
 
         await this.emailService.send(email)
             .catch(_ => {
