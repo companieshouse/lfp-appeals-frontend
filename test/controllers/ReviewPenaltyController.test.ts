@@ -7,6 +7,7 @@ import request from 'supertest';
 
 import 'app/controllers/ReviewPenaltyController';
 import { Appeal } from 'app/models/Appeal';
+import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -34,6 +35,7 @@ describe('ReviewPenaltyController', () => {
                 companyNumber,
                 companyName,
                 penaltyReference,
+                userInputPenaltyReference: penaltyReference,
                 penaltyList: penaltyList as PenaltyList
             }
         };
@@ -66,6 +68,7 @@ describe('ReviewPenaltyController', () => {
                 companyNumber,
                 companyName,
                 penaltyReference,
+                userInputPenaltyReference: penaltyReference,
                 penaltyList: penaltyList as PenaltyList
             }
         };
@@ -89,7 +92,58 @@ describe('ReviewPenaltyController', () => {
                 companyNumber,
                 companyName,
                 penaltyReference,
+                userInputPenaltyReference: penaltyReference
             }
+        };
+
+        const app = createApp({
+            appeal: appeal as Appeal, navigation: {
+                permissions: [REVIEW_PENALTY_PAGE_URI]
+            }
+        });
+
+        await request(app)
+            .get(REVIEW_PENALTY_PAGE_URI)
+            .expect(response => {
+                expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                expect(response.text).to.contain('Sorry, there is a problem with the service');
+            });
+    });
+
+    it('should redirect to error page if user PR is undefined in appeal with a single penalty', async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                penaltyReference,
+                penaltyList: { items: [{ id: 'A0000001' }] }
+            } as PenaltyIdentifier
+        };
+
+        const app = createApp({
+            appeal: appeal as Appeal, navigation: {
+                permissions: [REVIEW_PENALTY_PAGE_URI]
+            }
+        });
+
+        await request(app)
+            .get(REVIEW_PENALTY_PAGE_URI)
+            .expect(response => {
+                expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                expect(response.text).to.contain('Sorry, there is a problem with the service');
+            });
+    });
+
+    it('should redirect to error page if user PR is undefined in appeal with a multiple penalties', async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                userInputPenaltyReference: penaltyReference,
+                penaltyList: { items: [{ id: 'A0000001' }, { id: 'A0000002' }] }
+            } as PenaltyIdentifier
         };
 
         const app = createApp({

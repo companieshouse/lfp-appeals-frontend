@@ -30,6 +30,7 @@ const appealNoAttachments: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
+        userInputPenaltyReference: 'A00000001'
     },
     reasons: {
         other: {
@@ -43,6 +44,7 @@ const appealWithAttachments: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
+        userInputPenaltyReference: 'A00000001'
     },
     reasons: {
         other: {
@@ -66,6 +68,7 @@ const appealWithMaxAttachments: Appeal = {
     penaltyIdentifier: {
         companyNumber: '00345567',
         penaltyReference: 'A00000001',
+        userInputPenaltyReference: 'A00000001'
     },
     reasons: {
         other: {

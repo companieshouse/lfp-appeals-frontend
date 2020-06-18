@@ -5,7 +5,7 @@ import * as assert from 'assert';
 import { Session } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { IAccessToken, ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { IAccessToken, ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
@@ -24,13 +24,17 @@ describe('AppealStorageForSubmissionProcessor', () => {
     const appeal: Appeal = {
         penaltyIdentifier: {
             companyNumber: '00345567',
-            penaltyReference: 'A00000001',
+            penaltyReference: 'A0000001',
+            userInputPenaltyReference:'A0000001'
         },
         reasons: {
             other: {
                 title: 'I have reasons',
                 description: 'they are legit'
             }
+        },
+        createdBy: {
+            emailAddress: 'email@email.com'
         }
     };
 
@@ -55,6 +59,9 @@ describe('AppealStorageForSubmissionProcessor', () => {
             session:
                 new Session({
                     [SessionKey.SignInInfo]: {
+                        [SignInInfoKeys.UserProfile]: {
+                            emailAddress: 'email@email.com'
+                        } as IUserProfile,
                         [SignInInfoKeys.AccessToken]: {
                             access_token: accessToken,
                             refresh_token: refreshToken

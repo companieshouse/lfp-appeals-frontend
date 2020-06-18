@@ -12,33 +12,37 @@ describe('Penalty Details Schema Validation', () => {
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
             const validPenaltyReference = 'A12345678';
-            return { companyNumber, penaltyReference: validPenaltyReference };
+            return {
+                companyNumber,
+                penaltyReference: validPenaltyReference,
+                userInputPenaltyReference: validPenaltyReference
+            };
         }
 
         describe('Happy path', () => {
             it('should accept SC leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('SC123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept NI leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('NI123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept no leading characters input', () => {
                 const result = validator.validate(createModelWithCompanyNumber('12123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept leading characters in lowercase', () => {
                 const result = validator.validate(createModelWithCompanyNumber('sc123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept company numbers with less than 8 total characters', () => {
                 const result = validator.validate(createModelWithCompanyNumber('123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
         });
 
@@ -116,20 +120,24 @@ describe('Penalty Details Schema Validation', () => {
     });
 
     describe('Penalty Reference', () => {
-        function createModelWithPenaltyReference(penaltyReference: string): PenaltyIdentifier {
+        function createModelWithPenaltyReference(userInputPenaltyReference: string): PenaltyIdentifier {
             const validCompanyNumber = 'SC123123';
-            return { penaltyReference, companyNumber: validCompanyNumber };
+            return {
+                userInputPenaltyReference,
+                penaltyReference: userInputPenaltyReference,
+                companyNumber: validCompanyNumber
+            };
         }
 
         describe('Happy path', () => {
             it('should accept uppercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('Z12345678'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept lowercase leading character', () => {
                 const result = validator.validate(createModelWithPenaltyReference('z12345678'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept only digits', () => {
@@ -144,42 +152,42 @@ describe('Penalty Details Schema Validation', () => {
 
             it('should accept legacy penalty references', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN1A/SC123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept lower case legacy penalty references', () => {
                 const result = validator.validate(createModelWithPenaltyReference('pen1A/sc123123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept legacy penalty references with hidden leading zeros', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
             it('should accept legacy penalty references with leading zeros', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN1A/sc000123'));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
-            it(`should accept legacy penalty references with prefix number 1` , () => {
-                    const result = validator.validate(createModelWithPenaltyReference(`pen1A/sc123`));
-                    expect(result).to.deep.equal({errors: []});
+            it(`should accept legacy penalty references with prefix number 1`, () => {
+                const result = validator.validate(createModelWithPenaltyReference(`pen1A/sc123`));
+                expect(result).to.deep.equal({ errors: [] });
             });
 
-            it(`should accept legacy penalty references with prefix number 2` , () => {
+            it(`should accept legacy penalty references with prefix number 2`, () => {
                 const result = validator.validate(createModelWithPenaltyReference(`pen2A/sc123`));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
-            it(`should accept legacy penalty references with prefix number 8` , () => {
+            it(`should accept legacy penalty references with prefix number 8`, () => {
                 const result = validator.validate(createModelWithPenaltyReference(`pen8A/sc123`));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
-            it(`should accept legacy penalty references with only numbers as company number` , () => {
+            it(`should accept legacy penalty references with only numbers as company number`, () => {
                 const result = validator.validate(createModelWithPenaltyReference(`PEN1A/12345678`));
-                expect(result).to.deep.equal({errors: []});
+                expect(result).to.deep.equal({ errors: [] });
             });
 
         });
@@ -189,7 +197,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference(''));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter a penalty reference number'
                     }]
                 });
@@ -199,7 +207,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L123456'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -209,7 +217,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('PEN12A/SC123123'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -219,7 +227,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference(' L12345678 '));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -229,7 +237,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L12 34 56 78'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });
@@ -239,7 +247,7 @@ describe('Penalty Details Schema Validation', () => {
                 const result = validator.validate(createModelWithPenaltyReference('L12*45678'));
                 expect(result).to.deep.equal({
                     errors: [{
-                        field: 'penaltyReference',
+                        field: 'userInputPenaltyReference',
                         text: 'You must enter your reference number exactly as shown on your penalty notice'
                     }]
                 });

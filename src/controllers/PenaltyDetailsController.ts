@@ -10,7 +10,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, ROOT_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'penalty-details';
 
@@ -19,7 +19,7 @@ const navigation = {
         return ROOT_URI;
     },
     next(): string {
-        return REVIEW_PENALTY_PAGE_URI;
+        return SELECT_THE_PENALTY_PAGE_URI;
     }
 };
 
@@ -27,7 +27,8 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
     return {
         companyNumber: sanitizeCompany(body.companyNumber),
-        penaltyReference: body.penaltyReference.toUpperCase(),
+        userInputPenaltyReference: body.userInputPenaltyReference.toUpperCase(),
+        penaltyReference: body.userInputPenaltyReference.toUpperCase(),
         penaltyList: body.penaltyList
     };
 

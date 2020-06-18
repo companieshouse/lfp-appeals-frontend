@@ -3,9 +3,11 @@ import { LateFilingPenaltyService, Penalty, PenaltyList } from 'ch-sdk-node/dist
 import { assert, expect } from 'chai';
 import { Request } from 'express';
 
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/controllers/processors/errors/Errors';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
+import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createSession } from 'test/utils/session/SessionFactory';
@@ -21,13 +23,20 @@ describe('PenaltyDetailsValidator', () => {
         return (_: AuthMethod) => chApi;
     };
     const companyNumber = 'NI000000';
-    const getRequest = (penaltyReference: string): Request => {
+    const getRequest = (userInputPenaltyReference: string): Request => {
+        const session = createSession('secret', true);
+
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
+
         return {
             body: {
                 companyNumber,
-                penaltyReference
+                userInputPenaltyReference
             },
-            session: createSession('secret', true)
+            session
         } as Request;
     };
 
@@ -45,6 +54,11 @@ describe('PenaltyDetailsValidator', () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
         const session = createSession('secret', false);
         delete session.data.signin_info?.access_token?.access_token;
+
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
 
         try {
             await penaltyDetailsValidator.validate({
@@ -70,11 +84,17 @@ describe('PenaltyDetailsValidator', () => {
 
         const penaltyDetailsValidator = new PenaltyDetailsValidator(companiesHouseSDK);
 
+        const session = createSession('secret', true);
+        session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
+            appeal: {} as Appeal,
+            navigation: { permissions: [] }
+        });
+
         const result = await penaltyDetailsValidator.validate({
-            session: createSession('secret', true),
+            session,
             body: {
                 companyNumber: 'SC123123',
-                penaltyReference: 'A00000000'
+                userInputPenaltyReference: 'A00000000'
             }
         } as Request);
 
@@ -122,36 +142,6 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should throw an error if there is more than one penalty (TEMPORARY)', async () => {
-        const apiResponse = {
-            httpStatusCode: 200,
-            resource: {
-                items: [
-                    {
-                        id: '000000000',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty,
-                    {
-                        id: '000000001',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
-            } as PenaltyList
-        };
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
-        try {
-            await penaltyDetailsValidator.validate(getRequest(`PEN1A/${companyNumber}`));
-            assert.fail('Should have thrown an error');
-        } catch (err) {
-            expect(err.message).to.equal(PenaltyDetailsValidator.MULTIPLE_PENALTIES_FOUND_ERROR.message);
-        }
-
-    });
-
     it('should return an error when no items match the penalty', async () => {
 
         const penaltyReference = 'A0000001';
@@ -169,8 +159,12 @@ describe('PenaltyDetailsValidator', () => {
             } as PenaltyList
         };
         const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
-        const results = await penaltyDetailsValidator.validate(getRequest(penaltyReference));
+        const request = getRequest(penaltyReference);
+        const results = await penaltyDetailsValidator.validate(request);
         expect(results.errors.length).to.equal(2);
+
+        const navigation = request.session!.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)?.navigation;
+        expect(navigation?.permissions).to.deep.equal([]);
 
     });
 
