@@ -1,0 +1,105 @@
+{% extends 'layout.njk' %}
+
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
+
+{% block pageTitle %}
+  Accessibility statement
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
+{% endblock %}
+
+{% block content%}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Accessibility statement for the Appeal a late filing penalty service</h1>
+      <p>This service is run by
+        <a href="https://www.gov.uk/government/organisations/companies-house">Companies House</a>. We want as many people as possible to be able to use this service. For example, that means you should be able to:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>change colours, contrast levels and fonts</li>
+        <li>zoom in up to 300% without the text disappearing off the screen</li>
+        <li>navigate most of the website using just a keyboard</li>
+        <li>navigate most of the website using speech recognition software</li>
+        <li>listen to most of the website using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)</li>
+      </ul>
+      <p>We’ve also made the website text simple to understand.</p>
+      <p>
+        <a href="https://mcmw.abilitynet.org.uk/">AbilityNet has advice on making your device easier to use if you have a disability.</a>
+      </p>
+
+      <h2 class="govuk-heading-m">How accessible this service is</h2>
+      <p>This service is fully accessible.</p>
+
+      <h2 class="govuk-heading-m">What to do if you can’t access parts of this service</h2>
+      <ul class="govuk-list govuk-list--bullet" id="contact">
+        <li>Contact us by:</li>
+        <li>email
+          <a href="mailto:enquiries@companieshouse.gov.uk">enquiries@companieshouse.gov.uk</a>
+        </li>
+        <li>telephone 0303 1234 500</li>
+        <li>telephone (Welsh language) 029 2038 0065</li>
+        <li>minicom or textphone 029 2022 6788</li>
+      </ul>
+      <p>Or write to us at:</p>
+      <p>Companies House<br>Crown Way<br>Cardiff<br>CF14 3UZ</p>
+      <p>DX 33050</p>
+      <p>We’ll discuss what assistance we can provide to help you meet your responsibilities. With your permission, we’ll place a note on our internal system.</p>
+      <p>For example, if you have impaired vision and would prefer us to contact you by phone, we can call to remind you when your confirmation statement or accounts are due.</p>
+
+      <h2 class="govuk-heading-m">Reporting accessibility problems with this service</h2>
+      <p>We are continuing to improve the accessibility of this service.
+        <a href="#contact">Contact us</a>
+        if you have accessibility requirements that are not listed on this page.
+      </p>
+
+      <h2 class="govuk-heading-m">Enforcement procedure</h2>
+      <p>The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we
+        respond to your complaint,
+        <a href="https://www.equalityadvisoryservice.com/">contact the Equality Advisory and Support Service (EASS)</a>.
+      </p>
+
+      <h2 class="govuk-heading-m">Technical information about this service’s accessibility</h2>
+      <p>Companies House is committed to making its website accessible in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.</p>
+      <p>This service is partially compliant with the
+        <a href="https://www.w3.org/TR/WCAG21/">Web Content Accessibility Guidelines version 2.1</a>
+        AA standard.
+      </p>
+
+      <h2 class="govuk-heading-m">How we tested this service</h2>
+      <p>We regularly carry out internal tests for compliance with the Web Content Accessibility Guidelines V2.1 level A and level AA using a variety of manual and automated testing tools.</p>
+      <p>This service was last (internally) audited on 31 March 2020.</p>
+      <p>We tested all the screens from start page to confirmation screen.</p>
+
+      <h2 class="govuk-heading-m">What we’re doing to improve accessibility</h2>
+      <p>To improve this service’s accessibility, we:
+        </p><ul class="govuk-list govuk-list--bullet">
+          <li>work with real users who have accessibility issues to make sure that our services meet their needs</li>
+          <li>carry out internal tests for compliance with Web Content Accessibility Guidelines V2.1 level A and level AA</li>
+          <li>work with external agencies in major UK cities to perform usability research with users</li>
+          <li>recruit customers through
+            <a href="https://www.gov.uk/government/news/help-improve-companies-house">our user panel</a>
+            to take part in sessions at our usability lab in Cardiff
+          </li>
+          <li>build and test our services to meet
+            <a href="https://www.gov.uk/service-manual/helping-people-to-use-your-service/making-your-service-accessible-an-introduction#meeting-government-accessibility-requirements">government accessibility requirements</a>
+          </li>
+          <li>are developing
+            <a href="https://gds.blog.gov.uk/2018/06/20/creating-the-uk-governments-accessibility-empathy-lab/">an assistive technology lab</a>
+            in our Cardiff office to improve the testing of our services and raise awareness of accessibility
+          </li>
+          <p>
+            <a href="https://companieshouse.blog.gov.uk/category/user-research/">Read our blogs about usability</a>
+            to find out more about our user research work.
+          </p>
+          <p>This statement was prepared on 31 March 2020. It was last updated on 7 April 2020.</p>
+        </ul>
+    </div>
+  </div>
+{% endblock %}

@@ -1,3 +1,4 @@
+import 'app/controllers/AccessibilityStatementController';
 import 'app/controllers/CheckYourAppealController';
 import 'app/controllers/ConfirmationController';
 import 'app/controllers/EntryController';
