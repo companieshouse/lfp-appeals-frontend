@@ -3,9 +3,8 @@ import 'reflect-metadata';
 import { Arg } from '@fluffy-spoon/substitute';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
-import { createSubstituteOf } from '../SubstituteFactory';
 
 import 'app/controllers/ReviewPenaltyController';
 import { Appeal } from 'app/models/Appeal';
@@ -14,6 +13,7 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
+import { createSubstituteOf } from 'test/SubstituteFactory';
 
 describe('ReviewPenaltyController', () => {
 
@@ -211,7 +211,7 @@ describe('ReviewPenaltyController', () => {
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)
             .expect(response => {
-                expect(response.status).to.be.equal(UNAUTHORIZED);
+                expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                 expect(response.text).to.contain('An Appeal has already been submitted for this penalty');
             });
     });

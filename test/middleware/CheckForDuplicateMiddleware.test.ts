@@ -69,7 +69,7 @@ describe('CheckForDuplicateMiddleware', () => {
 
     });
 
-    it('should throw an error when access token is undefined', async () => {
+    it('should call next with an error when access token is undefined', async () => {
 
         const appData = { appeal };
 

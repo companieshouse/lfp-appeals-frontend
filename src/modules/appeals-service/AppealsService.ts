@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { CREATED, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import {
     AppealNotFoundError,
     AppealServiceError,
@@ -42,36 +42,40 @@ export class AppealsService {
 
     }
 
-    public async hasExistingAppeal(companyNumber: string, penaltyReference: string, accessToken: string,
-                                   refreshToken: string): Promise<boolean> {
-
-        const operation = 'get';
+    public async hasExistingAppeal(
+        companyNumber: string,
+        penaltyReference: string,
+        accessToken: string,
+        refreshToken: string
+    ): Promise<boolean> {
 
         this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
-        this.checkArgumentOrThrow(penaltyReference, 'penalty reference is missing');
+        this.checkArgumentOrThrow(penaltyReference, 'Penalty reference is missing');
         this.checkArgumentOrThrow(accessToken, 'Access token is missing');
         this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
 
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
-        const uri: string = `${this.uri}/companies/${companyNumber}/appeals?`;
+        const uri: string = `${this.uri}/companies/${companyNumber}/appeals`;
         loggerInstance()
-            .debug(`Making a GET request to ${uri}`);
+            .debug(`Making a GET request to ${uri}?penaltyReference=${penaltyReference}`);
 
         const params = {penaltyReference};
 
         try {
-            await this.axiosInstance.get(uri, {params});
+            const res = await this.axiosInstance.get(uri, {params});
+            if (res.status === OK && res.data){
+                return true;
+            }
         } catch (err) {
             if (err.response && err.response.status === NOT_FOUND) {
                 return false;
             } else {
-                this.handleResponseError(operation);
+                this.handleResponseError('get');
             }
         }
 
-        return true;
-
+        return false;
     }
 
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
@@ -105,8 +109,7 @@ export class AppealsService {
         }
     }
 
-    private handleResponseError(operation: 'get' | 'save', subject?: string):
-        (_: AxiosError) => never {
+    private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
         return (err: AxiosError) => {
             const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
             if (err.isAxiosError && err.response != null) {
