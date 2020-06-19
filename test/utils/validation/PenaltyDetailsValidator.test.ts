@@ -37,7 +37,8 @@ describe('PenaltyDetailsValidator', () => {
         return {
             body: {
                 companyNumber,
-                userInputPenaltyReference
+                userInputPenaltyReference,
+                penaltyReference: userInputPenaltyReference
             },
             session
         } as Request;
@@ -298,7 +299,7 @@ describe('PenaltyDetailsValidator', () => {
 
             expect(oldPenaltyReferenceResult.errors.length).to.equal(0);
             expect(oldPenaltyRequest.body.penaltyList.items[0]).to.deep.equal(mappedItems);
-            expect(oldPenaltyRequest.body.penaltyReference).to.equal(mappedItems[0].id);
+            expect(oldPenaltyRequest.body.userInputPenaltyReference).to.equal(mappedItems[0].id);
         });
 
     });

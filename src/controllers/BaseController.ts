@@ -198,10 +198,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                     const applicationData: ApplicationData = session
                         .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-                    session.setExtraData(APPLICATION_DATA_KEY, applicationData);
-
                     applicationData.appeal = that
                         .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
+
+                    session.setExtraData(APPLICATION_DATA_KEY, applicationData);
 
                     await that.persistSession();
                 }
