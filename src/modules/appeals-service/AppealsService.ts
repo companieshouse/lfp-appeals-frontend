@@ -1,6 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { CREATED, NOT_FOUND, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { AppealNotFoundError, AppealServiceError, AppealUnauthorisedError, AppealUnprocessableEntityError } from './errors';
+import { CREATED, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import {
+    AppealNotFoundError,
+    AppealServiceError,
+    AppealUnauthorisedError,
+    AppealUnprocessableEntityError
+} from './errors';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -35,6 +40,42 @@ export class AppealsService {
             .then((response: AxiosResponse<Appeal>) => response.data)
             .catch(this.handleResponseError('get', appealId));
 
+    }
+
+    public async hasExistingAppeal(
+        companyNumber: string,
+        penaltyReference: string,
+        accessToken: string,
+        refreshToken: string
+    ): Promise<boolean> {
+
+        this.checkArgumentOrThrow(companyNumber, 'Company number is missing');
+        this.checkArgumentOrThrow(penaltyReference, 'Penalty reference is missing');
+        this.checkArgumentOrThrow(accessToken, 'Access token is missing');
+        this.checkArgumentOrThrow(refreshToken, 'Refresh token is missing');
+
+        this.refreshTokenInterceptor(accessToken, refreshToken);
+
+        const uri: string = `${this.uri}/companies/${companyNumber}/appeals`;
+        loggerInstance()
+            .debug(`Making a GET request to ${uri}?penaltyReference=${penaltyReference}`);
+
+        const params = {penaltyReference};
+
+        try {
+            const res = await this.axiosInstance.get(uri, {params});
+            if (res.status === OK && res.data){
+                return true;
+            }
+        } catch (err) {
+            if (err.response && err.response.status === NOT_FOUND) {
+                return false;
+            } else {
+                this.handleResponseError('get');
+            }
+        }
+
+        return false;
     }
 
     public async save(appeal: Appeal, accessToken: string, refreshToken: string): Promise<string> {
