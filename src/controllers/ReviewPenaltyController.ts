@@ -43,13 +43,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
             throw new Error(ReviewPenaltyController.PENALTY_EXPECTED_ERROR);
         }
 
-        let penaltyReference: string | undefined;
-
-        if (penaltyList.items.length === 1) {
-            penaltyReference = appeal.penaltyIdentifier.userInputPenaltyReference;
-        } else {
-            penaltyReference = appeal.penaltyIdentifier.penaltyReference;
-        }
+        const penaltyReference: string | undefined = appeal.penaltyIdentifier.penaltyReference;
 
         if (!penaltyReference) {
             throw new Error(ReviewPenaltyController.PENALTY_IDENTIFIER_EXPECTED_ERROR);

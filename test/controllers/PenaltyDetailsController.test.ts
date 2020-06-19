@@ -63,7 +63,11 @@ describe('PenaltyDetailsController', () => {
             const appeal = {
                 penaltyIdentifier: {
                     companyNumber: 'SC123123',
-                    userInputPenaltyReference: 'A12345678'
+                    userInputPenaltyReference: 'A12345678',
+                    penaltyReference: 'A12345678',
+                    penaltyList: {
+                        items: [{ id: 'A12345678' }]
+                    }
                 }
             } as Appeal;
 
