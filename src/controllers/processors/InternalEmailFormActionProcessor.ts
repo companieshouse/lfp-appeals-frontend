@@ -34,7 +34,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
                         attachments: appeal.reasons.other.attachments?.map(attachment => {
                             return {
                                 name: attachment.name,
-                                url: attachment.url + `&a=${appeal.id}`
+                                url: `${attachment.url}&a=${appeal.id}`
                             };
                         })
                     }
