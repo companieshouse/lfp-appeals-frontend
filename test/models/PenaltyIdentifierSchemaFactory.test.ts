@@ -39,7 +39,16 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                     new PenaltyIdentifierSchemaFactory('').getPenaltyIdentifierSchema();
                     assert.fail('It should have thrown an error');
                 } catch (err) {
-                    expect(err.message).to.equal('Company prefixes must not be empty. e.g. NI,SC,SO');
+                    expect(err.message).to.equal('Prefix list formatting error. Make sure list is comma separated e.g. NI,SI,R');
+                }
+            });
+
+            it('should throw an error if prefix list in wrong format is provided', () => {
+                try {
+                    new PenaltyIdentifierSchemaFactory('A,,A,B,NI').getPenaltyIdentifierSchema();
+                    assert.fail('It should have thrown an error');
+                } catch (err) {
+                    expect(err.message).to.equal('Prefix list formatting error. Make sure list is comma separated e.g. NI,SI,R');
                 }
             });
 

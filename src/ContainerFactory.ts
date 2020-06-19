@@ -75,7 +75,8 @@ export function createContainer(): Container {
 
     container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('API_URL')));
 
-    container.bind(PenaltyIdentifierSchemaFactory).toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrDefault('ALLOWED_COMPANY_PREFIXES', '*')));
+    container.bind(PenaltyIdentifierSchemaFactory)
+        .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
 
     container.load(buildProviderModule());
     return container;
