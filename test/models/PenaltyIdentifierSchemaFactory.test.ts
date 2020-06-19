@@ -28,6 +28,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
             'OC123123',
             'SO123123',
             'R0000000',
+            'R123',
             '123',
             'AP123456'
         ];

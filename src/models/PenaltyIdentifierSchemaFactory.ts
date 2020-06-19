@@ -16,12 +16,26 @@ export class PenaltyIdentifierSchemaFactory {
 
         const prefixesArray: string[] = companyNumberPrefixes.split(',');
 
-        const prefixRegex = `(${prefixesArray.reduceRight((p, c) => `${p}|${c}`, '').substr(1)})[0-9]{1,7}`;
+        const singleCharacterPrefixRegex: string = '('
+            .concat(prefixesArray
+                .filter(prefix => prefix.length === 1)
+                .reduceRight((p, c) => `${p}|${c}`, '').substr(1)
+                .concat(')')
+                .concat('[0-9]{1,7}')
+            );
+
+        const doubleCharacterPrefixRegex: string = '('
+            .concat(prefixesArray
+                .filter(prefix => prefix.length === 2)
+                .reduceRight((p, c) => `${p}|${c}`, '').substr(1)
+                .concat(')')
+                .concat('[0-9]{1,6}')
+            );
 
         const onlyNumbersRegex = '[0-9]{1,8}';
 
         this.companyNumberRegex = new RegExp(`^(${
-            [prefixRegex, onlyNumbersRegex].join('|')
+            [singleCharacterPrefixRegex, doubleCharacterPrefixRegex, onlyNumbersRegex].join('|')
             })$`, 'i');
 
         this.penaltyReferenceRegex = /^[a-z0-9/]{8,14}$/i;
