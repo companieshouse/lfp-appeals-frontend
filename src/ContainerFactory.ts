@@ -7,6 +7,7 @@ import { CompaniesHouseSDK } from 'modules/Types';
 import * as util from 'util';
 
 import { APP_NAME } from 'app/Constants';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
@@ -73,6 +74,9 @@ export function createContainer(): Container {
             getEnvOrThrow(`FILE_TRANSFER_API_KEY`)));
 
     container.bind(CompaniesHouseSDK).toConstantValue(CompaniesHouseSDK(getEnvOrThrow('API_URL')));
+
+    container.bind(PenaltyIdentifierSchemaFactory)
+        .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
 
     container.load(buildProviderModule());
     return container;

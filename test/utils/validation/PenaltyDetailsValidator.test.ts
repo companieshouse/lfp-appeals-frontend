@@ -1,3 +1,4 @@
+import Joi from '@hapi/joi';
 import ApiClient from 'ch-sdk-node/dist/client';
 import { LateFilingPenaltyService, Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { assert, expect } from 'chai';
@@ -6,11 +7,13 @@ import { Request } from 'express';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 import { createSession } from 'test/utils/session/SessionFactory';
+
 
 describe('PenaltyDetailsValidator', () => {
     const createSDK = (apiResponse: any): CompaniesHouseSDK => {
@@ -41,7 +44,12 @@ describe('PenaltyDetailsValidator', () => {
     };
 
     it('should throw an error if session is undefined', async () => {
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            createSDK({}),
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
         try {
             await penaltyDetailsValidator.validate({} as Request);
             assert.fail('Should have thrown an error');
@@ -51,8 +59,12 @@ describe('PenaltyDetailsValidator', () => {
     });
 
     it('should throw an error if access token is undefined', async () => {
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK({}));
-        const session = createSession('secret', false);
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            createSDK({}),
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            )); const session = createSession('secret', false);
         delete session.data.signin_info?.access_token?.access_token;
 
         session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
@@ -82,7 +94,6 @@ describe('PenaltyDetailsValidator', () => {
         });
         const companiesHouseSDK = (_: AuthMethod) => apiClient;
 
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(companiesHouseSDK);
 
         const session = createSession('secret', true);
         session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
@@ -90,6 +101,12 @@ describe('PenaltyDetailsValidator', () => {
             navigation: { permissions: [] }
         });
 
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            companiesHouseSDK,
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
         const result = await penaltyDetailsValidator.validate({
             session,
             body: {
@@ -114,7 +131,13 @@ describe('PenaltyDetailsValidator', () => {
         });
         const chSDK = (_: AuthMethod) => chApi;
 
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(chSDK);
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            chSDK,
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
+
         try {
             await penaltyDetailsValidator.validate(getRequest(penaltyReference));
             assert.fail('Should have thrown an error');
@@ -133,7 +156,13 @@ describe('PenaltyDetailsValidator', () => {
             } as PenaltyList
         };
 
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            createSDK(apiResponse),
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
+
         const result = await penaltyDetailsValidator.validate(getRequest(penaltyReference));
         expect(result.errors).to.deep.equal([
             PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR,
@@ -158,7 +187,12 @@ describe('PenaltyDetailsValidator', () => {
                 ]
             } as PenaltyList
         };
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(createSDK(apiResponse));
+        const penaltyDetailsValidator = new PenaltyDetailsValidator(
+            createSDK(apiResponse),
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
         const request = getRequest(penaltyReference);
         const results = await penaltyDetailsValidator.validate(request);
         expect(results.errors.length).to.equal(2);
@@ -204,8 +238,12 @@ describe('PenaltyDetailsValidator', () => {
 
         const modernPenaltyReference = penaltyReferences[0];
 
-        const penaltyDetailsValidatorModern = new PenaltyDetailsValidator(createSDK(apiResponse));
-
+        const penaltyDetailsValidatorModern = new PenaltyDetailsValidator(
+            createSDK(apiResponse),
+            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                config.getCompanyNumberSchema().returns(Joi.string());
+            }
+            ));
         const modernPenaltyRequest: Request = getRequest(modernPenaltyReference);
 
         const modernPenaltyReferenceResult = await penaltyDetailsValidatorModern.validate(modernPenaltyRequest);
@@ -248,7 +286,12 @@ describe('PenaltyDetailsValidator', () => {
 
         penaltyReferences.forEach(async penaltyReference => {
 
-            const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(createSDK(apiResponse));
+            const penaltyDetailsValidatorOld = new PenaltyDetailsValidator(
+                createSDK(apiResponse),
+                createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
+                    config.getCompanyNumberSchema().returns(Joi.string());
+                }
+                ));
             const oldPenaltyRequest: Request = getRequest(penaltyReference);
 
             const oldPenaltyReferenceResult = await penaltyDetailsValidatorOld.validate(oldPenaltyRequest);

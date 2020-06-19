@@ -8,6 +8,7 @@ import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -18,7 +19,7 @@ import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { createSession } from 'test/utils/session/SessionFactory';
 
 // tslint:disable-next-line:no-empty
-export const createAppConfigurable = (configureBindings: (container: Container) => void = () => {}): Application => {
+export const createAppConfigurable = (configureBindings: (container: Container) => void = () => { }): Application => {
 
     const container = new Container();
     container.load(buildProviderModule());
@@ -28,7 +29,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 
 export const createApp = (data?: Partial<ApplicationData>,
     // tslint:disable-next-line:no-empty
-    configureBindings: (container: Container) => void = () => {},
+    configureBindings: (container: Container) => void = () => { },
     configureSession: (session: Session) => Session = (_: Session) => _) =>
     createAppConfigurable(container => {
 
@@ -61,5 +62,7 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
         container.bind(RefreshTokenService).toConstantValue(Substitute.for<RefreshTokenService>());
         container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
+        container.bind(PenaltyIdentifierSchemaFactory)
+            .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
         configureBindings(container);
     });

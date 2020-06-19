@@ -14,7 +14,9 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { Navigation } from 'app/models/Navigation';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AuthMethod } from 'app/modules/Types';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { PENALTY_DETAILS_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -27,6 +29,8 @@ const errorSummaryHeading = 'There is a problem with the information you entered
 describe('PenaltyDetailsController', () => {
 
     const navigation = {} as Navigation;
+
+    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES'));
 
     describe('GET request', () => {
 
@@ -126,7 +130,9 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            const app = createApp({});
+            const app = createApp({}, container => {
+                container.rebind(PenaltyIdentifierSchemaFactory).toConstantValue(companyNumberSchemaFactory);
+            });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -144,7 +150,9 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'SC123123'
             };
 
-            const app = createApp({});
+            const app = createApp({}, container => {
+                container.rebind(PenaltyIdentifierSchemaFactory).toConstantValue(companyNumberSchemaFactory);
+            });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -162,7 +170,9 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: ''
             };
 
-            const app = createApp({});
+            const app = createApp({}, container => {
+                container.rebind(PenaltyIdentifierSchemaFactory).toConstantValue(companyNumberSchemaFactory);
+            });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -180,7 +190,9 @@ describe('PenaltyDetailsController', () => {
                 companyNumber: 'AB66666666'
             };
 
-            const app = createApp({});
+            const app = createApp({}, container => {
+                container.rebind(PenaltyIdentifierSchemaFactory).toConstantValue(companyNumberSchemaFactory);
+            });
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -209,8 +221,10 @@ describe('PenaltyDetailsController', () => {
                 });
 
                 container.rebind(PenaltyDetailsValidator)
-                    .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api));
+                    .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api, companyNumberSchemaFactory));
+
             });
+
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)
@@ -220,7 +234,7 @@ describe('PenaltyDetailsController', () => {
                         .and.to.contain(PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR.text)
                         .and.to.contain(PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR.text);
                 });
-        });
 
+        });
     });
 });

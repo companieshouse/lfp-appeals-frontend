@@ -14,7 +14,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { schema } from 'app/models/PenaltyIdentifier.schema';
+import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
@@ -29,8 +29,10 @@ export class PenaltyDetailsValidator implements Validator {
     public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError('companyNumber', 'Check that you’ve entered the correct company number');
     public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('userInputPenaltyReference', 'Check that you’ve entered the correct reference number');
     public static MULTIPLE_PENALTIES_FOUND_ERROR: Error = new Error(`Multiple penalties found. This is currently unsupported`);
-
-    constructor(@inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK) { }
+    constructor(
+        @inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK,
+        @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory
+    ) { }
 
 
     private createValidationResultWithErrors(): ValidationResult {
@@ -42,7 +44,8 @@ export class PenaltyDetailsValidator implements Validator {
 
     async validate(request: Request): Promise<ValidationResult> {
 
-        const schemaResults: ValidationResult = new SchemaValidator(schema).validate(request.body);
+        const schemaResults: ValidationResult = new SchemaValidator(this.schemaFactory.getPenaltyIdentifierSchema())
+            .validate(request.body);
         if (schemaResults.errors.length > 0) {
             return schemaResults;
         }
