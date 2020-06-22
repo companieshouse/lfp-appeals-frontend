@@ -6,6 +6,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
+import { SessionCleanupProcessor } from 'app/controllers/processors/SessionCleanupProcessor';
 import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
@@ -39,7 +40,7 @@ const navigation = {
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor,
-            InternalEmailFormActionProcessor, UserEmailFormActionProcessor]);
+            InternalEmailFormActionProcessor, UserEmailFormActionProcessor, SessionCleanupProcessor]);
         // tslint:disable-next-line: forin
         for (const region in Region) {
             getEnvOrThrow(`${region}_TEAM_EMAIL`);

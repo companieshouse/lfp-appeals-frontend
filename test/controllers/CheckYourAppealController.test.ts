@@ -18,29 +18,31 @@ import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Pat
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
-const appeal = {
-    penaltyIdentifier: {
-        companyName: 'company-name-test',
-        companyNumber: '00345567',
-        penaltyReference: 'A00000001',
-    },
-    reasons: {
-        other: {
-            title: 'I have reasons',
-            description: 'they are legit',
-            attachments: [
-                {
-                    id: '1',
-                    name: 'some-file.jpeg'
-                } as Attachment,
-                {
-                    id: '2',
-                    name: 'another-file.jpeg'
-                } as Attachment
-            ]
+function getAppeal(): Appeal {
+    return {
+        penaltyIdentifier: {
+            companyName: 'company-name-test',
+            companyNumber: '00345567',
+            penaltyReference: 'A00000001',
+        },
+        reasons: {
+            other: {
+                title: 'I have reasons',
+                description: 'they are legit',
+                attachments: [
+                    {
+                        id: '1',
+                        name: 'some-file.jpeg'
+                    } as Attachment,
+                    {
+                        id: '2',
+                        name: 'another-file.jpeg'
+                    } as Attachment
+                ]
+            }
         }
-    }
-} as Appeal;
+    } as Appeal;
+}
 
 const pageHeading: string = 'Check your appeal';
 const subHeading: string = 'Reason for appeal';
@@ -52,6 +54,9 @@ describe('CheckYourAppealController', () => {
 
     describe('GET request', () => {
         it('should return 200 with populated session data', async () => {
+
+            const appeal = getAppeal();
+
             const applicationData = {
                 appeal,
                 navigation
@@ -106,15 +111,19 @@ describe('CheckYourAppealController', () => {
 
     describe('POST request', () => {
 
-        const applicationData = {
-            appeal,
-            navigation
-        } as ApplicationData;
+        function getApplicationData(): ApplicationData {
+            return {
+                appeal: getAppeal(),
+                navigation,
+            } as ApplicationData;
+        }
 
         it('should send email with appeal to internal team and submission confirmation to user', async () => {
             const emailService = createSubstituteOf<EmailService>(service => {
                 service.send(Arg.any()).returns(Promise.resolve());
             });
+
+            const applicationData = getApplicationData();
 
             const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
@@ -133,20 +142,38 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should redirect to confirmation page when email sending succeeded', async () => {
+
+            const applicationData = getApplicationData();
+
+            const appealsService = createSubstituteOf<AppealsService>(service => {
+                service.save(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve('1'));
+            });
+
             const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
                     service.send(Arg.any()).returns(Promise.resolve());
                 }));
+
+                container.rebind(AppealsService).toConstantValue(appealsService);
             });
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.get('Location')).to.be.equal(CONFIRMATION_PAGE_URI);
+                    expect(applicationData.appeal).to.deep.equal({});
+                    expect(applicationData.submittedAppeal).to.deep.equal({
+                        ...getAppeal(),
+                        createdBy: { emailAddress: 'test' },
+                        id: '1'
+                    } as Appeal);
                 });
         });
 
         it('should not send email to user and render error when internal email did not send', async () => {
+
+            const applicationData = getApplicationData();
+
             const emailService = createSubstituteOf<EmailService>(service => {
                 service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
             });
@@ -174,6 +201,8 @@ describe('CheckYourAppealController', () => {
                 })).returns(Promise.reject(Error('Unexpected error')));
             });
 
+            const applicationData = getApplicationData();
+
             const app = createApp(applicationData, container => {
                 container.rebind(EmailService).toConstantValue(emailService);
             });
@@ -185,6 +214,8 @@ describe('CheckYourAppealController', () => {
         });
 
         it('should render error when appeal storage failed', async () => {
+
+            const applicationData = getApplicationData();
 
             const app = createApp(applicationData, container => {
 
@@ -210,8 +241,10 @@ describe('CheckYourAppealController', () => {
                 'xUHinh19D17SQV2BYRLnGEZgeovYhcVitzLJMxpGxXW0w+30EYBb+6yF44pDWPsPejI17R5JSwy/Cw5kYQKO2A==';
 
             const appealsService = createSubstituteOf<AppealsService>(service => {
-                service.save(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve(Arg.any()));
+                service.save(Arg.any(), Arg.any(), Arg.any()).returns(Promise.resolve('1'));
             });
+
+            const applicationData = getApplicationData();
 
             const app = createApp(applicationData, container => {
                 container.rebind(AppealsService).toConstantValue(appealsService);
@@ -219,8 +252,11 @@ describe('CheckYourAppealController', () => {
 
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
-            appealsService.received().save(appeal, token, refreshToken);
-
+            appealsService.received().save(
+                { ...getAppeal(), createdBy: { emailAddress: 'test' }, id: '1' },
+                token,
+                refreshToken
+            );
         });
     });
 });
