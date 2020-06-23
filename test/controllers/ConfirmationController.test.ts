@@ -27,7 +27,7 @@ describe('ConfirmationController', () => {
         } as Appeal;
 
         const applicationData = {
-            appeal,
+            submittedAppeal: appeal,
             navigation
         } as ApplicationData;
 
