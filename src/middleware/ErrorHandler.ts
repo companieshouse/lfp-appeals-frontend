@@ -4,7 +4,7 @@ import { loggerInstance } from './Logger';
 
 // @ts-ignore
 export function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
-    res.status(NOT_FOUND).render('error');
+    res.status(NOT_FOUND).render('error-not-found');
 }
 
 
