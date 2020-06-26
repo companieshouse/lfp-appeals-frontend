@@ -3,14 +3,12 @@ import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status-codes';
 import { loggerInstance } from './Logger';
 
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { ROOT_URI } from 'app/utils/Paths';
 
 const enquiryEmail: string = getEnvOrThrow('ENQUIRY_EMAIL');
-const rootPath: string = ROOT_URI;
 
 // @ts-ignore
 export function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
-    res.status(NOT_FOUND).render('error-not-found', { enquiryEmail, rootPath });
+    res.status(NOT_FOUND).render('error-not-found', { enquiryEmail });
 }
 
 
