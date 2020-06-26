@@ -1,0 +1,62 @@
+{% extends "layout.njk" %}
+
+{% from 'govuk/components/details/macro.njk' import govukDetails %}
+
+{% block pageTitle %}
+  Appeal a late filing penalty
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Page not found
+      </h1>
+      <p>If you typed the web address, check it is spelled correctly.</p>
+      <p>If you pasted the web address, check you copied the entire address.</p>
+      <p>If the web address is correct or you selected a link, the page may have moved.
+        <a href={{ paths.ROOT_URI }}>Go to the Appeal a late filing penalty start page</a>.
+
+      <div class="govuk-form-group">
+        {% set otherWaysToAppeal %}
+          <p>You can send an appeal to us by email or by post. It should include a full explanation of your appeal.</p>
+          <h2 class="govuk-heading-m">By email</h2>
+          <p class="govuk-body">{{ enquiryEmail }}</p>
+          <h2 class="govuk-heading-m">By post</h2>
+          <h3 class="govuk-heading-s">England and Wales</h3>
+          <p class="govuk-body">
+            Companies House<br/>
+            PO Box 710<br/>
+            Crown Way<br/>
+            CF14 3UZ
+          </p>
+          <h3 class="govuk-heading-s">Scotland</h3>
+          <p class="govuk-body">
+            Companies House<br/>
+            Fourth Floor<br/>
+            Edinburgh Quay 2<br/>
+            139 Fountainbridge<br/>
+            Edinburgh<br/>
+            EH3 9FF
+          </p>
+          <h3 class="govuk-heading-s">Northern Ireland</h3>
+          <p class="govuk-body">
+            Companies House<br/>
+            2nd Floor<br/>
+            The Linenhall<br/>
+            32-38 Linenhall Street<br/>
+            Belfast<br/>
+            BT2 8BG<br/>
+          </p>
+        {% endset -%}
+
+        {{
+          govukDetails({
+            summaryText: 'Other ways to appeal a late filing penalty',
+            html: otherWaysToAppeal
+          })
+        }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
