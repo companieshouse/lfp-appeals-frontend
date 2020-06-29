@@ -1,38 +1,16 @@
-local_resource(
-  name = 'dev:lfp-appeals-frontend:init',
-  cmd = 'npm --silent install && npm --silent run build:init'
-)
-
-local_resource(
-  name = 'dev:lfp-appeals-frontend:build-views',
-  cmd = 'npm --silent run build:copy-views',
-  deps = [
-    'src/views'
-  ]
-)
-
-local_resource(
-  name = 'dev:lfp-appeals-frontend:build-code',
-  cmd = 'npm --silent run build:compile',
-  deps = [
-    'src'
-  ],
-  ignore = [
-    'src/views'
-  ]
-)
-
-custom_build(
+docker_build(
   ref = '169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/lfp-appeals-frontend',
-  command = 'docker build --ssh default -t $EXPECTED_REF .',
+  context = '.',
+  dockerfile = 'Dockerfile.dev',
+  ssh = 'default',
   live_update = [
     sync(
-      local_path = './dist',
-      remote_path = '/app/dist'
+      local_path = './src/views',
+      remote_path = '/app/src/views'
     ),
-    restart_container()
-  ],
-  deps = [
-    './dist'
+    sync(
+      local_path = './src',
+      remote_path = '/app/src'
+    )
   ]
 )

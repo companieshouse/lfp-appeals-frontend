@@ -22,7 +22,7 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
 
     app.set('view engine', 'njk');
     nunjucks.configure([
-        'dist/views',
+        'src/views',
         'node_modules/govuk-frontend',
         'node_modules/govuk-frontend/components',
     ], {

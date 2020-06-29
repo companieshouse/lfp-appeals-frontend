@@ -7,7 +7,7 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "pretty": true,
-        "baseUrl": "./src",
+        "baseUrl": ".",
         "removeComments": true,
         "experimentalDecorators": true,
         "esModuleInterop": true,

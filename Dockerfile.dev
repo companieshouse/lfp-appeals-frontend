@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1.0.0-experimental
+
+## Base build image
+FROM node:14-alpine as build-base
+
+RUN apk add --update-cache git openssh-client python make g++ && rm -rf /var/cache/apk/*
+RUN mkdir -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+
+## Image with runtime dependencies
+FROM build-base as prod-deps-image
+WORKDIR /app
+RUN --mount=type=ssh npm install
+
+FROM prod-deps-image
+WORKDIR /app
+
+COPY src/ src/
+COPY .env.vagrant ./
+
+EXPOSE 3000
+CMD npm run start:dev
