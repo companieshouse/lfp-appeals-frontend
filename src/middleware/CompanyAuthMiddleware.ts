@@ -25,15 +25,22 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const companyNumber: string = applicationData.appeal.penaltyIdentifier.companyNumber;
 
         const companyAuthConfig: CompanyAuthConfig = {
-            accountUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
+            accountUrl: 'http://account.chs.local',
             accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
             accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
-            chsUrl: getEnvOrThrow('CHS_URL'),
+            chsUrl: 'http://chs.local'
         };
 
         const encryptionService = new jwtEncryptionService(companyAuthConfig);
 
-        return res.redirect(await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber));
+        try{
+            const uri = await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber);
+            console.log(uri);
+
+            return res.redirect(uri);
+        } catch (err){
+            next(err);
+        }
 
     }
 }
