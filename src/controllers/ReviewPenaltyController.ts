@@ -26,7 +26,7 @@ const navigation = {
 };
 
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware,
-    CompanyAuthMiddleware, CheckForDuplicateMiddleware)
+    CheckForDuplicateMiddleware, CompanyAuthMiddleware)
 export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';

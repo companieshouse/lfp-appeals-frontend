@@ -32,9 +32,14 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         };
 
         const encryptionService = new jwtEncryptionService(companyAuthConfig);
-        return res.redirect(await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber));
-    }
 
+        try{
+            return res.redirect(await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber));
+        } catch(err){
+            next(err);
+        }
+
+    }
 }
 
 async function getAuthRedirectUri(req: Request, companyAuthConfig: CompanyAuthConfig,
@@ -44,15 +49,17 @@ async function getAuthRedirectUri(req: Request, companyAuthConfig: CompanyAuthCo
     const originalUrl: string = req.originalUrl;
     const scope: string = OATH_SCOPE_PREFIX + companyNumber;
     const nonce: string = encryptionService.generateNonce();
-    const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
 
-    // sessionService.setCompanyAuthNonce(req, nonce);
-
-    return await createAuthUri(encodedNonce, companyAuthConfig, scope);
+    try{
+        const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
+        return createAuthUri(encodedNonce, companyAuthConfig, scope);
+    } catch(err) {
+        throw err;
+    }
 }
 
-async function createAuthUri(encodedNonce: string,
-                             companyAuthConfig: CompanyAuthConfig, scope: string): Promise<string> {
+function createAuthUri(encodedNonce: string,
+                             companyAuthConfig: CompanyAuthConfig, scope: string): string {
     return `${companyAuthConfig.accountUrl}/oauth2/authorise`.concat(
         '?',
         `client_id=${companyAuthConfig.accountClientId}`,
