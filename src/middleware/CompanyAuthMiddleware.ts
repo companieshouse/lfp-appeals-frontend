@@ -33,11 +33,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
         const encryptionService = new jwtEncryptionService(companyAuthConfig);
 
-        try{
-            return res.redirect(await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber));
-        } catch(err){
-            next(err);
-        }
+        return res.redirect(await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber));
 
     }
 }
@@ -50,12 +46,8 @@ async function getAuthRedirectUri(req: Request, companyAuthConfig: CompanyAuthCo
     const scope: string = OATH_SCOPE_PREFIX + companyNumber;
     const nonce: string = encryptionService.generateNonce();
 
-    try{
-        const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
-        return createAuthUri(encodedNonce, companyAuthConfig, scope);
-    } catch(err) {
-        throw err;
-    }
+    const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
+    return createAuthUri(encodedNonce, companyAuthConfig, scope);
 }
 
 function createAuthUri(encodedNonce: string,
