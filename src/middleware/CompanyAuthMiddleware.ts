@@ -13,8 +13,8 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/jwtEncryptionService';
-import jwtEncryptionService from 'app/modules/jwt-encryption-service/jwtEncryptionService';
+import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import jwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 const OATH_SCOPE_PREFIX = 'https://api.companieshouse.gov.uk/company/';
