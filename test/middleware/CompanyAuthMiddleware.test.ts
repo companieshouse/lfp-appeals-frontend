@@ -62,6 +62,23 @@ describe('Company Authentication Middleware', () => {
         response.didNotReceive().redirect(Arg.any());
 
     });
+
+    it('should redirect if the user is not authorized for company number', async () => {
+
+        const appData = { appeal };
+
+        const nextFunction = createSubstituteOf<NextFunction>();
+        const response = createSubstituteOf<Response>();
+        const request = getRequestSubstitute(appData, '');
+
+
+        const companyAuthMiddleware = new CompanyAuthMiddleware();
+
+        await companyAuthMiddleware.handler(request, response, nextFunction);
+        nextFunction.didNotReceive();
+        response.received(1).redirect(Arg.any());
+
+    });
 });
 
 const getRequestSubstitute = (appData: Partial<ApplicationData>, companyNumber: string): Request => {
