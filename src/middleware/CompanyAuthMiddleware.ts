@@ -1,9 +1,14 @@
+
+import { Session } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
+import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
+import { Mutable } from 'app/models/Mutable';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/jwtEncryptionService';
 import jwtEncryptionService from 'app/modules/jwt-encryption-service/jwtEncryptionService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -33,11 +38,12 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
         const encryptionService = new jwtEncryptionService(companyAuthConfig);
 
-        try{
-            const uri = await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber);
-            console.log(uri);
+        try {
 
+            const uri = await getAuthRedirectUri(req, companyAuthConfig, encryptionService, companyNumber);
+            loggerInstance().debug(`Redirecting to ${uri}`);
             return res.redirect(uri);
+
         } catch (err){
             next(err);
         }
@@ -50,15 +56,21 @@ async function getAuthRedirectUri(req: Request, companyAuthConfig: CompanyAuthCo
                                   companyNumber?: string): Promise<string> {
 
     const originalUrl: string = req.originalUrl;
+    console.log(req.originalUrl);
     const scope: string = OATH_SCOPE_PREFIX + companyNumber;
     const nonce: string = encryptionService.generateNonce();
 
     const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
+
+    const mutableSession = req.session as Mutable<Session>;
+    mutableSession.data[SessionKey.OAuth2Nonce] = nonce;
+    req.session = mutableSession as Session;
+
     return createAuthUri(encodedNonce, companyAuthConfig, scope);
 }
 
-function createAuthUri(encodedNonce: string,
-                             companyAuthConfig: CompanyAuthConfig, scope: string): string {
+function createAuthUri(encodedNonce: string, companyAuthConfig: CompanyAuthConfig, scope: string): string {
+
     return `${companyAuthConfig.accountUrl}/oauth2/authorise`.concat(
         '?',
         `client_id=${companyAuthConfig.accountClientId}`,
