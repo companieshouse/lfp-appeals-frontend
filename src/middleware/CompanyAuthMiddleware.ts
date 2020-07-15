@@ -29,10 +29,16 @@ const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
 const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
 const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
 
+const COMPANY_AUTH_FEATURE_FLAG = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
+
 @provide(CompanyAuthMiddleware)
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+        if(COMPANY_AUTH_FEATURE_FLAG === '1'){
+            return next();
+        }
 
         if (!req.session) {
             return next(new Error('Session is undefined'));
