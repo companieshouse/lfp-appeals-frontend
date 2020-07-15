@@ -18,11 +18,12 @@ import jwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncrypti
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 const OATH_SCOPE_PREFIX = 'https://api.companieshouse.gov.uk/company/';
+
 const companyAuthConfig: CompanyAuthConfig = {
-    accountUrl: 'http://account.chs.local',
+    accountUrl: getEnvOrThrow('ACCOUNT_URL'),
     accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
     accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
-    chsUrl: 'http://chs.local'
+    chsUrl: getEnvOrThrow('CHS_URL'),
 };
 
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
