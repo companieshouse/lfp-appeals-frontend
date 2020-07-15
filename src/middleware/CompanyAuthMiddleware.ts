@@ -24,6 +24,7 @@ const companyAuthConfig: CompanyAuthConfig = {
     accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
     chsUrl: 'http://chs.local'
 };
+
 const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
 const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
 const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
@@ -41,18 +42,17 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         }
 
         if (!req.session) {
-            return next(new Error('Session is undefined'));
+            return next(new Error('Session Expected but was undefined'));
         }
 
         const applicationData: ApplicationData = req.session
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
         const companyNumber: string = applicationData.appeal.penaltyIdentifier.companyNumber;
-
         const signInInfo: ISignInInfo | undefined = req.session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (isAuthorisedForCompany(signInInfo, companyNumber)){
-            loggerInstance().info(`User is authenticated for ${companyNumber}`);
+            loggerInstance().info(`CompanyAuthMiddleware: User is authenticated for ${companyNumber}`);
             return next();
         }
 
@@ -65,8 +65,9 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
                 this.httpContext.container
             );
 
-            loggerInstance().debug(`Redirecting to ${uri}`);
+            loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
             return res.redirect(uri);
+
         } catch (err){
             next(err);
         }
