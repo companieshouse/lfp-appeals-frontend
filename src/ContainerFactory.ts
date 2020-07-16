@@ -98,9 +98,15 @@ export function createContainer(): Container {
 
     const encryptionService = new JwtEncryptionService(companyAuthConfig);
 
+    const featureFlag = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
+
     container.bind(CompanyAuthMiddleware)
-        .toConstantValue(new CompanyAuthMiddleware(encryptionService, sessionStore,
-            companyAuthConfig, sessionStoreForAuthConfig));
+        .toConstantValue(new CompanyAuthMiddleware(
+            encryptionService,
+            sessionStore,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            featureFlag));
 
     container.load(buildProviderModule());
     return container;

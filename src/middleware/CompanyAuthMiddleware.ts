@@ -13,22 +13,20 @@ import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
 import { SessionStoreConfig } from 'app/models/sessionStoreConfig';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
-import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-
-const COMPANY_AUTH_FEATURE_FLAG = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
 
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
     constructor(@inject(JwtEncryptionService) private readonly encryptionService: JwtEncryptionService,
                 @inject(SessionStore) private readonly sessionStore: SessionStore,
                 private readonly authConfig: CompanyAuthConfig,
-                private readonly sessionStoreConfig: SessionStoreConfig) {
+                private readonly sessionStoreConfig: SessionStoreConfig,
+                private readonly featureFlag: string) {
         super();
     }
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        if(COMPANY_AUTH_FEATURE_FLAG === '0'){
+        if(this.featureFlag === '0'){
             return next();
         }
 

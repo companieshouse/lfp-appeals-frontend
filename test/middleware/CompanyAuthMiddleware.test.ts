@@ -48,13 +48,20 @@ describe('Company Authentication Middleware', () => {
         sessionTimeToLiveInSeconds: 3600
     };
 
+    const featureFlag: string = '1';
+
     it('should call next with an error when session is undefined', async () => {
 
         const encryptionService = createEncryptionService('resolves');
 
         const sessionStore = Substitute.for<SessionStore>();
-        const companyAuthMiddleware =
-            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
+        const companyAuthMiddleware = new CompanyAuthMiddleware(
+            encryptionService,
+            sessionStore,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            featureFlag
+        );
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -75,8 +82,13 @@ describe('Company Authentication Middleware', () => {
         const encryptionService = createEncryptionService('resolves');
 
         const sessionStore = Substitute.for<SessionStore>();
-        const companyAuthMiddleware =
-            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
+        const companyAuthMiddleware = new CompanyAuthMiddleware(
+            encryptionService,
+            sessionStore,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            featureFlag
+        );
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -100,8 +112,13 @@ describe('Company Authentication Middleware', () => {
 
         const sessionStore = Substitute.for<SessionStore>();
 
-        const companyAuthMiddleware =
-            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
+        const companyAuthMiddleware = new CompanyAuthMiddleware(
+            encryptionService,
+            sessionStore,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            featureFlag
+        );
 
         await companyAuthMiddleware.handler(request, response, nextFunction);
         nextFunction.didNotReceive();
