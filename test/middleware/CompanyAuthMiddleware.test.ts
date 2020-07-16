@@ -12,7 +12,7 @@ import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -56,8 +56,8 @@ describe('Company Authentication Middleware', () => {
 
         const sessionStore = Substitute.for<SessionStore>();
         const companyAuthMiddleware = new CompanyAuthMiddleware(
-            encryptionService,
             sessionStore,
+            encryptionService,
             companyAuthConfig,
             sessionStoreForAuthConfig,
             featureFlag
@@ -83,8 +83,8 @@ describe('Company Authentication Middleware', () => {
 
         const sessionStore = Substitute.for<SessionStore>();
         const companyAuthMiddleware = new CompanyAuthMiddleware(
-            encryptionService,
             sessionStore,
+            encryptionService,
             companyAuthConfig,
             sessionStoreForAuthConfig,
             featureFlag
@@ -113,8 +113,8 @@ describe('Company Authentication Middleware', () => {
         const sessionStore = Substitute.for<SessionStore>();
 
         const companyAuthMiddleware = new CompanyAuthMiddleware(
-            encryptionService,
             sessionStore,
+            encryptionService,
             companyAuthConfig,
             sessionStoreForAuthConfig,
             featureFlag
@@ -131,7 +131,7 @@ const createEncryptionService = (method: 'resolves' | 'rejects', encoded?: strin
     : SubstituteOf<JwtEncryptionService> => {
 
     const service = Substitute.for<JwtEncryptionService>();
-    service.jweEncodeWithNonce(Arg.all())[method](encoded);
+    service.jweEncryptWithNonce(Arg.all())[method](encoded);
     return service;
 };
 

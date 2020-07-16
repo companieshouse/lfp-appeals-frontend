@@ -3,15 +3,12 @@ import 'reflect-metadata';
 import { randomBytes } from 'crypto';
 import { JWE, JWK } from 'node-jose';
 
-import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
-
 interface AuthPayload {
     nonce: string;
     content: string;
 }
 
-export default class JwtEncryptionService {
-    public constructor(private companyAuthConfig: CompanyAuthConfig) {}
+export class JwtEncryptionService {
 
     public generateNonce(): string {
         const bytes = randomBytes(5);
@@ -19,14 +16,14 @@ export default class JwtEncryptionService {
         return buffer.toString('base64');
     }
 
-    public async jweEncodeWithNonce(returnUri: string, nonce: string): Promise<string> {
+    public async jweEncryptWithNonce(content: string, nonce: string, requestKey: string): Promise<string> {
         const payloadObject: AuthPayload = {
             nonce,
-            content: returnUri
+            content
         };
 
         const payload = JSON.stringify(payloadObject);
-        const decoded = Buffer.from(`${this.companyAuthConfig.accountRequestKey}`, 'base64');
+        const decoded = Buffer.from(`${requestKey}`, 'base64');
 
         const ks = await JWK.asKeyStore([{
             alg: 'A128CBC-HS256',

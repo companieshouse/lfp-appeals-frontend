@@ -12,12 +12,12 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
 import { SessionStoreConfig } from 'app/models/sessionStoreConfig';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
-    constructor(@inject(JwtEncryptionService) private readonly encryptionService: JwtEncryptionService,
-                @inject(SessionStore) private readonly sessionStore: SessionStore,
+    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore,
+                private readonly encryptionService: JwtEncryptionService,
                 private readonly authConfig: CompanyAuthConfig,
                 private readonly sessionStoreConfig: SessionStoreConfig,
                 private readonly featureFlag: string) {
@@ -62,7 +62,8 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const originalUrl: string = req.originalUrl;
         const scope: string = this.authConfig.oathScopePrefix + companyNumber;
         const nonce: string = this.encryptionService.generateNonce();
-        const encodedNonce: string = await this.encryptionService.jweEncodeWithNonce(originalUrl, nonce);
+        const encodedNonce: string = await this
+            .encryptionService.jweEncryptWithNonce(originalUrl, nonce, this.authConfig.accountRequestKey);
 
         const mutableSession = req.session as Mutable<Session>;
         mutableSession.data[SessionKey.OAuth2Nonce] = nonce;

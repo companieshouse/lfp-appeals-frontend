@@ -13,7 +13,7 @@ import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 

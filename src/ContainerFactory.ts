@@ -14,7 +14,7 @@ import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -96,14 +96,14 @@ export function createContainer(): Container {
         sessionTimeToLiveInSeconds: parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10),
     };
 
-    const encryptionService = new JwtEncryptionService(companyAuthConfig);
+    const encryptionService = new JwtEncryptionService();
 
     const featureFlag = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
 
     container.bind(CompanyAuthMiddleware)
         .toConstantValue(new CompanyAuthMiddleware(
-            encryptionService,
             sessionStore,
+            encryptionService,
             companyAuthConfig,
             sessionStoreForAuthConfig,
             featureFlag));

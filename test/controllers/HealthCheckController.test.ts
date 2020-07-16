@@ -11,7 +11,7 @@ import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
