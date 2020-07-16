@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { randomBytes } from 'crypto';
 import { JWE, JWK } from 'node-jose';
 
-import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 
 interface AuthPayload {
     nonce: string;

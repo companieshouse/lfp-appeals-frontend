@@ -1,5 +1,5 @@
-export default interface CompanyAuthConfig {
-    oath_scope_prefix: string;
+export interface CompanyAuthConfig {
+    oathScopePrefix: string;
     accountUrl: string;
     accountRequestKey: string;
     accountClientId: string;

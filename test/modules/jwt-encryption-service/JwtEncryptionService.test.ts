@@ -6,7 +6,7 @@ import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncrypti
 describe('JwtEncryptionService', () => {
 
     const service: JwtEncryptionService = new JwtEncryptionService({
-        oath_scope_prefix: '',
+        oathScopePrefix: '',
         chsUrl: '',
         accountClientId: '',
         accountRequestKey: 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=',

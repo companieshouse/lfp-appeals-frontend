@@ -1,4 +1,4 @@
-export default interface SessionStoreConfig {
+export interface SessionStoreConfig {
     sessionCookieName: string;
     sessionCookieDomain: string;
     sessionCookieSecureFlag: string;

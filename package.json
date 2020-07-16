@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
-    "@types/node-jose": "^1.1.4",
     "avsc": "^5.4.21",
     "axios": "^0.19.2",
     "body-parser": "^1.18.2",
@@ -83,7 +82,8 @@
     "ts-node": "^8.10.1",
     "tslint": "^6.1.2",
     "typescript": "^3.9.3",
-    "typescript-tslint-plugin": "^0.5.5"
+    "typescript-tslint-plugin": "^0.5.5",
+      "@types/node-jose": "^1.1.4"
   },
   "husky": {
     "hooks": {

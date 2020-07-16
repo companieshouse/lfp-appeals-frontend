@@ -11,7 +11,7 @@ import 'app/controllers/index';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 
@@ -34,7 +34,7 @@ describe('Company Authentication Middleware', () => {
     };
 
     const companyAuthConfig: CompanyAuthConfig = {
-        oath_scope_prefix: 'MOCK',
+        oathScopePrefix: 'MOCK',
         accountUrl: 'MOCK',
         accountRequestKey: 'MOCK',
         accountClientId: 'MOCK',

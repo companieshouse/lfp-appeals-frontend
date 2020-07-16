@@ -9,9 +9,9 @@ import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
-import SessionStoreConfig from 'app/models/sessionStoreConfig';
+import { SessionStoreConfig } from 'app/models/sessionStoreConfig';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -62,7 +62,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
     async getAuthRedirectUri(req: Request, res: Response, companyNumber: string): Promise<string> {
 
         const originalUrl: string = req.originalUrl;
-        const scope: string = this.authConfig.oath_scope_prefix + companyNumber;
+        const scope: string = this.authConfig.oathScopePrefix + companyNumber;
         const nonce: string = this.encryptionService.generateNonce();
         const encodedNonce: string = await this.encryptionService.jweEncodeWithNonce(originalUrl, nonce);
 

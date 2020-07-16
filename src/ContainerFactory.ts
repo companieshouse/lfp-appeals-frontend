@@ -8,7 +8,7 @@ import * as util from 'util';
 
 import { APP_NAME } from 'app/Constants';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -82,7 +82,7 @@ export function createContainer(): Container {
         .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
 
     const companyAuthConfig: CompanyAuthConfig = {
-        oath_scope_prefix: getEnvOrThrow('OATH_SCOPE_PREFIX'),
+        oathScopePrefix: getEnvOrThrow('OATH_SCOPE_PREFIX'),
         accountUrl: getEnvOrThrow('ACCOUNT_URL'),
         accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
         accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
