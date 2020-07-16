@@ -11,6 +11,7 @@ import 'app/controllers/index';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 
@@ -32,12 +33,28 @@ describe('Company Authentication Middleware', () => {
         }
     };
 
+    const companyAuthConfig: CompanyAuthConfig = {
+        oath_scope_prefix: 'MOCK',
+        accountUrl: 'MOCK',
+        accountRequestKey: 'MOCK',
+        accountClientId: 'MOCK',
+        chsUrl: 'MOCK',
+    };
+
+    const sessionStoreForAuthConfig = {
+        sessionCookieName: '__SID',
+        sessionCookieDomain: 'rebel1.aws.chdev.org',
+        sessionCookieSecureFlag: 'true',
+        sessionTimeToLiveInSeconds: 3600
+    };
+
     it('should call next with an error when session is undefined', async () => {
 
         const encryptionService = createEncryptionService('resolves');
 
         const sessionStore = Substitute.for<SessionStore>();
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
+        const companyAuthMiddleware =
+            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -58,7 +75,8 @@ describe('Company Authentication Middleware', () => {
         const encryptionService = createEncryptionService('resolves');
 
         const sessionStore = Substitute.for<SessionStore>();
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
+        const companyAuthMiddleware =
+            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -82,7 +100,8 @@ describe('Company Authentication Middleware', () => {
 
         const sessionStore = Substitute.for<SessionStore>();
 
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
+        const companyAuthMiddleware =
+            new CompanyAuthMiddleware(encryptionService, sessionStore, companyAuthConfig, sessionStoreForAuthConfig);
 
         await companyAuthMiddleware.handler(request, response, nextFunction);
         nextFunction.didNotReceive();

@@ -7,6 +7,7 @@ import { CompaniesHouseSDK } from 'modules/Types';
 import * as util from 'util';
 
 import { APP_NAME } from 'app/Constants';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
@@ -81,14 +82,25 @@ export function createContainer(): Container {
         .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
 
     const companyAuthConfig: CompanyAuthConfig = {
+        oath_scope_prefix: getEnvOrThrow('OATH_SCOPE_PREFIX'),
         accountUrl: getEnvOrThrow('ACCOUNT_URL'),
         accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
         accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
         chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
     };
 
-    container.bind(JwtEncryptionService)
-        .toConstantValue(new JwtEncryptionService(companyAuthConfig));
+    const sessionStoreForAuthConfig = {
+        sessionCookieName: getEnvOrThrow('COOKIE_NAME'),
+        sessionCookieDomain: getEnvOrThrow('COOKIE_DOMAIN'),
+        sessionCookieSecureFlag: getEnvOrDefault('COOKIE_SECURE_ONLY', 'true'),
+        sessionTimeToLiveInSeconds: parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10),
+    };
+
+    const encryptionService = new JwtEncryptionService(companyAuthConfig);
+
+    container.bind(CompanyAuthMiddleware)
+        .toConstantValue(new CompanyAuthMiddleware(encryptionService, sessionStore,
+            companyAuthConfig, sessionStoreForAuthConfig));
 
     container.load(buildProviderModule());
     return container;

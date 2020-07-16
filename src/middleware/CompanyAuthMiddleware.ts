@@ -5,33 +5,24 @@ import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { inject} from 'inversify';
-import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
+import SessionStoreConfig from 'app/models/sessionStoreConfig';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
-import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-
-const OATH_SCOPE_PREFIX = getEnvOrThrow('OATH_SCOPE_PREFIX');
-
-const ACCOUNT_WEB_URL= getEnvOrThrow('ACCOUNT_WEB_URL');
-const ACCOUNT_URL = getEnvOrThrow('ACCOUNT_URL');
-const ACCOUNT_CLIENT_ID = getEnvOrThrow('OAUTH2_CLIENT_ID');
-
-const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
-const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
-const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
-const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 const COMPANY_AUTH_FEATURE_FLAG = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
 
-@provide(CompanyAuthMiddleware)
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
     constructor(@inject(JwtEncryptionService) private readonly encryptionService: JwtEncryptionService,
-                @inject(SessionStore) private readonly sessionStore: SessionStore) {
+                @inject(SessionStore) private readonly sessionStore: SessionStore,
+                private readonly authConfig: CompanyAuthConfig,
+                private readonly sessionStoreConfig: SessionStoreConfig) {
         super();
     }
 
@@ -63,6 +54,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             return res.redirect(uri);
 
         } catch (err){
+            console.log(err);
             next(err);
         }
     }
@@ -70,7 +62,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
     async getAuthRedirectUri(req: Request, res: Response, companyNumber: string): Promise<string> {
 
         const originalUrl: string = req.originalUrl;
-        const scope: string = OATH_SCOPE_PREFIX + companyNumber;
+        const scope: string = this.authConfig.oath_scope_prefix + companyNumber;
         const nonce: string = this.encryptionService.generateNonce();
         const encodedNonce: string = await this.encryptionService.jweEncodeWithNonce(originalUrl, nonce);
 
@@ -79,10 +71,10 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
         await this.persistMutableSession(req, res, mutableSession);
 
-        return `${ACCOUNT_URL}/oauth2/authorise`.concat(
+        return `${this.authConfig.accountUrl}/oauth2/authorise`.concat(
             '?',
-            `client_id=${ACCOUNT_CLIENT_ID}`,
-            `&redirect_uri=${ACCOUNT_WEB_URL}/oauth2/user/callback`,
+            `client_id=${this.authConfig.accountClientId}`,
+            `&redirect_uri=${this.authConfig.chsUrl}/oauth2/user/callback`,
             `&response_type=code`,
             `&scope=${scope}`,
             `&state=${encodedNonce}`);
@@ -99,15 +91,15 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
                                          mutableSession: Mutable<Session>): Promise<void> {
 
         await this.sessionStore
-            .store(Cookie.createFrom(req.cookies[sessionCookieName]), mutableSession!.data,
-                sessionTimeToLiveInSeconds);
+            .store(Cookie.createFrom(req.cookies[this.sessionStoreConfig.sessionCookieName]), mutableSession!.data,
+                this.sessionStoreConfig.sessionTimeToLiveInSeconds);
 
-        res.cookie(sessionCookieName, req.cookies[sessionCookieName], {
-            domain: sessionCookieDomain,
+        res.cookie(this.sessionStoreConfig.sessionCookieName, req.cookies[this.sessionStoreConfig.sessionCookieName], {
+            domain: this.sessionStoreConfig.sessionCookieDomain,
             path: '/',
             httpOnly: true,
-            secure: sessionCookieSecureFlag === 'true',
-            maxAge: sessionTimeToLiveInSeconds * 1000,
+            secure: this.sessionStoreConfig.sessionCookieSecureFlag === 'true',
+            maxAge: this.sessionStoreConfig.sessionTimeToLiveInSeconds * 1000,
             encode: String
         });
 
