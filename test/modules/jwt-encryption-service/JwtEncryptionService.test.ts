@@ -15,8 +15,8 @@ describe('JwtEncryptionService', () => {
 
     it('should generate random nonce value in base64', () => {
         const nonce = service.generateNonce();
-        assert.match(nonce, /[A-Za-z0-9+/=]/);
         assert.equal(nonce[nonce.length - 1], '=');
+        assert.match(nonce, /[A-Za-z0-9+/=]/);
     });
 
     it('should create an encrypted state string using nonce value', async () => {
