@@ -7,11 +7,13 @@ import { CompaniesHouseSDK } from 'modules/Types';
 import * as util from 'util';
 
 import { APP_NAME } from 'app/Constants';
+import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -77,6 +79,16 @@ export function createContainer(): Container {
 
     container.bind(PenaltyIdentifierSchemaFactory)
         .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
+
+    const companyAuthConfig: CompanyAuthConfig = {
+        accountUrl: getEnvOrThrow('ACCOUNT_URL'),
+        accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
+        accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
+        chsUrl: getEnvOrThrow('CHS_URL'),
+    };
+
+    container.bind(JwtEncryptionService)
+        .toConstantValue(new JwtEncryptionService(companyAuthConfig));
 
     container.load(buildProviderModule());
     return container;

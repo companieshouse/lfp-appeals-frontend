@@ -11,6 +11,7 @@ import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { HEALTH_CHECK_URI } from 'app/utils/Paths';
 
 import { createAppConfigurable } from 'test/ApplicationFactory';
@@ -25,6 +26,7 @@ describe('HealthCheckController', () => {
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
+            container.bind(JwtEncryptionService).toConstantValue(createSubstituteOf<JwtEncryptionService>());
             container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
             container.bind(PenaltyIdentifierSchemaFactory)
                 .toConstantValue(createSubstituteOf<PenaltyIdentifierSchemaFactory>());
@@ -43,6 +45,7 @@ describe('HealthCheckController', () => {
             container.bind(EmailService).toConstantValue(createSubstituteOf<EmailService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
             container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
+            container.bind(JwtEncryptionService).toConstantValue(createSubstituteOf<JwtEncryptionService>());
             container.bind(PenaltyIdentifierSchemaFactory)
                 .toConstantValue(createSubstituteOf<PenaltyIdentifierSchemaFactory>());
 

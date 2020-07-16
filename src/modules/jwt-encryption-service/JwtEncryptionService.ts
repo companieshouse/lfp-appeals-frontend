@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 import { randomBytes } from 'crypto';
-import { provide } from 'inversify-binding-decorators';
 import { JWE, JWK } from 'node-jose';
 
 import CompanyAuthConfig from 'app/models/CompanyAuthConfig';
@@ -11,7 +10,6 @@ interface AuthPayload {
     content: string;
 }
 
-@provide(JwtEncryptionService)
 export default class JwtEncryptionService {
     public constructor(private companyAuthConfig: CompanyAuthConfig) {}
 
