@@ -38,7 +38,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        if(COMPANY_AUTH_FEATURE_FLAG === '1'){
+        if(COMPANY_AUTH_FEATURE_FLAG === '0'){
             return next();
         }
 
