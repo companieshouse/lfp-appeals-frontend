@@ -39,6 +39,9 @@ export const createApp = (data?: Partial<ApplicationData>,
         const session: Session | undefined = data ? configureSession(createSession(cookieSecret)) : undefined;
         session?.setExtraData(APPLICATION_DATA_KEY, data);
 
+        // @ts-ignore
+        session?.data.signin_info.company_number = 'NI000000';
+
         const sessionId = session?.data[SessionKey.Id];
         const signature = session?.data[SessionKey.ClientSig];
 
