@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
-import { Session } from 'ch-node-session-handler';
+import { Session, SessionStore } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { expect } from 'chai';
@@ -36,7 +36,8 @@ describe('Company Authentication Middleware', () => {
 
         const encryptionService = createEncryptionService('resolves');
 
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService);
+        const sessionStore = Substitute.for<SessionStore>();
+        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -56,7 +57,8 @@ describe('Company Authentication Middleware', () => {
 
         const encryptionService = createEncryptionService('resolves');
 
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService);
+        const sessionStore = Substitute.for<SessionStore>();
+        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
 
         const nextFunction = createSubstituteOf<NextFunction>();
         const response = createSubstituteOf<Response>();
@@ -76,9 +78,11 @@ describe('Company Authentication Middleware', () => {
         const response = createSubstituteOf<Response>();
         const request = getRequestSubstitute(appData, '');
 
-        const encryptionService = createEncryptionService('resolves');
+        const encryptionService = createEncryptionService('resolves', 'a_sequence');
 
-        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService);
+        const sessionStore = Substitute.for<SessionStore>();
+
+        const companyAuthMiddleware = new CompanyAuthMiddleware(encryptionService, sessionStore);
 
         await companyAuthMiddleware.handler(request, response, nextFunction);
         nextFunction.didNotReceive();
@@ -97,6 +101,9 @@ const createEncryptionService = (method: 'resolves' | 'rejects', encoded?: strin
 
 const getRequestSubstitute = (appData: Partial<ApplicationData>, companyNumber: string): Request => {
     return {
+        cookies: {
+            '__SID': '1'.repeat(55)
+        },
         session:
             new Session({
                 [SessionKey.SignInInfo]: {

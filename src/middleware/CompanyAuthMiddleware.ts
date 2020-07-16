@@ -2,10 +2,9 @@
 import { Session, SessionStore } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import Container = interfaces.Container;
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { inject, interfaces } from 'inversify';
+import { inject} from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';
 
@@ -31,7 +30,8 @@ const COMPANY_AUTH_FEATURE_FLAG = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
 @provide(CompanyAuthMiddleware)
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
-    constructor(@inject(JwtEncryptionService) private readonly encryptionService: JwtEncryptionService) {
+    constructor(@inject(JwtEncryptionService) private readonly encryptionService: JwtEncryptionService,
+                @inject(SessionStore) private readonly sessionStore: SessionStore) {
         super();
     }
 
@@ -57,10 +57,9 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         }
 
         try {
-            const uri = await getAuthRedirectUri(req, res,
+            const uri = await getAuthRedirectUri(req, res, this.sessionStore,
                 this.encryptionService,
-                companyNumber,
-                this.httpContext.container
+                companyNumber
             );
 
             loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
@@ -76,9 +75,9 @@ function isAuthorisedForCompany(signInInfo: any, companyNumber: string): boolean
     return signInInfo.company_number === companyNumber;
 }
 
-async function getAuthRedirectUri(req: Request, res: Response,
+async function getAuthRedirectUri(req: Request, res: Response, sessionStore: SessionStore,
                                   encryptionService: JwtEncryptionService,
-                                  companyNumber: string, container: Container): Promise<string> {
+                                  companyNumber: string): Promise<string> {
 
     const originalUrl: string = req.originalUrl;
     const scope: string = OATH_SCOPE_PREFIX + companyNumber;
@@ -88,14 +87,15 @@ async function getAuthRedirectUri(req: Request, res: Response,
     const mutableSession = req.session as Mutable<Session>;
     mutableSession.data[SessionKey.OAuth2Nonce] = nonce;
 
-    await persistMutableSession(req, res, container, mutableSession);
+    await persistMutableSession(req, res, sessionStore, mutableSession);
 
     return createAuthUri(encodedNonce, scope);
 }
 
-async function persistMutableSession(req: Request, res: Response,
-                                     container: Container, mutableSession: Mutable<Session>): Promise<void> {
-    await container.get(SessionStore)
+async function persistMutableSession(req: Request, res: Response, sessionStore : SessionStore,
+                                     mutableSession: Mutable<Session>): Promise<void> {
+
+    await sessionStore
         .store(Cookie.createFrom(req.cookies[sessionCookieName]), mutableSession!.data,
             sessionTimeToLiveInSeconds);
 
