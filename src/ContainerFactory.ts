@@ -84,7 +84,7 @@ export function createContainer(): Container {
         accountUrl: getEnvOrThrow('ACCOUNT_URL'),
         accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
         accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
-        chsUrl: getEnvOrThrow('CHS_URL'),
+        chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
     };
 
     container.bind(JwtEncryptionService)
