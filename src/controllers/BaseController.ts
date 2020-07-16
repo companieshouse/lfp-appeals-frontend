@@ -11,7 +11,7 @@ import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { SessionConfig } from 'app/models/SessionConfig';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -35,10 +35,7 @@ const createChangeModeAwareNavigationProxy =
 
 const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
 
-const sessionCookieName = getEnvOrThrow('COOKIE_NAME');
-const sessionCookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
-const sessionCookieSecureFlag = getEnvOrDefault('COOKIE_SECURE_ONLY', 'true');
-const sessionTimeToLiveInSeconds = parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10);
+const sessionConfig = SessionConfig.createFromEnvironmentVariables();
 
 export interface FormActionHandler {
     handle(request: Request, response: Response): void | Promise<void>;
@@ -238,16 +235,17 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         }
 
         await this.httpContext.container.get(SessionStore)
-            .store(Cookie.createFrom(this.httpContext.request.cookies[sessionCookieName]), session!.data,
-                sessionTimeToLiveInSeconds);
+            .store(Cookie.createFrom(this.httpContext.request.cookies[sessionConfig.sessionCookieName]), session!.data,
+                sessionConfig.sessionTimeToLiveInSeconds);
 
         this.httpContext.response
-            .cookie(sessionCookieName, this.httpContext.request.cookies[sessionCookieName], {
-                domain: sessionCookieDomain,
+            .cookie(sessionConfig.sessionCookieName, this.httpContext.request.cookies[sessionConfig.sessionCookieName],
+                {
+                domain: sessionConfig.sessionCookieDomain,
                 path: '/',
                 httpOnly: true,
-                secure: sessionCookieSecureFlag === 'true',
-                maxAge: sessionTimeToLiveInSeconds * 1000,
+                secure: sessionConfig.sessionCookieSecureFlag === 'true',
+                maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
                 encode: String
             });
     }

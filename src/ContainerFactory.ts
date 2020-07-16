@@ -10,6 +10,7 @@ import { APP_NAME } from 'app/Constants';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
+import { SessionConfig, SessionStoreConfig } from 'app/models/SessionConfig';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
@@ -89,15 +90,8 @@ export function createContainer(): Container {
         chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
     };
 
-    const sessionStoreForAuthConfig = {
-        sessionCookieName: getEnvOrThrow('COOKIE_NAME'),
-        sessionCookieDomain: getEnvOrThrow('COOKIE_DOMAIN'),
-        sessionCookieSecureFlag: getEnvOrDefault('COOKIE_SECURE_ONLY', 'true'),
-        sessionTimeToLiveInSeconds: parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10),
-    };
-
+    const sessionConfig: SessionStoreConfig  = SessionConfig.createFromEnvironmentVariables();
     const encryptionService = new JwtEncryptionService();
-
     const featureFlag = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
 
     container.bind(CompanyAuthMiddleware)
@@ -105,7 +99,7 @@ export function createContainer(): Container {
             sessionStore,
             encryptionService,
             companyAuthConfig,
-            sessionStoreForAuthConfig,
+            sessionConfig,
             featureFlag));
 
     container.load(buildProviderModule());

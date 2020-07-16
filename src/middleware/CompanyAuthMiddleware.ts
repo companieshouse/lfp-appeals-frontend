@@ -11,7 +11,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
-import { SessionStoreConfig } from 'app/models/sessionStoreConfig';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 
 export class CompanyAuthMiddleware extends BaseMiddleware {
