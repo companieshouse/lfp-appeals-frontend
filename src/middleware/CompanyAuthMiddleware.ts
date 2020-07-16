@@ -14,7 +14,7 @@ import { Mutable } from 'app/models/Mutable';
 import JwtEncryptionService from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
-const OATH_SCOPE_PREFIX = 'https://api.companieshouse.gov.uk/company/';
+const OATH_SCOPE_PREFIX = getEnvOrThrow('OATH_SCOPE_PREFIX');
 
 const ACCOUNT_WEB_URL= getEnvOrThrow('ACCOUNT_WEB_URL');
 const ACCOUNT_URL = getEnvOrThrow('ACCOUNT_URL');
