@@ -16,7 +16,7 @@ import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
 const OATH_SCOPE_PREFIX = 'https://api.companieshouse.gov.uk/company/';
 
-const CHS_URL= getEnvOrThrow('CHS_URL');
+const ACCOUNT_WEB_URL= getEnvOrThrow('ACCOUNT_WEB_URL');
 const ACCOUNT_URL = getEnvOrThrow('ACCOUNT_URL');
 const ACCOUNT_CLIENT_ID = getEnvOrThrow('OAUTH2_CLIENT_ID');
 
@@ -51,16 +51,13 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const companyNumber: string = applicationData.appeal.penaltyIdentifier.companyNumber;
         const signInInfo: ISignInInfo | undefined = req.session.get<ISignInInfo>(SessionKey.SignInInfo);
 
-        if (isAuthorisedForCompany(signInInfo, companyNumber)){
+        if (this.isAuthorisedForCompany(signInInfo, companyNumber)){
             loggerInstance().info(`CompanyAuthMiddleware: User is authenticated for ${companyNumber}`);
             return next();
         }
 
         try {
-            const uri = await getAuthRedirectUri(req, res, this.sessionStore,
-                this.encryptionService,
-                companyNumber
-            );
+            const uri = await this.getAuthRedirectUri(req, res, companyNumber);
 
             loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
             return res.redirect(uri);
@@ -69,53 +66,51 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             next(err);
         }
     }
-}
 
-function isAuthorisedForCompany(signInInfo: any, companyNumber: string): boolean {
-    return signInInfo.company_number === companyNumber;
-}
+    async getAuthRedirectUri(req: Request, res: Response, companyNumber: string): Promise<string> {
 
-async function getAuthRedirectUri(req: Request, res: Response, sessionStore: SessionStore,
-                                  encryptionService: JwtEncryptionService,
-                                  companyNumber: string): Promise<string> {
+        const originalUrl: string = req.originalUrl;
+        const scope: string = OATH_SCOPE_PREFIX + companyNumber;
+        const nonce: string = this.encryptionService.generateNonce();
+        const encodedNonce: string = await this.encryptionService.jweEncodeWithNonce(originalUrl, nonce);
 
-    const originalUrl: string = req.originalUrl;
-    const scope: string = OATH_SCOPE_PREFIX + companyNumber;
-    const nonce: string = encryptionService.generateNonce();
-    const encodedNonce: string = await encryptionService.jweEncodeWithNonce(originalUrl, nonce);
+        const mutableSession = req.session as Mutable<Session>;
+        mutableSession.data[SessionKey.OAuth2Nonce] = nonce;
 
-    const mutableSession = req.session as Mutable<Session>;
-    mutableSession.data[SessionKey.OAuth2Nonce] = nonce;
+        await this.persistMutableSession(req, res, mutableSession);
 
-    await persistMutableSession(req, res, sessionStore, mutableSession);
+        return `${ACCOUNT_URL}/oauth2/authorise`.concat(
+            '?',
+            `client_id=${ACCOUNT_CLIENT_ID}`,
+            `&redirect_uri=${ACCOUNT_WEB_URL}/oauth2/user/callback`,
+            `&response_type=code`,
+            `&scope=${scope}`,
+            `&state=${encodedNonce}`);
 
-    return createAuthUri(encodedNonce, scope);
-}
+    }
 
-async function persistMutableSession(req: Request, res: Response, sessionStore : SessionStore,
-                                     mutableSession: Mutable<Session>): Promise<void> {
+    isAuthorisedForCompany(signInInfo: any, companyNumber: string): boolean {
 
-    await sessionStore
-        .store(Cookie.createFrom(req.cookies[sessionCookieName]), mutableSession!.data,
-            sessionTimeToLiveInSeconds);
+        return signInInfo.company_number === companyNumber;
 
-    res.cookie(sessionCookieName, req.cookies[sessionCookieName], {
-        domain: sessionCookieDomain,
-        path: '/',
-        httpOnly: true,
-        secure: sessionCookieSecureFlag === 'true',
-        maxAge: sessionTimeToLiveInSeconds * 1000,
-        encode: String
-    });
-}
+    }
 
-function createAuthUri(encodedNonce: string, scope: string): string {
+    async persistMutableSession(req: Request, res: Response,
+                                         mutableSession: Mutable<Session>): Promise<void> {
 
-    return `${ACCOUNT_URL}/oauth2/authorise`.concat(
-        '?',
-        `client_id=${ACCOUNT_CLIENT_ID}`,
-        `&redirect_uri=${CHS_URL}/oauth2/user/callback`,
-        `&response_type=code`,
-        `&scope=${scope}`,
-        `&state=${encodedNonce}`);
+        await this.sessionStore
+            .store(Cookie.createFrom(req.cookies[sessionCookieName]), mutableSession!.data,
+                sessionTimeToLiveInSeconds);
+
+        res.cookie(sessionCookieName, req.cookies[sessionCookieName], {
+            domain: sessionCookieDomain,
+            path: '/',
+            httpOnly: true,
+            secure: sessionCookieSecureFlag === 'true',
+            maxAge: sessionTimeToLiveInSeconds * 1000,
+            encode: String
+        });
+
+    }
+
 }
