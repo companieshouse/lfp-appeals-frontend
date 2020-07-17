@@ -34,7 +34,6 @@ describe('Company Authentication Middleware', () => {
     };
 
     const companyAuthConfig: CompanyAuthConfig = {
-        oathScopePrefix: 'mock_scope',
         accountUrl: 'mock_domain_url',
         accountRequestKey: 'mock_key',
         accountClientId: 'mock_id',
@@ -48,7 +47,7 @@ describe('Company Authentication Middleware', () => {
         sessionTimeToLiveInSeconds: 3600
     };
 
-    const redirectUrl: string = 'mock_domain_url/oauth2/authorise?client_id=mock_id&redirect_uri=mock_url/oauth2/user/callback&response_type=code&scope=mock_scopeSC123123&state=';
+    const redirectUrl: string = 'mock_domain_url/oauth2/authorise?client_id=mock_id&redirect_uri=mock_url/oauth2/user/callback&response_type=code&scope=https://api.companieshouse.gov.uk/company/SC123123&state=';
 
     const featureFlag: boolean = true;
 

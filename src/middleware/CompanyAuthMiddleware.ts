@@ -13,6 +13,8 @@ import { Mutable } from 'app/models/Mutable';
 import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 
+const oathScopePrefix: string = 'https://api.companieshouse.gov.uk/company/';
+
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
     constructor(private readonly sessionStore: SessionStore,
@@ -58,7 +60,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
     async getAuthRedirectUri(req: Request, res: Response, companyNumber: string): Promise<string> {
 
         const originalUrl: string = req.originalUrl;
-        const scope: string = this.authConfig.oathScopePrefix + companyNumber;
+        const scope: string = oathScopePrefix + companyNumber;
         const nonce: string = this.encryptionService.generateNonce();
         const encodedNonce: string = await this
             .encryptionService.encrypt({content: originalUrl, nonce}, this.authConfig.accountRequestKey);

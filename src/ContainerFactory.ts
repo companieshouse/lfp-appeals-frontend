@@ -83,7 +83,6 @@ export function createContainer(): Container {
         .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES')));
 
     const companyAuthConfig: CompanyAuthConfig = {
-        oathScopePrefix: getEnvOrThrow('OATH_SCOPE_PREFIX'),
         accountUrl: getEnvOrThrow('ACCOUNT_URL'),
         accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
         accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
