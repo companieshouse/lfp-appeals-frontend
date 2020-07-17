@@ -56,8 +56,6 @@ describe('ReviewPenaltyController', () => {
                 config.rebind(AppealsService).toConstantValue(appealsService);
             });
 
-
-
         await request(app)
             .get(REVIEW_PENALTY_PAGE_URI)
             .expect(OK)
