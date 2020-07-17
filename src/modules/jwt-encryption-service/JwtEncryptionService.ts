@@ -6,7 +6,7 @@ import { JWE, JWK } from 'node-jose';
 export class JwtEncryptionService {
 
     public generateNonce(): string {
-        const bytes = randomBytes(10);
+        const bytes = randomBytes(5);
         const buffer = Buffer.from(bytes);
         return buffer.toString('base64');
     }
