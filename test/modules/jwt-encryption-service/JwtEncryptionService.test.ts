@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import { expect } from 'chai';
 
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 
@@ -9,29 +9,25 @@ describe('JwtEncryptionService', () => {
 
     it('should generate random nonce value in base64', () => {
         const nonce1 = service.generateNonce();
-        const test1 = /[A-Za-z0-9+/=]/.test(nonce1);
-
         const nonce2 = service.generateNonce();
-        const test2 = /[A-Za-z0-9+/=]/.test(nonce2);
 
-        assert.notEqual(nonce1, nonce2);
+        const formatRegex = /[A-Za-z0-9+/=]/;
 
-        assert.equal(nonce1[nonce1.length - 1], '=');
-        assert.equal(nonce2[nonce2.length - 1], '=');
-        assert.equal(test1, true);
-        assert.equal(test2, true);
+        expect(nonce1).to.not.equal(nonce2);
+        expect(nonce1).to.match(formatRegex);
+        expect(nonce2).to.match(formatRegex);
     });
 
     it('should create an encrypted state and decrypt correctly', async () => {
         const nonce = '2dsa=';
         const content = 'http://example.com';
-        const requestKey = 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=';
+        const requestKey = `${'a'.repeat(3)}+${'a'.repeat(39)}=`;
 
         const encryptedState= await service.encrypt({content, nonce}, requestKey);
         const decryptedState = await service.decrypt(encryptedState, requestKey);
 
         const plainTextState = decryptedState.plaintext.toString();
 
-        assert.equal(plainTextState,`{"content":"${content}","nonce":"${nonce}"}`);
+        expect(plainTextState).to.equal(`{"content":"${content}","nonce":"${nonce}"}`);
     });
 });
