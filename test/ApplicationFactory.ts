@@ -13,6 +13,7 @@ import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
@@ -39,6 +40,9 @@ export const createApp = (data?: Partial<ApplicationData>,
         const session: Session | undefined = data ? configureSession(createSession(cookieSecret)) : undefined;
         session?.setExtraData(APPLICATION_DATA_KEY, data);
 
+        // @ts-ignore
+        session?.data.signin_info.company_number = 'NI000000';
+
         const sessionId = session?.data[SessionKey.Id];
         const signature = session?.data[SessionKey.ClientSig];
 
@@ -64,5 +68,6 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
+        container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());
         configureBindings(container);
     });
