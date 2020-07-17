@@ -86,7 +86,7 @@ export function createContainer(): Container {
         accountUrl: getEnvOrThrow('ACCOUNT_URL'),
         accountRequestKey: getEnvOrThrow('OAUTH2_REQUEST_KEY'),
         accountClientId: getEnvOrThrow('OAUTH2_CLIENT_ID'),
-        chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
+        chsUrl: getEnvOrThrow('CHS_URL'),
     };
 
     const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
