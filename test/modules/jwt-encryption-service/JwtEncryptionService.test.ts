@@ -14,11 +14,16 @@ describe('JwtEncryptionService', () => {
         assert.equal(test, true);
     });
 
-    it('should create an encrypted state string using nonce value', async () => {
+    it('should create an encrypted state and decrypt correctly', async () => {
         const nonce = '2dsa=';
+        const content = 'http://example.com';
         const requestKey = 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=';
-        const state = await service.jweEncryptWithNonce('http://example.com', nonce, requestKey);
-        const test = /eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoia2V5In0..*/.test(state);
-        assert.equal(test, true);
+
+        const encryptedState= await service.jweEncryptWithNonce(content, nonce, requestKey);
+        const decryptedState = await service.jweDecryptWithNonce(encryptedState, requestKey);
+
+        const plainTextState = decryptedState.plaintext.toString();
+
+        assert.equal(plainTextState,`{"nonce":"${nonce}","content":"${content}"}`);
     });
 });

@@ -34,4 +34,21 @@ export class JwtEncryptionService {
             }
         }, key).update(payload).final();
     }
+
+    public async jweDecryptWithNonce(content: string, requestKey: string): Promise<JWE.DecryptResult> {
+
+        const decoded = Buffer.from(`${requestKey}`, 'base64');
+
+        const ks = await JWK.asKeyStore([{
+            alg: 'A128CBC-HS256',
+            k: decoded,
+            kid: 'key',
+            kty: 'oct',
+            use: 'enc',
+        }]);
+
+        const key = await JWK.asKey(ks.get('key'));
+
+        return await JWE.createDecrypt(key).decrypt(content);
+    }
 }
