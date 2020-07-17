@@ -10,7 +10,7 @@ import { APP_NAME } from 'app/Constants';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { SessionConfig } from 'app/models/SessionConfig';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
@@ -90,9 +90,9 @@ export function createContainer(): Container {
         chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
     };
 
-    const sessionConfig  = SessionConfig.createFromEnvironmentVariables();
+    const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
     const encryptionService = new JwtEncryptionService();
-    const featureFlag = Number(getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG')) === 1;
+    const companyAuthFeatureEnabled = Number(getEnvOrThrow('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED')) === 1;
 
     container.bind(CompanyAuthMiddleware)
         .toConstantValue(new CompanyAuthMiddleware(
@@ -100,7 +100,7 @@ export function createContainer(): Container {
             encryptionService,
             companyAuthConfig,
             sessionConfig,
-            featureFlag));
+            companyAuthFeatureEnabled));
 
     container.load(buildProviderModule());
     return container;

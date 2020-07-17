@@ -11,7 +11,7 @@ import { Validator } from 'app/controllers/validators/Validator';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { SessionConfig } from 'app/models/SessionConfig';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -35,7 +35,7 @@ const createChangeModeAwareNavigationProxy =
 
 const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
 
-const sessionConfig = SessionConfig.createFromEnvironmentVariables();
+const sessionConfig: SessionStoreConfig = SessionStoreConfig.createFromEnvironmentVariables();
 
 export interface FormActionHandler {
     handle(request: Request, response: Response): void | Promise<void>;

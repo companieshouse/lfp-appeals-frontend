@@ -11,9 +11,9 @@ export class JwtEncryptionService {
         return buffer.toString('base64');
     }
 
-    public async jweEncryptWithNonce(content: string, nonce: string, requestKey: string): Promise<string> {
+    public async encrypt(payloadObject: object, requestKey: string): Promise<string> {
 
-        const payload = JSON.stringify({ nonce, content });
+        const payload = JSON.stringify(payloadObject);
         const bufferedKey = Buffer.from(`${requestKey}`, 'base64');
 
         const ks = await JWK.asKeyStore([{
@@ -35,7 +35,7 @@ export class JwtEncryptionService {
         }, key).update(payload).final();
     }
 
-    public async jweDecryptWithNonce(content: string, requestKey: string): Promise<JWE.DecryptResult> {
+    public async decrypt(content: string, requestKey: string): Promise<JWE.DecryptResult> {
 
         const bufferedKey = Buffer.from(`${requestKey}`, 'base64');
 

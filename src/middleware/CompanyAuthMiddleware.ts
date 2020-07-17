@@ -19,13 +19,13 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
                 private readonly encryptionService: JwtEncryptionService,
                 private readonly authConfig: CompanyAuthConfig,
                 private readonly sessionStoreConfig: SessionStoreConfig,
-                private readonly featureFlag: boolean) {
+                private readonly featureFlagEnabled: boolean) {
         super();
     }
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        if(!this.featureFlag){
+        if(!this.featureFlagEnabled){
             return next();
         }
 
@@ -61,7 +61,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const scope: string = this.authConfig.oathScopePrefix + companyNumber;
         const nonce: string = this.encryptionService.generateNonce();
         const encodedNonce: string = await this
-            .encryptionService.jweEncryptWithNonce(originalUrl, nonce, this.authConfig.accountRequestKey);
+            .encryptionService.encrypt({content: originalUrl, nonce}, this.authConfig.accountRequestKey);
 
         const mutableSession = req.session as Mutable<Session>;
         mutableSession.data[SessionKey.OAuth2Nonce] = nonce;

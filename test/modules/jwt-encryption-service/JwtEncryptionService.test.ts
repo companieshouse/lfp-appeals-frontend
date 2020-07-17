@@ -27,11 +27,11 @@ describe('JwtEncryptionService', () => {
         const content = 'http://example.com';
         const requestKey = 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=';
 
-        const encryptedState= await service.jweEncryptWithNonce(content, nonce, requestKey);
-        const decryptedState = await service.jweDecryptWithNonce(encryptedState, requestKey);
+        const encryptedState= await service.encrypt({content, nonce}, requestKey);
+        const decryptedState = await service.decrypt(encryptedState, requestKey);
 
         const plainTextState = decryptedState.plaintext.toString();
 
-        assert.equal(plainTextState,`{"nonce":"${nonce}","content":"${content}"}`);
+        assert.equal(plainTextState,`{"content":"${content}","nonce":"${nonce}"}`);
     });
 });

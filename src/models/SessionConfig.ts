@@ -1,22 +1,18 @@
 import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 
-export interface SessionStoreConfig {
-    sessionCookieName: string;
-    sessionCookieDomain: string;
-    sessionCookieSecureFlag: string;
-    sessionTimeToLiveInSeconds: number;
-}
+export class SessionStoreConfig {
 
-export class SessionConfig {
+    constructor(public readonly sessionCookieName: string,
+                public readonly sessionCookieDomain: string,
+                public readonly sessionCookieSecureFlag: string,
+                public readonly sessionTimeToLiveInSeconds: number) {}
 
     static createFromEnvironmentVariables(): SessionStoreConfig {
-
-        return {
-            sessionCookieName: getEnvOrThrow('COOKIE_NAME'),
-            sessionCookieDomain: getEnvOrThrow('COOKIE_DOMAIN'),
-            sessionCookieSecureFlag: getEnvOrDefault('COOKIE_SECURE_ONLY', 'true'),
-            sessionTimeToLiveInSeconds: parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10)
-        };
-
+        return new SessionStoreConfig(
+            getEnvOrThrow('COOKIE_NAME'),
+            getEnvOrThrow('COOKIE_DOMAIN'),
+            getEnvOrDefault('COOKIE_SECURE_ONLY', 'true'),
+            parseInt(getEnvOrThrow('DEFAULT_SESSION_EXPIRATION'), 10)
+        );
     }
 }
