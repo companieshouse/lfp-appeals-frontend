@@ -4,7 +4,6 @@ import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey'
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { inject} from 'inversify';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
@@ -16,17 +15,17 @@ import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncr
 
 export class CompanyAuthMiddleware extends BaseMiddleware {
 
-    constructor(@inject(SessionStore) private readonly sessionStore: SessionStore,
+    constructor(private readonly sessionStore: SessionStore,
                 private readonly encryptionService: JwtEncryptionService,
                 private readonly authConfig: CompanyAuthConfig,
                 private readonly sessionStoreConfig: SessionStoreConfig,
-                private readonly featureFlag: string) {
+                private readonly featureFlag: boolean) {
         super();
     }
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        if(this.featureFlag === '0'){
+        if(!this.featureFlag){
             return next();
         }
 
@@ -52,7 +51,6 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             return res.redirect(uri);
 
         } catch (err){
-            console.log(err);
             next(err);
         }
     }

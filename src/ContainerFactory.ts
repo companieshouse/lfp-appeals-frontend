@@ -10,7 +10,7 @@ import { APP_NAME } from 'app/Constants';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { SessionConfig, SessionStoreConfig } from 'app/models/SessionConfig';
+import { SessionConfig } from 'app/models/SessionConfig';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { Payload, Producer } from 'app/modules/email-publisher/producer/Producer';
@@ -90,9 +90,9 @@ export function createContainer(): Container {
         chsUrl: getEnvOrThrow('ACCOUNT_WEB_URL'),
     };
 
-    const sessionConfig: SessionStoreConfig  = SessionConfig.createFromEnvironmentVariables();
+    const sessionConfig  = SessionConfig.createFromEnvironmentVariables();
     const encryptionService = new JwtEncryptionService();
-    const featureFlag = getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG');
+    const featureFlag = Number(getEnvOrThrow('COMPANY_AUTH_FEATURE_FLAG')) === 1;
 
     container.bind(CompanyAuthMiddleware)
         .toConstantValue(new CompanyAuthMiddleware(

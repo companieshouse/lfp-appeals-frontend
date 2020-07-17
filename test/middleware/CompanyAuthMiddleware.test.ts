@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
+import { Arg, Substitute} from '@fluffy-spoon/substitute';
 import { Session, SessionStore } from 'ch-node-session-handler';
 import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
@@ -48,11 +48,15 @@ describe('Company Authentication Middleware', () => {
         sessionTimeToLiveInSeconds: 3600
     };
 
-    const featureFlag: string = '1';
+    const redirectUrl: string = 'MOCK/oauth2/authorise?client_id=MOCK&redirect_uri=MOCK/oauth2/user/callback&response_type=code&scope=MOCKSC123123&state=';
 
-    it('should call next with an error when session is undefined', async () => {
+    const featureFlag: boolean = true;
 
-        const encryptionService = createEncryptionService('resolves');
+    it('should throw error when session is undefined', async () => {
+
+        const encryptionService = createSubstituteOf<JwtEncryptionService>(service => {
+            service.jweEncryptWithNonce(Arg.any()).resolves('');
+        });
 
         const sessionStore = Substitute.for<SessionStore>();
         const companyAuthMiddleware = new CompanyAuthMiddleware(
@@ -70,8 +74,35 @@ describe('Company Authentication Middleware', () => {
         try{
             await companyAuthMiddleware.handler(request, response, nextFunction);
         } catch (err) {
-            expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
+            expect(err).to.equal(SESSION_NOT_FOUND_ERROR);
         }
+
+    });
+
+    it('should call next with a feature flag is set to false', async () => {
+
+        const flag = false;
+
+        const encryptionService = createSubstituteOf<JwtEncryptionService>(service => {
+            service.jweEncryptWithNonce(Arg.any()).resolves('');
+        });
+
+        const sessionStore = Substitute.for<SessionStore>();
+        const companyAuthMiddleware = new CompanyAuthMiddleware(
+            sessionStore,
+            encryptionService,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            flag
+        );
+
+        const nextFunction = createSubstituteOf<NextFunction>();
+        const response = createSubstituteOf<Response>();
+        const request = { session: undefined } as Request;
+
+        await companyAuthMiddleware.handler(request, response, nextFunction);
+        nextFunction.received(1);
+        response.didNotReceive().redirect(Arg.any());
     });
 
 
@@ -79,7 +110,9 @@ describe('Company Authentication Middleware', () => {
 
         const appData = { appeal };
 
-        const encryptionService = createEncryptionService('resolves');
+        const encryptionService = createSubstituteOf<JwtEncryptionService>(service => {
+            service.jweEncryptWithNonce(Arg.any()).resolves('');
+        });
 
         const sessionStore = Substitute.for<SessionStore>();
         const companyAuthMiddleware = new CompanyAuthMiddleware(
@@ -108,7 +141,9 @@ describe('Company Authentication Middleware', () => {
         const response = createSubstituteOf<Response>();
         const request = getRequestSubstitute(appData, '');
 
-        const encryptionService = createEncryptionService('resolves', 'a_sequence');
+        const encryptionService = createSubstituteOf<JwtEncryptionService>(service => {
+            service.jweEncryptWithNonce(Arg.any()).resolves('MOCK');
+        });
 
         const sessionStore = Substitute.for<SessionStore>();
 
@@ -120,20 +155,14 @@ describe('Company Authentication Middleware', () => {
             featureFlag
         );
 
+        const startingWithRedirectUrl = (redirect : string) => redirect.startsWith(redirectUrl);
+
         await companyAuthMiddleware.handler(request, response, nextFunction);
         nextFunction.didNotReceive();
-        response.received(1).redirect(Arg.any());
+        response.received(1).redirect(Arg.is(startingWithRedirectUrl));
 
     });
 });
-
-const createEncryptionService = (method: 'resolves' | 'rejects', encoded?: string | any)
-    : SubstituteOf<JwtEncryptionService> => {
-
-    const service = Substitute.for<JwtEncryptionService>();
-    service.jweEncryptWithNonce(Arg.all())[method](encoded);
-    return service;
-};
 
 const getRequestSubstitute = (appData: Partial<ApplicationData>, companyNumber: string): Request => {
     return {

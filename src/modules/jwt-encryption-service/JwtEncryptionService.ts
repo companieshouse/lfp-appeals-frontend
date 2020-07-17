@@ -3,26 +3,17 @@ import 'reflect-metadata';
 import { randomBytes } from 'crypto';
 import { JWE, JWK } from 'node-jose';
 
-interface AuthPayload {
-    nonce: string;
-    content: string;
-}
-
 export class JwtEncryptionService {
 
     public generateNonce(): string {
-        const bytes = randomBytes(5);
+        const bytes = randomBytes(10);
         const buffer = Buffer.from(bytes);
         return buffer.toString('base64');
     }
 
     public async jweEncryptWithNonce(content: string, nonce: string, requestKey: string): Promise<string> {
-        const payloadObject: AuthPayload = {
-            nonce,
-            content
-        };
 
-        const payload = JSON.stringify(payloadObject);
+        const payload = JSON.stringify({ nonce, content });
         const decoded = Buffer.from(`${requestKey}`, 'base64');
 
         const ks = await JWK.asKeyStore([{
