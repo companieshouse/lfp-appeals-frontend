@@ -25,7 +25,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
     public handler: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        if(!this.featureFlagEnabled){
+        if (!this.featureFlagEnabled) {
             return next();
         }
 
@@ -50,7 +50,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
             return res.redirect(uri);
 
-        } catch (err){
+        } catch (err) {
             next(err);
         }
     }
