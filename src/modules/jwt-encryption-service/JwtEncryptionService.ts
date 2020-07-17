@@ -14,11 +14,11 @@ export class JwtEncryptionService {
     public async jweEncryptWithNonce(content: string, nonce: string, requestKey: string): Promise<string> {
 
         const payload = JSON.stringify({ nonce, content });
-        const decoded = Buffer.from(`${requestKey}`, 'base64');
+        const bufferedKey = Buffer.from(`${requestKey}`, 'base64');
 
         const ks = await JWK.asKeyStore([{
             alg: 'A128CBC-HS256',
-            k: decoded,
+            k: bufferedKey,
             kid: 'key',
             kty: 'oct',
             use: 'enc',
@@ -37,11 +37,11 @@ export class JwtEncryptionService {
 
     public async jweDecryptWithNonce(content: string, requestKey: string): Promise<JWE.DecryptResult> {
 
-        const decoded = Buffer.from(`${requestKey}`, 'base64');
+        const bufferedKey = Buffer.from(`${requestKey}`, 'base64');
 
         const ks = await JWK.asKeyStore([{
             alg: 'A128CBC-HS256',
-            k: decoded,
+            k: bufferedKey,
             kid: 'key',
             kty: 'oct',
             use: 'enc',
