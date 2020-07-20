@@ -5,7 +5,6 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMiddleware';
-import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
 import {
@@ -25,8 +24,7 @@ const navigation = {
     }
 };
 
-@controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CheckForDuplicateMiddleware,
-    CompanyAuthMiddleware)
+@controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CheckForDuplicateMiddleware)
 export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
