@@ -4,6 +4,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { OtherReason } from 'app/models/OtherReason';
@@ -29,7 +30,7 @@ const navigation = {
     }
 };
 
-@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class OtherReasonController extends SafeNavigationBaseController<OtherReason> {
     constructor() {
         super(template, navigation, new FormValidator(formSchema));

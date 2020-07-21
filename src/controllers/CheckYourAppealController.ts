@@ -9,6 +9,7 @@ import { InternalEmailFormActionProcessor } from 'app/controllers/processors/Int
 import { SessionCleanupProcessor } from 'app/controllers/processors/SessionCleanupProcessor';
 import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -36,7 +37,7 @@ const navigation = {
     }
 };
 
-@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor,
