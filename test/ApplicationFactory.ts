@@ -7,8 +7,11 @@ import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -45,10 +48,16 @@ export const createApp = (data?: Partial<ApplicationData>,
 
         const sessionId = session?.data[SessionKey.Id];
         const signature = session?.data[SessionKey.ClientSig];
-
         const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
-
         const sessionStore = Substitute.for<SessionStore>();
+        const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
+        const encryptionService = new JwtEncryptionService();
+        const companyAuthConfig: CompanyAuthConfig = {
+            accountUrl: 'localhost',
+            accountRequestKey: 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=',
+            accountClientId: 'test',
+            chsUrl: 'test',
+        };
 
         if (session && cookie) {
             sessionStore.load(cookie).resolves(session.data);
@@ -60,6 +69,15 @@ export const createApp = (data?: Partial<ApplicationData>,
             }
             SessionMiddleware({ cookieName, cookieSecret }, sessionStore)(req, res, next);
         });
+
+        container.bind(CompanyAuthMiddleware)
+        .toConstantValue(new CompanyAuthMiddleware(
+            sessionStore,
+            encryptionService,
+            companyAuthConfig,
+            sessionConfig,
+            true));
+
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
