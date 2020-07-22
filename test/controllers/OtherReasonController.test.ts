@@ -22,6 +22,12 @@ const invalidDescriptionErrorMessage = 'You must give us more information';
 describe('OtherReasonController', () => {
 
     const applicationData = {
+        appeal: {
+            penaltyIdentifier: {
+                companyNumber: 'NI000000',
+                penaltyReference: 'A00000001'
+            }
+        } as Appeal,
         navigation: {
             permissions: [OTHER_REASON_PAGE_URI]
         }
@@ -45,10 +51,17 @@ describe('OtherReasonController', () => {
     describe('POST request', () => {
         it('should return 422 response with rendered error messages when invalid data was submitted', async () => {
 
-            const app = createApp({});
+            const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'NI000000',
+                    penaltyReference: 'A00000001'
+                }
+            } as Appeal;
+
+            const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
-                .send({})
+                .send(appeal)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(pageHeading)
@@ -62,6 +75,10 @@ describe('OtherReasonController', () => {
             process.env.FILE_TRANSFER_FEATURE = '0';
 
             const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'NI000000',
+                    penaltyReference: 'A00000001'
+                },
                 reasons: {
                     other: {
                         title: 'I have reasons',
@@ -84,6 +101,10 @@ describe('OtherReasonController', () => {
             process.env.FILE_TRANSFER_FEATURE = '1';
 
             const appeal = {
+                penaltyIdentifier: {
+                    companyNumber: 'NI000000',
+                    penaltyReference: 'A00000001'
+                },
                 reasons: {
                     other: {
                         title: 'I have reasons',

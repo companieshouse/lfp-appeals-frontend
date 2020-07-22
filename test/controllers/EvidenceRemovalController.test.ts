@@ -18,7 +18,7 @@ import { createSubstituteOf } from 'test/SubstituteFactory';
 const createAppealWithAttachments = (attachments: Attachment[]): Appeal => {
     return {
         penaltyIdentifier: {
-            companyNumber: '00345567',
+            companyNumber: 'NI000000',
             penaltyReference: 'A00000001',
             userInputPenaltyReference: 'A00000001'
 

@@ -9,6 +9,7 @@ import request from 'supertest';
 
 import 'app/controllers/EvidenceUploadController';
 import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
+import { Appeal } from 'app/models/Appeal';
 import { ENTRY_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -16,6 +17,12 @@ import { createApp } from 'test/ApplicationFactory';
 let initialFileTransferFlag: string | undefined;
 
 describe('File Transfer Feature Toggle Middleware', () => {
+
+    const appeal = {
+        penaltyIdentifier: {
+            companyNumber: 'NI000000',
+        },
+    } as Appeal;
 
     before(() => {
         initialFileTransferFlag = process.env.FILE_TRANSFER_FEATURE;
@@ -45,7 +52,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '1';
 
-            const app = createApp({ navigation: { permissions: [EVIDENCE_UPLOAD_PAGE_URI] } });
+            const app = createApp({ appeal, navigation: { permissions: [EVIDENCE_UPLOAD_PAGE_URI] }});
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)
@@ -74,7 +81,7 @@ describe('File Transfer Feature Toggle Middleware', () => {
 
             process.env.FILE_TRANSFER_FEATURE = '0';
 
-            const app = createApp({});
+            const app = createApp({ appeal });
 
             await request(app)
                 .get(EVIDENCE_UPLOAD_PAGE_URI)

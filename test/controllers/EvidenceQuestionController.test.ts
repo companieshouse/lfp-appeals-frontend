@@ -15,7 +15,7 @@ import { createApp } from 'test/ApplicationFactory';
 
 const appeal: Appeal = {
     penaltyIdentifier: {
-        companyNumber: '00345567',
+        companyNumber: 'NI000000',
         penaltyReference: 'A00000001',
         userInputPenaltyReference: 'A00000001'
     },

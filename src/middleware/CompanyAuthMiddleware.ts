@@ -7,6 +7,7 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
@@ -38,7 +39,12 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const applicationData: ApplicationData = req.session
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const companyNumber: string = applicationData.appeal.penaltyIdentifier.companyNumber;
+        const appeal: Appeal = applicationData.appeal;
+        if (!appeal) {
+            return next(new Error('Appeal data not found'));
+        }
+
+        const companyNumber: string = appeal.penaltyIdentifier.companyNumber;
         const signInInfo: ISignInInfo | undefined = req.session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (this.isAuthorisedForCompany(signInInfo, companyNumber)){

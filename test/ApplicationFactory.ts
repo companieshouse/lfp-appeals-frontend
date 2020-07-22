@@ -7,8 +7,11 @@ import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -68,6 +71,18 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
-        container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());
+
+        const jwtEncryptionService = Substitute.for<JwtEncryptionService>();
+        container.bind(JwtEncryptionService).toConstantValue(jwtEncryptionService);
+        const companyAuthConfig: CompanyAuthConfig = {
+            accountUrl: 'http://account.chs',
+            accountRequestKey: 'aaa+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=',
+            accountClientId: 'test',
+            chsUrl: 'http://chs',
+        };
+        const companyAuthMiddleware = new CompanyAuthMiddleware(sessionStore, jwtEncryptionService,
+            companyAuthConfig, SessionStoreConfig.createFromEnvironmentVariables(), true);
+        container.bind(CompanyAuthMiddleware).toConstantValue(companyAuthMiddleware);
+
         configureBindings(container);
     });
