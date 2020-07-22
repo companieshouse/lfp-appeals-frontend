@@ -6,7 +6,7 @@ import nunjucks from 'nunjucks';
 import path from 'path';
 
 import { APP_NAME } from 'app/Constants';
-import { getEnv, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { getEnv, getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import * as Paths from 'app/utils/Paths';
 
 export const createExpressConfigFunction = (directory: string) => (app: express.Application): void => {
@@ -52,6 +52,6 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
     }
 
     app.locals.featureFlags = {
-        companyAuthVerificationEnabled: Number(getEnvOrThrow('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED')) === 1
+        companyAuthVerificationEnabled: Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1
     };
 };

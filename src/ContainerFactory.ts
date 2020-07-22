@@ -91,7 +91,7 @@ export function createContainer(): Container {
 
     const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
     const encryptionService = new JwtEncryptionService();
-    const companyAuthFeatureEnabled = Number(getEnvOrThrow('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED')) === 1;
+    const companyAuthFeatureEnabled = Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1;
 
     container.bind(CompanyAuthMiddleware)
         .toConstantValue(new CompanyAuthMiddleware(
