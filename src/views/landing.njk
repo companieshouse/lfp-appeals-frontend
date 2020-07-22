@@ -44,6 +44,9 @@
       <h3 class="govuk-heading-s">You’ll need:</h3>
       <ul class="govuk-list govuk-list--bullet">
         <li>the company number</li>
+        {% if featureFlags.companyAuthVerificationEnabled %}
+        <li>the company authentication code for online filing</li>
+        {% endif %}
         <li>the penalty reference</li>
         <li>the reason for the appeal</li>
         <li>documents that support the reason for the appeal (optional)</li>

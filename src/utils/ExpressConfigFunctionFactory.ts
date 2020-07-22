@@ -50,4 +50,8 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
     if (url && site) {
         app.locals.piwik = { url, site };
     }
+
+    app.locals.featureFlags = {
+        companyAuthVerificationEnabled: Number(getEnvOrThrow('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED')) === 1
+    };
 };
