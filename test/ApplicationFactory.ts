@@ -53,10 +53,10 @@ export const createApp = (data?: Partial<ApplicationData>,
         const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
         const encryptionService = new JwtEncryptionService();
         const companyAuthConfig: CompanyAuthConfig = {
-            accountUrl: 'localhost',
-            accountRequestKey: 'pXf+qkU6P6SAoY2lKW0FtKMS4PylaNA3pY2sUQxNFDk=',
+            accountUrl: 'http://account.chs',
+            accountRequestKey: 'aaa+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=',
             accountClientId: 'test',
-            chsUrl: 'test',
+            chsUrl: 'http://chs',
         };
 
         if (session && cookie) {
