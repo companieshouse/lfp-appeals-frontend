@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Arg } from '@fluffy-spoon/substitute';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/ReviewPenaltyController';
@@ -70,38 +70,6 @@ describe('ReviewPenaltyController', () => {
                     .and.to.contain(total);
             });
 
-    });
-
-    it('should redirect to Company Authentication when user is not authenticated', async () => {
-
-        const appeal: Partial<Appeal> = {
-            penaltyIdentifier: {
-                companyNumber: 'NI999999',
-                companyName,
-                penaltyReference,
-                userInputPenaltyReference: penaltyReference,
-                penaltyList: penaltyList as PenaltyList
-            }
-        };
-
-        const app = createApp(
-            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
-            config => {
-                const appealsService = createSubstituteOf<AppealsService>(service =>
-                    service.hasExistingAppeal(Arg.all()).resolves(false)
-                );
-
-                config.rebind(AppealsService).toConstantValue(appealsService);
-            });
-
-        await request(app)
-            .get(REVIEW_PENALTY_PAGE_URI)
-            .expect(res => {
-                expect(res.status).to.be.equal(MOVED_TEMPORARILY);
-                expect(res.text).to.contain('Found. Redirecting')
-                    .and.to.contain('oauth2/authorise')
-                    .and.to.contain('scope=https://api.companieshouse.gov.uk/company/NI999999');
-            });
     });
 
     it('should go to other reasons disclaimer screen when continue is pressed', async () => {

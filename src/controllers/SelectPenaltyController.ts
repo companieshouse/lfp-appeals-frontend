@@ -56,8 +56,8 @@ class Processor implements FormActionProcessor {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-@controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, PenaltyReferenceRouter,
-    CompanyAuthMiddleware)
+@controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
+    PenaltyReferenceRouter)
 export class SelectPenaltyController extends SafeNavigationBaseController<any> {
 
     constructor() {
