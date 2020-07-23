@@ -74,7 +74,6 @@ export class SelectPenaltyController extends SafeNavigationBaseController<any> {
 
         const penaltyList: PenaltyList | undefined = appeal.penaltyIdentifier.penaltyList;
 
-        console.log('PREPARE RAN');
         if (!penaltyList || !penaltyList.items) {
             throw new Error('Penalty object expected but none found');
         }
