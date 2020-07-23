@@ -1,10 +1,10 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
-import { FormValidator } from './validators/FormValidator';
+import { AppealReasonValidator } from './validators/AppealReasonValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { schema as formSchema } from 'app/models/fields/Reason.schema';
+import { createReasonsRadioGroup } from 'app/models/components/ReasonsRadioGroup';
 import { CHOOSE_REASON_PAGE_URI, OTHER_REASON_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'choose-appeal-reason';
@@ -29,7 +29,12 @@ export class ChooseAppealReasonController extends SafeNavigationBaseController<a
     constructor() {
         super(template,
             navigation,
-            new FormValidator(formSchema)
+            new AppealReasonValidator()
         );
+    }
+
+    public prepareViewModel(): Record<string, any> & any {
+
+        return { reasons: createReasonsRadioGroup() };
     }
 }

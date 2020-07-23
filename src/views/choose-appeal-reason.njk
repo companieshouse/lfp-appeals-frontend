@@ -39,16 +39,7 @@
                                     text: 'You can add more reasons later'
                                 },
                                 errorMessage: validationResult.getErrorForField('chooseReason') if validationResult,
-                                items: [
-                                    {
-                                        value: "illness",
-                                        text: "Illness and health issues"
-                                    },
-                                    {
-                                        value: "other",
-                                        text: "I'm appealing for another reason"
-                                    }
-                                ]
+                                items: reasons
                             })
                         }}
 
