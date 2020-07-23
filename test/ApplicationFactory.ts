@@ -52,6 +52,14 @@ export const createApp = (data?: Partial<ApplicationData>,
         const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
 
         const sessionStore = Substitute.for<SessionStore>();
+        const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
+        const encryptionService = new JwtEncryptionService();
+        const companyAuthConfig: CompanyAuthConfig = {
+            accountUrl: 'http://account.chs',
+            accountRequestKey: 'aaa+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=',
+            accountClientId: 'test',
+            chsUrl: 'http://chs',
+        };
 
         if (session && cookie) {
             sessionStore.load(cookie).resolves(session.data);
@@ -63,6 +71,15 @@ export const createApp = (data?: Partial<ApplicationData>,
             }
             SessionMiddleware({ cookieName, cookieSecret }, sessionStore)(req, res, next);
         });
+
+        container.bind(CompanyAuthMiddleware)
+        .toConstantValue(new CompanyAuthMiddleware(
+            sessionStore,
+            encryptionService,
+            companyAuthConfig,
+            sessionConfig,
+            true));
+
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
@@ -71,18 +88,7 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
-
-        const jwtEncryptionService = Substitute.for<JwtEncryptionService>();
-        container.bind(JwtEncryptionService).toConstantValue(jwtEncryptionService);
-        const companyAuthConfig: CompanyAuthConfig = {
-            accountUrl: 'http://account.chs',
-            accountRequestKey: 'aaa+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=',
-            accountClientId: 'test',
-            chsUrl: 'http://chs',
-        };
-        const companyAuthMiddleware = new CompanyAuthMiddleware(sessionStore, jwtEncryptionService,
-            companyAuthConfig, SessionStoreConfig.createFromEnvironmentVariables(), true);
-        container.bind(CompanyAuthMiddleware).toConstantValue(companyAuthMiddleware);
+        container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());
 
         configureBindings(container);
     });

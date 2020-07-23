@@ -40,15 +40,17 @@ describe('SelectPenaltyController', () => {
             } as Appeal,
             navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
+
         const app = createApp(applicationData);
 
         await request(app)
             .get(SELECT_THE_PENALTY_PAGE_URI)
-            .expect(res => expect(res.text).to.include('type="radio"'))
-            .expect(res => expect(res.text).to.include('value="A0000001"'))
-            .expect(res => expect(res.text).to.include('value="A0000002"'));
+            .expect(res => {
+                expect(res.text).to.include('type="radio"');
+                expect(res.text).to.include('value="A0000001"');
+                expect(res.text).to.include('value="A0000002"');
+            });
     });
-
 
     it('POST: should show an error if the penalty list is undefined', async () => {
         const applicationData: Partial<ApplicationData> = {
