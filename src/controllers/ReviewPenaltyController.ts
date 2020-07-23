@@ -9,7 +9,7 @@ import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
 import {
-    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    CHOOSE_REASON_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI,
     SELECT_THE_PENALTY_PAGE_URI
 } from 'app/utils/Paths';
@@ -21,7 +21,7 @@ const navigation = {
         return `${SELECT_THE_PENALTY_PAGE_URI}?back=true`;
     },
     next(): string {
-        return OTHER_REASON_DISCLAIMER_PAGE_URI;
+        return CHOOSE_REASON_PAGE_URI;
     }
 };
 

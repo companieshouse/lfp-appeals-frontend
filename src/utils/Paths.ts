@@ -13,6 +13,7 @@ export const ACCESSIBILITY_STATEMENT_URI = `${ROOT_URI}/accessibility-statement`
 export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const SELECT_THE_PENALTY_PAGE_URI = `${ROOT_URI}/select-the-penalty`;
 export const REVIEW_PENALTY_PAGE_URI =`${ROOT_URI}/review-penalty`;
+export const CHOOSE_REASON_PAGE_URI =`${ROOT_URI}/choose-reason`;
 export const OTHER_REASON_DISCLAIMER_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/other-reason-entry`;
 export const OTHER_REASON_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/reason-other`;
 export const EVIDENCE_QUESTION_URI = `${ROOT_URI}/evidence`;

@@ -10,7 +10,7 @@ import 'app/controllers/ReviewPenaltyController';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { CHOOSE_REASON_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -72,7 +72,7 @@ describe('ReviewPenaltyController', () => {
 
     });
 
-    it('should go to other reasons disclaimer screen when continue is pressed', async () => {
+    it('should go to Choose Reason screen when continue is pressed', async () => {
 
         const appeal: Partial<Appeal> = {
             penaltyIdentifier: {
@@ -97,7 +97,7 @@ describe('ReviewPenaltyController', () => {
         await request(app)
             .post(REVIEW_PENALTY_PAGE_URI)
             .expect(302)
-            .expect(res => expect(res.get('Location')).to.equal(OTHER_REASON_DISCLAIMER_PAGE_URI));
+            .expect(res => expect(res.get('Location')).to.equal(CHOOSE_REASON_PAGE_URI));
     });
 
     it('should redirect to error page if penalty list is not found in appeal', async () => {
