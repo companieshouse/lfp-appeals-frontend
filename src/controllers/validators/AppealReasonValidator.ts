@@ -10,7 +10,6 @@ export class AppealReasonValidator extends FormValidator {
     }
 
     public async validate(request: Request): Promise<ValidationResult> {
-
         const result: ValidationResult = await super.validate(request);
         return result;
     }

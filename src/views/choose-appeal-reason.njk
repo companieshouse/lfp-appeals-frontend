@@ -8,13 +8,21 @@
   You must tell us the reason for the appeal
 {% endblock %}
 
+{% block backLink %}
+  {{ 
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    }) 
+  }}
+{% endblock %}
+
 {% block content %}
     <div class="govuk-width-container">
         <main role="main" class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <form method="post" id="choose-reasons-form">
-                        {{ validationResult.getErrorForField('chooseReason') if validationResult else 'No error' }}
                         {{ 
                             govukRadios({
                                 idPrefix: 'choose-reason',

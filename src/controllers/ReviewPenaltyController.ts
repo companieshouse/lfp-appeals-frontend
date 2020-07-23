@@ -8,8 +8,11 @@ import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMid
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
+import { Feature } from 'app/utils/Feature';
+import { isFeatureEnabled } from 'app/utils/FeatureChecker';
 import {
     CHOOSE_REASON_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI,
     SELECT_THE_PENALTY_PAGE_URI
 } from 'app/utils/Paths';
@@ -21,7 +24,10 @@ const navigation = {
         return `${SELECT_THE_PENALTY_PAGE_URI}?back=true`;
     },
     next(): string {
-        return CHOOSE_REASON_PAGE_URI;
+        if (isFeatureEnabled(Feature.ILLNESS_JOURNEY)) {
+            return CHOOSE_REASON_PAGE_URI;
+        }
+        return OTHER_REASON_DISCLAIMER_PAGE_URI;
     }
 };
 
