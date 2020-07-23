@@ -11,12 +11,12 @@ import { REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/
 describe('All pages after the Penalty Details page:', () => {
 
     const pageList = [
-        ['Select Penalty', SELECT_THE_PENALTY_PAGE_URI],
-        ['Review Penalty', REVIEW_PENALTY_PAGE_URI]
+        { name: 'Select Penalty', uri: SELECT_THE_PENALTY_PAGE_URI},
+        { name: 'Review Penalty', uri: REVIEW_PENALTY_PAGE_URI}
     ];
 
     pageList.forEach((page) => {
-        it(`The ${page[0]} page should redirect unauthenticated user to the Company Auth service`, async () => {
+        it(`The ${page.name} page should redirect unauthenticated user to the Company Auth service`, async () => {
 
             const applicationData: Partial<ApplicationData> = {
                 appeal: {
@@ -24,13 +24,13 @@ describe('All pages after the Penalty Details page:', () => {
                         companyNumber: 'NI999999'
                     }
                 } as Appeal,
-                navigation: { permissions: [ page[1] ] }
+                navigation: { permissions: [ page.uri ] }
             };
 
             const app = createApp(applicationData);
 
             await request(app)
-                .get(page[1])
+                .get(page.uri)
                 .expect(res => {
                     expect(res.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(res.text).to.contain('Found. Redirecting')
