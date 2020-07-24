@@ -4,6 +4,7 @@ import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 import { AppealReasonValidator } from './validators/AppealReasonValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { createReasonsRadioGroup } from 'app/models/components/ReasonsRadioGroup';
 import { CHOOSE_REASON_PAGE_URI, OTHER_REASON_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
@@ -23,7 +24,7 @@ const navigation = {
     }
 };
 
-@controller(CHOOSE_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(CHOOSE_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class ChooseAppealReasonController extends SafeNavigationBaseController<any> {
 
     constructor() {
