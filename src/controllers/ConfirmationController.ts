@@ -7,7 +7,6 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -24,7 +23,7 @@ const navigation = {
     }
 };
 
-@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [InternalEmailFormActionProcessor,

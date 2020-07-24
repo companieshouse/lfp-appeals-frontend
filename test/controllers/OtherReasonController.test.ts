@@ -61,7 +61,7 @@ describe('OtherReasonController', () => {
             const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
-                .send(appeal)
+                .send({})
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(pageHeading)

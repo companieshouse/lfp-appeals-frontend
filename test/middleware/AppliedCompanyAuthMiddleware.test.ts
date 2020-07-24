@@ -7,7 +7,6 @@ import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
-    CONFIRMATION_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     EVIDENCE_REMOVAL_PAGE_URI,
     EVIDENCE_UPLOAD_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI,
@@ -27,8 +26,7 @@ describe('All pages after the Penalty Details page:', () => {
         { name: 'Evidence Upload', uri: EVIDENCE_UPLOAD_PAGE_URI},
         { name: 'Evidence Question', uri: EVIDENCE_QUESTION_URI},
         { name: 'Evidence Removal', uri: EVIDENCE_REMOVAL_PAGE_URI},
-        { name: 'Check Your Appeal', uri: CHECK_YOUR_APPEAL_PAGE_URI},
-        { name: 'Confirmation', uri: CONFIRMATION_PAGE_URI}
+        { name: 'Check Your Appeal', uri: CHECK_YOUR_APPEAL_PAGE_URI}
     ];
 
     pageList.forEach((page) => {

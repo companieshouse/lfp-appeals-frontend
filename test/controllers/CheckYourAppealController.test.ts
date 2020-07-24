@@ -82,19 +82,6 @@ describe('CheckYourAppealController', () => {
                         .nested.contain('another-file.jpeg');
                 });
         });
-
-        it('should return 500 when there is no appeal data', async () => {
-            const applicationData = {
-                navigation,
-            } as ApplicationData;
-
-            const app = createApp(applicationData);
-
-            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
-                .expect(response => {
-                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
-                });
-        });
     });
 
     describe('POST request', () => {
