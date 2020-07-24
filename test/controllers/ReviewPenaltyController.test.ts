@@ -73,6 +73,8 @@ describe('ReviewPenaltyController', () => {
     });
 
     it('should go to Choose Reason screen when continue is pressed', async () => {
+        const env = process.env;
+        process.env.ENABLED_APPEAL_REASONS = 'illness,other';
 
         const appeal: Partial<Appeal> = {
             penaltyIdentifier: {
@@ -94,10 +96,12 @@ describe('ReviewPenaltyController', () => {
                 config.rebind(AppealsService).toConstantValue(appealsService);
             });
 
-        await request(app)
-            .post(REVIEW_PENALTY_PAGE_URI)
+        await request(app).post(REVIEW_PENALTY_PAGE_URI)
             .expect(302)
-            .expect(res => expect(res.get('Location')).to.equal(CHOOSE_REASON_PAGE_URI));
+            .expect(res => {
+                expect(res.get('Location')).to.equal(CHOOSE_REASON_PAGE_URI);
+                process.env = env;
+            });
     });
 
     it('should redirect to error page if penalty list is not found in appeal', async () => {

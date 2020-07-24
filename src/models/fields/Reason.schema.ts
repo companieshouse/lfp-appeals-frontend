@@ -1,13 +1,13 @@
 import Joi from '@hapi/joi';
 
-import { enabledAppealReasons } from 'app/utils/FeatureChecker';
+import { getEnabledAppealReasons } from 'app/utils/FeatureChecker';
 
 export const errorMessage: string = 'You must select a reason';
 
 export const schema = Joi.object({
-    chooseReason: Joi.string()
+    reason: Joi.string()
     .required()
-    .valid(...enabledAppealReasons())
+    .valid(...getEnabledAppealReasons())
     .messages({
         'any.required': errorMessage,
         'any.only': errorMessage,

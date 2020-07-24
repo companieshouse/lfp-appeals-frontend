@@ -1,7 +1,7 @@
-import { enabledAppealReasons } from 'app/utils/FeatureChecker';
+import { getEnabledAppealReasons } from 'app/utils/FeatureChecker';
 
 export function createReasonsRadioGroup(): {}[] {
-    const enabledReasons = enabledAppealReasons();
+    const enabledReasons = getEnabledAppealReasons();
     const allReasons = [
         { value: 'illness', text: 'Illness and health issues' },
         { value: 'other', text: 'I\'m appealing for another reason' }
