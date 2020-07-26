@@ -7,6 +7,7 @@ import 'app/controllers/EvidenceQuestionController';
 import 'app/controllers/EvidenceRemovalController';
 import 'app/controllers/EvidenceUploadController';
 import 'app/controllers/HealthCheckController';
+import 'app/controllers/IllnessStartDateController';
 import 'app/controllers/LandingController';
 import 'app/controllers/OtherReasonController';
 import 'app/controllers/OtherReasonDisclaimerController';

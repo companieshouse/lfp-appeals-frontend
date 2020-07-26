@@ -1,0 +1,111 @@
+{% extends 'layout.njk' %}
+
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
+{% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
+{% from 'govuk/components/button/macro.njk' import govukButton %}
+{% from 'govuk/components/date-input/macro.njk' import govukDateInput %}
+
+{% block pageTitle %}
+   Appeal due to ill health: Tell us when the illness started
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="post">
+
+        {{
+          govukErrorSummary ({
+            titleText: 'There is a problem',
+            errorList: validationResult.errors
+          }) if validationResult and validationResult.errors.length > 0
+        }}
+
+        {% set classes_day = 'govuk-input--width-2' %}
+        {% set classes_month = 'govuk-input--width-2' %}
+        {% set classes_year = 'govuk-input--width-4' %}
+
+        {% if isStartDateDayErrorFlag %}
+            {% set classes_day = classes_day + ' govuk-input--error' %}
+          {% endif %}
+        {% if isStartDateMonthErrorFlag %}
+            {% set classes_month = classes_month + ' govuk-input--error' %}
+          {% endif %}
+        {% if isStartDateYearErrorFlag %}
+          {% set classes_year = classes_year + ' govuk-input--error' %}
+        {% endif %}
+
+        {% if validationResult and validationResult.errors.length > 0 %}
+          {% set errorMessages %}
+            <ul style='padding: 0;list-style-type: none;'>
+              {% for error in validationResult.errors %}
+                <li>
+                  {{ error.text }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endset %}
+
+          {% if errorMessages %}
+            {% set illnessStartErrorMessage = {
+              html: errorMessages
+             } %}
+          {% else %}
+            {% set illnessStartErrorMessage = false %}
+          {% endif %}
+        {% else %}
+        {% endif %}
+
+        {{ govukDateInput({
+          id: 'illness-start',
+          fieldset: {
+            legend: {
+              text: 'When did the illness start?',
+              isPageHeading: true,
+              classes: 'govuk-fieldset__legend--l'
+            }
+          },
+          hint: {
+            text: 'For example, 31 8 2018'
+          },
+          errorMessage: illnessStartErrorMessage,
+          items: [
+            {
+              classes: classes_day,
+              id: 'start-day',
+              label: 'Day',
+              name: 'startDay',
+              value: startDay,
+              autocomplete: 'off'
+            },
+            {
+              classes: classes_month,
+              id: 'start-month',
+              label: 'Month',
+              name: 'startMonth',
+              value: startMonth,
+              autocomplete: 'off'
+            },
+            {
+              classes: classes_year,
+              id: 'start-year',
+              label: 'Year',
+              name: 'startYear',
+              value: startYear,
+              autocomplete: 'off'
+            }
+          ]
+        }) }}
+
+        {{
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
