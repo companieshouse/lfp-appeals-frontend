@@ -1,41 +1,35 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { controller } from 'inversify-express-utils';
-import { SafeNavigationBaseController } from './SafeNavigationBaseController';
-import { AppealReasonValidator } from './validators/AppealReasonValidator';
+import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { controller, httpGet, httpPost } from 'inversify-express-utils';
+import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { createReasonsRadioGroup } from 'app/models/components/ReasonsRadioGroup';
-import { CHOOSE_REASON_PAGE_URI, OTHER_REASON_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
+import { schema } from 'app/models/fields/Reason.schema';
+import { CHOOSE_REASON_PAGE_URI } from 'app/utils/Paths';
+import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 const template = 'choose-appeal-reason';
 
-const navigation = {
-    previous(): string {
-        return REVIEW_PENALTY_PAGE_URI;
-    },
-    next(): string {
-        return OTHER_REASON_PAGE_URI;
-    },
-    actions: (_: boolean) => {
-        return {
-            continue: 'action=continue'
-        };
-    }
-};
+@controller(CHOOSE_REASON_PAGE_URI, IllnessReasonFeatureMiddleware, SessionMiddleware, AuthMiddleware)
+export class ChooseAppealReasonController extends BaseAsyncHttpController{
 
-@controller(CHOOSE_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
-export class ChooseAppealReasonController extends SafeNavigationBaseController<any> {
-
-    constructor() {
-        super(template,
-            navigation,
-            new AppealReasonValidator()
-        );
+    @httpGet('')
+    public async renderView(): Promise<void> {
+        return this.render(template);
     }
 
-    public prepareViewModel(): Record<string, any> & any {
+    @httpPost('')
+    public async continue(): Promise<void> {
+        const request = this.httpContext.request;
+        const validationResult: ValidationResult = await new FormValidator(schema).validate(request);
 
-        return { reasons: createReasonsRadioGroup() };
+        if (validationResult.errors.length > 0) {
+            return this.renderWithStatus(UNPROCESSABLE_ENTITY)(
+                template, { validationResult });
+        } else {
+            return this.renderWithStatus(OK)(template);
+        }
     }
 }

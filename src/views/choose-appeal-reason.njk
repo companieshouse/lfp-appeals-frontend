@@ -12,7 +12,7 @@
   {{ 
     govukBackLink({
       text: 'Back',
-      href: navigation.back.href
+      href: ''
     }) 
   }}
 {% endblock %}
@@ -39,7 +39,10 @@
                                     text: 'You can add more reasons later'
                                 },
                                 errorMessage: validationResult.getErrorForField('reason') if validationResult,
-                                items: reasons
+                                items: [
+                                    { value: 'illness', text: 'Illness and health issues' },
+                                    { value: 'other', text: "I'm appealing for another reason" }
+                                ]
                             })
                         }}
 
