@@ -28,7 +28,7 @@ const maxNumberOfFiles = 10;
 
 const appealNoAttachments: Appeal = {
     penaltyIdentifier: {
-        companyNumber: '00345567',
+        companyNumber: 'NI000000',
         penaltyReference: 'A00000001',
         userInputPenaltyReference: 'A00000001'
     },
@@ -42,7 +42,7 @@ const appealNoAttachments: Appeal = {
 
 const appealWithAttachments: Appeal = {
     penaltyIdentifier: {
-        companyNumber: '00345567',
+        companyNumber: 'NI000000',
         penaltyReference: 'A00000001',
         userInputPenaltyReference: 'A00000001'
     },
@@ -68,7 +68,7 @@ const appealWithAttachments: Appeal = {
 
 const appealWithMaxAttachments: Appeal = {
     penaltyIdentifier: {
-        companyNumber: '00345567',
+        companyNumber: 'NI000000',
         penaltyReference: 'A00000001',
         userInputPenaltyReference: 'A00000001'
     },

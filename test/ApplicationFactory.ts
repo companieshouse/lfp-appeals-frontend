@@ -48,7 +48,9 @@ export const createApp = (data?: Partial<ApplicationData>,
 
         const sessionId = session?.data[SessionKey.Id];
         const signature = session?.data[SessionKey.ClientSig];
+
         const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
+
         const sessionStore = Substitute.for<SessionStore>();
         const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
         const encryptionService = new JwtEncryptionService();
@@ -87,5 +89,6 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
         container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());
+
         configureBindings(container);
     });
