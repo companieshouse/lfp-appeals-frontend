@@ -4,7 +4,6 @@ import { controller, httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { schema } from 'app/models/fields/Illness.schema';
 import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -15,7 +14,7 @@ const ILLNESS_START_MONTH_FIELD = 'startMonth';
 const ILLNESS_START_YEAR_FIELD = 'startYear';
 const ILLNESS_FULL_DATE = 'startDate';
 
-@controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware)
 export class IllnessStartDateController extends BaseAsyncHttpController {
 
     @httpGet('')
