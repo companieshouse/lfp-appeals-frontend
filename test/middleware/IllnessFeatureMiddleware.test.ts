@@ -36,7 +36,6 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
             new IllnessReasonFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
-            // @ts-ignore
             mockResponse.didNotReceive().redirect(Arg.any());
         });
 
@@ -65,7 +64,6 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
             new IllnessReasonFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
-            // @ts-ignore
             mockResponse.received().redirect(Arg.any());
         });
 

@@ -9,11 +9,11 @@ import { schema } from 'app/models/fields/IllnessStartDate.schema';
 import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
-const template = 'illness/illness-start-date';
-const ILLNESS_START_DAY_FIELD = 'startDay';
-const ILLNESS_START_MONTH_FIELD = 'startMonth';
-const ILLNESS_START_YEAR_FIELD = 'startYear';
-const ILLNESS_FULL_DATE = 'startDate';
+const template: string = 'illness/illness-start-date';
+const startDay: string  = 'startDay';
+const startMonth: string  = 'startMonth';
+const startYear: string  = 'startYear';
+const startDate: string  = 'startDate';
 
 @controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, IllnessReasonFeatureMiddleware)
 export class IllnessStartDateController extends BaseAsyncHttpController {
@@ -29,7 +29,7 @@ export class IllnessStartDateController extends BaseAsyncHttpController {
         const request = this.httpContext.request;
 
         request.body.startDate = new Date(
-            `${request.body[ILLNESS_START_YEAR_FIELD]}-${request.body[ILLNESS_START_MONTH_FIELD]}-${request.body[ILLNESS_START_DAY_FIELD]}`);
+            `${request.body[startYear]}-${request.body[startMonth]}-${request.body[startDay]}`);
 
         let startDateDayErrorFlag: boolean = false;
         let startDateMonthErrorFlag: boolean = false;
@@ -42,16 +42,16 @@ export class IllnessStartDateController extends BaseAsyncHttpController {
             validationResult.errors.forEach(err => {
 
                 switch (err.field) {
-                    case ILLNESS_START_DAY_FIELD:
+                    case startDay:
                         startDateDayErrorFlag = true;
                         break;
-                    case ILLNESS_START_MONTH_FIELD:
+                    case startMonth:
                         startDateMonthErrorFlag = true;
                         break;
-                    case ILLNESS_START_YEAR_FIELD:
+                    case startYear:
                         startDateYearErrorFlag = true;
                         break;
-                    case ILLNESS_FULL_DATE:
+                    case startDate:
                         if (startDateDayErrorFlag || startDateMonthErrorFlag || startDateYearErrorFlag) {
                             validationResult.errors.splice(validationResult.errors.indexOf(err), 1);
                         }

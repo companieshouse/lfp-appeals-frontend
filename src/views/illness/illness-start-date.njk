@@ -26,18 +26,18 @@
         {% set classes_year = 'govuk-input--width-4' %}
 
         {% if isStartDateDayErrorFlag %}
-            {% set classes_day = classes_day + ' govuk-input--error' %}
-          {% endif %}
+          {% set classes_day = classes_day + ' govuk-input--error' %}
+        {% endif %}
         {% if isStartDateMonthErrorFlag %}
-            {% set classes_month = classes_month + ' govuk-input--error' %}
-          {% endif %}
+          {% set classes_month = classes_month + ' govuk-input--error' %}
+        {% endif %}
         {% if isStartDateYearErrorFlag %}
           {% set classes_year = classes_year + ' govuk-input--error' %}
         {% endif %}
 
         {% if validationResult and validationResult.errors.length > 0 %}
           {% set errorMessages %}
-            <ul style='padding: 0;list-style-type: none;'>
+            <ul style="padding: 0;list-style-type: none;">
               {% for error in validationResult.errors %}
                 <li>
                   {{ error.text }}
@@ -49,56 +49,58 @@
           {% if errorMessages %}
             {% set illnessStartErrorMessage = {
               html: errorMessages
-             } %}
+              }
+            %}
           {% else %}
             {% set illnessStartErrorMessage = false %}
           {% endif %}
-        {% else %}
         {% endif %}
 
-        {{ govukDateInput({
-          id: 'illness-start',
-          fieldset: {
-            legend: {
-              text: 'When did the illness start?',
-              isPageHeading: true,
-              classes: 'govuk-fieldset__legend--l'
-            }
-          },
-          hint: {
-            text: 'For example, 31 8 2018'
-          },
-          errorMessage: illnessStartErrorMessage,
-          items: [
-            {
-              classes: classes_day,
-              id: 'start-day',
-              label: 'Day',
-              name: 'startDay',
-              value: startDay,
-              autocomplete: 'off'
+        {{
+          govukDateInput ({
+            id: 'illness-start',
+            fieldset: {
+              legend: {
+                text: 'When did the illness start?',
+                isPageHeading: true,
+                classes: 'govuk-fieldset__legend--l'
+              }
             },
-            {
-              classes: classes_month,
-              id: 'start-month',
-              label: 'Month',
-              name: 'startMonth',
-              value: startMonth,
-              autocomplete: 'off'
+            hint: {
+              text: 'For example, 31 8 2018'
             },
-            {
-              classes: classes_year,
-              id: 'start-year',
-              label: 'Year',
-              name: 'startYear',
-              value: startYear,
-              autocomplete: 'off'
-            }
-          ]
-        }) }}
+            errorMessage: illnessStartErrorMessage,
+            items: [
+              {
+                classes: classes_day,
+                id: 'start-day',
+                label: 'Day',
+                name: 'startDay',
+                value: startDay,
+                autocomplete: 'off'
+              },
+              {
+                classes: classes_month,
+                id: 'start-month',
+                label: 'Month',
+                name: 'startMonth',
+                value: startMonth,
+                autocomplete: 'off'
+              },
+              {
+                classes: classes_year,
+                id: 'start-year',
+                label: 'Year',
+                name: 'startYear',
+                value: startYear,
+                autocomplete: 'off'
+              }
+            ]
+          })
+        }}
 
         {{
-          govukButton({
+          govukButton ({
             text: 'Continue',
             attributes: {
               id: 'submit'

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { before } from 'mocha';
+import {after, before} from 'mocha';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
@@ -18,16 +18,24 @@ const invalidStartMonthErrorMessage: string = 'You must enter a month';
 const invalidStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
 const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+let initialIllnessReasonFeatureFlag: string | undefined;
 
 describe('IllnessStartDateController', () => {
 
+    before(() => {
+        initialIllnessReasonFeatureFlag = process.env.ILLNESS_REASON_FEATURE;
+    });
+
+    after(() => {
+        process.env.ILLNESS_REASON_FEATURE = initialIllnessReasonFeatureFlag;
+    });
+
     describe('GET request', () => {
 
-        before(() => {
-            process.env.ILLNESS_REASON_FEATURE = '1';
-        });
-
         it('should return 200 when trying to access the page', async () => {
+
+            process.env.ILLNESS_REASON_FEATURE = '1';
+
             const app = createApp();
             await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
@@ -47,9 +55,10 @@ describe('IllnessStartDateController', () => {
                 });
         });
     });
+
     describe('POST request', () => {
 
-        before(() => {
+        beforeEach(() => {
             process.env.ILLNESS_REASON_FEATURE = '1';
         });
 
@@ -62,6 +71,7 @@ describe('IllnessStartDateController', () => {
                     expect(response.text).to.contain(pageHeading);
                 });
         });
+
         it('should return 422 response with rendered error messages when empty start date was submitted', async () => {
             const app = createApp();
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
@@ -77,6 +87,7 @@ describe('IllnessStartDateController', () => {
                         .and.to.not.include(invalidDateFutureErrorMessage);
                 });
         });
+
         it('should return 422 response with rendered error messages when partial start date was submitted',
             async () => {
                 const app = createApp();
@@ -91,6 +102,7 @@ describe('IllnessStartDateController', () => {
                             .and.to.not.include(invalidDateFutureErrorMessage);
                     });
             });
+
         it('should return 422 response with rendered error message invalid start date (format) was submitted',
             async () => {
                 const app = createApp();
@@ -104,6 +116,7 @@ describe('IllnessStartDateController', () => {
                             .and.to.not.include(invalidDateFutureErrorMessage);
                     });
             });
+
         it('should return 422 response with rendered error message invalid start date (all zeros) was submitted',
             async () => {
                 const app = createApp();
@@ -116,6 +129,7 @@ describe('IllnessStartDateController', () => {
                             .and.to.include(invalidDateErrorMessage);
                     });
             });
+
         it('should return 422 response with rendered error message invalid start date (non-existing) was submitted',
             async () => {
                 const app = createApp();
@@ -128,6 +142,7 @@ describe('IllnessStartDateController', () => {
                             .and.to.include(invalidDateErrorMessage);
                     });
             });
+
         it('should return 422 response with rendered error message invalid start date (in future) was submitted',
             async () => {
                 const app = createApp();
@@ -140,6 +155,7 @@ describe('IllnessStartDateController', () => {
                             .and.to.include(invalidDateFutureErrorMessage);
                     });
             });
+
         it('should redirect to entry page when illness reason feature is disabled', async () => {
 
             process.env.ILLNESS_REASON_FEATURE = '0';

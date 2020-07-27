@@ -3,8 +3,8 @@ import * as Joi from '@hapi/joi';
 const illnessStartDayErrorMessage: string = 'You must enter a day';
 const illnessStartMonthErrorMessage: string = 'You must enter a month';
 const illnessStartYearErrorMessage: string = 'You must enter a year';
-const invalidDate: string = 'Enter a real date';
-const invalidDateFuture: string = 'Start date must be today or in the past';
+const invalidDateErrorMessage: string = 'Enter a real date';
+const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
 
 const dayMonthRegex: RegExp = /^[0-9]{1,2}$/i;
 const yearRegex: RegExp = /^[0-9]{2,4}$/i;
@@ -42,9 +42,9 @@ export const schema = Joi.object({
         .iso()
         .max('now')
         .messages({
-            'any.required': invalidDate,
-            'date.base': invalidDate,
-            'date.format': invalidDate,
-            'date.max': invalidDateFuture
+            'any.required': invalidDateErrorMessage,
+            'date.base': invalidDateErrorMessage,
+            'date.format': invalidDateErrorMessage,
+            'date.max': invalidDateFutureErrorMessage
         })
 });
