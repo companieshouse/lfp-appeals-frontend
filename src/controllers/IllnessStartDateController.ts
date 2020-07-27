@@ -4,7 +4,7 @@ import { controller, httpGet, httpPost } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
-import { schema } from 'app/models/fields/Illness.schema';
+import { schema } from 'app/models/fields/IllnessStartDate.schema';
 import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
