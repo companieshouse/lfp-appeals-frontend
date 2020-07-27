@@ -1,9 +1,13 @@
 import { expect } from 'chai';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { before } from 'mocha';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
-import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
+import {
+    ENTRY_PAGE_URI,
+    ILLNESS_START_DATE_PAGE_URI
+} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 
@@ -18,6 +22,11 @@ const invalidDateFutureErrorMessage: string = 'Start date must be today or in th
 describe('IllnessStartDateController', () => {
 
     describe('GET request', () => {
+
+        before(() => {
+            process.env.ILLNESS_REASON_FEATURE = '1';
+        });
+
         it('should return 200 when trying to access the page', async () => {
             const app = createApp();
             await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
@@ -25,8 +34,25 @@ describe('IllnessStartDateController', () => {
                 expect(response.text).to.contain(pageHeading);
             });
         });
+
+        it('should redirect to entry page when illness reason feature is disabled', async () => {
+
+            process.env.ILLNESS_REASON_FEATURE = '0';
+
+            const app = createApp();
+            await request(app).get(ILLNESS_START_DATE_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(ENTRY_PAGE_URI);
+                });
+        });
     });
     describe('POST request', () => {
+
+        before(() => {
+            process.env.ILLNESS_REASON_FEATURE = '1';
+        });
+
         it('should return 200 when posting a valid date', async () => {
             const app = createApp();
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
@@ -114,5 +140,17 @@ describe('IllnessStartDateController', () => {
                             .and.to.include(invalidDateFutureErrorMessage);
                     });
             });
+        it('should redirect to entry page when illness reason feature is disabled', async () => {
+
+            process.env.ILLNESS_REASON_FEATURE = '0';
+
+            const app = createApp();
+            await request(app).post(ILLNESS_START_DATE_PAGE_URI)
+                .send({})
+                .expect(response => {
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(ENTRY_PAGE_URI);
+                });
+        });
     });
 });
