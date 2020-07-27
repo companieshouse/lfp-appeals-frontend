@@ -73,6 +73,7 @@ describe('ReviewPenaltyController', () => {
     });
 
     it('should go to other reasons disclaimer screen when continue is pressed', async () => {
+
         const appeal: Partial<Appeal> = {
             penaltyIdentifier: {
                 companyNumber,
