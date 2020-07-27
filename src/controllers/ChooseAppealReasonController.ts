@@ -1,35 +1,34 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { BaseAsyncHttpController } from './BaseAsyncHttpController';
+import { controller } from 'inversify-express-utils';
+import { BaseController } from './BaseController';
 import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
 import { schema } from 'app/models/fields/Reason.schema';
 import { CHOOSE_REASON_PAGE_URI } from 'app/utils/Paths';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'choose-appeal-reason';
 
-@controller(CHOOSE_REASON_PAGE_URI, IllnessReasonFeatureMiddleware, SessionMiddleware, AuthMiddleware)
-export class ChooseAppealReasonController extends BaseAsyncHttpController{
-
-    @httpGet('')
-    public async renderView(): Promise<void> {
-        return this.render(template);
+const navigation: Navigation = {
+    previous(): string {
+        return '';
+    },
+    next(): string {
+        return '';
+    },
+    actions: (_: boolean) => {
+        return {
+            continue:'action=continue'
+        };
     }
+};
 
-    @httpPost('')
-    public async continue(): Promise<void> {
-        const request = this.httpContext.request;
-        const validationResult: ValidationResult = await new FormValidator(schema).validate(request);
+@controller(CHOOSE_REASON_PAGE_URI, IllnessReasonFeatureMiddleware, SessionMiddleware, AuthMiddleware)
+export class ChooseAppealReasonController extends BaseController<any>{
 
-        if (validationResult.errors.length > 0) {
-            return this.renderWithStatus(UNPROCESSABLE_ENTITY)(
-                template, { validationResult });
-        } else {
-            return this.renderWithStatus(OK)(template);
-        }
+    constructor() {
+        super(template, navigation, new FormValidator(schema));
     }
 }
