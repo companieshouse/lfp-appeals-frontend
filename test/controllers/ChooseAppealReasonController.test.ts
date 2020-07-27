@@ -8,13 +8,6 @@ import { CHOOSE_REASON_PAGE_URI } from 'app/utils/Paths';
 
 describe('ChooseAppealReasonController', () => {
 
-    let env: NodeJS.ProcessEnv;
-
-    before( () => {
-        env = process.env;
-        process.env.ENABLED_APPEAL_REASONS = 'illness,other';
-    });
-
     it('should show radio buttons for available appeal reasons on GET', async () => {
         const  applicationData: Partial<ApplicationData> = {
             appeal: {
@@ -54,9 +47,5 @@ describe('ChooseAppealReasonController', () => {
             expect(res.status).to.equal(422);
             expect(res.text).to.contain('You must select a reason');
         });
-    });
-
-    after( () => {
-        process.env = env;
     });
 });
