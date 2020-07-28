@@ -1,5 +1,6 @@
 import 'app/controllers/AccessibilityStatementController';
 import 'app/controllers/CheckYourAppealController';
+import 'app/controllers/ChooseAppealReasonController';
 import 'app/controllers/ConfirmationController';
 import 'app/controllers/EntryController';
 import 'app/controllers/EvidenceDownloadController';
