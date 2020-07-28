@@ -104,7 +104,6 @@ describe('Company Authentication Middleware', () => {
         nextFunction.didNotReceive();
         response.received(1).redirect(Arg.is(startingWithRedirectUrl));
 
-
     });
 
     it('should call next with a feature flag is set to false', async () => {
