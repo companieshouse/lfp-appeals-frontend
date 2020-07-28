@@ -13,6 +13,7 @@ import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
 import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 const oathScopePrefix: string = 'https://api.companieshouse.gov.uk/company/';
 
@@ -41,7 +42,8 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
         const appeal: Appeal = applicationData.appeal;
         if (!appeal) {
-            return next(new Error('Appeal data not found'));
+            loggerInstance().info(`CompanyAuthMiddleware: Appeal data not found in session, redirecting to ${PENALTY_DETAILS_PAGE_URI}`);
+            return res.redirect(PENALTY_DETAILS_PAGE_URI);
         }
 
         const companyNumber: string = appeal.penaltyIdentifier.companyNumber;
