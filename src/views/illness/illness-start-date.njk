@@ -27,13 +27,13 @@
 
         {% if validationResult and validationResult.errors.length > 0 %}
 
-          {% if validationResult.getErrorForField('startDay') %}
+          {% if validationResult.getErrorForField('day') %}
             {% set classes_day = classes_day + ' govuk-input--error' %}
           {% endif %}
-          {% if validationResult.getErrorForField('startMonth') %}
+          {% if validationResult.getErrorForField('month') %}
             {% set classes_month = classes_month + ' govuk-input--error' %}
           {% endif %}
-           {% if validationResult.getErrorForField('startYear') %}
+           {% if validationResult.getErrorForField('year') %}
             {% set classes_year = classes_year + ' govuk-input--error' %}
           {% endif %}
           {% if validationResult.getErrorForField('startDate') %}
@@ -81,24 +81,24 @@
                 classes: classes_day,
                 id: 'start-day',
                 label: 'Day',
-                name: 'startDay',
-                value: startDay,
+                name: 'day',
+                value: day,
                 autocomplete: 'off'
               },
               {
                 classes: classes_month,
                 id: 'start-month',
                 label: 'Month',
-                name: 'startMonth',
-                value: startMonth,
+                name: 'month',
+                value: month,
                 autocomplete: 'off'
               },
               {
                 classes: classes_year,
                 id: 'start-year',
                 label: 'Year',
-                name: 'startYear',
-                value: startYear,
+                name: 'year',
+                value: year,
                 autocomplete: 'off'
               }
             ]

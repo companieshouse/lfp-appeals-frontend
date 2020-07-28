@@ -5,6 +5,8 @@ import { BaseController } from 'app/controllers/BaseController';
 import { StartDateValidator } from 'app/controllers/validators/StartDateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
+import { Appeal } from 'app/models/Appeal';
+import { Illness } from 'app/models/Illness';
 import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -20,9 +22,20 @@ const navigation: Navigation = {
 };
 
 @controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, AuthMiddleware, IllnessReasonFeatureMiddleware)
-export class IllnessStartDateController extends BaseController<any> {
+export class IllnessStartDateController extends BaseController<Illness> {
 
     constructor() {
         super(template, navigation, new StartDateValidator());
+    }
+
+    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & Illness {
+        return appeal.reasons?.illness || {} as Illness;
+    }
+
+    protected prepareSessionModelPriorSave(appeal: Appeal, illness: Illness): Appeal {
+        if (appeal.reasons?.illness != null) {
+            appeal.reasons.illness = illness;
+        }
+        return appeal;
     }
 }

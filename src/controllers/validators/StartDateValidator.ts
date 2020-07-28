@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { FormValidator } from './FormValidator';
 
-import { schema } from 'app/models/fields/IllnessStartDate.schema';
+import { schema } from 'app/models/fields/Date.schema';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
@@ -12,23 +12,23 @@ export class StartDateValidator extends FormValidator {
 
     public async validate(request: Request): Promise<ValidationResult> {
 
-        const startDay: string = 'startDay';
-        const startMonth: string = 'startMonth';
-        const startYear: string = 'startYear';
-        const startDate: string = 'startDate';
+        const dayField: string = 'day';
+        const monthField: string = 'month';
+        const yearField: string = 'year';
+        const startDateField: string = 'startDate';
 
         request.body.startDate = new Date(
-            `${request.body[startYear]}-${request.body[startMonth]}-${request.body[startDay]}`);
+            `${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`);
 
         const validationResult: ValidationResult = await super.validate(request);
 
         if (validationResult.errors.length > 0) {
-            const startDateError: ValidationError | undefined = validationResult.getErrorForField(startDate);
+            const startDateError: ValidationError | undefined = validationResult.getErrorForField(startDateField);
 
             if (startDateError &&
-                (validationResult.getErrorForField(startDay) ||
-                    validationResult.getErrorForField(startMonth) ||
-                    validationResult.getErrorForField(startYear))) {
+                (validationResult.getErrorForField(dayField) ||
+                    validationResult.getErrorForField(monthField) ||
+                    validationResult.getErrorForField(yearField))) {
 
                 validationResult.errors.splice(validationResult.errors.indexOf(startDateError), 1);
             }

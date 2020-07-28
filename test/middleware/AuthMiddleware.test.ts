@@ -9,7 +9,7 @@ import 'app/controllers/index';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
-    CONFIRMATION_PAGE_URI,
+    CONFIRMATION_PAGE_URI, ILLNESS_START_DATE_PAGE_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     OTHER_REASON_PAGE_URI,
     PENALTY_DETAILS_PAGE_URI
@@ -23,7 +23,8 @@ const protectedPages = [
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     OTHER_REASON_PAGE_URI,
     CONFIRMATION_PAGE_URI,
-    CHECK_YOUR_APPEAL_PAGE_URI
+    CHECK_YOUR_APPEAL_PAGE_URI,
+    ILLNESS_START_DATE_PAGE_URI
 ];
 
 describe('Authentication Middleware', () => {
