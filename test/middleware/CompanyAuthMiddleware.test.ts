@@ -98,11 +98,9 @@ describe('Company Authentication Middleware', () => {
         const response = createSubstituteOf<Response>();
         const request = getRequestSubstitute({}, '');
 
-        const startingWithRedirectUrl = (redirect : string) => redirect.startsWith(PENALTY_DETAILS_PAGE_URI);
-
         await companyAuthMiddleware.handler(request, response, nextFunction);
         nextFunction.didNotReceive();
-        response.received(1).redirect(Arg.is(startingWithRedirectUrl));
+        response.received(1).redirect(Arg.is(arg => arg === PENALTY_DETAILS_PAGE_URI));
 
     });
 
