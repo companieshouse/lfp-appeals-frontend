@@ -9,6 +9,7 @@ import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeat
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
+import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import { CONTINUED_ILLNESS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -62,7 +63,7 @@ export class ContinuedIllnessController extends BaseController<any> {
     protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
         if (appeal.reasons?.illness != null) {
             appeal.reasons.illness.continuedIllness = value.continuedIllness;
-            if (value.continuedIllness === true) {
+            if (value.continuedIllness === YesNo.yes) {
                 appeal.reasons.illness.illnessEnd = undefined;
             }
         } else {
