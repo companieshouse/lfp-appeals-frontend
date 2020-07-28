@@ -1,74 +1,67 @@
-import Joi from '@hapi/joi';
-
-import { YesNo } from 'app/models/fields/YesNo';
-import { createSchema } from 'app/models/fields/YesNo.schema';
+import { schema } from 'app/models/fields/Reason.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
 import { assertValidationErrors } from 'test/models/ValidationAssertions';
 
-const validator = new SchemaValidator(Joi.object({
-    consent: createSchema('Invalid value')
-}));
+const validator = new SchemaValidator(schema);
 
-describe('YesNo schema', () => {
+describe('Reason schema', () => {
     describe('invalid values', () => {
         const assertValidationError = (validationResult: ValidationResult) => assertValidationErrors(validationResult, [
-            new ValidationError('consent', 'Invalid value')
+            new ValidationError('reason', 'You must select a reason')
         ]);
 
-        it('should reject undefined string', () => {
+        it('should reject an undefined string', () => {
             const validationResult = validator.validate({
-                consent: undefined
+                reason: undefined
             });
             assertValidationError(validationResult);
         });
 
         it('should reject null string', () => {
             const validationResult = validator.validate({
-                consent: null
+                reason: null
             });
             assertValidationError(validationResult);
         });
 
         it('should reject empty string', () => {
             const validationResult = validator.validate({
-                consent: ''
+                reason: ''
             });
             assertValidationError(validationResult);
         });
 
         it('should reject blank string', () => {
             const validationResult = validator.validate({
-                consent: ' '
+                reason: ' '
             });
             assertValidationError(validationResult);
         });
 
         it('should reject incorrect string', () => {
             const validationResult = validator.validate({
-                consent: 'xyz'
+                reason: 'xyz'
             });
             assertValidationError(validationResult);
         });
     });
 
     describe('valid values', () => {
-        it('should accept "yes" string', () => {
+        it('should accept "illness" reason', () => {
             const validationResult = validator.validate({
-                consent: YesNo.yes
+                reason: 'illness'
             });
             assertValidationErrors(validationResult, []);
         });
 
-        it('should accept "no" string', () => {
+        it('should accept "other" reason', () => {
             const validationResult = validator.validate({
-                consent: YesNo.no
+                reason: 'other'
             });
             assertValidationErrors(validationResult, []);
         });
     });
 });
-
-

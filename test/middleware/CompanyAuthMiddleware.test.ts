@@ -14,6 +14,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationDat
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
+import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
@@ -75,6 +76,31 @@ describe('Company Authentication Middleware', () => {
         } catch (err) {
             expect(err).to.equal(SESSION_NOT_FOUND_ERROR);
         }
+
+    });
+
+    it('should redirect to penalty details page no appeal data in session', async () => {
+
+        const encryptionService = createSubstituteOf<JwtEncryptionService>(service => {
+            service.encrypt(Arg.any()).resolves('');
+        });
+
+        const sessionStore = Substitute.for<SessionStore>();
+        const companyAuthMiddleware = new CompanyAuthMiddleware(
+            sessionStore,
+            encryptionService,
+            companyAuthConfig,
+            sessionStoreForAuthConfig,
+            featureFlag
+        );
+
+        const nextFunction = createSubstituteOf<NextFunction>();
+        const response = createSubstituteOf<Response>();
+        const request = getRequestSubstitute({}, '');
+
+        await companyAuthMiddleware.handler(request, response, nextFunction);
+        nextFunction.didNotReceive();
+        response.received(1).redirect(Arg.is(arg => arg === PENALTY_DETAILS_PAGE_URI));
 
     });
 

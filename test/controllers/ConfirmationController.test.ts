@@ -22,7 +22,7 @@ describe('ConfirmationController', () => {
 
         const appeal = {
             penaltyIdentifier: {
-                companyNumber: '00345567',
+                companyNumber: 'NI000000',
             },
         } as Appeal;
 

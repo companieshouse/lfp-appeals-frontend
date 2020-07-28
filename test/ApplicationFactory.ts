@@ -7,8 +7,11 @@ import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
 import { ApplicationFactory } from 'app/ApplicationFactory';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
+import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -49,6 +52,14 @@ export const createApp = (data?: Partial<ApplicationData>,
         const cookie = session ? Cookie.createFrom(sessionId! + signature) : null;
 
         const sessionStore = Substitute.for<SessionStore>();
+        const sessionConfig: SessionStoreConfig  = SessionStoreConfig.createFromEnvironmentVariables();
+        const encryptionService = new JwtEncryptionService();
+        const companyAuthConfig: CompanyAuthConfig = {
+            accountUrl: 'http://account.chs',
+            accountRequestKey: 'aaa+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=',
+            accountClientId: 'test',
+            chsUrl: 'http://chs',
+        };
 
         if (session && cookie) {
             sessionStore.load(cookie).resolves(session.data);
@@ -60,6 +71,15 @@ export const createApp = (data?: Partial<ApplicationData>,
             }
             SessionMiddleware({ cookieName, cookieSecret }, sessionStore)(req, res, next);
         });
+
+        container.bind(CompanyAuthMiddleware)
+        .toConstantValue(new CompanyAuthMiddleware(
+            sessionStore,
+            encryptionService,
+            companyAuthConfig,
+            sessionConfig,
+            true));
+
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
@@ -69,5 +89,6 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
         container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());
+
         configureBindings(container);
     });

@@ -7,11 +7,13 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { BaseMiddleware } from 'inversify-express-utils';
 
 import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { Mutable } from 'app/models/Mutable';
 import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
+import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
 
 const oathScopePrefix: string = 'https://api.companieshouse.gov.uk/company/';
 
@@ -38,7 +40,13 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         const applicationData: ApplicationData = req.session
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
-        const companyNumber: string = applicationData.appeal.penaltyIdentifier.companyNumber;
+        const appeal: Appeal = applicationData.appeal;
+        if (!appeal) {
+            loggerInstance().info(`CompanyAuthMiddleware: Appeal data not found in session, redirecting to ${PENALTY_DETAILS_PAGE_URI}`);
+            return res.redirect(PENALTY_DETAILS_PAGE_URI);
+        }
+
+        const companyNumber: string = appeal.penaltyIdentifier.companyNumber;
         const signInInfo: ISignInInfo | undefined = req.session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (this.isAuthorisedForCompany(signInInfo, companyNumber)){

@@ -22,7 +22,7 @@ function getAppeal(): Appeal {
     return {
         penaltyIdentifier: {
             companyName: 'company-name-test',
-            companyNumber: '00345567',
+            companyNumber: 'NI000000',
             penaltyReference: 'A00000001',
         },
         reasons: {
@@ -82,31 +82,6 @@ describe('CheckYourAppealController', () => {
                         .nested.contain('another-file.jpeg');
                 });
         });
-
-        it('should return 200 with no populated session data', async () => {
-            const applicationData = {
-                navigation
-            } as ApplicationData;
-
-            const app = createApp(applicationData);
-
-            await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
-                .expect(response => {
-                    expect(response.status).to.be.equal(OK);
-                    expect(response.text)
-                        .to.contain(pageHeading).and
-                        .to.contain('Company Name').and
-                        .to.contain('Penalty details').and
-                        .to.contain('Company Number').and
-                        .to.contain('Type').and
-                        .to.contain('Contact email').and
-                        .to.contain(subHeading).and
-                        .to.contain('Reason').and
-                        .to.contain('Further information').and
-                        .to.contain('Supporting documents').and
-                        .nested.contain('None');
-                });
-        });
     });
 
     describe('POST request', () => {
@@ -132,7 +107,7 @@ describe('CheckYourAppealController', () => {
             await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
             emailService.received().send(Arg.is((email: Email) => {
-                return email.to === 'appeals.ch.fake+DEFAULT@gmail.com'
+                return email.to === 'appeals.ch.fake+NI@gmail.com'
                     && email.body.templateName === 'lfp-appeal-submission-internal';
             }));
             emailService.received().send(Arg.is((email: Email) => {
