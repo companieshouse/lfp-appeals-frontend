@@ -144,7 +144,7 @@ describe('IllnessStartDate schema', () => {
         const validationResult = validator.validate({
             startDay: '1',
             startMonth: '1',
-            startYear: '20',
+            startYear: '2020',
             startDate: new Date('2020-01-01')
         });
         assertValidationErrors(validationResult, []);

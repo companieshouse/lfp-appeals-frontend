@@ -6,8 +6,8 @@ const illnessStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
 const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
 
-const dayMonthRegex: RegExp = /^[0-9]{1,2}$/i;
-const yearRegex: RegExp = /^[0-9]{2,4}$/i;
+const dayMonthRegex: RegExp = /^[0-9]{1,2}$/;
+const yearRegex: RegExp = /^[0-9]{4}$/;
 
 export const schema = Joi.object({
     startDay: Joi.string()

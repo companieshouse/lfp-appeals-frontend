@@ -43,7 +43,7 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
             process.env.ILLNESS_REASON_FEATURE = '1';
 
-            const app = createApp();
+            const app = createApp({});
 
             await request(app)
                 .get(ILLNESS_START_DATE_PAGE_URI)

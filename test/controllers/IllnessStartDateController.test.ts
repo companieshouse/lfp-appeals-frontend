@@ -36,7 +36,7 @@ describe('IllnessStartDateController', () => {
 
             process.env.ILLNESS_REASON_FEATURE = '1';
 
-            const app = createApp();
+            const app = createApp({});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
                 expect(response.text).to.contain(pageHeading);
@@ -47,7 +47,7 @@ describe('IllnessStartDateController', () => {
 
             process.env.ILLNESS_REASON_FEATURE = '0';
 
-            const app = createApp();
+            const app = createApp({});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -62,18 +62,18 @@ describe('IllnessStartDateController', () => {
             process.env.ILLNESS_REASON_FEATURE = '1';
         });
 
-        it('should return 200 when posting a valid date', async () => {
-            const app = createApp();
+        it('should redirect to illness start date page when posting a valid date', async () => {
+            const app = createApp({});
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                 .send({startDay: '01', startMonth: '01', startYear: '2020'})
                 .expect(response => {
-                    expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.contain(pageHeading);
+                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(ILLNESS_START_DATE_PAGE_URI);
                 });
         });
 
         it('should return 422 response with rendered error messages when empty start date was submitted', async () => {
-            const app = createApp();
+            const app = createApp({});
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                 .send({})
                 .expect(response => {
@@ -90,7 +90,7 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error messages when partial start date was submitted',
             async () => {
-                const app = createApp();
+                const app = createApp({});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                     .send({startMonth: '01', startYear: '2020'})
                     .expect(response => {
@@ -105,7 +105,7 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error message invalid start date (format) was submitted',
             async () => {
-                const app = createApp();
+                const app = createApp({});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                     .send({startDay: '123', startMonth: '01', startYear: '2000'})
                     .expect(response => {
@@ -119,9 +119,9 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error message invalid start date (all zeros) was submitted',
             async () => {
-                const app = createApp();
+                const app = createApp({});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
-                    .send({startDay: '00', startMonth: '00', startYear: '00'})
+                    .send({startDay: '00', startMonth: '00', startYear: '0000'})
                     .expect(response => {
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
@@ -132,7 +132,7 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error message invalid start date (non-existing) was submitted',
             async () => {
-                const app = createApp();
+                const app = createApp({});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                     .send({startDay: '32', startMonth: '13', startYear: '2020'})
                     .expect(response => {
@@ -145,7 +145,7 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error message invalid start date (in future) was submitted',
             async () => {
-                const app = createApp();
+                const app = createApp({});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                     .send({startDay: '01', startMonth: '01', startYear: '2029'})
                     .expect(response => {
@@ -160,7 +160,7 @@ describe('IllnessStartDateController', () => {
 
             process.env.ILLNESS_REASON_FEATURE = '0';
 
-            const app = createApp();
+            const app = createApp({});
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                 .send({})
                 .expect(response => {
