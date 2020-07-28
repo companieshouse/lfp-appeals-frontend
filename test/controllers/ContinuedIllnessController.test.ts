@@ -4,16 +4,23 @@ import { createApp } from '../ApplicationFactory';
 
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
+import { Illness } from 'app/models/Illness';
+import { Reasons } from 'app/models/Reasons';
 import { CONTINUED_ILLNESS_PAGE_URI } from 'app/utils/Paths';
 
 describe('ContinuedIllnessController', () => {
 
-    it('should show radio buttons for Yes and No on GET', async () => {
+    it('should show hint containing illness start date, and radio buttons for Yes and No on GET', async () => {
         const  applicationData: Partial<ApplicationData> = {
             appeal: {
                 penaltyIdentifier: {
                     companyNumber: 'NI000000'
-                }
+                },
+                reasons: {
+                    illness: {
+                        illnessStart: new Date(2020, 4, 1)
+                    } as Illness
+                } as Reasons
             } as Appeal,
             navigation: { permissions: [CONTINUED_ILLNESS_PAGE_URI] }
         };
@@ -21,6 +28,8 @@ describe('ContinuedIllnessController', () => {
         const app = createApp(applicationData);
 
         await request(app).get(CONTINUED_ILLNESS_PAGE_URI).expect(res => {
+            expect(res.text).to.include('class="govuk-hint"');
+            expect(res.text).to.include('You told us the illness started on 1 May 2020');
             expect(res.text).to.include('type="radio"');
             expect(res.text).to.include('value="yes"');
             expect(res.text).to.include('value="no"');
