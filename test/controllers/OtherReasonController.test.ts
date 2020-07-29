@@ -72,7 +72,7 @@ describe('OtherReasonController', () => {
         });
 
         it('should redirect to check your appeal page when file transfer feature is disabled', async () => {
-            process.env.FILE_TRANSFER_FEATURE = '0';
+            process.env.FILE_TRANSFER_FEATURE_ENABLED = '0';
 
             const appeal = {
                 penaltyIdentifier: {
@@ -98,7 +98,7 @@ describe('OtherReasonController', () => {
         });
 
         it('should redirect to evidence upload page when file transfer feature is enabled', async () => {
-            process.env.FILE_TRANSFER_FEATURE = '1';
+            process.env.FILE_TRANSFER_FEATURE_ENABLED = '1';
 
             const appeal = {
                 penaltyIdentifier: {

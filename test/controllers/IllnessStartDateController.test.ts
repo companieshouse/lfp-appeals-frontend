@@ -24,11 +24,11 @@ let initialIllnessReasonFeatureFlag: string | undefined;
 describe('IllnessStartDateController', () => {
 
     before(() => {
-        initialIllnessReasonFeatureFlag = process.env.ILLNESS_REASON_FEATURE;
+        initialIllnessReasonFeatureFlag = process.env.ILLNESS_REASON_FEATURE_ENABLED;
     });
 
     after(() => {
-        process.env.ILLNESS_REASON_FEATURE = initialIllnessReasonFeatureFlag;
+        process.env.ILLNESS_REASON_FEATURE_ENABLED = initialIllnessReasonFeatureFlag;
     });
 
     const appeal = {
@@ -42,7 +42,7 @@ describe('IllnessStartDateController', () => {
 
         it('should return 200 when trying to access the page', async () => {
 
-            process.env.ILLNESS_REASON_FEATURE = '1';
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
             const app = createApp({appeal});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
@@ -53,7 +53,7 @@ describe('IllnessStartDateController', () => {
 
         it('should redirect to entry page when illness reason feature is disabled', async () => {
 
-            process.env.ILLNESS_REASON_FEATURE = '0';
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
             const app = createApp({appeal});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI)
@@ -67,7 +67,7 @@ describe('IllnessStartDateController', () => {
     describe('POST request', () => {
 
         beforeEach(() => {
-            process.env.ILLNESS_REASON_FEATURE = '1';
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
         });
 
         it('should redirect to illness start date page when posting a valid date', async () => {
@@ -167,7 +167,7 @@ describe('IllnessStartDateController', () => {
 
         it('should redirect to entry page when illness reason feature is disabled', async () => {
 
-            process.env.ILLNESS_REASON_FEATURE = '0';
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
             const app = createApp({appeal});
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)

@@ -4,9 +4,10 @@ import { controller } from 'inversify-express-utils';
 import { BaseController } from 'app/controllers/BaseController';
 import { StartDateValidator } from 'app/controllers/validators/StartDateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
+import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
+import { Feature } from 'app/utils/Feature';
 import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -21,7 +22,8 @@ const navigation: Navigation = {
     }
 };
 
-@controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, AuthMiddleware, IllnessReasonFeatureMiddleware)
+@controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, AuthMiddleware,
+    FeatureToggleMiddleware(Feature.ILLNESS_REASON))
 export class IllnessStartDateController extends BaseController<Illness> {
 
     constructor() {

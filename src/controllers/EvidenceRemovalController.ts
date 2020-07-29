@@ -10,13 +10,14 @@ import { FormActionProcessor } from 'app/controllers/processors/FormActionProces
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
+import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
+import { Feature } from 'app/utils/Feature';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -83,7 +84,7 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    FileTransferFeatureMiddleware)
+    FeatureToggleMiddleware(Feature.FILE_TRANSFER))
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined,
