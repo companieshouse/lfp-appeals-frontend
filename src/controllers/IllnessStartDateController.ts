@@ -37,14 +37,16 @@ export class IllnessStartDateController extends BaseController<Illness> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const illness = appeal.reasons?.illness || {} as Illness;
+        const illness: Illness | undefined = appeal.reasons?.illness || undefined;
+        if (!illness) {
+            return {};
+        }
         const startDate: Date = new Date(illness.startDate);
+        const day: string = applyPadding(startDate.getDate().toString());
+        const month: string = applyPadding((startDate.getMonth() + 1).toString());
+        const year: string = startDate.getFullYear().toString();
 
-        const day = applyPadding(startDate.getDate().toString());
-        const month = applyPadding((startDate.getMonth() + 1).toString());
-        const year = startDate.getFullYear().toString();
-
-        return { day, month, year };
+        return {day, month, year};
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
