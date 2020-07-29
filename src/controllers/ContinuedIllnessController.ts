@@ -8,7 +8,6 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
-import { Illness } from 'app/models/Illness';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import { CONTINUED_ILLNESS_PAGE_URI } from 'app/utils/Paths';
@@ -30,8 +29,13 @@ const navigation : Navigation = {
     }
 };
 
+interface FormBody {
+    continuedIllness: YesNo;
+    illnessStart: string;
+}
+
 @controller(CONTINUED_ILLNESS_PAGE_URI, IllnessReasonFeatureMiddleware, SessionMiddleware, AuthMiddleware)
-export class ContinuedIllnessController extends BaseController<any> {
+export class ContinuedIllnessController extends BaseController<FormBody> {
 
     constructor() {
         const errorMessage = 'You must tell us if this is a continued illness';
@@ -52,7 +56,7 @@ export class ContinuedIllnessController extends BaseController<any> {
         return { illnessStart };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
         if (appeal.reasons?.illness != null) {
             appeal.reasons.illness.continuedIllness = value.continuedIllness;
             if (value.continuedIllness === YesNo.yes) {

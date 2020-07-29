@@ -4,7 +4,7 @@ export function dateFilter(value: string ): string {
         return parseInt(i, 10);
     });
 
-    if (!year || !month || !day) {
+    if (!year || !month || !day || month > 11 || month < 0) {
         throw new Error('Input should be an ISO-formatted date string');
     }
 

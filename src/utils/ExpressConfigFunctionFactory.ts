@@ -6,7 +6,7 @@ import nunjucks from 'nunjucks';
 import path from 'path';
 
 import { APP_NAME } from 'app/Constants';
-import { dateFilter } from 'app/modules/nunjucks/dateFilter';
+import { dateFilter } from 'app/modules/nunjucks/DateFilter';
 import { getEnv, getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import * as Paths from 'app/utils/Paths';
 
