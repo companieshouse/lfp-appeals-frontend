@@ -2,6 +2,7 @@
 
 {% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
 {% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
+{% from 'govuk/components/input/macro.njk'          import govukInput %}
 {% from 'govuk/components/button/macro.njk'         import govukButton %}
 {% from 'govuk/components/radios/macro.njk'         import govukRadios %}
 
@@ -19,7 +20,15 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      <form method="post" id="continued-illness-form">
+      <form method="post">
+
+        {{
+          govukInput({
+            type: 'hidden',
+            name: 'illnessStart',
+            value: illnessStart
+          })
+        }}
         {{ 
           govukRadios({
             classes: 'govuk-radios--inline',
@@ -34,7 +43,7 @@
               }
             },
             hint: {
-              text: hint
+              text: 'You told us the illness started on ' + illnessStart | date
             },
             errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
             items: [

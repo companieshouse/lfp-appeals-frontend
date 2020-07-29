@@ -6,6 +6,7 @@ import nunjucks from 'nunjucks';
 import path from 'path';
 
 import { APP_NAME } from 'app/Constants';
+import { dateFilter } from 'app/modules/nunjucks/dateFilter';
 import { getEnv, getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import * as Paths from 'app/utils/Paths';
 
@@ -21,7 +22,7 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
     app.use(loggingMiddleware);
 
     app.set('view engine', 'njk');
-    nunjucks.configure([
+    const nunjucksEnv = nunjucks.configure([
         'dist/views',
         'node_modules/govuk-frontend',
         'node_modules/govuk-frontend/components',
@@ -29,6 +30,8 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
         autoescape: true,
         express: app,
     });
+
+    nunjucksEnv.addFilter('date', dateFilter);
 
     app.locals.paths = Paths;
     app.locals.ui = {

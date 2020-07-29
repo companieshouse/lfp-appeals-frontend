@@ -47,17 +47,9 @@ export class ContinuedIllnessController extends BaseController<any> {
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const illnessStartDateRaw = appeal.reasons.illness?.illnessStart;
+        const illnessStart = appeal.reasons.illness?.illnessStart;
 
-        if (!illnessStartDateRaw) {
-            throw new Error('Illness Start Date expected but not found');
-        } else {
-            const illnessStart = illnessStartDateRaw.toLocaleDateString('en-GB', {
-                year: 'numeric', month: 'long', day: 'numeric'
-            });
-            const hint: string = `You told us the illness started on ${illnessStart}`;
-            return { hint };
-        }
+        return { illnessStart };
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
