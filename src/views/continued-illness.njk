@@ -43,7 +43,7 @@
               }
             },
             hint: {
-              text: 'You told us the illness started on ' + illnessStart | date
+              text: 'You told us the illness started on ' + illnessStart | govukDate
             },
             errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
             items: [
