@@ -6,59 +6,59 @@
 {% from 'govuk/components/radios/macro.njk'         import govukRadios %}
 
 {% block pageTitle %}
-    Appeal due to ill health: Is the person still ill?
+  Appeal due to ill health: Is the person still ill?
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {{
-                govukErrorSummary ({
-                    titleText: 'There is a problem with the details you gave us',
-                    errorList: validationResult.errors
-                }) if validationResult and validationResult.errors.length > 0
-            }}
-            
-            <form method="post" id="continued-illness-form">
-                {{ 
-                    govukRadios({
-                        classes: 'govuk-radios--inline',
-                        idPrefix: 'continued-illness',
-                        name: 'continuedIllness',
-                        fieldset: {
-                            describedBy: 'continued-illness-hint',
-                            legend: {
-                                text: 'Is the person still ill?',
-                                isPageHeading: true,
-                                classes: 'govuk-fieldset__legend--xl'
-                            }
-                        },
-                        hint: {
-                            text: hint
-                        },
-                        errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
-                        items: [
-                            {
-                                value: 'yes',
-                                text: 'Yes'
-                            },
-                            {
-                                value: 'no',
-                                text: 'No'
-                            }
-                        ]
-                    })
-                }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem with the details you gave us',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
 
-                {{ 
-                            govukButton({
-                                text: 'Continue',
-                                attributes: {
-                                    id: 'submit'
-                                }
-                            }) 
-                        }}
-            </form>
-        </div>
+      <form method="post" id="continued-illness-form">
+        {{ 
+          govukRadios({
+            classes: 'govuk-radios--inline',
+            idPrefix: 'continued-illness',
+            name: 'continuedIllness',
+            fieldset: {
+              describedBy: 'continued-illness-hint',
+              legend: {
+                text: 'Is the person still ill?',
+                isPageHeading: true,
+                classes: 'govuk-fieldset__legend--xl'
+              }
+            },
+            hint: {
+              text: hint
+            },
+            errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
+            items: [
+              {
+                value: 'yes',
+                text: 'Yes'
+              },
+              {
+                value: 'no',
+                text: 'No'
+              }
+            ]
+          })
+        }}
+
+        {{ 
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          }) 
+        }}
+      </form>
     </div>
+  </div>
 {% endblock %}
