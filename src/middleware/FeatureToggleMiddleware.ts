@@ -11,7 +11,7 @@ export function FeatureToggleMiddleware(feature: Feature): RequestHandler {
         throw Error('Feature must be defined');
     }
 
-    return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    return (req: Request, res: Response, next: NextFunction): any => {
         if (isFeatureEnabled(feature)) {
             return next();
         } else {
