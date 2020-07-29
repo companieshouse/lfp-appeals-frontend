@@ -11,6 +11,7 @@ import {
 } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
+import { createDefaultAppeal } from 'test/models/AppDataFactory';
 
 const pageHeading: string = 'When did the illness start?';
 const errorSummaryHeading: string = 'There is a problem';
@@ -31,12 +32,7 @@ describe('IllnessStartDateController', () => {
         process.env.ILLNESS_REASON_FEATURE_ENABLED = initialIllnessReasonFeatureFlag;
     });
 
-    const appeal = {
-        penaltyIdentifier: {
-            companyNumber: 'NI000000',
-            penaltyReference: 'A00000001'
-        }
-    } as Appeal;
+    const appeal = createDefaultAppeal();
 
     describe('GET request', () => {
 

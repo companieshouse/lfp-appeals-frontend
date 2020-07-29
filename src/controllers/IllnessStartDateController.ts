@@ -47,12 +47,12 @@ export class IllnessStartDateController extends BaseController<Illness> {
         return { day, month, year };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, illness: Illness): Appeal {
-        if (appeal.reasons.illness != null) {
-            appeal.reasons.illness = illness;
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
+        if (appeal.reasons?.illness != null) {
+            appeal.reasons.illness = value;
         } else {
             appeal.reasons = {
-                illness
+                illness: value
             } as Reasons;
         }
         loggerInstance()
