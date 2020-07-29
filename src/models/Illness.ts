@@ -1,3 +1,3 @@
 export interface Illness {
-    startDate: Date;
+    startDate: string;
 }
