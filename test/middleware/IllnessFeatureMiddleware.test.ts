@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { after, before } from 'mocha';
 
 import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
+import { ENTRY_PAGE_URI } from 'app/utils/Paths';
 
 let initialIllnessReasonFeatureFlag: string | undefined;
 
@@ -30,7 +31,7 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
             new IllnessReasonFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
-            mockResponse.didNotReceive().redirect(Arg.any());
+            mockResponse.didNotReceive().redirect(Arg.is(arg => arg === ENTRY_PAGE_URI));
         });
     });
 
@@ -46,7 +47,7 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
             new IllnessReasonFeatureMiddleware().handler(mockRequest, mockResponse, mockNext);
 
-            mockResponse.received().redirect(Arg.any());
+            mockResponse.received().redirect(Arg.is(arg => arg === ENTRY_PAGE_URI));
         });
     });
 
