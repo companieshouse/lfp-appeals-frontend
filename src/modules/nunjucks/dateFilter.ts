@@ -8,9 +8,20 @@ export function dateFilter(value: string ): string {
         throw new Error('Input should be an ISO-formatted date string');
     }
 
-    month--; // Months are indexed from zero
+    const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ];
 
-    return new Date(year, month, day).toLocaleDateString('en-GB', {
-        year: 'numeric', month: 'long', day: 'numeric'
-    });
+    return `${day} ${months[month-1]} ${year}`;
 }
