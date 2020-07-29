@@ -51,6 +51,37 @@ describe('IllnessStartDateController', () => {
             });
         });
 
+        it('should return 200 when trying to access page with a session', async () => {
+
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
+
+            const appealWithReasons = {
+                penaltyIdentifier: {
+                    companyNumber: 'NI000000',
+                    penaltyReference: 'A00000001'
+                },
+                reasons: {
+                    other: {
+                        title: 'I have reasons',
+                        description: 'they are legit'
+                    },
+                    illness: {
+                        startDate: '2020-01-01T00:00:00.000Z'
+                    }
+                }
+            } as Appeal;
+
+            const app = createApp({appeal: appealWithReasons});
+            await request(app).get(ILLNESS_START_DATE_PAGE_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.contain(pageHeading)
+                        .and.to.contain('id="start-day" name="day" type="text" value="01"')
+                        .and.to.contain('id="start-month" name="month" type="text" value="01"')
+                        .and.to.contain('id="start-year" name="year" type="text" value="2020"');
+                });
+        });
+
         it('should redirect to entry page when illness reason feature is disabled', async () => {
 
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
