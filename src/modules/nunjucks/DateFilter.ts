@@ -14,7 +14,7 @@ export function dateFilter(value: string): string {
         throw new Error('Input should be formatted as yyyy-MM-dd');
     }
 
-    /* const months = [
+    const months = [
         'January',
         'February',
         'March',
@@ -27,12 +27,7 @@ export function dateFilter(value: string): string {
         'October',
         'November',
         'December'
-    ]; */
+    ];
 
-    const dateObj = new Date(Date.UTC(year, month - 1, day));
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-
-    return new Intl.DateTimeFormat('en-GB', options).format(dateObj);
-
-    // return `${day} ${months[month-1]} ${year}`;
+    return `${day} ${months[month-1]} ${year}`;
 }
