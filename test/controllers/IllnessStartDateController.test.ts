@@ -158,7 +158,6 @@ describe('IllnessStartDateController', () => {
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                     .send({day: '01', month: '01', year: futureYear})
                     .expect(response => {
-                        console.log(response);
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
                             .and.to.include(errorSummaryHeading)
