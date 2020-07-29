@@ -1,8 +1,9 @@
 {% extends 'layout.njk' %}
 
-{% from 'govuk/components/back-link/macro.njk'     import govukBackLink %}
-{% from 'govuk/components/button/macro.njk' import govukButton %}
-{% from 'govuk/components/radios/macro.njk' import govukRadios %}
+{% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
+{% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
+{% from 'govuk/components/button/macro.njk'         import govukButton %}
+{% from 'govuk/components/radios/macro.njk'         import govukRadios %}
 
 {% block pageTitle %}
   You must tell us the reason for the appeal
@@ -18,45 +19,48 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-width-container">
-        <main role="main" class="govuk-main-wrapper">
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <form method="post" id="choose-reasons-form">
-                        {{ 
-                            govukRadios({
-                                idPrefix: 'choose-reason',
-                                name: 'reason',
-                                fieldset: {
-                                    describedBy: 'choose-reason-hint',
-                                    legend: {
-                                        text: 'Why are you appealing this penalty?',
-                                        isPageHeading: true,
-                                        classes: 'govuk-fieldset__legend--xl'
-                                    }
-                                },
-                                hint: {
-                                    text: 'You can add more reasons later'
-                                },
-                                errorMessage: validationResult.getErrorForField('reason') if validationResult,
-                                items: [
-                                    { value: 'illness', text: 'Illness and health issues' },
-                                    { value: 'other', text: 'I’m appealing for another reason' }
-                                ]
-                            })
-                        }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem with the details you gave us',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
 
-                        {{ 
-                            govukButton({
-                                text: 'Continue',
-                                attributes: {
-                                    id: 'submit'
-                                }
-                            }) 
-                        }}
-                    </form>
-                </div>
-            </div>
-        </main>
+      <form method="post" id="choose-reasons-form">
+        {{ 
+          govukRadios({
+            idPrefix: 'choose-reason',
+            name: 'reason',
+            fieldset: {
+              describedBy: 'choose-reason-hint',
+              legend: {
+                text: 'Why are you appealing this penalty?',
+                isPageHeading: true,
+                classes: 'govuk-fieldset__legend--xl'
+              }
+            },
+            hint: {
+              text: 'You can add more reasons later'
+            },
+            errorMessage: validationResult.getErrorForField('reason') if validationResult,
+            items: [
+              { value: 'illness', text: 'Illness and health issues' },
+              { value: 'other', text: 'I’m appealing for another reason' }
+            ]
+          })
+        }}
+
+        {{ 
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          }) 
+        }}
+      </form>
     </div>
+  </div>
 {% endblock %}
