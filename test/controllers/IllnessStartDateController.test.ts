@@ -153,10 +153,12 @@ describe('IllnessStartDateController', () => {
 
         it('should return 422 response with rendered error message invalid start date (in future) was submitted',
             async () => {
+                const futureYear = (new Date().getFullYear() + 1).toString();
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_START_DATE_PAGE_URI)
-                    .send({day: '01', month: '01', year: '2029'})
+                    .send({day: '01', month: '01', year: futureYear})
                     .expect(response => {
+                        console.log(response);
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
                             .and.to.include(errorSummaryHeading)
