@@ -18,7 +18,7 @@ describe('ContinuedIllnessController', () => {
                 },
                 reasons: {
                     illness: {
-                        illnessStart: '2020-5-1'
+                        illnessStart: '2020-05-01'
                     } as Illness
                 } as Reasons
             } as Appeal,
@@ -47,7 +47,7 @@ describe('ContinuedIllnessController', () => {
                 },
                 reasons: {
                     illness: {
-                        illnessStart: '2020-5-1'
+                        illnessStart: '2020-05-01'
                     } as Illness
                 } as Reasons
             } as Appeal,
@@ -58,7 +58,7 @@ describe('ContinuedIllnessController', () => {
 
         await request(app)
             .post(CONTINUED_ILLNESS_PAGE_URI)
-            .send({ illnessStart: '2020-5-1' })
+            .send({ illnessStart: '2020-05-01' })
             .expect(res => {
                 expect(res.status).to.equal(422);
                 expect(res.text).to.contain('You must tell us if this is a continued illness');
@@ -73,7 +73,7 @@ describe('ContinuedIllnessController', () => {
                 },
                 reasons: {
                     illness: {
-                        illnessStart: '2020-5-1'
+                        illnessStart: '2020-05-01'
                     } as Illness
                 } as Reasons
             } as Appeal,

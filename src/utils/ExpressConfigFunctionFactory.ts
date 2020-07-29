@@ -31,7 +31,7 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
         express: app,
     });
 
-    nunjucksEnv.addFilter('govukDate', dateFilter);
+    nunjucksEnv.addFilter('date', dateFilter);
 
     app.locals.paths = Paths;
     app.locals.ui = {
