@@ -5,11 +5,12 @@ import { BaseController } from './BaseController';
 import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { IllnessReasonFeatureMiddleware } from 'app/middleware/IllnessReasonFeatureMiddleware';
+import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
+import { Feature } from 'app/utils/Feature';
 import { CONTINUED_ILLNESS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -34,7 +35,8 @@ interface FormBody {
     illnessStart: string;
 }
 
-@controller(CONTINUED_ILLNESS_PAGE_URI, IllnessReasonFeatureMiddleware, SessionMiddleware, AuthMiddleware)
+@controller(CONTINUED_ILLNESS_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
+    SessionMiddleware, AuthMiddleware)
 export class ContinuedIllnessController extends BaseController<FormBody> {
 
     constructor() {
