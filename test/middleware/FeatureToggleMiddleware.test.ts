@@ -9,18 +9,15 @@ import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware'
 import { Feature } from 'app/utils/Feature';
 import { ENTRY_PAGE_URI } from 'app/utils/Paths';
 
-let initialFileTransferFeatureFlag: string | undefined;
 let initialIllnessReasonFeatureFlag: string | undefined;
 
 describe('Illness Reason Feature Toggle Middleware', () => {
 
     before(() => {
-        initialFileTransferFeatureFlag = process.env.FILE_TRANSFER_FEATURE_ENABLED;
         initialIllnessReasonFeatureFlag = process.env.ILLNESS_REASON_FEATURE_ENABLED;
     });
 
     after(() => {
-        process.env.FILE_TRANSFER_FEATURE_ENABLED = initialFileTransferFeatureFlag;
         process.env.ILLNESS_REASON_FEATURE_ENABLED = initialIllnessReasonFeatureFlag;
     });
 
@@ -44,7 +41,6 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
         it('should call next() if feature flag is on', () => {
 
-            process.env.FILE_TRANSFER_FEATURE_ENABLED = '1';
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
             const mockRequest = Substitute.for<Request>();
@@ -64,7 +60,6 @@ describe('Illness Reason Feature Toggle Middleware', () => {
 
         it('should redirect if feature flag is off', () => {
 
-            process.env.FILE_TRANSFER_FEATURE_ENABLED = '0';
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
             const mockRequest = Substitute.for<Request>();
@@ -80,4 +75,3 @@ describe('Illness Reason Feature Toggle Middleware', () => {
         });
     });
 });
-

@@ -35,8 +35,8 @@ interface FormBody {
     illnessStart: string;
 }
 
-@controller(CONTINUED_ILLNESS_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
-    AuthMiddleware)
+@controller(CONTINUED_ILLNESS_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
+    SessionMiddleware, AuthMiddleware)
 export class ContinuedIllnessController extends BaseController<FormBody> {
 
     constructor() {
