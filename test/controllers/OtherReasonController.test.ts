@@ -7,7 +7,6 @@ import request from 'supertest';
 import 'app/controllers/OtherReasonController';
 import { Appeal } from 'app/models/Appeal';
 import {
-    CHECK_YOUR_APPEAL_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
@@ -71,34 +70,7 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it('should redirect to check your appeal page when file transfer feature is disabled', async () => {
-            process.env.FILE_TRANSFER_FEATURE = '0';
-
-            const appeal = {
-                penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    penaltyReference: 'A00000001'
-                },
-                reasons: {
-                    other: {
-                        title: 'I have reasons',
-                        description: 'they are legit'
-                    }
-                }
-            } as Appeal;
-
-            const app = createApp({ appeal });
-
-            await request(app).post(OTHER_REASON_PAGE_URI)
-                .send(appeal.reasons.other)
-                .expect(response => {
-                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.header.location).to.include(CHECK_YOUR_APPEAL_PAGE_URI);
-                });
-        });
-
-        it('should redirect to evidence upload page when file transfer feature is enabled', async () => {
-            process.env.FILE_TRANSFER_FEATURE = '1';
+        it('should redirect to evidence upload page when valid data was submitted', async () => {
 
             const appeal = {
                 penaltyIdentifier: {
