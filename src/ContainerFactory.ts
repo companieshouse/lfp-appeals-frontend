@@ -8,7 +8,6 @@ import * as util from 'util';
 
 import { APP_NAME } from 'app/Constants';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { CompanyAuthConfig } from 'app/models/CompanyAuthConfig';
 import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
 import { SessionStoreConfig } from 'app/models/SessionConfig';
@@ -101,8 +100,6 @@ export function createContainer(): Container {
             companyAuthConfig,
             sessionConfig,
             companyAuthFeatureEnabled));
-
-    container.bind(FeatureToggleMiddleware).toConstantValue(FeatureToggleMiddleware);
 
     container.load(buildProviderModule());
     return container;
