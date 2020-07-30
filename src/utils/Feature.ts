@@ -1,4 +1,3 @@
 export enum Feature {
-    FILE_TRANSFER = 'FILE_TRANSFER',
     ILLNESS_REASON = 'ILLNESS_REASON'
 }

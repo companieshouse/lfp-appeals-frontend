@@ -9,7 +9,6 @@ import { RequestWithNavigation, SafeNavigationBaseController } from 'app/control
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
@@ -61,8 +60,7 @@ class NavigationPermissionProcessor implements FormActionProcessor {
     }
 }
 // tslint:disable-next-line: max-classes-per-file
-@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    FileTransferFeatureMiddleware)
+@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined, [NavigationPermissionProcessor]);

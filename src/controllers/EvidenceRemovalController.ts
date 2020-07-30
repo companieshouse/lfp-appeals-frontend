@@ -10,7 +10,6 @@ import { FormActionProcessor } from 'app/controllers/processors/FormActionProces
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
@@ -82,8 +81,7 @@ class Processor implements FormActionProcessor {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-@controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    FileTransferFeatureMiddleware)
+@controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined,

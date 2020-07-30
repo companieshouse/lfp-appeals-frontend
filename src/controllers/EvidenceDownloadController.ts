@@ -8,7 +8,6 @@ import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 import { FileRestrictionsAuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
-import { FileTransferFeatureMiddleware } from 'app/middleware/FileTransferFeatureMiddleware';
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
@@ -21,7 +20,6 @@ const errorCustomTemplate = 'error-custom';
 @controller(DOWNLOAD_FILE_PAGE_URI,
     SessionMiddleware,
     FileRestrictionsAuthMiddleware,
-    FileTransferFeatureMiddleware,
     LoadAppealMiddleware,
     FileRestrictionsMiddleware
 )
