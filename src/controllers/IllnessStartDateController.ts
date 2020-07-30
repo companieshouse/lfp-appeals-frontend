@@ -2,7 +2,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 
 import { BaseController } from 'app/controllers/BaseController';
-import { StartDateValidator } from 'app/controllers/validators/StartDateValidator';
+import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
@@ -28,16 +28,20 @@ const applyPadding = (dayMonth: string): string => {
     return dayMonth.length < 2 ? dayMonth.padStart(2, '0') : dayMonth;
 };
 
-@controller(ILLNESS_START_DATE_PAGE_URI, SessionMiddleware, AuthMiddleware,
-    FeatureToggleMiddleware(Feature.ILLNESS_REASON))
-export class IllnessStartDateController extends BaseController<Illness> {
+interface FormBody {
+    illnessStart: string;
+}
+
+@controller(ILLNESS_START_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
+    AuthMiddleware)
+export class IllnessStartDateController extends BaseController<FormBody> {
 
     constructor() {
-        super(template, navigation, new StartDateValidator());
+        super(template, navigation, new DateValidator());
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const illness: Illness | undefined = appeal.reasons?.illness || undefined;
+        const illness: Illness | undefined = appeal.reasons?.illness;
         if (!illness) {
             return {};
         }
@@ -49,12 +53,15 @@ export class IllnessStartDateController extends BaseController<Illness> {
         return {day, month, year};
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: Illness): Appeal {
-        if (appeal.reasons?.illness != null) {
-            appeal.reasons.illness = value;
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+        const illness: Illness | undefined = appeal.reasons.illness;
+        if (illness != null) {
+            illness.illnessStart = value.date;
         } else {
             appeal.reasons = {
-                illness: value
+                illness: {
+                    illnessStart: value.date,
+                }
             } as Reasons;
         }
         loggerInstance()

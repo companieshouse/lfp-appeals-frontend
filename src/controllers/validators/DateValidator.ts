@@ -5,7 +5,7 @@ import { schema } from 'app/models/fields/Date.schema';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
 
-export class StartDateValidator extends FormValidator {
+export class DateValidator extends FormValidator {
     constructor() {
         super(schema);
     }
@@ -15,22 +15,22 @@ export class StartDateValidator extends FormValidator {
         const dayField: string = 'day';
         const monthField: string = 'month';
         const yearField: string = 'year';
-        const startDateField: string = 'illnessStart';
+        const dateField: string = 'date';
 
-        request.body.illnessStart = new Date(
+        request.body.date = new Date(
             `${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`);
 
         const validationResult: ValidationResult = await super.validate(request);
 
         if (validationResult.errors.length > 0) {
-            const startDateError: ValidationError | undefined = validationResult.getErrorForField(startDateField);
+            const dateError: ValidationError | undefined = validationResult.getErrorForField(dateField);
 
-            if (startDateError &&
+            if (dateError &&
                 (validationResult.getErrorForField(dayField) ||
                     validationResult.getErrorForField(monthField) ||
                     validationResult.getErrorForField(yearField))) {
 
-                validationResult.errors.splice(validationResult.errors.indexOf(startDateError), 1);
+                validationResult.errors.splice(validationResult.errors.indexOf(dateError), 1);
             }
         }
         return validationResult;
