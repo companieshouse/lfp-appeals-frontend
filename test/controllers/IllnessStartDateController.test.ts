@@ -72,8 +72,8 @@ describe('IllnessStartDateController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('id="start-day" name="day" type="text" value="01"')
-                        .and.to.contain('id="start-month" name="month" type="text" value="01"')
+                        .and.to.contain('id="start-day" name="day" type="text" value="1"')
+                        .and.to.contain('id="start-month" name="month" type="text" value="1"')
                         .and.to.contain('id="start-year" name="year" type="text" value="2020"');
                 });
         });
