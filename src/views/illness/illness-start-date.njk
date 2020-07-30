@@ -24,6 +24,7 @@
         {% set classes_day = 'govuk-input--width-2' %}
         {% set classes_month = 'govuk-input--width-2' %}
         {% set classes_year = 'govuk-input--width-4' %}
+        {% set illnessStartErrorMessage = false %}
 
         {% if validationResult and validationResult.errors.length > 0 %}
 
@@ -36,7 +37,7 @@
            {% if validationResult.getErrorForField('year') %}
             {% set classes_year = classes_year + ' govuk-input--error' %}
           {% endif %}
-          {% if validationResult.getErrorForField('startDate') %}
+          {% if validationResult.getErrorForField('date') %}
             {% set classes_day = classes_day + ' govuk-input--error' %}
             {% set classes_month = classes_month + ' govuk-input--error' %}
             {% set classes_year = classes_year + ' govuk-input--error' %}
@@ -52,14 +53,10 @@
             </ul>
           {% endset %}
 
-          {% if errorMessages %}
-            {% set illnessStartErrorMessage = {
-              html: errorMessages
-              }
-            %}
-          {% else %}
-            {% set illnessStartErrorMessage = false %}
-          {% endif %}
+          {% set illnessStartErrorMessage = {
+            html: errorMessages
+            }
+          %}
         {% endif %}
 
         {{
