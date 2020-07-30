@@ -2,20 +2,12 @@
 
 {% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
 {% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
+{% from 'govuk/components/input/macro.njk'          import govukInput %}
 {% from 'govuk/components/button/macro.njk'         import govukButton %}
 {% from 'govuk/components/radios/macro.njk'         import govukRadios %}
 
 {% block pageTitle %}
-  You must tell us the reason for the appeal
-{% endblock %}
-
-{% block backLink %}
-  {{ 
-    govukBackLink({
-      text: 'Back',
-      href: ''
-    }) 
-  }}
+  Appeal due to ill health: Is the person still ill?
 {% endblock %}
 
 {% block content %}
@@ -28,26 +20,41 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      <form method="post" id="choose-reasons-form">
+      <form method="post">
+
+        {{
+          govukInput({
+            type: 'hidden',
+            name: 'illnessStart',
+            value: illnessStart
+          })
+        }}
         {{ 
           govukRadios({
-            idPrefix: 'choose-reason',
-            name: 'reason',
+            classes: 'govuk-radios--inline',
+            idPrefix: 'continued-illness',
+            name: 'continuedIllness',
             fieldset: {
-              describedBy: 'choose-reason-hint',
+              describedBy: 'continued-illness-hint',
               legend: {
-                text: 'Why are you appealing this penalty?',
+                text: 'Is the person still ill?',
                 isPageHeading: true,
                 classes: 'govuk-fieldset__legend--xl'
               }
             },
             hint: {
-              text: 'You can add more reasons later'
+              text: 'You told us the illness started on ' + illnessStart | date
             },
-            errorMessage: validationResult.getErrorForField('reason') if validationResult,
+            errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
             items: [
-              { value: 'illness', text: 'Illness and health issues' },
-              { value: 'other', text: 'I’m appealing for another reason' }
+              {
+                value: 'yes',
+                text: 'Yes'
+              },
+              {
+                value: 'no',
+                text: 'No'
+              }
             ]
           })
         }}

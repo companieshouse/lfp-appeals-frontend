@@ -7,13 +7,11 @@ import { Readable, Writable } from 'stream';
 import { BaseAsyncHttpController } from './BaseAsyncHttpController';
 
 import { FileRestrictionsAuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
 import { APPEAL_ID_QUERY_KEY, COMPANY_NUMBER_QUERY_KEY, LoadAppealMiddleware } from 'app/middleware/LoadAppealMiddleware';
 import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
-import { Feature } from 'app/utils/Feature';
 import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'download-file';
@@ -22,7 +20,6 @@ const errorCustomTemplate = 'error-custom';
 @controller(DOWNLOAD_FILE_PAGE_URI,
     SessionMiddleware,
     FileRestrictionsAuthMiddleware,
-    FeatureToggleMiddleware(Feature.FILE_TRANSFER),
     LoadAppealMiddleware,
     FileRestrictionsMiddleware
 )

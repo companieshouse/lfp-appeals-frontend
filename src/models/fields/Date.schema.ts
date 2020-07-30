@@ -37,7 +37,7 @@ export const schema = Joi.object({
             'string.empty': invalidYearErrorMessage,
             'string.pattern.base': invalidYearErrorMessage
         }),
-    startDate: Joi.date()
+    illnessStart: Joi.date()
         .required()
         .iso()
         .max('now')

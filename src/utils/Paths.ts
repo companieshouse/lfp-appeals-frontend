@@ -1,8 +1,8 @@
 export const ROOT_URI = '/appeal-a-penalty';
 
 const CATEGORY_PREFIXES = {
-    OTHER_REASON: `${ROOT_URI}/other`,
-    ILLNESS: `${ROOT_URI}/illness`
+    ILLNESS: `${ROOT_URI}/illness`,
+    OTHER_REASON: `${ROOT_URI}/other`
 };
 
 // Endpoints
@@ -15,6 +15,7 @@ export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const SELECT_THE_PENALTY_PAGE_URI = `${ROOT_URI}/select-the-penalty`;
 export const REVIEW_PENALTY_PAGE_URI =`${ROOT_URI}/review-penalty`;
 export const CHOOSE_REASON_PAGE_URI =`${ROOT_URI}/choose-reason`;
+export const CONTINUED_ILLNESS_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/continued-illness`;
 export const OTHER_REASON_DISCLAIMER_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/other-reason-entry`;
 export const OTHER_REASON_PAGE_URI = `${CATEGORY_PREFIXES.OTHER_REASON}/reason-other`;
 export const EVIDENCE_QUESTION_URI = `${ROOT_URI}/evidence`;

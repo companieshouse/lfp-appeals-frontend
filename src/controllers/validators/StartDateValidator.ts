@@ -15,9 +15,9 @@ export class StartDateValidator extends FormValidator {
         const dayField: string = 'day';
         const monthField: string = 'month';
         const yearField: string = 'year';
-        const startDateField: string = 'startDate';
+        const startDateField: string = 'illnessStart';
 
-        request.body.startDate = new Date(
+        request.body.illnessStart = new Date(
             `${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`);
 
         const validationResult: ValidationResult = await super.validate(request);

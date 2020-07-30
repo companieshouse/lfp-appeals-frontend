@@ -1,3 +1,8 @@
+
+import { YesNo } from './fields/YesNo';
+
 export interface Illness {
-    startDate: string;
+    illnessStart: string;
+    continuedIllness: YesNo;
+    illnessEnd?: string;
 }

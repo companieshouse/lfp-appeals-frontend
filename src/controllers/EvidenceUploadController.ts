@@ -9,7 +9,6 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
@@ -17,7 +16,6 @@ import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { Feature } from 'app/utils/Feature';
 import { parseFormData } from 'app/utils/MultipartFormDataParser';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
@@ -75,8 +73,7 @@ const continueButtonValidator: Validator = {
     }
 };
 
-@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    FeatureToggleMiddleware(Feature.FILE_TRANSFER))
+@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);

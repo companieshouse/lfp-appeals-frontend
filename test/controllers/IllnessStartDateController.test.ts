@@ -62,7 +62,7 @@ describe('IllnessStartDateController', () => {
                         description: 'they are legit'
                     },
                     illness: {
-                        startDate: '2020-01-01T00:00:00.000Z'
+                        illnessStart: '2020-01-01T00:00:00.000Z'
                     }
                 }
             } as Appeal;

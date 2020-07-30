@@ -41,7 +41,7 @@ export class IllnessStartDateController extends BaseController<Illness> {
         if (!illness) {
             return {};
         }
-        const startDate: Date = new Date(illness.startDate);
+        const startDate: Date = new Date(illness.illnessStart);
         const day: string = applyPadding(startDate.getDate().toString());
         const month: string = applyPadding((startDate.getMonth() + 1).toString());
         const year: string = startDate.getFullYear().toString();

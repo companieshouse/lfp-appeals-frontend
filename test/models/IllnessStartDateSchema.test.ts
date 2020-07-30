@@ -9,7 +9,7 @@ const validator = new SchemaValidator(schema);
 const dayField: string = 'day';
 const monthField: string = 'month';
 const yearField: string = 'year';
-const startDateField: string = 'startDate';
+const startDateField: string = 'illnessStart';
 
 describe('IllnessStartDate schema', () => {
 
@@ -28,7 +28,7 @@ describe('IllnessStartDate schema', () => {
             day: undefined,
             month: undefined,
             year: undefined,
-            startDate: undefined
+            illnessStart: undefined
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -43,7 +43,7 @@ describe('IllnessStartDate schema', () => {
             day: null,
             month: null,
             year: null,
-            startDate: null
+            illnessStart: null
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -58,7 +58,7 @@ describe('IllnessStartDate schema', () => {
             day: '',
             month: '',
             year: '',
-            startDate: ''
+            illnessStart: ''
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -73,7 +73,7 @@ describe('IllnessStartDate schema', () => {
             day: ' ',
             month: ' ',
             year: ' ',
-            startDate: ' '
+            illnessStart: ' '
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -88,7 +88,7 @@ describe('IllnessStartDate schema', () => {
             day: '001',
             month: 'abc',
             year: '*@&',
-            startDate: '0'
+            illnessStart: '0'
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -104,7 +104,7 @@ describe('IllnessStartDate schema', () => {
             day: '33',
             month: '01',
             year: '2020',
-            startDate: '2020-01-33'
+            illnessStart: '2020-01-33'
         });
         assertValidationErrors(validationResult, [
             new ValidationError(startDateField, 'Enter a real date')
@@ -117,7 +117,7 @@ describe('IllnessStartDate schema', () => {
             day: '01',
             month: '01',
             year: '2020',
-            startDate: '2020-01-01'
+            illnessStart: '2020-01-01'
         });
         assertValidationErrors(validationResult, [
             new ValidationError(startDateField, 'Enter a real date')
@@ -129,7 +129,7 @@ describe('IllnessStartDate schema', () => {
             day: '01',
             month: '01',
             year: '2030',
-            startDate: new Date('2030-01-01')
+            illnessStart: new Date('2030-01-01')
         });
         assertValidationErrors(validationResult, [
             new ValidationError(startDateField, 'Start date must be today or in the past')
@@ -141,7 +141,7 @@ describe('IllnessStartDate schema', () => {
             day: '01',
             month: '01',
             year: '2020',
-            startDate: new Date('2020-01-01')
+            illnessStart: new Date('2020-01-01')
         });
         assertValidationErrors(validationResult, []);
     });
@@ -150,7 +150,7 @@ describe('IllnessStartDate schema', () => {
             day: '1',
             month: '1',
             year: '2020',
-            startDate: new Date('2020-01-01')
+            illnessStart: new Date('2020-01-01')
         });
         assertValidationErrors(validationResult, []);
     });
