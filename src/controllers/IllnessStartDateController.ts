@@ -25,7 +25,7 @@ const navigation: Navigation = {
 };
 
 interface FormBody {
-    illnessStart: string;
+    date: Date;
 }
 
 @controller(ILLNESS_START_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
@@ -49,14 +49,16 @@ export class IllnessStartDateController extends BaseController<FormBody> {
         return {day, month, year};
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
-        const illness: Illness | undefined = appeal.reasons.illness;
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
+        const illness: Illness | undefined = appeal.reasons?.illness;
+
         if (illness != null) {
-            illness.illnessStart = value.date;
+            illness.illnessStart = value.date.toISOString().split('T')[0];
+            console.log(illness.illnessStart);
         } else {
             appeal.reasons = {
                 illness: {
-                    illnessStart: value.date,
+                    illnessStart: value.date.toISOString().split('T')[0]
                 }
             } as Reasons;
         }

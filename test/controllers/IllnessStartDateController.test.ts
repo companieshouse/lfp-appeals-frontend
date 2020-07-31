@@ -11,7 +11,6 @@ import {
 } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
-import { createDefaultAppeal } from 'test/models/AppDataFactory';
 
 const pageHeading: string = 'When did the illness start?';
 const errorSummaryHeading: string = 'There is a problem';
@@ -32,7 +31,15 @@ describe('IllnessStartDateController', () => {
         process.env.ILLNESS_REASON_FEATURE_ENABLED = initialIllnessReasonFeatureFlag;
     });
 
-    const appeal = createDefaultAppeal();
+    const appeal = {
+        penaltyIdentifier: {
+            companyNumber: 'NI000000',
+            penaltyReference: 'A00000001'
+        },
+        reasons: {
+            illness: {}
+        }
+    } as Appeal;
 
     describe('GET request', () => {
 
@@ -57,10 +64,6 @@ describe('IllnessStartDateController', () => {
                     penaltyReference: 'A00000001'
                 },
                 reasons: {
-                    other: {
-                        title: 'I have reasons',
-                        description: 'they are legit'
-                    },
                     illness: {
                         illnessStart: '2020-01-01T00:00:00.000Z'
                     }
@@ -132,20 +135,6 @@ describe('IllnessStartDateController', () => {
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
                             .and.to.include(errorSummaryHeading)
-                            .and.to.include(invalidStartDayErrorMessage)
-                            .and.to.not.include(invalidDateErrorMessage)
-                            .and.to.not.include(invalidDateFutureErrorMessage);
-                    });
-            });
-
-        it('should return 422 response with rendered error message invalid start date (format) was submitted',
-            async () => {
-                const app = createApp({appeal});
-                await request(app).post(ILLNESS_START_DATE_PAGE_URI)
-                    .send({day: '123', month: '01', year: '2000'})
-                    .expect(response => {
-                        expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
-                        expect(response.text).to.include(pageHeading)
                             .and.to.include(invalidStartDayErrorMessage)
                             .and.to.not.include(invalidDateErrorMessage)
                             .and.to.not.include(invalidDateFutureErrorMessage);

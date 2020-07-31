@@ -98,26 +98,12 @@ describe('Date schema', () => {
         ]);
     });
 
-
     it('should reject invalid (non-existing) date', () => {
         const validationResult = validator.validate({
             day: '33',
             month: '01',
             year: '2020',
-            date: '2020-01-33'
-        });
-        assertValidationErrors(validationResult, [
-            new ValidationError(dateField, 'Enter a real date')
-        ]);
-    });
-
-
-    it('should reject invalid (non iso format) date', () => {
-        const validationResult = validator.validate({
-            day: '01',
-            month: '01',
-            year: '2020',
-            date: '2020-01-01'
+            date: new Date('2020-01-33')
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dateField, 'Enter a real date')
@@ -145,6 +131,7 @@ describe('Date schema', () => {
         });
         assertValidationErrors(validationResult, []);
     });
+
     it('should accept single digit date values', () => {
         const validationResult = validator.validate({
             day: '1',
