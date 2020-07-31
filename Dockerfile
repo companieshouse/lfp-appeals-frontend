@@ -27,7 +27,6 @@ WORKDIR /app
 
 COPY --from=prod-deps-image /build/node_modules/ ./node_modules
 COPY --from=build-image /build/dist/ ./dist
-COPY .env.vagrant ./
 
 EXPOSE 3000
 CMD [ "node", "/app/dist/App.js" ]

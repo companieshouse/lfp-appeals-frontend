@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv';
 
-const DEFAULT_ENV_FILE = `${__dirname}/../../.env`;
+import { getEnv } from 'app/utils/EnvironmentUtils';
 
 export const loadEnvironmentVariablesFromFiles = () => {
-    dotenv.config({ path: DEFAULT_ENV_FILE });
-    if (process.env.NODE_ENV) {
-        const envFilePath = `${__dirname}/../../.env.${process.env.NODE_ENV}`;
+    const env = getEnv('NODE_ENV');
+    if (env) {
+        const envFilePath = `${__dirname}/../../.env.${env}`;
         dotenv.config({ path: envFilePath });
     }
 };

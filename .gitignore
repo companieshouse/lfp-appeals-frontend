@@ -5,7 +5,7 @@ node_modules/
 .DS_Store
 .vscode/
 .env.*
-!.env.vagrant
+!.env.test
 coverage-report
 .nyc_output/
 .scannerwork/
