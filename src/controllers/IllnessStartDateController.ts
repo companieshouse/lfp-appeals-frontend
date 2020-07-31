@@ -54,7 +54,6 @@ export class IllnessStartDateController extends BaseController<FormBody> {
 
         if (illness != null) {
             illness.illnessStart = value.date.toISOString().split('T')[0];
-            console.log(illness.illnessStart);
         } else {
             appeal.reasons = {
                 illness: {
