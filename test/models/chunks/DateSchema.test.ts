@@ -58,7 +58,7 @@ describe('Date schema', () => {
             day: '',
             month: '',
             year: '',
-            date: ''
+            date: new Date('')
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -73,7 +73,7 @@ describe('Date schema', () => {
             day: ' ',
             month: ' ',
             year: ' ',
-            date: ' '
+            date: new Date(' ')
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
