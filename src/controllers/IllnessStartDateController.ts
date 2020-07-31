@@ -10,17 +10,17 @@ import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { Reasons } from 'app/models/Reasons';
 import { Feature } from 'app/utils/Feature';
-import { ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
+import { CONTINUED_ILLNESS_PAGE_URI, ILLNESS_START_DATE_PAGE_URI, WHO_WAS_ILL_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template: string = 'illness/illness-start-date';
 
 const navigation: Navigation = {
     previous(): string {
-        return ILLNESS_START_DATE_PAGE_URI;
+        return WHO_WAS_ILL_PAGE_URI;
     },
     next(): string {
-        return ILLNESS_START_DATE_PAGE_URI;
+        return CONTINUED_ILLNESS_PAGE_URI;
     }
 };
 

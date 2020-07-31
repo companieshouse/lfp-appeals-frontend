@@ -9,6 +9,15 @@
    Appeal due to ill health: Tell us when the illness started
 {% endblock %}
 
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
