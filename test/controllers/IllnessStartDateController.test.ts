@@ -6,6 +6,7 @@ import request from 'supertest';
 import 'app/controllers/EvidenceDownloadController';
 import { Appeal } from 'app/models/Appeal';
 import {
+    CONTINUED_ILLNESS_PAGE_URI,
     ENTRY_PAGE_URI,
     ILLNESS_START_DATE_PAGE_URI
 } from 'app/utils/Paths';
@@ -98,13 +99,13 @@ describe('IllnessStartDateController', () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
         });
 
-        it('should redirect to illness start date page when posting a valid date', async () => {
+        it('should redirect to Continued Illness page when posting a valid date', async () => {
             const app = createApp({appeal});
             await request(app).post(ILLNESS_START_DATE_PAGE_URI)
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.header.location).to.include(ILLNESS_START_DATE_PAGE_URI);
+                    expect(response.header.location).to.include(CONTINUED_ILLNESS_PAGE_URI);
                 });
         });
 

@@ -14,7 +14,7 @@ import { Feature } from 'app/utils/Feature';
 import { CONTINUED_ILLNESS_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-const template = 'continued-illness';
+const template = 'illness/continued-illness';
 
 const navigation : Navigation = {
     previous(): string {
