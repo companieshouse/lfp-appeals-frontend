@@ -1,6 +1,6 @@
 export const dateToString = (date: Date): string => {
 
-    if(isNaN(date.getDate())){
+    if (isNaN(date.getDate())) {
         throw new Error('DateFormatter - Invalid date');
     }
 
