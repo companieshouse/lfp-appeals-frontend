@@ -1,5 +1,10 @@
 {% extends 'layout.njk' %}
 
+{% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
+{% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
+{% from 'govuk/components/button/macro.njk'         import govukButton %}
+{% from 'govuk/components/radios/macro.njk'         import govukRadios %}
+
 {% block pageTitle %}
   Appeal due to ill health: Who was ill?
 {% endblock %}
@@ -7,10 +12,62 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        Who was ill?
-      </h1>
-      <p class="govuk-body">This page is currently in development.</p>
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem with the details you gave us',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
+
+      <form method="post">
+        {% set otherPersonHtml %}
+          {{ govukInput({
+            id: "other-person",
+            name: "otherPerson",
+            type: "text",
+            spellcheck: false,
+            classes: "govuk-!-width-one-third",
+            label: {
+              text: "Their relationship to the company"
+            },
+            errorMessage: validationResult.getErrorForField('otherPerson') if validationResult,
+          }) }}
+        {% endset -%}
+
+        {{ 
+          govukRadios({
+            idPrefix: 'ill-person',
+            name: 'illPerson',
+            fieldset: {
+              describedBy: 'ill-person-hint',
+              legend: {
+                text: 'Who was ill?',
+                isPageHeading: true,
+                classes: 'govuk-fieldset__legend--xl'
+              }
+            },
+            errorMessage: validationResult.getErrorForField('illPerson') if validationResult,
+            items: [
+              { value: 'director', text: 'A company director' },
+              { value: 'accountant', text: 'A company accountant or agent' },
+              { value: 'family', text: 'A family member of a director' },
+              { value: 'employee', text: 'A company employee' },
+              { value: 'otherPerson', text: 'Someone else', conditional: {
+                html: otherPersonHtml
+              } }
+            ]
+          })
+        }}
+
+        {{ 
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          }) 
+        }}
+      </form>
     </div>
   </div>
 {% endblock %}
