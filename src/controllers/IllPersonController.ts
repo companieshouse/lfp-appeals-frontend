@@ -1,15 +1,14 @@
-import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller, httpGet } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { Feature } from 'app/utils/Feature';
-import { WHO_WAS_ILL_PAGE_URI } from 'app/utils/Paths';
+import { ILL_PERSON_PAGE_URI } from 'app/utils/Paths';
 
-const template = 'illness/who-was-ill';
+const template = 'illness/ill-person';
 
-@controller(WHO_WAS_ILL_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware)
-export class WhoWasIllController extends BaseAsyncHttpController {
+@controller(ILL_PERSON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON))
+export class IllPersonController extends BaseAsyncHttpController {
 
     @httpGet('')
     public async redirectView (): Promise<void> {
