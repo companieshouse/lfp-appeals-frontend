@@ -1,6 +1,7 @@
 // import Joi from '@hapi/joi';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
+import { FormValidator } from './validators/FormValidator';
 
 import { BaseController } from 'app/controllers/BaseController';
 // import { FormValidator } from 'app/controllers/validators/FormValidator';
@@ -8,13 +9,15 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
+import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason.ts';
 import { IllPerson } from 'app/models/fields/IllPerson';
+import { schema } from 'app/models/fields/IllPerson.schema';
 import { Feature } from 'app/utils/Feature';
 import { ILL_PERSON_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-const template = 'illness/who-was-ill';
+const template = 'illness/ill-person';
 
 const navigation : Navigation = {
     previous(): string {
@@ -40,22 +43,23 @@ interface FormBody {
 export class IllPersonController extends BaseController<FormBody> {
 
     constructor() {
-        /* const errorMessage = 'You must tell us if this is a continued illness';
-        const schema: Joi.AnySchema = Joi.object({
-            continuedIllness: createSchema(errorMessage)
-        }).unknown(true); */
-
         super(
             template,
             navigation,
-            // new FormValidator(schema)
+            new FormValidator(schema)
         );
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const illnessStart = appeal.reasons.illness?.illnessStart;
+        const illness: Illness | undefined = appeal.reasons?.illness;
+        if (!illness) {
+            return {};
+        }
 
-        return { illnessStart };
+        return {
+            illPerson: illness.illPerson,
+            otherPerson: illness.otherPerson
+        };
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
