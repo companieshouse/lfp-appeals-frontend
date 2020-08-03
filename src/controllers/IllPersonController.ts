@@ -1,10 +1,8 @@
-// import Joi from '@hapi/joi';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 import { FormValidator } from './validators/FormValidator';
 
 import { BaseController } from 'app/controllers/BaseController';
-// import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
