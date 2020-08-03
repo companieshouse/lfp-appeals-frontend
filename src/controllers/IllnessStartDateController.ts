@@ -1,5 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
+import moment from 'moment';
 
 import { BaseController } from 'app/controllers/BaseController';
 import { DateValidator } from 'app/controllers/validators/DateValidator';
@@ -42,7 +43,7 @@ export class IllnessStartDateController extends BaseController<FormBody> {
             return {};
         }
 
-        const [year, month, day]= illness.illnessStart.split('-', 3);
+        const [year, month, day] = illness.illnessStart.split('-', 3);
 
         return {day, month, year};
     }
@@ -51,11 +52,11 @@ export class IllnessStartDateController extends BaseController<FormBody> {
         const illness: Illness | undefined = appeal.reasons?.illness;
 
         if (illness != null) {
-            illness.illnessStart = value.date.toISOString().split('T')[0];
+            illness.illnessStart = moment(value.date).format('YYYY-MM-DD');
         } else {
             appeal.reasons = {
                 illness: {
-                    illnessStart: value.date.toISOString().split('T')[0]
+                    illnessStart: moment(value.date).format('YYYY-MM-DD')
                 }
             } as Reasons;
         }
