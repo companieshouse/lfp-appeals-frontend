@@ -41,10 +41,8 @@ export class IllnessStartDateController extends BaseController<FormBody> {
         if (!illness) {
             return {};
         }
-        const startDate: Date = new Date(illness.illnessStart);
-        const day: string = startDate.getDate().toString();
-        const month: string = (startDate.getMonth() + 1).toString();
-        const year: string = startDate.getFullYear().toString();
+
+        const [year, month, day]= illness.illnessStart.split('-', 3);
 
         return {day, month, year};
     }
