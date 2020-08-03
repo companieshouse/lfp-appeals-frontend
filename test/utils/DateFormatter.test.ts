@@ -18,7 +18,7 @@ describe('DateFormatter', () => {
 
     });
 
-    it('should return incremented month value [0-11] by one for correct string representation [1-12]', () =>{
+    it('should return correct month number for a given month value', () =>{
 
         const date: Date = new Date();
         date.setDate(30);
