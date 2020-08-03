@@ -35,7 +35,7 @@ describe('DateFormatter', () => {
 
     });
 
-    it('should return YYYY-0M-DD format for dates with single digit months', () =>{
+    it('should return a padded month format for single digit months', () =>{
 
         const date: Date = new Date();
         date.setDate(30);
