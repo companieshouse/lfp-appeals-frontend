@@ -9,7 +9,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { Reasons } from 'app/models/Reasons';
-import { dateToString } from 'app/utils/DateFormatter';
+import { dateToLocalTimeString } from 'app/utils/DateFormatter';
 import { Feature } from 'app/utils/Feature';
 import { CONTINUED_ILLNESS_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -52,11 +52,11 @@ export class IllnessStartDateController extends BaseController<FormBody> {
         const illness: Illness | undefined = appeal.reasons?.illness;
 
         if (illness != null) {
-            illness.illnessStart = dateToString(value.date);
+            illness.illnessStart = dateToLocalTimeString(value.date);
         } else {
             appeal.reasons = {
                 illness: {
-                    illnessStart: dateToString(value.date)
+                    illnessStart: dateToLocalTimeString(value.date)
                 }
             } as Reasons;
         }

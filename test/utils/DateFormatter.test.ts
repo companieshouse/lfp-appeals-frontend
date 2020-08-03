@@ -1,27 +1,27 @@
 import { expect } from 'chai';
 
-import { dateToString } from 'app/utils/DateFormatter';
+import { dateToLocalTimeString } from 'app/utils/DateFormatter';
 
 describe('DateFormatter', () => {
 
     it('should throw invalid date error', () =>{
 
         const date: Date = new Date('nonsense date value');
-        expect(() => dateToString(date)).throws('DateFormatter - Invalid date');
+        expect(() => dateToLocalTimeString(date)).throws('DateFormatter - Invalid date');
 
     });
 
     it('should return YYYY-MM-DD format for a local date', () =>{
 
         const date: Date = new Date('2020-10-30T23:00:00.000');
-        expect(dateToString(date)).to.equal('2020-10-30');
+        expect(dateToLocalTimeString(date)).to.equal('2020-10-30');
 
     });
 
     it('should return YYYY-MM-DD format for a UTC date', () =>{
 
         const date: Date = new Date('2020-10-30T23:00:00.000z');
-        expect(dateToString(date)).to.equal('2020-10-30');
+        expect(dateToLocalTimeString(date)).to.equal('2020-10-30');
 
     });
 
@@ -31,7 +31,7 @@ describe('DateFormatter', () => {
         date.setDate(30);
         date.setMonth(10);
         date.setFullYear(2020);
-        expect(dateToString(date)).to.equal('2020-11-30');
+        expect(dateToLocalTimeString(date)).to.equal('2020-11-30');
 
     });
 
@@ -41,7 +41,7 @@ describe('DateFormatter', () => {
         date.setDate(30);
         date.setMonth(4);
         date.setFullYear(2020);
-        expect(dateToString(date)).to.equal('2020-05-30');
+        expect(dateToLocalTimeString(date)).to.equal('2020-05-30');
 
     });
 
@@ -51,7 +51,7 @@ describe('DateFormatter', () => {
         date.setDate(3);
         date.setMonth(11);
         date.setFullYear(2020);
-        expect(dateToString(date)).to.equal('2020-12-03');
+        expect(dateToLocalTimeString(date)).to.equal('2020-12-03');
 
     });
 });

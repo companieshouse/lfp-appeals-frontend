@@ -1,4 +1,4 @@
-export const dateToString = (date: Date): string => {
+export const dateToLocalTimeString = (date: Date): string => {
 
     if (isNaN(date.getDate())) {
         throw new Error('DateFormatter - Invalid date');
