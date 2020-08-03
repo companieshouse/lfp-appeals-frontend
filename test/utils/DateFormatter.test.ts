@@ -11,10 +11,23 @@ describe('DateFormatter', () => {
 
     });
 
-    it('should return YYYY-MM-DD format for a local date', () =>{
+    it('should return YYYY-MM-DD format for a date', () =>{
 
         const date: Date = new Date('2020-10-30T23:00:00.000');
         expect(dateToLocalTimeString(date)).to.equal('2020-10-30');
+
+    });
+
+    it('should return string for local date rather than UTC', () =>{
+
+        const date: Date = new Date('Mon Aug 03 2015 00:00:00 GMT+01:00');
+
+        const dateUTC: string = date.toISOString().split('T')[0];
+        const dateLocal: string = '2015-08-03';
+
+        expect(dateToLocalTimeString(date))
+            .to.equal(dateLocal).and
+            .to.not.equal(dateUTC);
 
     });
 
