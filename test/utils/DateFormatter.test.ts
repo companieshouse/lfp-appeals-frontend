@@ -4,6 +4,13 @@ import { dateToString } from 'app/utils/DateFormatter';
 
 describe('DateFormatter', () => {
 
+    it('should throw invalid date error', () =>{
+
+        const date: Date = new Date('nonsense date value');
+        expect(() => dateToString(date)).throws('DateFormatter - Invalid date');
+
+    });
+
     it('should return YYYY-MM-DD format for a local date', () =>{
 
         const date: Date = new Date('2020-10-30T23:00:00.000');
