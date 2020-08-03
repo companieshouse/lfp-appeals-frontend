@@ -4,7 +4,7 @@ import { dateToString } from 'app/utils/DateFormatter';
 
 describe('DateFormatter', () => {
 
-    it('should return YYYY-MM-DD format for a date', () =>{
+    it('should return YYYY-MM-DD format for a local date', () =>{
 
         const date: Date = new Date('2020-10-30T23:00:00.000');
         expect(dateToString(date)).to.equal('2020-10-30');
@@ -18,7 +18,7 @@ describe('DateFormatter', () => {
 
     });
 
-    it('should return increment month value [0-11] by one for correct string representation [1-12]', () =>{
+    it('should return incremented month value [0-11] by one for correct string representation [1-12]', () =>{
 
         const date: Date = new Date();
         date.setDate(30);
