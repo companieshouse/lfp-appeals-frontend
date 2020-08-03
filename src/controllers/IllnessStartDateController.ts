@@ -42,8 +42,6 @@ export class IllnessStartDateController extends BaseController<FormBody> {
             return {};
         }
 
-        console.log(illness.illnessStart);
-
         const dateIngredients = illness.illnessStart.split('-', 3);
 
         const year: string = dateIngredients[0];
