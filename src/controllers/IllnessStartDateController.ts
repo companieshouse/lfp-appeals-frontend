@@ -42,11 +42,7 @@ export class IllnessStartDateController extends BaseController<FormBody> {
             return {};
         }
 
-        const dateIngredients = illness.illnessStart.split('-', 3);
-
-        const year: string = dateIngredients[0];
-        const month: string = dateIngredients[1];
-        const day: string = dateIngredients[2];
+        const [year, month, day]= illness.illnessStart.split('-', 3);
 
         return {day, month, year};
     }
