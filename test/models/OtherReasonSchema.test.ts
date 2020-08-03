@@ -1,4 +1,3 @@
-
 import { schema } from 'app/models/OtherReason.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';

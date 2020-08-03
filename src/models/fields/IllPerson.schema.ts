@@ -17,10 +17,11 @@ export const schema = Joi.object({
         }),
     otherPerson: Joi.when('illPerson', {
             is: IllPerson.otherPerson,
-            then: Joi.string().required().messages({
+            then: Joi.string().required().pattern(/\w+/).messages({
                 'any.required': emptyOtherPersonErrorMessage,
                 'string.base': emptyOtherPersonErrorMessage,
-                'string.empty': emptyOtherPersonErrorMessage
+                'string.empty': emptyOtherPersonErrorMessage,
+                'string.pattern.base': emptyOtherPersonErrorMessage
             })
         })
 }).options({ abortEarly: true });
