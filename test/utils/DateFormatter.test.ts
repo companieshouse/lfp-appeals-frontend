@@ -18,13 +18,6 @@ describe('DateFormatter', () => {
 
     });
 
-    it('should return YYYY-MM-DD format for a UTC date', () =>{
-
-        const date: Date = new Date('2020-10-30T23:00:00.000z');
-        expect(dateToLocalTimeString(date)).to.equal('2020-10-30');
-
-    });
-
     it('should return incremented month value [0-11] by one for correct string representation [1-12]', () =>{
 
         const date: Date = new Date();
