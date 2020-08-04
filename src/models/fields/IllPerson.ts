@@ -5,3 +5,7 @@ export enum IllPerson {
     employee = 'employee',
     someoneElse = 'someoneElse'
 }
+
+export function getIllPersonValues(): string[] {
+    return Object.values(IllPerson).filter(x => typeof x === 'string');
+}

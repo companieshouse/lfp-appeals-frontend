@@ -1,6 +1,6 @@
 import Joi from '@hapi/joi';
 
-import { IllPerson } from 'app/models/fields/IllPerson';
+import { getIllPersonValues, IllPerson } from 'app/models/fields/IllPerson';
 
 export const emptySelectionErrorMessage = 'You must select a person';
 export const emptyOtherPersonErrorMessage = 'You must tell us more information';
@@ -8,7 +8,7 @@ export const emptyOtherPersonErrorMessage = 'You must tell us more information';
 export const schema = Joi.object({
     illPerson: Joi.string()
         .required()
-        .valid(...Object.values(IllPerson).filter(x => typeof x === 'string'))
+        .valid(...getIllPersonValues())
         .messages({
             'any.required': emptySelectionErrorMessage,
             'any.only': emptySelectionErrorMessage,
