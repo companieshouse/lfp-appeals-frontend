@@ -14,7 +14,7 @@
 
 ### Merge instructions
 
-We are commited to keeping commit history clean, consistent and linear. To achive this commit should be structured as follows:
+We are committed to keeping commit history clean, consistent and linear. To achieve this commit should be structured as follows:
 
 ```
 <type>[optional scope]: <description>
