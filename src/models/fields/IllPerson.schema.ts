@@ -12,11 +12,9 @@ export const schema = Joi.object({
         .messages({
             'any.required': emptySelectionErrorMessage,
             'any.only': emptySelectionErrorMessage,
-            'string.base': emptySelectionErrorMessage,
-            'string.empty': emptySelectionErrorMessage
         }),
     otherPerson: Joi.when('illPerson', {
-            is: IllPerson.otherPerson,
+            is: IllPerson.someoneElse,
             then: Joi.string().required().pattern(/\w+/).messages({
                 'any.required': emptyOtherPersonErrorMessage,
                 'string.base': emptyOtherPersonErrorMessage,

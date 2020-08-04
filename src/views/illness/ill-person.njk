@@ -13,7 +13,6 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
       {{
         govukErrorSummary ({
           titleText: 'There is a problem with the details you gave us',
@@ -23,17 +22,18 @@
 
       <form method="post">
         {% set otherPersonHtml %}
-          {{ govukInput({
-            id: "other-person",
-            name: "otherPerson",
-            type: "text",
-            spellcheck: false,
-            classes: "govuk-!-width-one-third",
-            label: {
-              text: "Their relationship to the company"
-            },
-            errorMessage: validationResult.getErrorForField('otherPerson') if validationResult
-          }) }}
+          {{ 
+            govukInput({
+              id: 'other-person',
+              name: 'otherPerson',
+              type: 'text',
+              classes: 'govuk-!-width-one-third',
+              label: {
+                text: 'Their relationship to the company'
+              },
+              errorMessage: validationResult.getErrorForField('otherPerson') if validationResult
+            })
+          }}
         {% endset -%}
 
         {{ 
@@ -70,9 +70,9 @@
                 checked: true if illPerson === 'employee'
               },
               {
-                value: 'otherPerson',
+                value: 'someoneElse',
                 text: 'Someone else',
-                checked: true if illPerson === 'otherPerson',
+                checked: true if illPerson === 'someoneElse',
                 conditional: {
                   html: otherPersonHtml
                 } 

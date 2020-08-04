@@ -60,25 +60,25 @@ export class IllPersonController extends BaseController<FormBody> {
         };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
 
-        const dummyOther: OtherReason = {
+        /* const dummyOther: OtherReason = {
             title: 'Dummy Reason',
             description: 'The current Appeal data model requires an Other-type reason, ' +
                 'and reworking the data model is outside of the scope of this feature. ' +
                 'Until the Appeal object has been remodelled, this dummy reason must ' +
                 'be included.'
-        };
+        }; */
 
         if (appeal.reasons?.illness != null) {
             appeal.reasons.illness.illPerson = value.illPerson;
-            if (value.illPerson !== IllPerson.otherPerson) {
+            if (value.illPerson !== IllPerson.someoneElse) {
                 appeal.reasons.illness.otherPerson = undefined;
             }
         } else {
             appeal.reasons = {
-                illness: value,
-                other: dummyOther
+                illness: value as Illness,
+                other: {} as OtherReason
             };
         }
 

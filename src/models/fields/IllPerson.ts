@@ -3,5 +3,5 @@ export enum IllPerson {
     accountant = 'accountant',
     family = 'family',
     employee = 'employee',
-    otherPerson = 'otherPerson'
+    someoneElse = 'someoneElse'
 }

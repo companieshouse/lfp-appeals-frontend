@@ -11,16 +11,16 @@ const emptyOtherPersonErrorMessage = 'You must tell us more information';
 
 describe('IllPerson schema', () => {
 
-    describe('should reject', () => {
+    describe('invalid', () => {
 
-        it('empty object with only one error', () => {
+        it('should reject empty object with only one error', () => {
             const validationResult = validator.validate({});
             assertValidationErrors(validationResult, [
                 new ValidationError('illPerson', emptySelectionErrorMessage)
             ]);
         });
 
-        it('undefined values with only one error', () => {
+        it('should reject undefined values with only one error', () => {
             const validationResult = validator.validate({
                 illPerson: undefined,
                 otherPerson: undefined
@@ -30,7 +30,7 @@ describe('IllPerson schema', () => {
             ]);
         });
 
-        it('null values with only one error', () => {
+        it('should reject null values with only one error', () => {
             const validationResult = validator.validate({
                 illPerson: null,
                 otherPerson: null
@@ -40,7 +40,7 @@ describe('IllPerson schema', () => {
             ]);
         });
 
-        it('empty values with only one error', () => {
+        it('should reject empty values with only one error', () => {
             const validationResult = validator.validate({
                 illPerson: '',
                 otherPerson: ''
@@ -50,7 +50,7 @@ describe('IllPerson schema', () => {
             ]);
         });
 
-        it('blank values', () => {
+        it('should reject blank values', () => {
             const validationResult = validator.validate({
                 illPerson: ' ',
                 otherPerson: ' '
@@ -60,11 +60,11 @@ describe('IllPerson schema', () => {
             ]);
         });
 
-        it('falsy values for Other Person when "Other" is selected', () => {
+        it('should reject falsy values for Other Person when "Someone Else" is selected', () => {
             const falsyValues = [null, '', ' ', undefined];
             falsyValues.forEach(val => {
                 const validationResult = validator.validate({
-                    illPerson: IllPerson.otherPerson,
+                    illPerson: IllPerson.someoneElse,
                     otherPerson: val
                 });
 
@@ -75,8 +75,8 @@ describe('IllPerson schema', () => {
         });
     });
 
-    describe('should allow', () => {
-        it('all valid non-"other" values for illPerson without otherPerson field', () => {
+    describe('valid', () => {
+        it('should accept all valid non-"someone else" values for illPerson without otherPerson field', () => {
             const validValues = ['director', 'accountant', 'family', 'employee'];
             validValues.forEach(val => {
                 const validationResult = validator.validate({
@@ -86,9 +86,9 @@ describe('IllPerson schema', () => {
             });
         });
 
-        it('"Other" for illPerson with otherPerson field filled', () => {
+        it('should accept "Other" for illPerson with otherPerson field filled', () => {
             const validationResult = validator.validate({
-                illPerson: IllPerson.otherPerson,
+                illPerson: IllPerson.someoneElse,
                 otherPerson: 'Director’s Dog'
             });
             assertValidationErrors(validationResult, []);
