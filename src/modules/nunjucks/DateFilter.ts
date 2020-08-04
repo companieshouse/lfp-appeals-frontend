@@ -2,7 +2,7 @@ export function dateFilter(value: string): string {
 
     const dateRegex: RegExp = /(\d{4})-(\d{2})-(\d{2})/;
     if (!dateRegex.test(value)) {
-        throw new Error('Input should be formatted as yyyy-MM-dd');
+        throw new Error(`Input should be formatted as yyyy-MM-dd: ${value}`);
     }
 
     // tslint:disable-next-line: prefer-const
@@ -10,8 +10,8 @@ export function dateFilter(value: string): string {
         return parseInt(i, 10);
     });
 
-    if (month > 11 || month < 0) {
-        throw new Error('Input should be formatted as yyyy-MM-dd');
+    if (month > 12 || month < 1) {
+        throw new Error(`Input contains invalid month: ${value}`);
     }
 
     const months = [
