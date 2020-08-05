@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import { MOVED_TEMPORARILY, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';
 import { createApp } from '../ApplicationFactory';
 
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { IllPerson } from 'app/models/fields/IllPerson';
-import { ILL_PERSON_PAGE_URI } from 'app/utils/Paths';
+import { ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 
 describe('IllPersonController', () => {
 
@@ -64,6 +64,20 @@ describe('IllPersonController', () => {
                 expect(res.status).to.equal(UNPROCESSABLE_ENTITY);
                 expect(res.text).to.contain('You must tell us more information');
             });
+        });
+
+        it('should redirect to Illness Start Date page when valid information is entered', async () => {
+            const app = createApp(applicationData);
+
+            await request(app).post(ILL_PERSON_PAGE_URI)
+                .send({
+                    illPerson: IllPerson.someoneElse,
+                    otherPerson: 'QA'
+                })
+                .expect(res => {
+                    expect(res.status).to.equal(MOVED_TEMPORARILY);
+                    expect(res.header.location).to.include(ILLNESS_START_DATE_PAGE_URI);
+                });
         });
     });
 });
