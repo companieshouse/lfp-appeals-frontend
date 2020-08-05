@@ -73,7 +73,7 @@ export class IllPersonController extends BaseController<FormBody> {
 
             } else {
 
-                appeal.reasons.illness.otherPerson = undefined
+                appeal.reasons.illness.otherPerson = undefined;
 
             }
 
