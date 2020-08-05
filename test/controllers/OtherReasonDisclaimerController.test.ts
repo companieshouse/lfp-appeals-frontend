@@ -17,12 +17,13 @@ describe('OtherReasonDisclaimerController', () => {
             penaltyIdentifier: {
                 companyNumber: 'NI000000',
                 penaltyReference: 'A00000001'
-            },
+            }
         } as Appeal,
         navigation: {
             permissions: [OTHER_REASON_DISCLAIMER_PAGE_URI]
         }
     };
+
 
     describe('GET request', () => {
         it('should return 200 when trying to access the other-reason-entry page', async () => {
