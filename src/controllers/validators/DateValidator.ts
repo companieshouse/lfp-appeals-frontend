@@ -1,10 +1,10 @@
 import { Request } from 'express';
+import moment from 'moment';
 import { FormValidator } from './FormValidator';
 
 import { schema } from 'app/models/fields/Date.schema';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
-import moment from 'moment';
 
 export class DateValidator extends FormValidator {
     constructor() {
@@ -18,7 +18,8 @@ export class DateValidator extends FormValidator {
         const yearField: string = 'year';
         const dateField: string = 'date';
 
-        request.body.date = moment(`${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`).toDate();
+        request.body.date = moment(`${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`)
+            .toDate();
 
         const validationResult: ValidationResult = await super.validate(request);
 

@@ -1,9 +1,10 @@
+import moment from 'moment';
+
 import { schema } from 'app/models/fields/Date.schema';
 import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 
 import { assertValidationErrors } from 'test/models/ValidationAssertions';
-import moment from 'moment';
 
 const validator = new SchemaValidator(schema);
 
