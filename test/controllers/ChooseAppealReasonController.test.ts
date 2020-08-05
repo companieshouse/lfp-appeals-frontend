@@ -6,7 +6,7 @@ import { createApp } from '../ApplicationFactory';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
 import { ReasonType } from 'app/models/fields/ReasonType';
-import { CHOOSE_REASON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
+import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI } from 'app/utils/Paths';
 
 describe('ChooseAppealReasonController', () => {
 
@@ -45,7 +45,16 @@ describe('ChooseAppealReasonController', () => {
             });
         });
 
-        it('should send the user to the first page of the Other journey if a reason is selected', async () => {
+        it('should send the user to the first page of the Illness journey if Illness reason is selected', async () => {
+            const app = createApp(applicationData);
+
+            await request(app).post(CHOOSE_REASON_PAGE_URI).send({ reason: ReasonType.illness }).expect(res => {
+                expect(res.status).to.equal(MOVED_TEMPORARILY);
+                expect(res.header.location).to.include(ILL_PERSON_PAGE_URI);
+            });
+        });
+
+        it('should send the user to the first page of the Other journey if Other reason is selected', async () => {
             const app = createApp(applicationData);
 
             await request(app).post(CHOOSE_REASON_PAGE_URI).send({ reason: ReasonType.other }).expect(res => {
