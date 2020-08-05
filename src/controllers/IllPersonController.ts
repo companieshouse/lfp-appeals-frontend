@@ -67,13 +67,13 @@ export class IllPersonController extends BaseController<FormBody> {
 
             appeal.reasons.illness.illPerson = value.illPerson;
 
-            if (value.illPerson !== IllPerson.someoneElse) {
+            if (value.illPerson === IllPerson.someoneElse) {
 
-                appeal.reasons.illness.otherPerson = undefined;
+                appeal.reasons.illness.otherPerson = value.otherPerson;
 
             } else {
 
-                appeal.reasons.illness.otherPerson = value.otherPerson
+                appeal.reasons.illness.otherPerson = undefined
 
             }
 
