@@ -39,7 +39,7 @@ export class IllnessStartDateController extends BaseController<FormBody> {
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
         const illness: Illness | undefined = appeal.reasons?.illness;
-        if (!illness) {
+        if (!illness?.illnessStart) {
             return {};
         }
 

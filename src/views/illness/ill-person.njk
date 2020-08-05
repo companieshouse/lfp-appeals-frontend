@@ -10,6 +10,15 @@
   Appeal due to ill health: Who was ill?
 {% endblock %}
 
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -22,11 +31,12 @@
 
       <form method="post">
         {% set otherPersonHtml %}
-          {{ 
+          {{
             govukInput({
               id: 'other-person',
               name: 'otherPerson',
               type: 'text',
+              value: otherPerson,
               classes: 'govuk-!-width-one-third',
               label: {
                 text: 'Their relationship to the company'
@@ -36,7 +46,7 @@
           }}
         {% endset -%}
 
-        {{ 
+        {{
           govukRadios({
             idPrefix: 'ill-person',
             name: 'illPerson',
@@ -75,19 +85,19 @@
                 checked: true if illPerson === 'someoneElse',
                 conditional: {
                   html: otherPersonHtml
-                } 
+                }
               }
             ]
           })
         }}
 
-        {{ 
+        {{
           govukButton({
             text: 'Continue',
             attributes: {
               id: 'submit'
             }
-          }) 
+          })
         }}
       </form>
     </div>

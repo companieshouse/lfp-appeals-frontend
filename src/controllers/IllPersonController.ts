@@ -12,17 +12,17 @@ import { OtherReason } from 'app/models/OtherReason.ts';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { schema } from 'app/models/fields/IllPerson.schema';
 import { Feature } from 'app/utils/Feature';
-import { ILL_PERSON_PAGE_URI } from 'app/utils/Paths';
+import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'illness/ill-person';
 
 const navigation : Navigation = {
     previous(): string {
-        return '';
+        return CHOOSE_REASON_PAGE_URI;
     },
     next(): string {
-        return '';
+        return ILLNESS_START_DATE_PAGE_URI;
     },
     actions: (_: boolean) => {
         return {
@@ -50,6 +50,7 @@ export class IllPersonController extends BaseController<FormBody> {
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
         const illness: Illness | undefined = appeal.reasons?.illness;
+
         if (!illness) {
             return {};
         }
@@ -61,11 +62,21 @@ export class IllPersonController extends BaseController<FormBody> {
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
+
         if (appeal.reasons?.illness != null) {
+
             appeal.reasons.illness.illPerson = value.illPerson;
-            if (value.illPerson !== IllPerson.someoneElse) {
+
+            if (value.illPerson === IllPerson.someoneElse) {
+
+                appeal.reasons.illness.otherPerson = value.otherPerson;
+
+            } else {
+
                 appeal.reasons.illness.otherPerson = undefined;
+
             }
+
         } else {
             appeal.reasons = {
                 illness: value as Illness,
