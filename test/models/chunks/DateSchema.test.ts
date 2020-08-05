@@ -148,6 +148,28 @@ describe('Date schema', () => {
         ]);
     });
 
+    it('should reject 29th of feb during a non-leap year', () => {
+        const validationResult = validator.validate({
+            day: '29',
+            month: '02',
+            year: '1997',
+            date: moment('1997-02-29').toDate()
+        });
+        assertValidationErrors(validationResult, [
+            new ValidationError(dateField, 'Enter a real date')
+        ]);
+    });
+
+    it('should accept 29th of feb during a leap year', () => {
+        const validationResult = validator.validate({
+            day: '29',
+            month: '02',
+            year: '1996',
+            date: moment('1996-02-29').toDate()
+        });
+        assertValidationErrors(validationResult, []);
+    });
+
     it('should accept valid date values', () => {
         const validationResult = validator.validate({
             day: '31',
