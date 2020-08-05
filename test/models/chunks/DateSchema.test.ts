@@ -3,6 +3,7 @@ import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 
 import { assertValidationErrors } from 'test/models/ValidationAssertions';
+import moment from 'moment';
 
 const validator = new SchemaValidator(schema);
 
@@ -58,7 +59,7 @@ describe('Date schema', () => {
             day: '',
             month: '',
             year: '',
-            date: new Date('')
+            date: moment('').toDate()
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -73,7 +74,7 @@ describe('Date schema', () => {
             day: ' ',
             month: ' ',
             year: ' ',
-            date: new Date(' ')
+            date: moment(' ').toDate()
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dayField, 'You must enter a day'),
@@ -103,7 +104,7 @@ describe('Date schema', () => {
             day: '33',
             month: '01',
             year: '2020',
-            date: new Date('2020-01-33')
+            date: moment('2020-01-33').toDate()
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dateField, 'Enter a real date')
@@ -115,19 +116,43 @@ describe('Date schema', () => {
             day: '01',
             month: '01',
             year: '2030',
-            date: new Date('2030-01-01')
+            date: moment('2030-01-01').toDate()
         });
         assertValidationErrors(validationResult, [
             new ValidationError(dateField, 'Start date must be today or in the past')
         ]);
     });
 
+    it('should reject invalid calendar dates - feb 30th does not exist', () => {
+        const validationResult = validator.validate({
+            day: '30',
+            month: '02',
+            year: '2015',
+            date: moment('2015-02-30').toDate()
+        });
+        assertValidationErrors(validationResult, [
+            new ValidationError(dateField, 'Enter a real date')
+        ]);
+    });
+
+    it('should reject invalid calendar dates - april 31st does not exist', () => {
+        const validationResult = validator.validate({
+            day: '31',
+            month: '04',
+            year: '2015',
+            date: moment('2015-04-31').toDate()
+        });
+        assertValidationErrors(validationResult, [
+            new ValidationError(dateField, 'Enter a real date')
+        ]);
+    });
+
     it('should accept valid date values', () => {
         const validationResult = validator.validate({
-            day: '01',
-            month: '01',
+            day: '31',
+            month: '03',
             year: '2020',
-            date: new Date('2020-01-01')
+            date: moment('2020-03-31').toDate()
         });
         assertValidationErrors(validationResult, []);
     });
@@ -137,7 +162,7 @@ describe('Date schema', () => {
             day: '1',
             month: '1',
             year: '2020',
-            date: new Date('2020-01-01')
+            date: moment('2020-01-01').toDate()
         });
         assertValidationErrors(validationResult, []);
     });
