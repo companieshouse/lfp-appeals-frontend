@@ -18,7 +18,7 @@ IntelliJ does not have a Nunjuck plugin
 ## How to run it
 
 - Create a redis docker instance with `docker run --name redis-instance -p 6379:6379 -d redis`
-- Ensure the variables in `.env.local` are set according to your setup. 
+- Ensure the variables in `.env.local` are set according to your setup.
 - `npm install`
 - `npm start`
 - Then open your browswer and go to http://localhost:3000.
@@ -28,3 +28,9 @@ IntelliJ does not have a Nunjuck plugin
 - `.env.local` is the config file for running the app in a local environment.
 - If you want a different configuration create `.env.<NODE_ENV>` file with the necessary secrets and variables as described on this README. Note that the `NODE_ENV` variable has to be set with the same name as the config name pretended.
 
+## Docker support
+
+Pull image from private CH registry by running `docker pull 169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/lfp-appeals-frontend:latest` or run the following steps to build image locally:
+
+1. `export SSH_PRIVATE_KEY_PASSPHRASE='[your SSH key passhprase goes here]'` (optional, set only if SSH key is passphrase protected)
+2. `docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/lfp-appeals-frontend:latest .`
