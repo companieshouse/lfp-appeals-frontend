@@ -11,4 +11,3 @@
 !tsconfig.json
 !tsconfig.prod.json
 !gulpfile.js
-!.env.test
