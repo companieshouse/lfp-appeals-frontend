@@ -1,5 +1,5 @@
-import { createLogger } from 'ch-logging';
-import ApplicationLogger from 'ch-logging/lib/ApplicationLogger';
+import { createLogger } from '@companieshouse/structured-logging-node';
+import ApplicationLogger from '@companieshouse/structured-logging-node/lib/ApplicationLogger';
 
 import { APP_NAME } from 'app/Constants';
 
