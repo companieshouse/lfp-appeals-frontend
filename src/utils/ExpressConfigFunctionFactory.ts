@@ -1,5 +1,5 @@
+import { createLoggerMiddleware } from '@companieshouse/structured-logging-node';
 import bodyParser from 'body-parser';
-import { createLoggerMiddleware } from 'ch-logging/lib';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import nunjucks from 'nunjucks';
