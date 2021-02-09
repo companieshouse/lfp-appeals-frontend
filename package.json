@@ -28,7 +28,7 @@
     "avsc": "^5.4.21",
     "axios": "^0.19.2",
     "body-parser": "^1.18.2",
-    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#2.1.1",
+    "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#4.1.6",
     "ch-sdk-node": "git+ssh://git@github.com/companieshouse/ch-sdk-node.git#0.2.10",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
