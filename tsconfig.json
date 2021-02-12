@@ -15,6 +15,7 @@
         "emitDecoratorMetadata": true,
         "moduleResolution": "node",
         "importHelpers": true,
+        "skipLibCheck": true,
         "plugins": [
             {
                 "name": "typescript-tslint-plugin"
