@@ -1,5 +1,6 @@
 {% extends 'govuk/template.njk' %}
 
+{% from 'govuk/components/cookie-banner/macro.njk' import govukCookieBanner %}
 {% from 'govuk/components/footer/macro.njk'       import govukFooter %}
 {% from 'govuk/components/header/macro.njk'       import govukHeader %}
 {% from 'govuk/components/phase-banner/macro.njk' import govukPhaseBanner %}
@@ -8,7 +9,7 @@
 
 {% block head %}
   <!--[if !IE 8]><!-->
-  <link href="//{{ cdn.host }}/stylesheets/govuk-frontend/v3.6.0/govuk-frontend-3.6.0.min.css" rel="stylesheet"/>
+  <link href="//{{ cdn.host }}/stylesheets/govuk-frontend/v3.11.0/govuk-frontend-3.11.0.min.css" rel="stylesheet"/>
   <link href="//{{ cdn.host }}/stylesheets/services/late-filing-penalties/appeals/application.css" rel="stylesheet"/>
   <!--<![endif]-->
 
@@ -16,7 +17,17 @@
           integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
           crossorigin="anonymous"></script>
 
+   <script nonce={{ nonce | dump | safe }} type="application/javascript">
+    window.SERVICE_NAME = 'appeals'
+    window.PIWIK_URL = '{{ piwik.url }}'
+    window.PIWIK_SITE_ID = '{{ piwik.site }}'
+  </script>
+
   {% block download %}{% endblock %}
+{% endblock %}
+
+{% block bodyStart %}
+  {% include "cookie-consent-banner.njk" %}
 {% endblock %}
 
 {% block header %}
@@ -77,10 +88,12 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="//{{ cdn.host }}/javascripts/govuk-frontend/v3.6.0/govuk-frontend-3.6.0.min.js"></script>
-  <script>window.GOVUKFrontend.initAll()</script>
+  <script src="//{{ cdn.host }}/javascripts/govuk-frontend/v3.11.0/govuk-frontend-3.11.0.min.js"></script>
+  <script nonce={{ nonce | dump | safe }}>window.GOVUKFrontend.initAll()</script>
   {% if piwik %}
   <script src="//{{ cdn.host }}/javascripts/app/piwik-enable.js"></script>
+  <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/cookie-consent-1.0.0.js"></script>
+  <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/piwik-only-cookie-consent.js"></script>
   <script type="application/javascript">
     (function() {
       bindPiwikListener('appeals', '{{ piwik.url }}', {{ piwik.site }});
