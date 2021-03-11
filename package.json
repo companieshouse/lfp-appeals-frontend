@@ -26,7 +26,7 @@
     "@companieshouse/structured-logging-node": "1.0.4",
     "@hapi/joi": "^17.1.1",
     "avsc": "^5.4.21",
-    "axios": "^0.21.1",
+    "axios": "^0.19.2",
     "body-parser": "^1.18.2",
     "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#2.1.1",
     "ch-sdk-node": "git+ssh://git@github.com/companieshouse/ch-sdk-node.git#0.2.10",
