@@ -1,0 +1,104 @@
+{% set html %}
+  <p>We use some essential cookies to make our services work.</p>
+  <p>We'd also like to use analytics cookies so we can understand how you use our services and to make improvements.</p>
+{% endset %}
+
+{% set acceptHtml %}
+  <p>You've accepted analytics cookies. You can <a class="govuk-link" href="{{ chs.url }}/help/cookies">change your cookie settings</a> at any time.</p>
+{% endset %}
+
+{% set rejectHtml %}
+  <p>You've rejected analytics cookies. You can <a class="govuk-link" href="{{ chs.url }}/help/cookies">change your cookie settings</a> at any time.</p>
+{% endset %}
+
+{{ govukCookieBanner({
+  ariaLabel: "Cookies on Companies House services",
+  attributes: {
+    id: "cookie-banner"
+  },
+  hidden: true,
+  messages: [
+    {
+      headingText: "Cookies on Companies House services",
+      attributes: {
+        id: "accept-or-reject-message"
+      },
+      hidden: true,
+      html: html,
+      actions: [
+        {
+          text: "Accept analytics cookies",
+          type: "button",
+          name: "cookies",
+          value: "accept",
+          attributes: {
+            id: "accept-cookies-button"
+          }
+        },
+        {
+          text: "Reject analytics cookies",
+          type: "button",
+          name: "cookies",
+          value: "reject",
+          attributes: {
+            id: "reject-cookies-button"
+          }
+        },
+        {
+          text: "View cookies",
+          href: chs.url + "/help/cookies"
+        }
+      ]
+    },
+    {
+      html: acceptHtml,
+      role: "alert",
+      attributes: {
+        id: "accepted-cookies-message"
+      },
+      hidden: true,
+      actions: [
+        {
+          text: "Hide this message",
+          type: "button",
+          name: "hide",
+          value: "hide",
+          attributes: {
+            id: "hide-accepted-message-button"
+          }
+        }
+      ]
+    },
+    {
+      html: rejectHtml,
+      role: "alert",
+      attributes: {
+        id: "rejected-cookies-message"
+      },
+      hidden: true,
+      actions: [
+        {
+          text: "Hide this message",
+          type: "button",
+          name: "hide",
+          value: "hide",
+          attributes: {
+            id: "hide-rejected-message-button"
+          }
+        }
+      ]
+    }
+  ]
+}) }}
+
+<noscript>
+  {{ govukCookieBanner({
+    ariaLabel: "Cookies on Companies House services",
+    messages: [
+      {
+        headingText: "Cookies on Companies House services",
+        text: "We use cookies to make our services work and collect analytics information. To accept or reject analytics cookies, turn on JavaScript in your browser settings and reload this page."
+      }
+    ]
+  }) }}
+</noscript>
