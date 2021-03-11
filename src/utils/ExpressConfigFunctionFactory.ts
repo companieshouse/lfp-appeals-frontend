@@ -7,7 +7,7 @@ import path from 'path';
 
 import { APP_NAME } from 'app/Constants';
 import { dateFilter } from 'app/modules/nunjucks/DateFilter';
-import { getEnv, getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { getEnvOrDefault, getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import * as Paths from 'app/utils/Paths';
 
 export const createExpressConfigFunction = (directory: string) => (app: express.Application): void => {
@@ -47,12 +47,6 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
     app.locals.cdn = {
         host: getEnvOrThrow('CDN_HOST')
     };
-
-    const url = getEnv('PIWIK_URL');
-    const site = getEnv('PIWIK_SITE_ID');
-    if (url && site) {
-        app.locals.piwik = { url, site };
-    }
 
     app.locals.featureFlags = {
         companyAuthVerificationEnabled: Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1
