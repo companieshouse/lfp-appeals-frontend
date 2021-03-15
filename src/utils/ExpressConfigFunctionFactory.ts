@@ -54,6 +54,11 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
         app.locals.piwik = { url, site };
     }
 
+    const chsUrl = getEnv('CHS_URL');
+    app.locals.chs = {
+        url: chsUrl
+    };
+
     app.locals.featureFlags = {
         companyAuthVerificationEnabled: Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1
     };
