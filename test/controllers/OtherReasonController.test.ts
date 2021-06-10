@@ -13,7 +13,7 @@ import {
 
 import { createApp } from 'test/ApplicationFactory';
 const pageHeading = 'Tell us why you’re appealing this penalty';
-const otherReasonHint = 'You should include your name and relationship to the company.';
+const otherReasonHint = 'You should include your name, relationship to the company, and any relevant dates.';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
