@@ -32,7 +32,6 @@ export class IllnessFurtherInformationController extends BaseController<Illness>
         super(
             template,
             navigation,
-            undefined
         );
     }
 }
