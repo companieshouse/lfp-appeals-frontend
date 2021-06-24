@@ -9,7 +9,7 @@ import { Feature } from 'app/utils/Feature';
 import { FURTHER_INFORMATION_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
-const template = 'illness/further-information';
+const template = 'illness/illness-information';
 
 const navigation: Navigation = {
     previous(): string {

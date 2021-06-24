@@ -1,0 +1,51 @@
+{% extends "layout.njk" %}
+
+{% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from 'govuk/components/button/macro.njk'import govukButton %}
+
+{% block pageTitle %}
+  Appeal due to ill health: how did this affect your ability to file on time? 
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back'
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+          How did this affect your ability to file on time?
+      </h1>
+
+      {{ 
+        govukTextarea({
+          label: {
+            text: 'Include all dates and why no one else could file. Anything you tell us to support your application will be kept confidential.'
+          },
+          id: 'description',
+          name: 'description',
+          value: description | default(''),
+          rows: 8,
+          autocomplete: 'off'
+        })
+      }}
+
+      {{ 
+        govukButton({
+          text: 'Continue',
+          attributes: {
+            id: 'submit'
+          }
+        }) 
+      }}
+
+    </div>
+  </div>
+  
+{% endblock %}
