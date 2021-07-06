@@ -23,6 +23,7 @@ describe('ConfirmationController', () => {
         const appeal = {
             penaltyIdentifier: {
                 companyNumber: 'NI000000',
+                companyName: 'Test Ltd.'
             },
         } as Appeal;
 
@@ -38,7 +39,8 @@ describe('ConfirmationController', () => {
                 .expect(response => {
 
                     expect(response.text).to.contain('Appeal submitted')
-                        .and.to.contain(appeal.penaltyIdentifier.companyNumber);
+                        .and.to.contain(appeal.penaltyIdentifier.companyNumber)
+                        .and.to.contain(appeal.penaltyIdentifier.companyName);
 
                     expect(response.status).to.be.equal(OK);
                 });

@@ -45,10 +45,16 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
             throw new Error('Appeal data was expected in session but none found');
         }
 
+        // To Be Done: Generalized Page to include other reasons (illness ...)
+        const appealReasonDetails = appealData.reasons?.other || {};
+        const appealPenaltyDetails = appealData.penaltyIdentifier;
+
         const model = {
-            ...appealData,
+            appealReasonDetails,
+            appealPenaltyDetails,
             userProfile
         };
+
         loggerInstance()
             .debug(`${ConfirmationController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
         return model;
