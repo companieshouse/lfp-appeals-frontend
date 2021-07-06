@@ -19,6 +19,7 @@ import {
     EVIDENCE_QUESTION_URI
 } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
+import { getReasonFromReasons } from 'app/utils/appeal/extra.data';
 
 const template = 'check-your-appeal';
 
@@ -52,8 +53,7 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
 
         const appealData = super.prepareViewModelFromSession(session);
 
-        // To Be Done: Generalized Page to include other reasons (illness ...)
-        const appealReasonDetails = appealData.reasons?.other;
+        const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
 
         const model = {

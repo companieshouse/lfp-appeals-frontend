@@ -61,19 +61,14 @@ export class IllPersonController extends BaseController<FormBody> {
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
-
+        // TBD: Remove OtherReason object when creating Illness if not Multiple reasons
         if (appeal.reasons?.illness != null) {
-
             appeal.reasons.illness.illPerson = value.illPerson;
 
             if (value.illPerson === IllPerson.someoneElse) {
-
                 appeal.reasons.illness.otherPerson = value.otherPerson;
-
             } else {
-
                 appeal.reasons.illness.otherPerson = undefined;
-
             }
 
         } else {
@@ -84,6 +79,7 @@ export class IllPersonController extends BaseController<FormBody> {
 
         loggerInstance()
             .debug(`${IllPersonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+
         return appeal;
     }
 }

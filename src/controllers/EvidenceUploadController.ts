@@ -12,7 +12,6 @@ import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
-import { OtherReason } from 'app/models/OtherReason';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { UnsupportedFileTypeError } from 'app/modules/file-transfer-service/errors';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -25,6 +24,11 @@ import {
     EVIDENCE_UPLOAD_PAGE_URI
 } from 'app/utils/Paths';
 import { newUriFactory } from 'app/utils/UriFactory';
+import {
+    addAttachmentToReason,
+    getAttachmentsFromReasons,
+    getReasonFromReasons
+} from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 import { ValidationError } from 'app/utils/validation/ValidationError';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -63,25 +67,26 @@ const continueButtonValidator: Validator = {
             throw new Error('Appeal is undefined');
         }
 
-        const attachments: Attachment[] | undefined = appeal.reasons.other!.attachments;
+        const attachments: Attachment[] | undefined = getAttachmentsFromReasons(appeal.reasons);
 
         if (!attachments || attachments.length === 0) {
             return new ValidationResult([new ValidationError('file',
                 'You must add a document or click \"Continue without adding documents\"')]);
         }
+
         return new ValidationResult([]);
     }
 };
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
-export class EvidenceUploadController extends SafeNavigationBaseController<OtherReason> {
+export class EvidenceUploadController extends SafeNavigationBaseController<any> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
         return {
-            ...appeal.reasons?.other as OtherReason,
+            ...getReasonFromReasons(appeal.reasons),
             companyNumber: appeal.penaltyIdentifier?.companyNumber
         };
     }
@@ -134,10 +139,11 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                         }
                     }
 
+                    const attachments = getAttachmentsFromReasons(appeal.reasons);
+
                     if (!request.file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
-                    } else if (appeal.reasons.other!.attachments &&
-                        appeal.reasons.other!.attachments.length >= maxNumberOfFiles) {
+                    } else if (attachments && attachments.length >= maxNumberOfFiles) {
                         return await that.renderUploadError(appeal, tooManyFilesError);
                     }
 
@@ -156,13 +162,13 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     const downloadBaseURI: string = newUriFactory(request)
                         .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI);
 
-                    appeal.reasons.other!.attachments = [...appeal.reasons.other!.attachments || [], {
+                    addAttachmentToReason(appeal.reasons, {
                         id,
                         name: request.file.originalname,
                         contentType: request.file.mimetype,
                         size: request.file.size,
                         url: `${downloadBaseURI}/prompt/${id}?c=${appeal.penaltyIdentifier.companyNumber}`
-                    }];
+                    });
 
                     await that.persistSession();
 

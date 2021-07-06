@@ -28,6 +28,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
                     email: userProfile.email
                 },
                 reasons: {
+                    // TBD: BI-8333
                     other: {
                         title: appeal.reasons.other!.title,
                         description: appeal.reasons.other!.description,

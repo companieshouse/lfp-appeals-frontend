@@ -11,6 +11,7 @@ import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { getReasonFromReasons } from 'app/utils/appeal/extra.data';
 
 const template = 'confirmation';
 
@@ -45,8 +46,7 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
             throw new Error('Appeal data was expected in session but none found');
         }
 
-        // To Be Done: Generalized Page to include other reasons (illness ...)
-        const appealReasonDetails = appealData.reasons?.other || {};
+        const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
 
         const model = {
