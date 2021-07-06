@@ -32,7 +32,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
-        return appeal.reasons?.other;
+        return appeal.reasons?.other as OtherReason;
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {

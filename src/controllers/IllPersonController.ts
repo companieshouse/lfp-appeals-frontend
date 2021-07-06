@@ -8,7 +8,6 @@ import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware'
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
-import { OtherReason } from 'app/models/OtherReason.ts';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { schema } from 'app/models/fields/IllPerson.schema';
 import { Feature } from 'app/utils/Feature';
@@ -79,8 +78,7 @@ export class IllPersonController extends BaseController<FormBody> {
 
         } else {
             appeal.reasons = {
-                illness: value as Illness,
-                other: {} as OtherReason
+                illness: value as Illness
             };
         }
 

@@ -29,9 +29,9 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
                 },
                 reasons: {
                     other: {
-                        title: appeal.reasons.other.title,
-                        description: appeal.reasons.other.description,
-                        attachments: appeal.reasons.other.attachments?.map(attachment => {
+                        title: appeal.reasons.other!.title,
+                        description: appeal.reasons.other!.description,
+                        attachments: appeal.reasons.other!.attachments?.map(attachment => {
                             return {
                                 name: attachment.name,
                                 url: `${attachment.url}&a=${appeal.id}`

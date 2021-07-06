@@ -1,8 +1,7 @@
 import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
 
-export interface Reasons {
-  illness?: Illness;
-  other: OtherReason;
-}
+interface PenaltyIllnessReason { illness: Illness; other?: never; }
+interface PenaltyOtherReason { illness?: never; other: OtherReason; }
 
+export type Reasons =  PenaltyIllnessReason | PenaltyOtherReason;
