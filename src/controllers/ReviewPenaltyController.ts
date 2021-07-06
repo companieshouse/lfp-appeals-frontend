@@ -1,5 +1,5 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
+import { Penalty } from 'ch-sdk-node/dist/services/lfp';
 import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
@@ -7,7 +7,6 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
-import { PenaltyDetailsTable, TableRow } from 'app/models/components/PenaltyDetailsTable';
 import {
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI,
@@ -27,7 +26,7 @@ const navigation = {
 
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
     CheckForDuplicateMiddleware)
-export class ReviewPenaltyController extends SafeNavigationBaseController<PenaltyDetailsTable> {
+export class ReviewPenaltyController extends SafeNavigationBaseController<Penalty> {
 
     public static PENALTY_EXPECTED_ERROR: string = 'Penalty object expected but none found';
     public static PENALTY_IDENTIFIER_EXPECTED_ERROR: string = 'User input penalty identifier expected';
@@ -37,7 +36,7 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
         super(template, navigation);
     }
 
-    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyDetailsTable {
+    public prepareViewModelFromAppeal(appeal: Appeal): any {
 
         const penaltyList = appeal.penaltyIdentifier.penaltyList;
 
@@ -49,70 +48,14 @@ export class ReviewPenaltyController extends SafeNavigationBaseController<Penalt
 
         if (!penaltyReference) {
             throw new Error(ReviewPenaltyController.PENALTY_IDENTIFIER_EXPECTED_ERROR);
-
         }
 
-        return { ...appeal.penaltyIdentifier, ...this.createTable(penaltyReference, penaltyList) };
-    }
-
-    private createTable(penaltyReference: string, penalties: PenaltyList): PenaltyDetailsTable {
-        const penalty: Penalty | undefined = penalties.items.find(item => item.id === penaltyReference);
+        const penalty: Penalty | undefined = penaltyList.items.find(item => item.id === penaltyReference);
 
         if (!penalty) {
             throw new Error(ReviewPenaltyController.PENALTY_NOT_FOUND);
         }
 
-        const madeUpToDate: string = penalty.madeUpDate;
-        const caption: string = 'Penalty reference: ' + penalty.id;
-        const header: TableRow = [
-            {
-                text: 'Fee'
-            },
-            {
-                text: 'Date'
-            },
-            {
-                text: 'Fee Amount'
-            }
-        ];
-        const penaltyRow: TableRow = [
-            {
-                text: this.mapPenaltyType(penalty.type)
-            },
-            {
-                text: penalty.transactionDate
-            },
-            {
-                text: '£' + penalty.originalAmount.toString()
-            }
-        ];
-
-        const totalRow: TableRow = [
-            {
-                text: 'Total:'
-            },
-            {
-                text: ''
-            },
-            {
-                text: '£' + penalty.originalAmount.toString()
-            }
-        ];
-
-        return {
-            caption,
-            header,
-            madeUpToDate,
-            tableRows: [penaltyRow, totalRow]
-        };
-    }
-
-    private mapPenaltyType(type: string): string {
-        switch (type) {
-            case 'penalty':
-                return 'Late Filing Penalty';
-            default:
-                return 'Other';
-        }
+        return { ...appeal.penaltyIdentifier, penalty };
     }
 }
