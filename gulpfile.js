@@ -1,16 +1,11 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
-const sass = require('gulp-sass');
 const del = require('del');
-sass.compiler = require('node-sass');
 nodemon = require('gulp-nodemon');
 const tsProject = ts.createProject('tsconfig.prod.json');
 const paths = {
     build: ['dist'],
     pages: ['src/views'],
-    public: ['src/public'],
-    sassSrc: ['src/public/sass'],
-    sassDest: ['src/public/css'],
     src: ['src'],
     nodeModules: ['node_modules'],
     govukfrontend: ['node_modules/govuk-frontend']
