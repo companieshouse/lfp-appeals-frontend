@@ -19,7 +19,7 @@
       {{ govukPanel
         ({
           titleText: 'Appeal submitted',
-          html: 'Your reference number is your company number <br><strong>' + penaltyIdentifier.companyNumber + '</strong>'
+          html: 'Your reference number is your company number <br><strong>' + appealPenaltyDetails.companyNumber + '</strong>'
         })
       }}
       <p class="govuk-body-l">
@@ -38,7 +38,7 @@
             rows: [
               {
                 key: { text: 'Company Name' },
-                value: { text: penaltyIdentifier.companyName }
+                value: { text: appealPenaltyDetails.companyName }
               }
             ]
           })
@@ -47,9 +47,9 @@
         <h2 class="govuk-heading-l">Reason for appeal</h2>
 
         {% set attachmentsList %}
-          {% if reasons.other.attachments and reasons.other.attachments.length > 0 %}
+          {% if appealReasonDetails.attachments and appealReasonDetails.attachments.length > 0 %}
             <ul class="govuk-list govuk-list--bullet">
-              {% for attachment in reasons.other.attachments | reverse %}
+              {% for attachment in appealReasonDetails.attachments | reverse %}
                 <li>
                   {{ attachment.name }}
                 </li>
@@ -65,11 +65,11 @@
             rows: [
               {
                 key: { text: 'Reason' },
-                value: { text: reasons.other.title }
+                value: { text: appealReasonDetails.title }
               },
               {
                 key: { text: 'Further information' },
-                value: { text: reasons.other.description }
+                value: { text: appealReasonDetails.description }
               },
               {
                 key: { text: 'Supporting documents' },

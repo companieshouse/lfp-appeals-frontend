@@ -50,10 +50,18 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
             throw new Error('User profile was expected in session but none found');
         }
 
+        const appealData = super.prepareViewModelFromSession(session);
+
+        // To Be Done: Generalized Page to include other reasons (illness ...)
+        const appealReasonDetails = appealData.reasons?.other;
+        const appealPenaltyDetails = appealData.penaltyIdentifier;
+
         const model = {
-            ...super.prepareViewModelFromSession(session),
+            appealReasonDetails,
+            appealPenaltyDetails,
             userProfile
         };
+
         loggerInstance()
             .debug(`${CheckYourAppealController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
 
