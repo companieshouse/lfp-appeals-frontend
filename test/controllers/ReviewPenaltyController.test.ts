@@ -72,6 +72,44 @@ describe('ReviewPenaltyController', () => {
 
     });
 
+    it('should show correct penalty details when type is different from penalty ', async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                penaltyReference,
+                userInputPenaltyReference: penaltyReference,
+                penaltyList: {
+                    items: [{
+                        type: 'somethingelse',
+                        id: penaltyReference
+                    } as Penalty
+                ]} as PenaltyList
+            }
+        };
+
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
+
+        await request(app)
+            .get(REVIEW_PENALTY_PAGE_URI)
+            .expect(OK)
+            .expect(res => {
+                expect(res.text).to.contain(companyName)
+                    .and.to.contain(`Other`)
+                    .and.not.to.contain('Late Filing Penalty');
+            });
+
+    });
+
     it('should go to other reasons disclaimer screen when continue is pressed', async () => {
 
         const appeal: Partial<Appeal> = {
