@@ -36,6 +36,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
+        // TBD: Remove Illness object when creating OtherReason if not Multiple reasons
         if (appeal.reasons?.other != null) {
             appeal.reasons.other.title = value.title;
             appeal.reasons.other.description = value.description;
@@ -44,8 +45,10 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
                 other: value
             };
         }
+
         loggerInstance()
             .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+
         return appeal;
     }
 }

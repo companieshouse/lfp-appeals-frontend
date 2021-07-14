@@ -17,6 +17,7 @@ import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { findAttachmentByIdFromReasons, removeAttachmentFromReasons } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'evidence-removal';
@@ -45,10 +46,13 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
     if (fileId == null || fileId.trim().length < 1) {
         throw new Error('File identifier is missing');
     }
-    const attachment = appeal.reasons.other?.attachments?.find(file => file.id === fileId);
-    if (attachment == null) {
+
+    const attachment = findAttachmentByIdFromReasons(appeal.reasons, fileId);
+
+    if (!attachment) {
         throw new Error(`File ${fileId} does not belong to appeal`);
     }
+
     return attachment;
 };
 
@@ -75,8 +79,10 @@ class Processor implements FormActionProcessor {
         }
 
         const attachment: Attachment = findAttachment(appeal, request.body.id);
+
         await this.fileTransferService.delete(attachment.id);
-        appeal.reasons.other!.attachments!.splice(appeal.reasons.other!.attachments!.indexOf(attachment), 1);
+
+        removeAttachmentFromReasons(appeal.reasons, attachment);
     }
 }
 

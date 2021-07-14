@@ -12,7 +12,7 @@ import { loggerInstance } from './Logger';
 import { Appeal } from 'app/models/Appeal';
 import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { Attachment } from 'app/models/Attachment';
+import { findAttachmentByIdFromReasons } from 'app/utils/appeal/extra.data';
 
 const customErrorTemplate = 'error-custom';
 
@@ -42,13 +42,18 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         if (!userProfile) {
             throw new Error(`${FileRestrictionsMiddleware.name} - User profile was expected in session but none found`);
         }
+
         const fileId: string = req.params.fileId;
+
+        if (!fileId) {
+            throw Error('File id must not be null');
+        }
 
         const hasSufficientPermissions = () =>
             this.hasAppealsPermissions(userProfile) ||
             this.hasUserPermission(userProfile, appeal);
 
-        if (hasSufficientPermissions() && this.getAttachment(appeal, fileId)) {
+        if (hasSufficientPermissions() && findAttachmentByIdFromReasons(appeal.reasons, fileId)) {
             return next();
         }
 
@@ -82,15 +87,5 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         res.render(customErrorTemplate, {
             heading: 'You are not authorised to download this document'
         });
-    }
-
-    private getAttachment(appeal: Appeal, fileId: string): Attachment | undefined {
-
-        if (!fileId) {
-            throw Error('File id must not be null');
-        }
-
-        const attachments: Attachment[] | undefined = appeal.reasons?.other?.attachments;
-        return attachments && attachments.find(attachment => attachment.id === fileId);
     }
 }
