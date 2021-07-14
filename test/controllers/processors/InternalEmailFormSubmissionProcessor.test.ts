@@ -11,7 +11,9 @@ import { Request } from 'express';
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { OtherReason } from 'app/models/OtherReason';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
+import { Reasons } from 'app/models/Reasons';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -137,8 +139,8 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 url: 'http://localhost/appeal-a-penalty/download/prompt/123?c=12345678'
                             }
                         ]
-                    }
-                }
+                    } as OtherReason
+                } as Reasons
             }));
 
             emailService.received().send({

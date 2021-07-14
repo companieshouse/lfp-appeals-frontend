@@ -63,7 +63,7 @@ const continueButtonValidator: Validator = {
             throw new Error('Appeal is undefined');
         }
 
-        const attachments: Attachment[] | undefined = appeal.reasons.other.attachments;
+        const attachments: Attachment[] | undefined = appeal.reasons.other!.attachments;
 
         if (!attachments || attachments.length === 0) {
             return new ValidationResult([new ValidationError('file',
@@ -80,7 +80,10 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
-        return { ...appeal.reasons?.other, companyNumber: appeal.penaltyIdentifier?.companyNumber };
+        return {
+            ...appeal.reasons?.other as OtherReason,
+            companyNumber: appeal.penaltyIdentifier?.companyNumber
+        };
     }
 
     private async renderUploadError(appeal: Appeal, text: string): Promise<void> {
@@ -133,8 +136,8 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
 
                     if (!request.file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
-                    } else if (appeal.reasons.other.attachments &&
-                        appeal.reasons.other.attachments.length >= maxNumberOfFiles) {
+                    } else if (appeal.reasons.other!.attachments &&
+                        appeal.reasons.other!.attachments.length >= maxNumberOfFiles) {
                         return await that.renderUploadError(appeal, tooManyFilesError);
                     }
 
@@ -153,7 +156,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<Other
                     const downloadBaseURI: string = newUriFactory(request)
                         .createAbsoluteUri(DOWNLOAD_FILE_PAGE_URI);
 
-                    appeal.reasons.other.attachments = [...appeal.reasons.other.attachments || [], {
+                    appeal.reasons.other!.attachments = [...appeal.reasons.other!.attachments || [], {
                         id,
                         name: request.file.originalname,
                         contentType: request.file.mimetype,
