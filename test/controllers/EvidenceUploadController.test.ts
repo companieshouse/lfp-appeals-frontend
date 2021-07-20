@@ -22,7 +22,7 @@ import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, PENALTY_DETAILS_P
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
-const pageHeading = 'Add documents to support your application';
+const pageHeading = 'Upload documents to support your application';
 
 const maxNumberOfFiles = 10;
 

@@ -7,7 +7,7 @@
 {% from "govuk/components/input/macro.njk"         import govukInput %}
 
 {% block pageTitle %}
-  Add documents to support your application
+  Upload documents to support your application
 {% endblock %}
 
 {% block backLink %}
@@ -30,8 +30,16 @@
       }}
 
       <h1 class="govuk-heading-xl">
-        Add documents to support your application
+        Upload documents to support your application
       </h1>
+
+   <p>Documents should:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+          <li>show evidence that supports your appeal, such as a doctor's note or an insurance claim</li>
+          <li>show the full name of the person or company affected</li>
+          <li>show any relevant dates to support your appeal</li>
+          </ul>
 
       <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
