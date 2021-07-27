@@ -30,7 +30,4 @@ export class IllnessFurtherInformationController extends BaseController<Illness>
             navigation,
         );
     }
-    protected prepareViewModelFromAppeal(): any {
-        return;
-     }
 }
