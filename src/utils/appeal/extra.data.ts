@@ -1,3 +1,6 @@
+import { Session } from 'ch-node-session-handler';
+
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
@@ -40,4 +43,11 @@ export const addAttachmentToReason = (reasons: Reasons, attachment: Attachment):
     const reason = getReasonFromReasons(reasons);
 
     reason!.attachments = [...reason!.attachments || [], attachment];
+};
+
+export const addNavigationPermission = (session: Session | undefined, uriPage: string): void => {
+    const extraData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
+
+    if (extraData?.navigation.permissions)
+        extraData?.navigation.permissions.push(uriPage);
 };
