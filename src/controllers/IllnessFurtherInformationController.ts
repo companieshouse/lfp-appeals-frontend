@@ -6,23 +6,19 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { Illness } from 'app/models/Illness';
 import { Feature } from 'app/utils/Feature';
-import { FURTHER_INFORMATION_PAGE_URI } from 'app/utils/Paths';
+import { FURTHER_INFORMATION_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
+
 
 const template = 'illness/illness-information';
 
 const navigation: Navigation = {
     previous(): string {
-        return '';
+        return ILLNESS_START_DATE_PAGE_URI;
     },
     next(): string {
         return '';
     },
-    actions: (_: boolean) => {
-        return {
-            continue: 'action=continue'
-        };
-    }
 };
 
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
