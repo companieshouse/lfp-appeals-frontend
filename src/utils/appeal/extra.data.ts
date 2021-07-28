@@ -48,7 +48,10 @@ export const addAttachmentToReason = (reasons: Reasons, attachment: Attachment):
 export const addNavigationPermission = (session: Session | undefined, uriPage: string): void => {
     const extraData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
 
-    if (extraData?.navigation.permissions){
-        extraData?.navigation.permissions.push(uriPage);
+    if (extraData?.navigation){
+        const permissions = extraData.navigation.permissions || [];
+        extraData.navigation = {
+            permissions: [...permissions, uriPage]
+        };
     }
 };
