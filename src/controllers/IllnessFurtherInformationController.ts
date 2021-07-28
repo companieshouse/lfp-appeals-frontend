@@ -16,6 +16,7 @@ import {
 import { addNavigationPermission } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
+
 const template = 'illness/illness-information';
 
 const navigation: Navigation = {
