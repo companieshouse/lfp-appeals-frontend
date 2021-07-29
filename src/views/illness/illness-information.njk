@@ -23,29 +23,29 @@
       <h1 class="govuk-heading-xl">
           How did this affect your ability to file on time?
       </h1>
+      <form method="post">
+        {{
+          govukTextarea({
+            label: {
+              text: 'Include all dates and why no one else could file. Anything you tell us to support your application will be kept confidential.'
+            },
+            id: 'description',
+            name: 'description',
+            value: description | default(''),
+            rows: 8,
+            autocomplete: 'off'
+          })
+        }}
 
-      {{ 
-        govukTextarea({
-          label: {
-            text: 'Include all dates and why no one else could file. Anything you tell us to support your application will be kept confidential.'
-          },
-          id: 'description',
-          name: 'description',
-          value: description | default(''),
-          rows: 8,
-          autocomplete: 'off'
-        })
-      }}
-
-      {{ 
-        govukButton({
-          text: 'Continue',
-          attributes: {
-            id: 'submit'
-          }
-        }) 
-      }}
-
+        {{
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          })
+        }}
+      </form>
     </div>
   </div>
   
