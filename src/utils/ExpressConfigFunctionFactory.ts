@@ -60,6 +60,7 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
     };
 
     app.locals.featureFlags = {
-        companyAuthVerificationEnabled: Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1
+        companyAuthVerificationEnabled: Number(getEnvOrDefault('COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED', '0')) === 1,
+        illnessReasonEnabled: Number(getEnvOrDefault('ILLNESS_REASON_FEATURE_ENABLED', '0')) === 1
     };
 };

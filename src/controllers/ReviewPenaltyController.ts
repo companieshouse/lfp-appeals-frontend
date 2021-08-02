@@ -1,5 +1,6 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Penalty } from 'ch-sdk-node/dist/services/lfp';
+import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';
 
@@ -8,19 +9,23 @@ import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMid
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import {
+    CHOOSE_REASON_PAGE_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI,
     SELECT_THE_PENALTY_PAGE_URI
 } from 'app/utils/Paths';
+import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'review-penalty';
 
-const navigation = {
+const navigation: Navigation = {
     previous(): string {
         return `${SELECT_THE_PENALTY_PAGE_URI}?back=true`;
     },
-    next(): string {
-        return OTHER_REASON_DISCLAIMER_PAGE_URI;
+    next(request: Request): string {
+        return (request.app.locals.featureFlags.illnessReasonEnabled)
+            ? CHOOSE_REASON_PAGE_URI
+            : OTHER_REASON_DISCLAIMER_PAGE_URI;
     }
 };
 
