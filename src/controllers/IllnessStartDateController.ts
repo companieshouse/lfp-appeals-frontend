@@ -2,7 +2,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 import moment from 'moment';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
@@ -31,7 +31,7 @@ interface FormBody {
 
 @controller(ILLNESS_START_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
     AuthMiddleware)
-export class IllnessStartDateController extends BaseController<FormBody> {
+export class IllnessStartDateController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {
         super(template, navigation, new DateValidator());
