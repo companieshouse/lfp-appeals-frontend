@@ -17,15 +17,23 @@ import {
     CHECK_YOUR_APPEAL_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     EVIDENCE_UPLOAD_PAGE_URI,
+    FURTHER_INFORMATION_PAGE_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
+import { isIllnessReason } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'evidence-question';
 
 const navigation: Navigation = {
-    previous(): string {
-        return OTHER_REASON_PAGE_URI;
+    previous(request: Request): string {
+        const isIllness = isIllnessReason(request.session);
+
+        if (isIllness) {
+            return FURTHER_INFORMATION_PAGE_URI;
+        } else {
+            return OTHER_REASON_PAGE_URI;
+        }
     },
     next(request: Request): string {
         if (request.body.evidence === YesNo.yes) {
