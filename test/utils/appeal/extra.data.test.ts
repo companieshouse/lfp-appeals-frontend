@@ -1,16 +1,12 @@
 import { expect } from 'chai';
-import { createSession } from '../session/SessionFactory';
 
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
-import { Navigation } from 'app/models/Navigation';
 import { OtherReason } from 'app/models/OtherReason';
 import { Reasons } from 'app/models/Reasons';
 import {
     addAttachmentToReason,
-    addNavigationPermission,
     findAttachmentByIdFromReasons,
     getAttachmentsFromReasons,
     getReasonFromReasons,
@@ -103,33 +99,5 @@ describe('Appeal Extra Data', () => {
         addAttachmentToReason( emptyAttachments.reasons, secondAttachment);
         expect(emptyAttachments.reasons.other?.attachments).to.be.deep.equal([secondAttachment]);
         expect(emptyAttachments.reasons.other?.attachments?.length).to.be.equal(1);
-    });
-    it('should add new permission to the already existing Navigation permission object', () => {
-        const session = createSession('secret');
-        const navigationPermission = 'some/next/page';
-        const mockExtraData = {
-            appeal: {} as Appeal,
-            navigation: { permissions: [] } as Navigation
-        } as ApplicationData;
-
-        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
-
-        addNavigationPermission(session, navigationPermission);
-
-        const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
-        const permissionFromExtraData = extraData?.navigation.permissions;
-
-        expect(permissionFromExtraData).to.be.deep.equal([navigationPermission]);
-        expect(permissionFromExtraData?.length).to.be.equal(1);
-    });
-    it('should do nothing when extra data is undefined', () => {
-        const session = createSession('secret');
-        const navigationPermission = 'some/next/page';
-
-        const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
-        const permissionFromExtraData = extraData?.navigation.permissions;
-
-        addNavigationPermission(session, navigationPermission);
-        expect(permissionFromExtraData).to.be.equal(undefined);
     });
 });

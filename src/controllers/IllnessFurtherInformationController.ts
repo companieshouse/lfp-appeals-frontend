@@ -1,7 +1,7 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
@@ -13,9 +13,7 @@ import {
     FURTHER_INFORMATION_PAGE_URI,
     ILLNESS_START_DATE_PAGE_URI
 } from 'app/utils/Paths';
-import { addNavigationPermission } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
-
 
 const template = 'illness/illness-information';
 
@@ -25,12 +23,12 @@ const navigation: Navigation = {
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
-    },
+    }
 };
 
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
     SessionMiddleware, AuthMiddleware)
-export class IllnessFurtherInformationController extends BaseController<Illness> {
+export class IllnessFurtherInformationController extends SafeNavigationBaseController<Illness> {
     constructor() {
         super(
             template,
@@ -39,7 +37,6 @@ export class IllnessFurtherInformationController extends BaseController<Illness>
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
-        addNavigationPermission(this.httpContext.request.session, EVIDENCE_QUESTION_URI);
 
         loggerInstance().debug(`
             prepareSessionModelPriorSave: ${value?.description} -

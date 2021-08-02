@@ -2,7 +2,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 import { FormValidator } from './validators/FormValidator';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
@@ -12,6 +12,7 @@ import { IllPerson } from 'app/models/fields/IllPerson';
 import { schema } from 'app/models/fields/IllPerson.schema';
 import { Feature } from 'app/utils/Feature';
 import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
+import { getAttachmentsFromReasons } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'illness/ill-person';
@@ -37,7 +38,7 @@ interface FormBody {
 
 @controller(ILL_PERSON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
     SessionMiddleware, AuthMiddleware)
-export class IllPersonController extends BaseController<FormBody> {
+export class IllPersonController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {
         super(
@@ -61,7 +62,7 @@ export class IllPersonController extends BaseController<FormBody> {
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
-        // TBD: Remove OtherReason object when creating Illness if not Multiple reasons
+        const attachments = getAttachmentsFromReasons(appeal.reasons) || [];
         if (appeal.reasons?.illness != null) {
             appeal.reasons.illness.illPerson = value.illPerson;
 
@@ -75,6 +76,7 @@ export class IllPersonController extends BaseController<FormBody> {
             appeal.reasons = {
                 illness: value as Illness
             };
+            appeal.reasons.illness.attachments = [ ...attachments ];
         }
 
         loggerInstance()
