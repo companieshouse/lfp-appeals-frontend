@@ -3,13 +3,15 @@
 {% from 'govuk/components/back-link/macro.njk' import govukBackLink %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from 'govuk/components/button/macro.njk' import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
 
 {% block pageTitle %}
-  Appeal due to ill health: how did this affect your ability to file on time?
+Appeal due to ill health: how did this affect your ability to file on time?
 {% endblock %}
 
 {% block backLink %}
-  {{
+{{
     govukBackLink({
       text: 'Back',
       href: navigation.back.href
@@ -18,17 +20,43 @@
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        How did this affect your ability to file on time?
-      </h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">
+      How did this affect your ability to file on time?
+    </h1>
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="user-name">
+        Your name
+      </label>
+      <input class="govuk-input" id="user-name" name="userName" type="text">
+    </div>
+    <label class="govuk-label govuk-heading-large" for="illness-information">
+      Anything you tell us to support your application will be kept confidential.
+    </label>
+
+    <div id="illness-information-hint" class="govuk-hint">
+      <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            What details should I include to support my appeal?
+          </span>
+        </summary>
+
+        <div class="govuk-details__text">
+          <p>You should include:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>any relevant dates - for example, the dates that a problem began and ended</li>
+            <li>names of people or organisations that prevented accounts from being filed on time, and their relationship to the company</li>
+          </ul>
+          <p>If the person who usually files the accounts was not able to, tell us why no one else could file them.</p>
+          <p>If you were give advice by Companies House, include details of when and how you contacted us.</p>
+        </div>
+      </details>
+
       <form method="post">
         {{
           govukTextarea({
-            label: {
-              text: 'Include all dates and why no one else could file. Anything you tell us to support your application will be kept confidential.'
-            },
             id: 'description',
             name: 'description',
             value: description | default(''),
@@ -48,4 +76,4 @@
       </form>
     </div>
 
-  {% endblock %}
+    {% endblock %}
