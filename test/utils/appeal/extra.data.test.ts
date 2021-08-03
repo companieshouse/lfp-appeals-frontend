@@ -13,7 +13,6 @@ import {
     removeAttachmentFromReasons
 } from 'app/utils/appeal/extra.data';
 
-
 describe('Appeal Extra Data', () => {
     const appealReasonAttachments: Attachment[] = [ {
         id: '123',

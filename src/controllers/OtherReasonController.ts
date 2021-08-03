@@ -10,9 +10,11 @@ import { Appeal } from 'app/models/Appeal';
 import { OtherReason } from 'app/models/OtherReason';
 import { schema as formSchema } from 'app/models/OtherReason.schema';
 import {
-    EVIDENCE_QUESTION_URI, OTHER_REASON_DISCLAIMER_PAGE_URI,
+    EVIDENCE_QUESTION_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
+import { getAttachmentsFromReasons } from 'app/utils/appeal/extra.data';
 
 const template = 'other-reason';
 
@@ -36,7 +38,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
-        // TBD: Remove Illness object when creating OtherReason if not Multiple reasons
+        const attachments = getAttachmentsFromReasons(appeal.reasons) || [];
         if (appeal.reasons?.other != null) {
             appeal.reasons.other.title = value.title;
             appeal.reasons.other.description = value.description;
@@ -44,6 +46,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
             appeal.reasons = {
                 other: value
             };
+            appeal.reasons.other.attachments = [ ...attachments ];
         }
 
         loggerInstance()

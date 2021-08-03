@@ -2,7 +2,7 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 
-import { BaseController } from 'app/controllers/BaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
@@ -10,7 +10,12 @@ import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware'
 import { schema } from 'app/models/fields/Reason.schema';
 import { ReasonType } from 'app/models/fields/ReasonType';
 import { Feature } from 'app/utils/Feature';
-import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import {
+    CHOOSE_REASON_PAGE_URI,
+    ILL_PERSON_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    REVIEW_PENALTY_PAGE_URI
+} from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'choose-appeal-reason';
@@ -40,7 +45,7 @@ interface FormBody {
 
 @controller(CHOOSE_REASON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware, AuthMiddleware,
 CompanyAuthMiddleware)
-export class ChooseAppealReasonController extends BaseController<FormBody>{
+export class ChooseAppealReasonController extends SafeNavigationBaseController<FormBody>{
 
     constructor() {
         super(template, navigation, new FormValidator(schema));

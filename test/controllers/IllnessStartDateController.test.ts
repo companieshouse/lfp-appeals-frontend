@@ -1,5 +1,10 @@
 import { expect } from 'chai';
-import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import {
+    INTERNAL_SERVER_ERROR,
+    MOVED_TEMPORARILY,
+    OK,
+    UNPROCESSABLE_ENTITY
+} from 'http-status-codes';
 import { after, before } from 'mocha';
 import request from 'supertest';
 
@@ -20,6 +25,7 @@ const invalidStartMonthErrorMessage: string = 'You must enter a month';
 const invalidStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
 const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+const errorLoadingPage = 'Sorry, there is a problem with the service';
 let initialIllnessReasonFeatureFlag: string | undefined;
 
 describe('IllnessStartDateController', () => {
@@ -40,16 +46,28 @@ describe('IllnessStartDateController', () => {
         reasons: {}
     } as Appeal;
 
+    const navigation = { permissions: [ILLNESS_START_DATE_PAGE_URI] };
+
     describe('GET request', () => {
 
         it('should return 200 when trying to access the page', async () => {
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
+            const app = createApp({appeal, navigation});
+            await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
+                expect(response.status).to.be.equal(OK);
+                expect(response.text).to.contain(pageHeading);
+            });
+        });
+
+        it(`should return 500 when trying to access the page with no
+                            navigation permission and feature flag enabled`, async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
             const app = createApp({appeal});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI).expect(response => {
-                expect(response.status).to.be.equal(OK);
-                expect(response.text).to.contain(pageHeading);
+                expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                expect(response.text).to.contain(errorLoadingPage);
             });
         });
 
@@ -69,7 +87,7 @@ describe('IllnessStartDateController', () => {
                 }
             } as Appeal;
 
-            const app = createApp({appeal: appealWithReasons});
+            const app = createApp({appeal: appealWithReasons, navigation});
             await request(app).get(ILLNESS_START_DATE_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);

@@ -23,7 +23,7 @@
     <div class="govuk-grid-column-two-thirds">
       {{
         govukErrorSummary ({
-          titleText: 'There is a problem with the details you gave us',
+          titleText: 'There is a problem',
           errorList: validationResult.errors
         }) if validationResult and validationResult.errors.length > 0
       }}
@@ -40,9 +40,6 @@
                 isPageHeading: true,
                 classes: 'govuk-fieldset__legend--xl'
               }
-            },
-            hint: {
-              text: 'You can add more reasons later'
             },
             errorMessage: validationResult.getErrorForField('reason') if validationResult,
             items: [

@@ -10,7 +10,11 @@ import 'app/controllers/ReviewPenaltyController';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import {
+    CHOOSE_REASON_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    REVIEW_PENALTY_PAGE_URI
+} from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -110,7 +114,7 @@ describe('ReviewPenaltyController', () => {
 
     });
 
-    it('should go to other reasons disclaimer screen when continue is pressed', async () => {
+    it('should go to choose reason page when continue is pressed with illnessReasonEnabled flag enabled', async () => {
 
         const appeal: Partial<Appeal> = {
             penaltyIdentifier: {
@@ -131,6 +135,36 @@ describe('ReviewPenaltyController', () => {
 
                 config.rebind(AppealsService).toConstantValue(appealsService);
             });
+
+        await request(app)
+            .post(REVIEW_PENALTY_PAGE_URI)
+            .expect(302)
+            .expect(res => expect(res.get('Location')).to.equal(CHOOSE_REASON_PAGE_URI));
+    });
+
+    it(`should go to other reasons disclaimer screen when continue
+        is pressed with illnessReasonEnabled flag disabled`, async () => {
+
+        const appeal: Partial<Appeal> = {
+            penaltyIdentifier: {
+                companyNumber,
+                companyName,
+                penaltyReference,
+                userInputPenaltyReference: penaltyReference,
+                penaltyList: penaltyList as PenaltyList
+            }
+        };
+
+        const app = createApp(
+            { appeal: appeal as Appeal, navigation: { permissions: [REVIEW_PENALTY_PAGE_URI] } },
+            config => {
+                const appealsService = createSubstituteOf<AppealsService>(service =>
+                    service.hasExistingAppeal(Arg.all()).resolves(false)
+                );
+
+                config.rebind(AppealsService).toConstantValue(appealsService);
+            });
+        app.locals.featureFlags.illnessReasonEnabled = false;
 
         await request(app)
             .post(REVIEW_PENALTY_PAGE_URI)
