@@ -45,7 +45,7 @@ export const addAttachmentToReason = (reasons: Reasons, attachment: Attachment):
     reason!.attachments = [...reason!.attachments || [], attachment];
 };
 
-export const isIllnessReason = (session: Session | undefined) => {
+export const isIllnessReason = (session: Session | undefined): boolean => {
     const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
     const reason = extraData?.appeal.reasons || {} as Reasons;
 
