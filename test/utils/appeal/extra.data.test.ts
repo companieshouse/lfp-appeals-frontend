@@ -1,6 +1,8 @@
 import { expect } from 'chai';
+import { createSession } from '../session/SessionFactory';
 
 import { Appeal } from 'app/models/Appeal';
+import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
@@ -10,6 +12,7 @@ import {
     findAttachmentByIdFromReasons,
     getAttachmentsFromReasons,
     getReasonFromReasons,
+    isIllnessReason,
     removeAttachmentFromReasons
 } from 'app/utils/appeal/extra.data';
 
@@ -99,5 +102,27 @@ describe('Appeal Extra Data', () => {
         addAttachmentToReason( emptyAttachments.reasons, secondAttachment);
         expect(emptyAttachments.reasons.other?.attachments).to.be.deep.equal([secondAttachment]);
         expect(emptyAttachments.reasons.other?.attachments?.length).to.be.equal(1);
+    });
+    it('should return false when appeal has got Other type on reason object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: appealOtherReason as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const typeReason = isIllnessReason(session);
+        expect(typeReason).to.be.equal(false);
+    });
+    it('should return true when appeal has got Illness type on reason object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: appealIllnessReason as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const typeReason = isIllnessReason(session);
+        expect(typeReason).to.be.equal(true);
+    });
+    it('should return false when session is undefined', () => {
+        const typeReason = isIllnessReason(undefined);
+        expect(typeReason).to.be.equal(false);
     });
 });
