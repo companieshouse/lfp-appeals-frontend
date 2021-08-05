@@ -143,7 +143,7 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You must enter a penalty reference number');
+                        .and.to.contain('You must enter a reference number');
                 });
         });
 

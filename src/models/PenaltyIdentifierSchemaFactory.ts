@@ -57,7 +57,7 @@ export class PenaltyIdentifierSchemaFactory {
             .required()
             .regex(this.penaltyReferenceRegex)
             .messages({
-                'string.empty': 'You must enter a penalty reference number',
+                'string.empty': 'You must enter a reference number',
                 'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
             });
     }
