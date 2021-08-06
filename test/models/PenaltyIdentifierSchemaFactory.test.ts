@@ -224,7 +224,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter a penalty reference number'
+                        text: 'You must enter a reference number'
                     }]
                 });
             });
