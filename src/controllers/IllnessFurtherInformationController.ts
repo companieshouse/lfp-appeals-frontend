@@ -1,5 +1,7 @@
+import Joi from '@hapi/joi';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
+import { FormValidator } from './validators/FormValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
@@ -26,21 +28,48 @@ const navigation: Navigation = {
     }
 };
 
+const nameErrorMessage = 'Enter your name';
+const descriptionErrorMessage = 'You must tell us how this affected your ability to file on time';
+const furtherInformationSchema = Joi.object({
+    name: Joi.string().required().messages({'any.required': nameErrorMessage }),
+    description: Joi.string().required().messages({'any.required': descriptionErrorMessage })
+});
+
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
     SessionMiddleware, AuthMiddleware)
 export class IllnessFurtherInformationController extends SafeNavigationBaseController<Illness> {
     constructor() {
         super(
             template,
-            navigation
+            navigation,
+            new FormValidator(furtherInformationSchema)
         );
+    }
+
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        const description = appeal.reasons.illness?.illnessImpactFurtherInformation;
+        const name = appeal.createdBy?.name;
+
+        loggerInstance().debug(`
+            prepareViewModelFromAppeal - name: ${name} -
+            illnessImpactFurtherInformation: ${description} -
+            Penalty Id: ${JSON.stringify(appeal?.penaltyIdentifier)}`);
+
+        return { name, description };
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
 
+        appeal.reasons.illness!.illnessImpactFurtherInformation = value.description;
+        appeal.createdBy = {
+            ...appeal.createdBy,
+            name: value.name
+        };
+
         loggerInstance().debug(`
-            prepareSessionModelPriorSave: ${value?.description} -
-            Penalty Id: ${JSON.stringify(appeal.penaltyIdentifier)}`);
+            prepareSessionModelPriorSave - name: ${value?.name} -
+            illnessImpactFurtherInformation: ${value?.description} -
+            Penalty Id: ${JSON.stringify(appeal?.penaltyIdentifier)}`);
 
         return appeal;
     }

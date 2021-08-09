@@ -9,4 +9,5 @@ export interface Illness {
     continuedIllness: YesNo;
     illnessEnd?: string;
     attachments?: Attachment[];
+    illnessImpactFurtherInformation: string;
 }
