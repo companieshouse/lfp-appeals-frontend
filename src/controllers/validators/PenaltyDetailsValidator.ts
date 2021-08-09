@@ -26,8 +26,8 @@ import { ValidationResult } from 'app/utils/validation/ValidationResult';
 @provide(PenaltyDetailsValidator)
 export class PenaltyDetailsValidator implements Validator {
 
-    public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError('companyNumber', 'Check that you’ve entered the correct company number');
-    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('userInputPenaltyReference', 'Check that you’ve entered the correct reference number');
+    public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError('companyNumber', 'You must enter your full eight character company number');
+    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('userInputPenaltyReference', 'You must enter your reference number exactly as shown on your penalty notice');
     public static MULTIPLE_PENALTIES_FOUND_ERROR: Error = new Error(`Multiple penalties found. This is currently unsupported`);
     constructor(
         @inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK,
