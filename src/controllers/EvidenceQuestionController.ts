@@ -57,19 +57,13 @@ class NavigationPermissionProcessor implements FormActionProcessor {
             throw new Error('Session was expected but none found');
         }
 
-        let applicationData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
+        const applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
 
         if (!applicationData) {
-            applicationData = {
-                navigation: {
-                    permissions: [ EVIDENCE_UPLOAD_PAGE_URI ]
-                }
-            } as ApplicationData;
-
-            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
-        } else {
-            applicationData.navigation!.permissions.push(EVIDENCE_UPLOAD_PAGE_URI);
+            throw new Error('ApplicationData was expected but none found');
         }
+
+        applicationData.navigation!.permissions!.push(EVIDENCE_UPLOAD_PAGE_URI);
     }
 }
 
