@@ -31,8 +31,16 @@ const navigation: Navigation = {
 const nameErrorMessage = 'Enter your name';
 const descriptionErrorMessage = 'You must tell us how this affected your ability to file on time';
 const furtherInformationSchema = Joi.object({
-    name: Joi.string().required().messages({'any.required': nameErrorMessage }),
-    description: Joi.string().required().messages({'any.required': descriptionErrorMessage })
+    name: Joi.string().required().pattern(/\w+/).messages({
+        'any.required': nameErrorMessage,
+        'string.empty': nameErrorMessage,
+        'string.pattern.base': nameErrorMessage
+    }),
+    description: Joi.string().required().pattern(/\w+/).messages({
+        'any.required': descriptionErrorMessage,
+        'string.empty': descriptionErrorMessage,
+        'string.pattern.base': descriptionErrorMessage
+    })
 });
 
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
@@ -53,7 +61,7 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
         loggerInstance().debug(`
             prepareViewModelFromAppeal - name: ${name} -
             illnessImpactFurtherInformation: ${description} -
-            Penalty Id: ${JSON.stringify(appeal?.penaltyIdentifier)}`);
+            Penalty Id: ${JSON.stringify(appeal.penaltyIdentifier)}`);
 
         return { name, description };
     }
@@ -67,9 +75,9 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
         };
 
         loggerInstance().debug(`
-            prepareSessionModelPriorSave - name: ${value?.name} -
-            illnessImpactFurtherInformation: ${value?.description} -
-            Penalty Id: ${JSON.stringify(appeal?.penaltyIdentifier)}`);
+            prepareSessionModelPriorSave - name: ${value.name} -
+            illnessImpactFurtherInformation: ${value.description} -
+            Penalty Id: ${JSON.stringify(appeal.penaltyIdentifier)}`);
 
         return appeal;
     }
