@@ -60,13 +60,19 @@ class NavigationPermissionProcessor implements FormActionProcessor {
         let applicationData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
 
         if (!applicationData) {
-            applicationData = {} as ApplicationData;
-            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
-        }
+            applicationData = {
+                navigation: {
+                    permissions: [ EVIDENCE_UPLOAD_PAGE_URI ]
+                }
+            } as ApplicationData;
 
-        applicationData?.navigation?.permissions.push(EVIDENCE_UPLOAD_PAGE_URI);
+            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
+        } else {
+            applicationData.navigation!.permissions.push(EVIDENCE_UPLOAD_PAGE_URI);
+        }
     }
 }
+
 // tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
