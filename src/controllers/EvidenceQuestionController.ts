@@ -1,15 +1,13 @@
 import Joi from '@hapi/joi';
-import { Session, SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
-import { provide } from 'inversify-binding-decorators';
 import { controller } from 'inversify-express-utils';
-import { FormActionProcessor } from './processors/FormActionProcessor';
 
-import { RequestWithNavigation, SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
+import { NavigationPermissionProcessor } from 'app/controllers/processors/NavigationPermissionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
@@ -48,26 +46,6 @@ const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
 
-@provide(NavigationPermissionProcessor)
-class NavigationPermissionProcessor implements FormActionProcessor {
-    process(request: RequestWithNavigation): void {
-        const session: Session | undefined = request.session;
-
-        if (!session) {
-            throw new Error('Session was expected but none found');
-        }
-
-        const applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
-
-        if (!applicationData) {
-            throw new Error('ApplicationData was expected but none found');
-        }
-
-        applicationData.navigation!.permissions!.push(EVIDENCE_UPLOAD_PAGE_URI);
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {

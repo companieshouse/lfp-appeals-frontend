@@ -7,6 +7,7 @@ import request from 'supertest';
 import 'app/controllers/EvidenceRemovalController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
+import { Illness } from 'app/models/Illness';
 import { Navigation } from 'app/models/Navigation';
 import { YesNo } from 'app/models/fields/YesNo';
 import { CHECK_YOUR_APPEAL_PAGE_URI, EVIDENCE_QUESTION_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
@@ -43,6 +44,23 @@ describe('EvidenceQuestionController', () => {
 
         it('should return 200 when accessing evidence question page', async () => {
             const app = createApp(applicationData);
+
+            await request(app).get(EVIDENCE_QUESTION_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.include('Do you want to add documents to support your application?');
+                });
+        });
+
+        it('should return 200 when accessing evidence question page', async () => {
+            const illnessApplicationData = {
+                navigation,
+                appeal: {
+                    ...appeal,
+                    reasons: { illness: {} as Illness}
+                }
+            };
+            const app = createApp(illnessApplicationData);
 
             await request(app).get(EVIDENCE_QUESTION_URI)
                 .expect(response => {
