@@ -6,6 +6,7 @@ import { FormActionProcessor } from 'app/controllers/processors/FormActionProces
 import { loggerInstance } from 'app/middleware/Logger';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { addPermissionToNavigation } from 'app/utils/appeal/extra.data';
 
 @provide(NavigationPermissionProcessor)
 export class NavigationPermissionProcessor implements FormActionProcessor {
@@ -26,6 +27,6 @@ export class NavigationPermissionProcessor implements FormActionProcessor {
             throw new Error('Application Data expected but was undefined');
         }
 
-        applicationData.navigation!.permissions!.push(EVIDENCE_UPLOAD_PAGE_URI);
+        addPermissionToNavigation(applicationData, EVIDENCE_UPLOAD_PAGE_URI);
     }
 }
