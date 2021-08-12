@@ -20,32 +20,6 @@ import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Pat
 import { createApp } from 'test/ApplicationFactory';
 import { createSubstituteOf } from 'test/SubstituteFactory';
 
-function getAppeal(): Appeal {
-    return {
-        penaltyIdentifier: {
-            companyName: 'company-name-test',
-            companyNumber: 'NI000000',
-            penaltyReference: 'A00000001',
-        },
-        reasons: {
-            other: {
-                title: 'I have reasons',
-                description: 'they are legit',
-                attachments: [
-                    {
-                        id: '1',
-                        name: 'some-file.jpeg'
-                    } as Attachment,
-                    {
-                        id: '2',
-                        name: 'another-file.jpeg'
-                    } as Attachment
-                ]
-            }
-        }
-    } as Appeal;
-}
-
 const attachments = [
   {
     id: '1',
@@ -71,20 +45,26 @@ const otherReason = {
   attachments
 };
 
-const appeal = {
+const baseAppeal = {
   createdBy: {
-      name: 'name'
-    },
+    name: 'name'
+  },
   penaltyIdentifier: {
-      companyName: 'company-name-test',
-      companyNumber: 'NI000000',
-      userInputPenaltyReference: '',
-      penaltyReference: 'A00000001',
-    },
-  reasons: {
-    other: otherReason
-  }
+    companyName: 'company-name-test',
+    companyNumber: 'NI000000',
+    userInputPenaltyReference: '',
+    penaltyReference: 'A00000001',
+  },
 } as Appeal;
+
+function getAppeal(): Appeal {
+  return {
+    ...baseAppeal,
+    reasons: {
+      other: otherReason
+    }
+  } as Appeal;
+}
 
 const pageHeading: string = 'Check your appeal';
 const subHeading: string = 'Reason for appeal';
@@ -98,7 +78,12 @@ describe('CheckYourAppealController', () => {
     it('should return 200 with populated session data', async () => {
 
       const applicationData = {
-        appeal,
+        appeal: {
+          ...baseAppeal,
+          reasons: {
+            other: otherReason
+          }
+        },
         navigation
       } as ApplicationData;
 
@@ -109,27 +94,29 @@ describe('CheckYourAppealController', () => {
           expect(response.status).to.be.equal(OK);
           expect(response.text)
             .to.contain(pageHeading).and
-            .to.contain(appeal.penaltyIdentifier.companyName).and
-            .to.contain(appeal.penaltyIdentifier.companyNumber).and
-            .to.contain(appeal.penaltyIdentifier.penaltyReference).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.companyName).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.companyNumber).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.penaltyReference).and
             .to.contain('test').and
             .to.contain(subHeading).and
-            .to.contain(appeal.reasons.other!.title).and
-            .to.contain(appeal.reasons.other!.description).and
-            .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
+            .to.contain(applicationData.appeal.reasons.other!.title).and
+            .to.contain(applicationData.appeal.reasons.other!.description).and
+            .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('some-file.jpeg').and
-            .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
+            .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('another-file.jpeg');
         });
     });
 
     it('should show illness reason section with populated data', async () => {
 
-      appeal.reasons.illness = illnessReason;
-      appeal.reasons.other = undefined;
-
       const applicationData = {
-        appeal,
+        appeal: {
+          ...baseAppeal,
+          reasons: {
+            illness: illnessReason
+          }
+        },
         navigation
       } as ApplicationData;
 
@@ -140,18 +127,18 @@ describe('CheckYourAppealController', () => {
           expect(response.status).to.be.equal(OK);
           expect(response.text)
             .to.contain(pageHeading).and
-            .to.contain(appeal.penaltyIdentifier.companyName).and
-            .to.contain(appeal.penaltyIdentifier.companyNumber).and
-            .to.contain(appeal.penaltyIdentifier.penaltyReference).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.companyName).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.companyNumber).and
+            .to.contain(applicationData.appeal.penaltyIdentifier.penaltyReference).and
             .to.contain('test').and
             .to.contain(subHeading).and
-            .to.contain(appeal.reasons.illness!.illPerson).and
-            .to.contain(appeal.reasons.illness!.illnessStart).and
-            .to.contain(appeal.createdBy?.name).and
-            .to.contain(appeal.reasons.illness?.illnessImpactFurtherInformation)
-            .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
+            .to.contain(applicationData.appeal.reasons.illness!.illPerson).and
+            .to.contain(applicationData.appeal.reasons.illness!.illnessStart).and
+            .to.contain(applicationData.appeal.createdBy?.name).and
+            .to.contain(applicationData.appeal.reasons.illness?.illnessImpactFurtherInformation)
+            .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('some-file.jpeg').and
-            .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${appeal.penaltyIdentifier.companyNumber}"`)
+            .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('another-file.jpeg');
         });
     });
@@ -211,7 +198,7 @@ describe('CheckYourAppealController', () => {
             expect(applicationData.appeal).to.deep.equal({});
             expect(applicationData.submittedAppeal).to.deep.equal({
               ...getAppeal(),
-              createdBy: { emailAddress: 'test' },
+              createdBy: { emailAddress: 'test', name: 'name' },
               id: '1'
             } as Appeal);
           });
@@ -300,7 +287,7 @@ describe('CheckYourAppealController', () => {
         await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
         appealsService.received().save(
-          { ...getAppeal(), createdBy: { emailAddress: 'test' }, id: '1' },
+          { ...getAppeal(), createdBy: { emailAddress: 'test', name: 'name' }, id: '1' },
           token,
           refreshToken
         );
