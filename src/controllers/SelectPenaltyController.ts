@@ -70,7 +70,7 @@ export class SelectPenaltyController extends SafeNavigationBaseController<any> {
         );
     }
 
-    public prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & any {
+    public prepareViewModelFromAppeal(appeal: Appeal): any {
 
         const penaltyList: PenaltyList | undefined = appeal.penaltyIdentifier.penaltyList;
 

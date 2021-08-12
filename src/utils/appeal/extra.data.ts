@@ -51,3 +51,12 @@ export const isIllnessReason = (session: Session | undefined): boolean => {
 
     return getReasonType(reason) === ReasonType.illness;
 };
+
+export const addPermissionToNavigation = (extraData: ApplicationData, pageURI: string) => {
+    extraData.navigation = {
+        permissions: [
+            ...extraData.navigation.permissions,
+            pageURI
+        ]
+    };
+};
