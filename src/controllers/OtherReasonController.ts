@@ -33,11 +33,14 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
         super(template, navigation, new FormValidator(formSchema));
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & OtherReason {
-        return appeal.reasons?.other as OtherReason;
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        const otherReason = appeal.reasons?.other;
+        const name = appeal.createdBy?.name;
+
+        return { ...otherReason, name };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: OtherReason): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
         const attachments = getAttachmentsFromReasons(appeal.reasons) || [];
         if (appeal.reasons?.other != null) {
             appeal.reasons.other.title = value.title;
@@ -48,6 +51,11 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
             };
             appeal.reasons.other.attachments = [ ...attachments ];
         }
+
+        appeal.createdBy = {
+            ...appeal.createdBy,
+            name: value.name
+        };
 
         loggerInstance()
             .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
