@@ -29,9 +29,42 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
+      {% set detailsHTML %}
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              What details should I include to support my appeal?
+            </span>
+          </summary>
+
+          <div class="govuk-details__text">
+            <p>You should include:</p>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>any relevant dates - for example, the date of an incident that prevented the accounts from being filed (for example, a fire or bereavement), or the dates that a problem began and ended</li>
+              <li>names of people or organisations that prevented accounts from being filed on time, and their relationship to the company</li>
+            </ul>
+            <p>If the person who usually files the accounts was not able to, tell us why no one else could file them.</p>
+            <p>If you were given advice by Companies House, include details of when and how you contacted us.</p>
+          </div>
+        </details>
+      {% endset -%}
+
       <form method="post">
         <h1 class="govuk-heading-xl">Tell us why you’re appealing this penalty</h1>
         <p class="govuk-body-l">Anything you tell us to support your appeal will be kept confidential.</p>
+
+        {{
+          govukInput({
+            label: {
+              text: 'Your name'
+            },
+            id: 'name',
+            name: 'name',
+            value: name | default(''),
+            errorMessage: validationResult.getErrorForField('name') if validationResult and validationResult.getErrorForField('name'),
+            autocomplete: 'off'
+          })
+        }}
 
         {{
           govukInput({
@@ -41,7 +74,7 @@
             id: 'title',
             name: 'title',
             value: title | default(''),
-            errorMessage: validationResult.getErrorForField('title') if validationResult,
+            errorMessage: validationResult.getErrorForField('title') if validationResult and validationResult.getErrorForField('title'),
             autocomplete: 'off'
           })
         }}
@@ -52,12 +85,12 @@
               text: 'Detailed description of the reason'
             },
             hint: {
-              text: "You should include your name, relationship to the company, and any relevant dates."
+              html: detailsHTML
             },
             id: 'description',
             name: 'description',
             value: description | default(''),
-            errorMessage: validationResult.getErrorForField('description') if validationResult,
+            errorMessage: validationResult.getErrorForField('description') if validationResult and validationResult.getErrorForField('description'),
             rows: 8,
             autocomplete: 'off'
           })
