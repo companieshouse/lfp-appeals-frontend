@@ -55,11 +55,13 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
 
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
+        const appealName = appealData.createdBy?.name;
 
         const model = {
-            appealReasonDetails,
-            appealPenaltyDetails,
-            userProfile
+          appealReasonDetails,
+          appealPenaltyDetails,
+          userProfile,
+          appealName
         };
 
         loggerInstance()
