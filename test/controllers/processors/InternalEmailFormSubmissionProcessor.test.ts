@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';
@@ -34,19 +35,38 @@ describe('InternalEmailFormSubmissionProcessor', () => {
     });
 
     describe('processing', () => {
+        const otherReason = {
+            other: {
+                title: 'I have reasons',
+                description: 'They are legit'
+            }
+        };
+        const illnessReason = {
+            illPerson: 'director',
+            illnessStart: '01/01/2021',
+            illnessImpactFurtherInformation: 'test',
+            continuedIllness: 'no'
+        } as Illness;
+        const attachmentReason = [
+            {
+                id: '123',
+                name: 'evidence.png',
+                contentType: 'image/png',
+                size: 100,
+                url: 'http://localhost/appeal-a-penalty/download/prompt/123?c=12345678'
+            }
+        ];
         const appealWithoutAttachments: Appeal = {
             id: 'abc',
+            createdBy: {
+                name: 'name'
+            },
             penaltyIdentifier: {
                 companyName: 'A Company Name',
                 companyNumber: '12345678',
                 penaltyReference: 'PEN1A/12345677'
             } as PenaltyIdentifier,
-            reasons: {
-                other: {
-                    title: 'I have reasons',
-                    description: 'They are legit'
-                }
-            }
+            reasons: otherReason
         };
 
         const createRequestWithAppealInSession = (appeal: Appeal): Request => {
@@ -130,15 +150,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                     ...appealWithoutAttachments.reasons,
                     other: {
                         ...appealWithoutAttachments.reasons.other,
-                        attachments: [
-                            {
-                                id: '123',
-                                name: 'evidence.png',
-                                contentType: 'image/png',
-                                size: 100,
-                                url: 'http://localhost/appeal-a-penalty/download/prompt/123?c=12345678'
-                            }
-                        ]
+                        attachments: attachmentReason
                     } as OtherReason
                 } as Reasons
             }));
@@ -161,10 +173,47 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 description: 'They are legit',
                                 attachments: [
                                     {
-                                        name: 'evidence.png',
-                                        url: `http://localhost/appeal-a-penalty/download/prompt/123?c=12345678&a=abc`
+                                        name: attachmentReason[0].name,
+                                        url: `${attachmentReason[0].url}&a=abc`
                                     }
                                 ]
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        it('should send right email with illness data without attachments', async () => {
+            const emailService = createSubstituteOf<EmailService>();
+
+            const processor = new InternalEmailFormActionProcessor(emailService);
+            await processor.process(createRequestWithAppealInSession({
+                ...appealWithoutAttachments,
+                reasons: {
+                    illness: illnessReason
+                }
+            }));
+
+            emailService.received().send({
+                to: 'appeals.ch.fake+DEFAULT@gmail.com',
+                subject: `Appeal submitted - 12345678`,
+                body: {
+                    templateName: 'lfp-appeal-submission-internal',
+                    templateData: {
+                        companyName: 'A Company Name',
+                        companyNumber: '12345678',
+                        penaltyReference: 'PEN1A/12345677',
+                        userProfile: {
+                            email: 'user@example.com'
+                        },
+                        reasons: {
+                            illness: {
+                                name: 'name',
+                                illPerson: 'director',
+                                illnessStart: '01/01/2021',
+                                description: 'test',
+                                attachments: undefined
                             }
                         }
                     }

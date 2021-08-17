@@ -8,10 +8,43 @@ import { FormActionProcessor } from 'app/controllers/processors/FormActionProces
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { ReasonType } from 'app/models/fields/ReasonType';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
+import { getAttachmentsFromReasons, getReasonType } from 'app/utils/appeal/extra.data';
+
+function buildEmailReasonContent(appeal: Appeal): any {
+    const reasonType = getReasonType(appeal.reasons);
+    const attachments = getAttachmentsFromReasons(appeal.reasons);
+    const attachmentsContent = attachments?.map((attachment) => {
+        return {
+            name: attachment.name,
+            url: `${attachment.url}&a=${appeal.id}`,
+        };
+    });
+
+    if (reasonType === ReasonType.other) {
+        return {
+            [ReasonType.other]: {
+                title: appeal.reasons.other!.title,
+                description: appeal.reasons.other!.description,
+                attachments: attachmentsContent,
+            },
+        };
+    } else {
+        return {
+            [ReasonType.illness]: {
+                name: appeal.createdBy!.name,
+                illPerson: appeal.reasons.illness!.illPerson,
+                illnessStart: appeal.reasons.illness!.illnessStart,
+                description: appeal.reasons.illness!.illnessImpactFurtherInformation,
+                attachments: attachmentsContent,
+            },
+        };
+    }
+}
 
 function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
     const region = findRegionByCompanyNumber(appeal.penaltyIdentifier.companyNumber);
@@ -27,19 +60,7 @@ function buildEmail(userProfile: IUserProfile, appeal: Appeal): Email {
                 userProfile: {
                     email: userProfile.email
                 },
-                reasons: {
-                    // TBD: BI-8333
-                    other: {
-                        title: appeal.reasons.other!.title,
-                        description: appeal.reasons.other!.description,
-                        attachments: appeal.reasons.other!.attachments?.map(attachment => {
-                            return {
-                                name: attachment.name,
-                                url: `${attachment.url}&a=${appeal.id}`
-                            };
-                        })
-                    }
-                }
+                reasons: buildEmailReasonContent(appeal)
             }
         }
     };

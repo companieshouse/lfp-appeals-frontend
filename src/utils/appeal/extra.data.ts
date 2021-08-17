@@ -7,7 +7,7 @@ import { OtherReason } from 'app/models/OtherReason';
 import { Reasons } from 'app/models/Reasons';
 import { ReasonType } from 'app/models/fields/ReasonType';
 
-const getReasonType = (reasons: Reasons): ReasonType => {
+export const getReasonType = (reasons: Reasons): ReasonType => {
     return (ReasonType.illness in reasons && reasons.illness && !reasons.other)
         ? ReasonType.illness
         : ReasonType.other;
