@@ -65,6 +65,7 @@
         {% endif %}
       {% endset %}
       {% if appealReasonDetails.title %}
+        <h2 class="govuk-heading-m">Other</h2>
         {{
           govukSummaryList({
             rows: [
@@ -87,6 +88,7 @@
           })
         }}
       {% else %}
+        <h2 class="govuk-heading-m">Illness</h2>
         {{
           govukSummaryList({
             rows: [
