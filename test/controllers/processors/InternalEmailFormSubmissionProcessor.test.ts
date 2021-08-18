@@ -43,7 +43,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         };
         const illnessReason = {
             illPerson: 'director',
-            illnessStart: '01/01/2021',
+            illnessStart: '2021-03-20',
             illnessImpactFurtherInformation: 'test',
             continuedIllness: 'no'
         } as Illness;
@@ -211,7 +211,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                             illness: {
                                 name: 'name',
                                 illPerson: 'director',
-                                illnessStart: '01/01/2021',
+                                illnessStart: '20 March 2021',
                                 description: 'test',
                                 attachments: undefined
                             }

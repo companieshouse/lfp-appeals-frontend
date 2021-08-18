@@ -1,10 +1,12 @@
 import { Session } from 'ch-node-session-handler';
+import moment from 'moment';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
 import { Reasons } from 'app/models/Reasons';
+import { IllPerson } from 'app/models/fields/IllPerson';
 import { ReasonType } from 'app/models/fields/ReasonType';
 
 export const getReasonType = (reasons: Reasons): ReasonType => {
@@ -59,4 +61,14 @@ export const addPermissionToNavigation = (extraData: ApplicationData, pageURI: s
             pageURI
         ]
     };
+};
+
+export const getIllPersonFromIllnessReason = (illnessReasons: Illness): string => {
+    return (illnessReasons.illPerson === IllPerson.someoneElse)
+            ? illnessReasons.otherPerson!
+            : illnessReasons.illPerson;
+};
+
+export const formatDate = (inputDate: string ): string => {
+    return moment(inputDate).format('D MMMM YYYY');
 };

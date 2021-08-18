@@ -12,7 +12,9 @@ import {
     addAttachmentToReason,
     addPermissionToNavigation,
     findAttachmentByIdFromReasons,
+    formatDate,
     getAttachmentsFromReasons,
+    getIllPersonFromIllnessReason,
     getReasonFromReasons,
     isIllnessReason,
     removeAttachmentFromReasons
@@ -37,7 +39,7 @@ describe('Appeal Extra Data', () => {
         reasons: {
             illness: {
                 illPerson: 'director',
-                illnessStart: '21/10/20',
+                illnessStart: '2020-02-03',
                 continuedIllness: 'yes',
                 attachments: [appealReasonAttachments[0]]
             } as Illness
@@ -147,5 +149,26 @@ describe('Appeal Extra Data', () => {
 
         addPermissionToNavigation(mockExtraData, mockPathURI);
         expect(mockExtraData.navigation.permissions).to.deep.equal([mockPathURI]);
+    });
+
+    it('should return illPerson if someoneElse is not selected', () => {
+        const illperson = getIllPersonFromIllnessReason(appealIllnessReason.reasons.illness as Illness);
+        expect(illperson).to.be.equal(appealIllnessReason.reasons.illness?.illPerson);
+    });
+
+    it('should return otherPerson if someoneElse selected', () => {
+        const illness = {
+            ...appealIllnessReason.reasons.illness,
+            illPerson: 'someoneElse',
+            otherPerson: 'RealName',
+        } as Illness;
+        const illperson = getIllPersonFromIllnessReason(illness);
+        expect(illperson).to.be.equal(illness.otherPerson);
+    });
+
+    it('should return correct format date', () => {
+        const data = '2020-02-03';
+        const dataFormatted = formatDate(data);
+        expect(dataFormatted).to.be.equal('3 February 2020');
     });
 });
