@@ -43,7 +43,7 @@ function buildEmailReasonContent(appeal: Appeal): any {
             [ReasonType.illness]: {
                 name: appeal.createdBy!.name,
                 illPerson: getIllPersonFromIllnessReason(appeal.reasons.illness!),
-                illnessStart: formatDate(appeal.reasons.illness!.illnessStart!),
+                illnessStart: formatDate(appeal.reasons.illness!.illnessStart),
                 description: appeal.reasons.illness!.illnessImpactFurtherInformation,
                 attachments: attachmentsContent,
             },
