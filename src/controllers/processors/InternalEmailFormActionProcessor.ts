@@ -13,7 +13,12 @@ import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { findRegionByCompanyNumber } from 'app/utils/RegionLookup';
-import { getAttachmentsFromReasons, getReasonType } from 'app/utils/appeal/extra.data';
+import {
+    formatDate,
+    getAttachmentsFromReasons,
+    getIllPersonFromIllnessReason,
+    getReasonType
+} from 'app/utils/appeal/extra.data';
 
 function buildEmailReasonContent(appeal: Appeal): any {
     const reasonType = getReasonType(appeal.reasons);
@@ -37,8 +42,8 @@ function buildEmailReasonContent(appeal: Appeal): any {
         return {
             [ReasonType.illness]: {
                 name: appeal.createdBy!.name,
-                illPerson: appeal.reasons.illness!.illPerson,
-                illnessStart: appeal.reasons.illness!.illnessStart,
+                illPerson: getIllPersonFromIllnessReason(appeal.reasons.illness!),
+                illnessStart: formatDate(appeal.reasons.illness!.illnessStart),
                 description: appeal.reasons.illness!.illnessImpactFurtherInformation,
                 attachments: attachmentsContent,
             },

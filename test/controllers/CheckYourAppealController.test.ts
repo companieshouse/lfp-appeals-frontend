@@ -33,7 +33,7 @@ const attachments = [
 
 const illnessReason = {
   illPerson: IllPerson.director,
-  illnessStart: '01/01/2021',
+  illnessStart: '2020-11-12',
   continuedIllness: YesNo.no,
   illnessImpactFurtherInformation: 'test',
   attachments
@@ -133,7 +133,7 @@ describe('CheckYourAppealController', () => {
             .to.contain('test').and
             .to.contain(subHeading).and
             .to.contain(applicationData.appeal.reasons.illness!.illPerson).and
-            .to.contain(applicationData.appeal.reasons.illness!.illnessStart).and
+            .to.contain('12 November 2020').and
             .to.contain(applicationData.appeal.createdBy?.name).and
             .to.contain(applicationData.appeal.reasons.illness?.illnessImpactFurtherInformation)
             .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)

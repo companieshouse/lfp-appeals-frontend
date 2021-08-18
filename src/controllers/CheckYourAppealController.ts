@@ -12,6 +12,7 @@ import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
+import { ReasonType } from 'app/models/fields/ReasonType';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
@@ -19,7 +20,12 @@ import {
     EVIDENCE_QUESTION_URI
 } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
-import { getReasonFromReasons } from 'app/utils/appeal/extra.data';
+import {
+    formatDate,
+    getIllPersonFromIllnessReason,
+    getReasonFromReasons,
+    getReasonType
+} from 'app/utils/appeal/extra.data';
 
 const template = 'check-your-appeal';
 
@@ -52,16 +58,22 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         }
 
         const appealData = super.prepareViewModelFromSession(session);
-
+        const reasonType = getReasonType(appealData.reasons);
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
         const appealName = appealData.createdBy?.name;
+        const illPersonName = (reasonType === ReasonType.illness )
+                                ? getIllPersonFromIllnessReason(appealData.reasons.illness) : undefined;
+        const illnessStartDate = (reasonType === ReasonType.illness )
+                                ? formatDate(appealData.reasons.illness.illnessStart) : undefined;
 
         const model = {
           appealReasonDetails,
           appealPenaltyDetails,
           userProfile,
-          appealName
+          appealName,
+          illPersonName,
+          illnessStartDate
         };
 
         loggerInstance()
