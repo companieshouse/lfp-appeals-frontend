@@ -33,6 +33,7 @@ function buildEmailReasonContent(appeal: Appeal): any {
     if (reasonType === ReasonType.other) {
         return {
             [ReasonType.other]: {
+                name: appeal.createdBy!.name,
                 title: appeal.reasons.other!.title,
                 description: appeal.reasons.other!.description,
                 attachments: attachmentsContent,

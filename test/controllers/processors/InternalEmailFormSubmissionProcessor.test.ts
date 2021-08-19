@@ -130,6 +130,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         },
                         reasons: {
                             other: {
+                                name: 'name',
                                 title: 'I have reasons',
                                 description: 'They are legit',
                                 attachments: undefined
@@ -169,6 +170,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         },
                         reasons: {
                             other: {
+                                name: 'name',
                                 title: 'I have reasons',
                                 description: 'They are legit',
                                 attachments: [
