@@ -75,6 +75,11 @@
                 actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'reason') ] }
               },
               {
+                key: { text: 'Your Name' },
+                value: { text: appealName },
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name') ] }
+              },
+              {
                 key: { text: 'Further information' },
                 value: { text: appealReasonDetails.description },
                 actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'further information') ] }
