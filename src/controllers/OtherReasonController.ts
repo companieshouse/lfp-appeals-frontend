@@ -41,15 +41,20 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
-        const attachments = getAttachmentsFromReasons(appeal.reasons) || [];
+        const attachments = getAttachmentsFromReasons(appeal.reasons);
         if (appeal.reasons?.other != null) {
             appeal.reasons.other.title = value.title;
             appeal.reasons.other.description = value.description;
         } else {
             appeal.reasons = {
-                other: value
+                other: {
+                    description: value.description,
+                    title: value.title
+                }
             };
-            appeal.reasons.other.attachments = [ ...attachments ];
+            if(attachments) {
+                appeal.reasons.other.attachments = [ ...attachments ];
+            }
         }
 
         appeal.createdBy = {

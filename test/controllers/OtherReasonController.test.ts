@@ -112,5 +112,24 @@ describe('OtherReasonController', () => {
                     expect(response.header.location).to.include(EVIDENCE_QUESTION_URI);
                 });
         });
+
+        it('should maintain the attachments object when present on illness reason', async () => {
+            const attachments = [{id: 'i', name: 'n', contentType: 'c', size: 1, url: 'u'}];
+            const appealWithAttachment = {
+                ...appeal,
+                reasons: { illness: { attachments } }
+            } as Appeal;
+            const app = createApp({ appeal: appealWithAttachment});
+
+            await request(app).post(OTHER_REASON_PAGE_URI)
+                .send({...reasons.other, name: appeal.createdBy!.name})
+                .expect(_ => {
+                    expect(appealWithAttachment.reasons.illness).to.equal(undefined);
+                    expect(appealWithAttachment.reasons.other).deep.equal({
+                        ...reasons.other,
+                        attachments
+                    });
+                });
+        });
     });
 });
