@@ -1,17 +1,25 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
+import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { OTHER_REASON_DISCLAIMER_PAGE_URI, OTHER_REASON_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import {
+    CHOOSE_REASON_PAGE_URI,
+    OTHER_REASON_DISCLAIMER_PAGE_URI,
+    OTHER_REASON_PAGE_URI,
+    REVIEW_PENALTY_PAGE_URI
+} from 'app/utils/Paths';
 
 const template = 'other-reason-disclaimer';
 
 const navigation = {
-    previous(): string {
-        return REVIEW_PENALTY_PAGE_URI;
+    previous(request: Request): string {
+        return (request.app.locals.featureFlags.illnessReasonEnabled)
+            ? CHOOSE_REASON_PAGE_URI
+            : REVIEW_PENALTY_PAGE_URI;
     },
     next(): string {
         return OTHER_REASON_PAGE_URI;
