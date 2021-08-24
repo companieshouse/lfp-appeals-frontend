@@ -18,7 +18,7 @@
           crossorigin="anonymous"></script>
 
   <script type="application/javascript">
-    window.SERVICE_NAME = 'appeals'
+    window.SERVICE_NAME = 'serviceName'
     window.PIWIK_URL = '{{ piwik.url }}'
     window.PIWIK_SITE_ID = '{{ piwik.site }}'
   </script>
@@ -92,5 +92,10 @@
   <script>window.GOVUKFrontend.initAll()</script>
   <script src="//{{ cdn.host }}/javascripts/app/piwik-enable.js"></script>
   <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/cookie-consent-1.0.0.js"></script>
-  <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/piwik-only-cookie-consent.js"></script>
+  <script src="{{assetPath}}/javascripts/app/cookie-consent/matomo-only-cookie-consent.js"></script>
+  <noscript>
+    <p>
+        <img src="{{PIWIK_URL}}/piwik.php?idsite={{PIWIK_SITE_ID}}" style="border:0;" alt="" />
+    </p>
+  </noscript>
 {% endblock %}
