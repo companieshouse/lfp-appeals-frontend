@@ -8,6 +8,7 @@ import { NavigationPermissionProcessor } from 'app/controllers/processors/Naviga
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
+import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
@@ -18,7 +19,7 @@ import {
     FURTHER_INFORMATION_PAGE_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
-import { isIllnessReason } from 'app/utils/appeal/extra.data';
+import { getAttachmentsFromReasons, getReasonFromReasons, isIllnessReason } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'evidence-question';
@@ -50,5 +51,23 @@ const schema: Joi.AnySchema = Joi.object({
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined, [NavigationPermissionProcessor]);
+    }
+
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        const attachments = getAttachmentsFromReasons(appeal.reasons);
+        const evidenceUploded = attachments
+            ? ( attachments.length > 0) ? YesNo.yes : YesNo.no
+            : undefined;
+        return { evidenceUploded };
+    }
+
+    protected prepareSessionModelPriorSave(appeal: Appeal): Appeal {
+        const reason = getReasonFromReasons(appeal.reasons);
+
+        if(!reason!.attachments){
+            reason!.attachments = [];
+        }
+
+        return appeal;
     }
 }

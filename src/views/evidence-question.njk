@@ -46,12 +46,14 @@
               {
                 id: 'evidence-yes',
                 value: 'yes',
-                text: 'Yes'
+                text: 'Yes',
+                checked: evidenceUploded === "yes"
               },
               {
                 id: 'evidence-no',
                 value: 'no',
-                text: 'No'
+                text: 'No',
+                checked: evidenceUploded === "no"
               }
             ],
             errorMessage: validationResult.getErrorForField('evidence') if validationResult

@@ -7,6 +7,7 @@ import request from 'supertest';
 import 'app/controllers/EvidenceRemovalController';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData } from 'app/models/ApplicationData';
+import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
 import { Navigation } from 'app/models/Navigation';
 import { YesNo } from 'app/models/fields/YesNo';
@@ -52,7 +53,7 @@ describe('EvidenceQuestionController', () => {
                 });
         });
 
-        it('should return 200 when accessing evidence question page', async () => {
+        it('should return 200 when accessing evidence question page with appeal illness object', async () => {
             const illnessApplicationData = {
                 navigation,
                 appeal: {
@@ -66,6 +67,42 @@ describe('EvidenceQuestionController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text).to.include('Do you want to add documents to support your application?');
+                });
+        });
+
+        it('should return 200 with "no" radio button checked', async () => {
+            const illnessApplicationData = {
+                navigation,
+                appeal: {
+                    ...appeal,
+                    reasons: { illness: { attachments: [] as Attachment[]} as Illness}
+                }
+            };
+            const app = createApp(illnessApplicationData);
+
+            await request(app).get(EVIDENCE_QUESTION_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.include('value="no" checked');
+                    expect(response.text).not.to.include('value="yes" checked');
+                });
+        });
+
+        it('should return 200 with "yes" radio button checked', async () => {
+            const illnessApplicationData = {
+                navigation,
+                appeal: {
+                    ...appeal,
+                    reasons: { illness: { attachments: [ {} ] as Attachment[]} as Illness}
+                }
+            };
+            const app = createApp(illnessApplicationData);
+
+            await request(app).get(EVIDENCE_QUESTION_URI)
+                .expect(response => {
+                    expect(response.status).to.be.equal(OK);
+                    expect(response.text).to.include('value="yes" checked');
+                    expect(response.text).not.to.include('value="no" checked');
                 });
         });
     });

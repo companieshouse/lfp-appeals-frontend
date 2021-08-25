@@ -66,6 +66,28 @@ describe('IllPersonController', () => {
             });
         });
 
+        it('should maintain the attachments object when present on other reason', async () => {
+            const attachments = [{id: 'i', name: 'n', contentType: 'c', size: 1, url: 'u'}];
+            const otherApplicationData = {
+                ...applicationData,
+                appeal: {
+                    ...applicationData.appeal,
+                    reasons: { other: { attachments }}
+                }
+            } as Partial<ApplicationData>;
+            const app = createApp(otherApplicationData);
+
+            await request(app).post(ILL_PERSON_PAGE_URI)
+                .send({illPerson: IllPerson.accountant})
+                .expect(_ => {
+                    expect(otherApplicationData.appeal!.reasons.other).to.equal(undefined);
+                    expect(otherApplicationData.appeal!.reasons.illness).deep.equal({
+                        illPerson: IllPerson.accountant,
+                        attachments
+                    });
+                });
+        });
+
         it('should redirect to Illness Start Date page when valid information is entered', async () => {
             const app = createApp(applicationData);
 

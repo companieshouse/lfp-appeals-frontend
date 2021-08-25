@@ -62,7 +62,7 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
-        const attachments = getAttachmentsFromReasons(appeal.reasons) || [];
+        const attachments = getAttachmentsFromReasons(appeal.reasons);
         if (appeal.reasons?.illness != null) {
             appeal.reasons.illness.illPerson = value.illPerson;
 
@@ -76,7 +76,9 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
             appeal.reasons = {
                 illness: value as Illness
             };
-            appeal.reasons.illness.attachments = [ ...attachments ];
+            if(attachments) {
+                appeal.reasons.illness.attachments = [ ...attachments ];
+            }
         }
 
         loggerInstance()
