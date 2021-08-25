@@ -10,13 +10,20 @@ import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, OTHER_REASON_DISCLAIMER_PA
 
 describe('ChooseAppealReasonController', () => {
 
+    const navigation = { permissions: [CHOOSE_REASON_PAGE_URI] };
+    const penaltyIdentifier = { companyNumber: 'NI000000' };
+
     const applicationData: Partial<ApplicationData> = {
+        appeal: { penaltyIdentifier } as Appeal,
+        navigation
+    };
+
+    const illnessApplicationData: Partial<ApplicationData> = {
         appeal: {
-            penaltyIdentifier: {
-                companyNumber: 'NI000000'
-            }
+            penaltyIdentifier,
+            reasons: { illness: {} }
         } as Appeal,
-        navigation: { permissions: [CHOOSE_REASON_PAGE_URI] }
+        navigation
     };
 
     describe('on GET', () => {
@@ -30,6 +37,16 @@ describe('ChooseAppealReasonController', () => {
                 expect(res.text).to.include('value="other"');
                 const radioCount = (res.text.match(/type="radio"/g) || []).length;
                 expect(radioCount).to.equal(2);
+            });
+        });
+
+        it('should show radio buttons for available appeal reasons', async () => {
+            const app = createApp(illnessApplicationData);
+
+            await request(app).get(CHOOSE_REASON_PAGE_URI).expect(res => {
+                expect(res.text).to.include('type="radio"');
+                expect(res.text).to.include('value="illness" checked');
+                expect(res.text).not.to.include('value="other" checked');
             });
         });
     });

@@ -57,7 +57,7 @@ export class ChooseAppealReasonController extends SafeNavigationBaseController<F
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const reasonType = getReasonType(appeal.reasons);
+        const reasonType = appeal.reasons ? getReasonType(appeal.reasons) : undefined;
 
         return { reasonType };
     }
