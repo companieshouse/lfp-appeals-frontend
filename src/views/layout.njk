@@ -92,10 +92,10 @@
   <script>window.GOVUKFrontend.initAll()</script>
   <script src="//{{ cdn.host }}/javascripts/app/piwik-enable.js"></script>
   <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/cookie-consent-1.0.0.js"></script>
-  <script src="{{assetPath}}/javascripts/app/cookie-consent/matomo-only-cookie-consent.js"></script>
+  <script src="//{{ cdn.host }}/javascripts/app/cookie-consent/matomo-only-cookie-consent.js"></script>
   <noscript>
     <p>
-        <img src="{{PIWIK_URL}}/piwik.php?idsite={{PIWIK_SITE_ID}}" style="border:0;" alt="" />
+      <img src="{{piwik.url}}/piwik.php?idsite={{piwik.site}}" style="border:0;" alt="" />
     </p>
   </noscript>
 {% endblock %}
