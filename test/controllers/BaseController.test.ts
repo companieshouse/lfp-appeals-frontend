@@ -147,6 +147,7 @@ describe('Base controller', () => {
             // @ts-ignore
             response.received().render(response, template, Arg.is(arg => {
                 return JSON.stringify(arg) === JSON.stringify({
+                    templateName: template,
                     ...formBody,
                     validationResult: {
                         errors: [
