@@ -61,7 +61,6 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
-
         appeal.reasons.illness!.illPerson = value.illPerson;
 
         if (value.illPerson === IllPerson.someoneElse) {

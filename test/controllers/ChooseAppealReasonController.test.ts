@@ -62,5 +62,47 @@ describe('ChooseAppealReasonController', () => {
                 expect(res.header.location).to.include(OTHER_REASON_DISCLAIMER_PAGE_URI);
             });
         });
+
+        it('should maintain the attachments object when present on illness reason', async () => {
+            const attachments = [{id: 'i', name: 'n', contentType: 'c', size: 1, url: 'u'}];
+            const appealWithAttachment = {
+                ...applicationData,
+                appeal: {
+                ...applicationData.appeal,
+                reasons: { illness: { attachments } }
+                }
+            } as Partial<ApplicationData>;
+            const app = createApp(appealWithAttachment);
+
+            await request(app).post(CHOOSE_REASON_PAGE_URI)
+                .send({reason: ReasonType.other})
+                .expect(_ => {
+                    expect(appealWithAttachment.appeal!.reasons.illness).to.equal(undefined);
+                    expect(appealWithAttachment.appeal!.reasons.other).deep.equal({
+                        attachments
+                    });
+                });
+        });
+
+        it('should maintain the attachments object when present on other reason', async () => {
+            const attachments = [{id: 'i', name: 'n', contentType: 'c', size: 1, url: 'u'}];
+            const otherApplicationData = {
+                ...applicationData,
+                appeal: {
+                    ...applicationData.appeal,
+                    reasons: { other: { attachments }}
+                }
+            } as Partial<ApplicationData>;
+            const app = createApp(otherApplicationData);
+
+            await request(app).post(CHOOSE_REASON_PAGE_URI)
+                .send({reason: ReasonType.illness})
+                .expect(_ => {
+                    expect(otherApplicationData.appeal!.reasons.other).to.equal(undefined);
+                    expect(otherApplicationData.appeal!.reasons.illness).deep.equal({
+                        attachments
+                    });
+                });
+        });
     });
 });
