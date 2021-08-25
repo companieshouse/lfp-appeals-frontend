@@ -1,7 +1,12 @@
 import 'reflect-metadata';
 
 import { expect } from 'chai';
-import { MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
+import {
+    INTERNAL_SERVER_ERROR,
+    MOVED_TEMPORARILY,
+    OK,
+    UNPROCESSABLE_ENTITY
+} from 'http-status-codes';
 import request from 'supertest';
 
 import 'app/controllers/OtherReasonController';
@@ -19,6 +24,7 @@ const otherReasonHint = 'What details should I include to support my appeal?';
 const errorSummaryHeading = 'There is a problem with the information you entered';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
+const errorServiceProblem = 'Sorry, there is a problem with the service';
 
 describe('OtherReasonController', () => {
     const reasons = {
@@ -101,15 +107,14 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it(`should redirect to evidence upload page when
-                valid data was submitted on an empty reason object`, async () => {
+        it(`should fail with 500 error when passing an empty reason object`, async () => {
             const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
                 .send({...reasons.other, name: appeal.createdBy!.name})
                 .expect(response => {
-                    expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.header.location).to.include(EVIDENCE_QUESTION_URI);
+                    expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
+                    expect(response.text).to.include(errorServiceProblem);
                 });
         });
     });
