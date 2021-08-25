@@ -12,7 +12,6 @@ import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { createPenaltyRadioButton } from 'app/models/components/PenaltyRadioButton';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
@@ -78,7 +77,10 @@ export class SelectPenaltyController extends SafeNavigationBaseController<any> {
             throw new Error('Penalty object expected but none found');
         }
 
-        return { penalties: penaltyList.items.map(createPenaltyRadioButton) };
+        return {
+            penaltyList: penaltyList.items,
+            penaltyReferenceSelected: appeal.penaltyIdentifier.penaltyReference
+        };
     }
 
 }
