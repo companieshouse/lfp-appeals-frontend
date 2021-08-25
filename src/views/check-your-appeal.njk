@@ -72,22 +72,34 @@
               {
                 key: { text: 'Your Name' },
                 value: { text: appealName },
-                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name', { attributes: {
+                'data-event-id': 'change your name'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Reason' },
                 value: { text: appealReasonDetails.title },
-                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'reason') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'reason', { attributes: {
+                'data-event-id': 'change reason'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Further information' },
                 value: { text: appealReasonDetails.description },
-                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'further information') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'further information', { attributes: {
+                'data-event-id': 'change information'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Supporting documents' },
                 value: { html: attachmentsList },
-                actions: { items: [ ui.createChangeLinkConfig(paths.EVIDENCE_UPLOAD_PAGE_URI, 'supporting documents') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.EVIDENCE_UPLOAD_PAGE_URI, 'supporting documents', { attributes: {
+                'data-event-id': 'change supporting documents'
+              }
+              }) ] }
               }
             ]
           })
@@ -100,27 +112,42 @@
               {
                 key: { text: 'Who was ill?' },
                 value: { text: illPersonName },
-                actions: { items: [ ui.createChangeLinkConfig(paths.ILL_PERSON_PAGE_URI, 'who was ill') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.ILL_PERSON_PAGE_URI, 'who was ill', { attributes: {
+                'data-event-id': 'change ill person'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Illness start date' },
                 value: { text: illnessStartDate },
-                actions: { items: [ ui.createChangeLinkConfig(paths.ILLNESS_START_DATE_PAGE_URI, 'illness start date') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.ILLNESS_START_DATE_PAGE_URI, 'illness start date', { attributes: {
+                'data-event-id': 'change ill start date'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Your Name' },
                 value: { text: appealName },
-                actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'your name') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'your name', { attributes: {
+                'data-event-id': 'change your name'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Further information' },
                 value: { text: appealReasonDetails.illnessImpactFurtherInformation },
-                actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'further information') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'further information', { attributes: {
+                'data-event-id': 'change further information'
+              }
+              }) ] }
               },
               {
                 key: { text: 'Supporting documents' },
                 value: { html: attachmentsList },
-                actions: { items: [ ui.createChangeLinkConfig(paths.EVIDENCE_UPLOAD_PAGE_URI, 'supporting documents') ] }
+                actions: { items: [ ui.createChangeLinkConfig(paths.EVIDENCE_UPLOAD_PAGE_URI, 'supporting documents', { attributes: {
+                'data-event-id': 'change supporting documents'
+              }
+              }) ] }
               }
             ]
           })

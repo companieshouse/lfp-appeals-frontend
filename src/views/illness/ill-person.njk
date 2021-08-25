@@ -62,30 +62,48 @@
               {
                 value: 'director',
                 text: 'A company director',
-                checked: true if illPerson === 'director'
+                checked: true if illPerson === 'director',
+                attributes: {
+                'data-event-id': 'director-selected'
+              }
               },
               {
                 value: 'accountant',
                 text: 'A company accountant or agent',
-                checked: true if illPerson === 'accountant'
+                checked: true if illPerson === 'accountant',
+                attributes: {
+                  'data-event-id': 'accountant-selected'
+              } 
               },
               {
                 value: 'family',
                 text: 'A family member of a director',
-                checked: true if illPerson === 'family'
+                checked: true if illPerson === 'family',
+                attributes: {
+                  'data-event-id': 'family member selected'
+              } 
               },
               {
                 value: 'employee',
                 text: 'A company employee',
-                checked: true if illPerson === 'employee'
+                checked: true if illPerson === 'employee',
+                attributes: {
+                  'data-event-id': 'employee selected'
+              } 
               },
               {
                 value: 'someoneElse',
                 text: 'Someone else',
                 checked: true if illPerson === 'someoneElse',
                 conditional: {
-                  html: otherPersonHtml
-                }
+                  html: otherPersonHtml,
+                  attributes: {
+                  'data-event-id': 'input in option box'
+              } 
+                },
+                attributes: {
+                  'data-event-id': 'someone-else-selected'
+              } 
               }
             ]
           })
