@@ -14,13 +14,20 @@ const errorServiceProblem = 'Sorry, there is a problem with the service';
 
 describe('IllPersonController', () => {
 
+    const navigation = { permissions: [ILL_PERSON_PAGE_URI] };
+    const penaltyIdentifier = { companyNumber: 'NI000000' };
+
     const applicationData: Partial<ApplicationData> = {
+        appeal: { penaltyIdentifier } as Appeal,
+        navigation
+    };
+
+    const illnessApplicationData: Partial<ApplicationData> = {
         appeal: {
-            penaltyIdentifier: {
-                companyNumber: 'NI000000'
-            }
+            penaltyIdentifier,
+            reasons: { illness: {} }
         } as Appeal,
-        navigation: { permissions: [ILL_PERSON_PAGE_URI] }
+        navigation
     };
 
     describe('on GET', () => {
@@ -70,27 +77,22 @@ describe('IllPersonController', () => {
             });
         });
 
-        it('should redirect to Illness Start Date page when valid information is entered', async () => {
-
-            const localApplicationData: Partial<ApplicationData> = {
-                appeal: {
-                    penaltyIdentifier: {
-                        companyNumber: 'NI000000'
-                    },
-                    reasons: {
-                        illness: {}
-                    }
-                } as Appeal,
-                navigation: { permissions: [ILL_PERSON_PAGE_URI] }
-            };
-
-            const app = createApp(localApplicationData);
+        it('should redirect to Illness Start Date page when valid ill person is entered', async () => {
+            const app = createApp(illnessApplicationData);
 
             await request(app).post(ILL_PERSON_PAGE_URI)
-                .send({
-                    illPerson: IllPerson.someoneElse,
-                    otherPerson: 'QA'
-                })
+                .send({ illPerson: IllPerson.accountant })
+                .expect(response => {
+                    expect(response.status).to.equal(MOVED_TEMPORARILY);
+                    expect(response.header.location).to.include(ILLNESS_START_DATE_PAGE_URI);
+                });
+        });
+
+        it('should redirect to Illness Start Date page when valid someone else ill is entered', async () => {
+            const app = createApp(illnessApplicationData);
+
+            await request(app).post(ILL_PERSON_PAGE_URI)
+                .send({ illPerson: IllPerson.someoneElse, otherPerson: 'Banana Hungry Peach' })
                 .expect(response => {
                     expect(response.status).to.equal(MOVED_TEMPORARILY);
                     expect(response.header.location).to.include(ILLNESS_START_DATE_PAGE_URI);
