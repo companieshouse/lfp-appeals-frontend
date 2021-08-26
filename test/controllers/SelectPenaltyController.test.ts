@@ -10,32 +10,37 @@ import { ApplicationData } from 'app/models/ApplicationData';
 import { REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 describe('SelectPenaltyController', () => {
+    const penaltyList = {
+        items: [
+            {
+                type: 'penalty',
+                madeUpDate: '12 May 2020',
+                originalAmount: 3000,
+                transactionDate: '12 May 2019',
+                id: 'A0000001'
+            } as Penalty,
+            {
+                type: 'penalty',
+                madeUpDate: '31 May 2019',
+                originalAmount: 250,
+                transactionDate: '31 May 2018',
+                id: 'A0000002'
+            } as Penalty
+        ]
+    } as PenaltyList;
+
+    const penaltyIdentifier = {
+        companyNumber: 'NI000000',
+        penaltyReference: 'A0000001',
+        companyName: 'Test'
+    };
 
     it('GET: should render the radio buttons', async () => {
         const applicationData: Partial<ApplicationData> = {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    penaltyReference: 'PEN1A/NI000000',
-                    companyName: 'Test',
-                    penaltyList: {
-                        items: [
-                            {
-                                type: 'penalty',
-                                madeUpDate: '12 May 2020',
-                                originalAmount: 3000,
-                                transactionDate: '12 May 2019',
-                                id: 'A0000001'
-                            } as Penalty,
-                            {
-                                type: 'penalty',
-                                madeUpDate: '31 May 2019',
-                                originalAmount: 250,
-                                transactionDate: '31 May 2018',
-                                id: 'A0000002'
-                            } as Penalty
-                        ]
-                    } as PenaltyList
+                    ...penaltyIdentifier,
+                    penaltyList
                 }
             } as Appeal,
             navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
@@ -46,21 +51,24 @@ describe('SelectPenaltyController', () => {
         await request(app)
             .get(SELECT_THE_PENALTY_PAGE_URI)
             .expect(res => {
-                expect(res.text).to.include('type="radio"');
-                expect(res.text).to.include('value="A0000001"');
-                expect(res.text).to.include('value="A0000002"');
+                expect(res.text)
+                    .to.include('type="radio"')
+                    .to.include('value="A0000001"')
+                    .to.include('value="A0000002"')
+                    .to.include('Accounts made up to 12 May 2020')
+                    .to.include('Accounts made up to 31 May 2019')
+                    .to.include('These accounts were filed 12 May 2019.')
+                    .to.include('The late filing penalty is £3000.')
+                    .to.include('These accounts were filed 31 May 2018.')
+                    .to.include('The late filing penalty is £250.')
+                    .to.include('value="A0000001" checked')
+                    .not.to.include('value="A0000002" checked');
             });
     });
 
     it('POST: should show an error if the penalty list is undefined', async () => {
         const applicationData: Partial<ApplicationData> = {
-            appeal: {
-                penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    penaltyReference: 'PEN1A/NI000000',
-                    companyName: 'Test',
-                }
-            } as Appeal,
+            appeal: { penaltyIdentifier } as Appeal,
             navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
         };
         const app = createApp(applicationData);
@@ -76,27 +84,8 @@ describe('SelectPenaltyController', () => {
         const applicationData: Partial<ApplicationData> = {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    penaltyReference: 'PEN1A/NI000000',
-                    companyName: 'Test',
-                    penaltyList: {
-                        items: [
-                            {
-                                type: 'penalty',
-                                madeUpDate: '12 May 2020',
-                                originalAmount: 3000,
-                                transactionDate: '12 May 2019',
-                                id: 'A0000001'
-                            } as Penalty,
-                            {
-                                type: 'penalty',
-                                madeUpDate: '31 May 2019',
-                                originalAmount: 250,
-                                transactionDate: '31 May 2018',
-                                id: 'A0000002'
-                            } as Penalty
-                        ]
-                    } as PenaltyList
+                    ...penaltyIdentifier,
+                    penaltyList
                 }
             } as Appeal,
             navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
@@ -106,35 +95,14 @@ describe('SelectPenaltyController', () => {
         await request(app)
             .post(SELECT_THE_PENALTY_PAGE_URI)
             .expect(res => expect(res.text).to.contain('Select the penalty you want to appeal'));
-
-
     });
 
     it('POST: should redirect to the review penalty page when penalty is selected', async () => {
         const applicationData: Partial<ApplicationData> = {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    penaltyReference: 'PEN1A/NI000000',
-                    companyName: 'Test',
-                    penaltyList: {
-                        items: [
-                            {
-                                type: 'penalty',
-                                madeUpDate: '12 May 2020',
-                                originalAmount: 3000,
-                                transactionDate: '12 May 2019',
-                                id: 'A0000001'
-                            } as Penalty,
-                            {
-                                type: 'penalty',
-                                madeUpDate: '31 May 2019',
-                                originalAmount: 250,
-                                transactionDate: '31 May 2018',
-                                id: 'A0000002'
-                            } as Penalty
-                        ]
-                    } as PenaltyList
+                    ...penaltyIdentifier,
+                    penaltyList
                 }
             } as Appeal,
             navigation: { permissions: [SELECT_THE_PENALTY_PAGE_URI] }
@@ -146,7 +114,6 @@ describe('SelectPenaltyController', () => {
             .send({ selectPenalty: 'A0000001' })
             .expect(302)
             .expect(res => expect(res.get('Location')).to.equal(REVIEW_PENALTY_PAGE_URI));
-
     });
 
 });

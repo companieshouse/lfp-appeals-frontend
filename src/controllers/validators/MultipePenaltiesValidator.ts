@@ -4,7 +4,6 @@ import { Request } from 'express';
 import { FormValidator } from './FormValidator';
 
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { createPenaltyRadioButton } from 'app/models/components/PenaltyRadioButton';
 import { schema } from 'app/models/fields/PenaltyChoice.schema';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
 import { ValidationResult } from 'app/utils/validation/ValidationResult';
@@ -36,7 +35,7 @@ export class MultiplePenaltiesValidator extends FormValidator {
 
         const result: ValidationResult = await super.validate(request);
 
-        request.body.penalties = penaltyList.items.map(createPenaltyRadioButton);
+        request.body.penaltyList = [...penaltyList.items];
 
         return result;
     }
