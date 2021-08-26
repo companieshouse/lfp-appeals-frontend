@@ -43,8 +43,14 @@
             },
             errorMessage: validationResult.getErrorForField('reason') if validationResult,
             items: [
-              { value: 'illness', text: 'Illness and health issues' },
-              { value: 'other', text: 'I’m appealing for another reason' }
+              { value: 'illness', 
+                text: 'Illness and health issues',
+                checked: reasonType === 'illness'
+              },
+              { value: 'other', 
+                text: 'I’m appealing for another reason',
+                checked: reasonType === 'other'
+              }
             ]
           })
         }}

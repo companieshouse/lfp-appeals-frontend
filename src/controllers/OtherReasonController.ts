@@ -14,7 +14,6 @@ import {
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     OTHER_REASON_PAGE_URI
 } from 'app/utils/Paths';
-import { getAttachmentsFromReasons } from 'app/utils/appeal/extra.data';
 
 const template = 'other-reason';
 
@@ -41,21 +40,9 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
-        const attachments = getAttachmentsFromReasons(appeal.reasons);
-        if (appeal.reasons?.other != null) {
-            appeal.reasons.other.title = value.title;
-            appeal.reasons.other.description = value.description;
-        } else {
-            appeal.reasons = {
-                other: {
-                    description: value.description,
-                    title: value.title
-                }
-            };
-            if(attachments) {
-                appeal.reasons.other.attachments = [ ...attachments ];
-            }
-        }
+
+        appeal.reasons.other!.title = value.title;
+        appeal.reasons.other!.description = value.description;
 
         appeal.createdBy = {
             ...appeal.createdBy,

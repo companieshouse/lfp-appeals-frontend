@@ -7,6 +7,10 @@ import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
+import { loggerInstance } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
+import { Illness } from 'app/models/Illness';
+import { OtherReason } from 'app/models/OtherReason';
 import { schema } from 'app/models/fields/Reason.schema';
 import { ReasonType } from 'app/models/fields/ReasonType';
 import { Feature } from 'app/utils/Feature';
@@ -16,6 +20,7 @@ import {
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI
 } from 'app/utils/Paths';
+import { getAttachmentsFromReasons, getReasonType } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'choose-appeal-reason';
@@ -49,5 +54,36 @@ export class ChooseAppealReasonController extends SafeNavigationBaseController<F
 
     constructor() {
         super(template, navigation, new FormValidator(schema));
+    }
+
+    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        const reasonType = appeal.reasons ? getReasonType(appeal.reasons) : undefined;
+
+        return { reasonType };
+    }
+
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+        const attachments = getAttachmentsFromReasons(appeal.reasons);
+
+        if(value.reason === ReasonType.illness) {
+            appeal.reasons = {
+                illness: {} as Illness
+            };
+            if(attachments) {
+                appeal.reasons.illness.attachments = [ ...attachments ];
+            }
+        } else {
+            appeal.reasons = {
+                other: {} as OtherReason
+            };
+            if(attachments) {
+                appeal.reasons.other.attachments = [ ...attachments ];
+            }
+        }
+
+        loggerInstance()
+            .debug(`${ChooseAppealReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+
+        return appeal;
     }
 }
