@@ -166,6 +166,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                         return await that.renderWithStatus(UNPROCESSABLE_ENTITY)(
                             that.template,
                             {
+                                templateName: that.template,
                                 ...request.body,
                                 validationResult,
                                 ...that.prepareNavigationConfig()

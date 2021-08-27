@@ -58,14 +58,20 @@
               name: 'file',
               label: {
                 text: uploadText
-              }
+              },
+              attributes: {
+                'data-event-id': 'clicked file upload'
+              } 
             })
           }}
           {{
             govukButton({
               text: 'Add document',
               classes: 'govuk-button--secondary',
-              id: 'add-document'
+              id: 'add-document',
+              attributes: {
+                'data-event-id': 'clicked add document'
+              }  
             })
           }}
         </div>
@@ -101,7 +107,7 @@
       </form>
 
       <form method="post" action="{{ navigation.actions.continueWithoutUpload }}">
-        <button role="link" type="submit" id="no-evidence-link" class="btn-link" >
+        <button role="link" type="submit" id="no-evidence-link" class="btn-link" data-event-id="Continue without uploading" >
           Continue without adding documents
         </button>
       </form>

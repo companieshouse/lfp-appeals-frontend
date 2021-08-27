@@ -47,13 +47,19 @@
                 id: 'evidence-yes',
                 value: 'yes',
                 text: 'Yes',
-                checked: evidenceUploded === "yes"
+                checked: evidenceUploded === "yes",
+                attributes: {
+                  'data-event-id': 'Yes - evidence to upload'
+                }
               },
               {
                 id: 'evidence-no',
                 value: 'no',
                 text: 'No',
-                checked: evidenceUploded === "no"
+                checked: evidenceUploded === "no",
+                attributes: {
+                  'data-event-id': 'No - evidence to upload'
+                }
               }
             ],
             errorMessage: validationResult.getErrorForField('evidence') if validationResult

@@ -39,7 +39,10 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
             return {
                 href: `${uri}?cm=1`,
                 text: 'Change',
-                visuallyHiddenText: accessibleName
+                visuallyHiddenText: accessibleName,
+                attributes: {
+                    'data-event-id': `Change - ${accessibleName}`
+                }
             };
         }
     };
