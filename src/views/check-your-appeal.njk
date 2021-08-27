@@ -70,13 +70,9 @@
           govukSummaryList({
             rows: [
               {
-                key: { text: 'Your Name'},
+                key: { text: 'Your Name' },
                 value: { text: appealName },
-                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name')],
-               attributes: {
-                'data-event-id': 'change your name'
-              }  
-              }
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name') ] }
               },
               {
                 key: { text: 'Reason' },
