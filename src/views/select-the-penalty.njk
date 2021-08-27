@@ -24,6 +24,22 @@
         <div class="govuk-grid-column-two-thirds">
           <form method="post" id="penaltyForm">
 
+            {% set penalties = [] %}
+            {% for penalty in penaltyList %}
+              {% set penalties = (penalties.push({
+                  value: penalty.id,
+                  text: 'Accounts made up to ' + penalty.madeUpDate,
+                  label: {
+                      classes: 'govuk-label--s'
+                  },
+                  hint: {
+                      html: 'These accounts were filed ' + penalty.transactionDate + '.<br>The late filing penalty is £' + penalty.originalAmount + '.'
+                  },
+                  checked: penalty.id === penaltyReferenceSelected
+                }), penalties)
+              %}
+            {% endfor %}
+
             {{ 
               govukRadios({
                 idPrefix: 'select-the-penalty',
