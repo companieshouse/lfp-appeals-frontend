@@ -6,7 +6,7 @@ import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
+import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
@@ -70,6 +70,8 @@ export class ContinuedIllnessController extends BaseController<FormBody> {
 
         loggerInstance()
             .debug(`${ContinuedIllnessController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+        loggerInstance().error(loggingErrorMessage(appeal, `${ContinuedIllnessController.name}`));
+
         return appeal;
     }
 }

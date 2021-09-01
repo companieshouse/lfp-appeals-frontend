@@ -10,7 +10,7 @@ import { SessionCleanupProcessor } from 'app/controllers/processors/SessionClean
 import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
+import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ReasonType } from 'app/models/fields/ReasonType';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
@@ -78,6 +78,7 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
 
         loggerInstance()
             .debug(`${CheckYourAppealController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
+        loggerInstance().error(loggingErrorMessage(appealData, `${CheckYourAppealController.name}`));
 
         return model;
     }

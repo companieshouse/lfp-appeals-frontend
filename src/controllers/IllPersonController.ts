@@ -5,7 +5,7 @@ import { FormValidator } from './validators/FormValidator';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
+import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { IllPerson } from 'app/models/fields/IllPerson';
@@ -71,6 +71,8 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
 
         loggerInstance()
             .debug(`${IllPersonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+
+        loggerInstance().error(loggingErrorMessage(appeal, `${IllPersonController.name}`));
 
         return appeal;
     }
