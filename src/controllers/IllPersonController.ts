@@ -70,9 +70,7 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
         }
 
         loggerInstance()
-            .debug(`${IllPersonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
-
-        loggerInstance().error(loggingErrorMessage(appeal, `${IllPersonController.name}`));
+            .debug(loggingErrorMessage(appeal, `${IllPersonController.name}`));
 
         return appeal;
     }

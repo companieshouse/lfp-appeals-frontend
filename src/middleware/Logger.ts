@@ -13,9 +13,9 @@ export function loggerInstance(): ApplicationLogger {
     return logger;
 }
 
-export function loggingErrorMessage(appeal : Appeal, applicationName : string): string {
+export function loggingErrorMessage(appeal : Appeal, className : string): string {
 
-    return `${applicationName} -
+    return `${className} -
     userId: ${appeal.createdBy?.id}
     appealId: ${appeal.id}
     penaltyIdentifier: ${appeal.penaltyIdentifier.penaltyReference}

@@ -69,8 +69,7 @@ export class ContinuedIllnessController extends BaseController<FormBody> {
         }
 
         loggerInstance()
-            .debug(`${ContinuedIllnessController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
-        loggerInstance().error(loggingErrorMessage(appeal, `${ContinuedIllnessController.name}`));
+            .debug(loggingErrorMessage(appeal, `${ContinuedIllnessController.name}`));
 
         return appeal;
     }

@@ -77,8 +77,7 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         };
 
         loggerInstance()
-            .debug(`${CheckYourAppealController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
-        loggerInstance().error(loggingErrorMessage(appealData, `${CheckYourAppealController.name}`));
+            .debug(loggingErrorMessage(appealData, `${CheckYourAppealController.name}`));
 
         return model;
     }

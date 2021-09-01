@@ -61,8 +61,7 @@ export class IllnessStartDateController extends SafeNavigationBaseController<For
             } as Reasons;
         }
         loggerInstance()
-            .debug(`${IllnessStartDateController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
-        loggerInstance().error(loggingErrorMessage(appeal, `${IllnessStartDateController.name}`));
+            .debug(loggingErrorMessage(appeal, `${IllnessStartDateController.name}`));
 
         return appeal;
     }

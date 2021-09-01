@@ -56,8 +56,7 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
         };
 
         loggerInstance()
-            .debug(`${ConfirmationController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
-        loggerInstance().error(loggingErrorMessage(appealData, `${ConfirmationController.name}`));
+            .debug(loggingErrorMessage(appealData, `${ConfirmationController.name}`));
 
         return model;
     }

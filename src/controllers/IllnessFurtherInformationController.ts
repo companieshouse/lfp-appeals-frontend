@@ -58,12 +58,7 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
         const description = appeal.reasons.illness?.illnessImpactFurtherInformation;
         const name = appeal.createdBy?.name;
 
-        loggerInstance().debug(`
-            prepareViewModelFromAppeal - name: ${name} -
-            illnessImpactFurtherInformation: ${description} -
-            Penalty Id: ${JSON.stringify(appeal.penaltyIdentifier)}`);
-
-        loggerInstance().error(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
+        loggerInstance().debug(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
 
         return { name, description };
     }
@@ -76,12 +71,7 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
             name: value.name
         };
 
-        loggerInstance().debug(`
-            prepareSessionModelPriorSave - name: ${value.name} -
-            illnessImpactFurtherInformation: ${value.description} -
-            Penalty Id: ${JSON.stringify(appeal.penaltyIdentifier)}`);
-
-        loggerInstance().error(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
+        loggerInstance().debug(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
 
         return appeal;
     }

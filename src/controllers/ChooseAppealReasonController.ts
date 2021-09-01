@@ -82,8 +82,7 @@ export class ChooseAppealReasonController extends SafeNavigationBaseController<F
         }
 
         loggerInstance()
-            .debug(`${ChooseAppealReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
-        loggerInstance().error(loggingErrorMessage(appeal, `${ChooseAppealReasonController.name}`));
+            .debug(loggingErrorMessage(appeal, `${ChooseAppealReasonController.name}`));
 
         return appeal;
     }
