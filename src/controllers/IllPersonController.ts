@@ -5,7 +5,7 @@ import { FormValidator } from './validators/FormValidator';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { IllPerson } from 'app/models/fields/IllPerson';
@@ -69,8 +69,7 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
             appeal.reasons.illness!.otherPerson = undefined;
         }
 
-        loggerInstance()
-            .debug(loggingErrorMessage(appeal, `${IllPersonController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, IllPersonController.name));
 
         return appeal;
     }

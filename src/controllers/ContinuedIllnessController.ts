@@ -6,7 +6,7 @@ import { FormValidator } from './validators/FormValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
@@ -68,8 +68,7 @@ export class ContinuedIllnessController extends BaseController<FormBody> {
             throw new Error('Illness reason object expected but none found');
         }
 
-        loggerInstance()
-            .debug(loggingErrorMessage(appeal, `${ContinuedIllnessController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, ContinuedIllnessController.name));
 
         return appeal;
     }

@@ -13,11 +13,11 @@ export function loggerInstance(): ApplicationLogger {
     return logger;
 }
 
-export function loggingErrorMessage(appeal : Appeal, className : string): string {
+export function loggingMessage(appeal: Appeal, className: string): string {
+    const penaltyReference = appeal.penaltyIdentifier.penaltyReference;
+    const companyNumber = appeal.penaltyIdentifier.companyNumber;
+    const createdById = appeal.createdBy?.id;
+    const penaltyDetails = `penaltyIdentifier: ${penaltyReference} - companyNumber: ${companyNumber}`;
 
-    return `${className} -
-    userId: ${appeal.createdBy?.id}
-    appealId: ${appeal.id}
-    penaltyIdentifier: ${appeal.penaltyIdentifier.penaltyReference}
-    companyNumber: ${appeal.penaltyIdentifier.companyNumber}`;
+    return `${className} - appealId: ${appeal.id} - userId: ${createdById} - ${penaltyDetails}`;
 }

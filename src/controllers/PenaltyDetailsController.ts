@@ -6,7 +6,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
@@ -57,8 +57,7 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
         }
         appeal.penaltyIdentifier = value;
 
-        loggerInstance()
-            .debug(loggingErrorMessage(appeal, `${PenaltyDetailsController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, PenaltyDetailsController.name));
 
         return appeal;
     }

@@ -5,7 +5,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { OtherReason } from 'app/models/OtherReason';
 import { schema as formSchema } from 'app/models/OtherReason.schema';
@@ -49,8 +49,7 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
             name: value.name
         };
 
-        loggerInstance()
-            .debug(loggingErrorMessage(appeal, `${OtherReasonController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, OtherReasonController.name));
 
         return appeal;
     }

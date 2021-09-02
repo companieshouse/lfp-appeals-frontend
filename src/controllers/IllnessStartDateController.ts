@@ -6,7 +6,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { Reasons } from 'app/models/Reasons';
@@ -60,8 +60,8 @@ export class IllnessStartDateController extends SafeNavigationBaseController<For
                 }
             } as Reasons;
         }
-        loggerInstance()
-            .debug(loggingErrorMessage(appeal, `${IllnessStartDateController.name}`));
+
+        loggerInstance().debug(loggingMessage(appeal, IllnessStartDateController.name));
 
         return appeal;
     }

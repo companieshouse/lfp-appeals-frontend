@@ -6,7 +6,7 @@ import { FormValidator } from './validators/FormValidator';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingErrorMessage } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { Feature } from 'app/utils/Feature';
@@ -58,7 +58,7 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
         const description = appeal.reasons.illness?.illnessImpactFurtherInformation;
         const name = appeal.createdBy?.name;
 
-        loggerInstance().debug(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, IllnessFurtherInformationController.name));
 
         return { name, description };
     }
@@ -71,7 +71,7 @@ export class IllnessFurtherInformationController extends SafeNavigationBaseContr
             name: value.name
         };
 
-        loggerInstance().debug(loggingErrorMessage(appeal, `${IllnessFurtherInformationController.name}`));
+        loggerInstance().debug(loggingMessage(appeal, IllnessFurtherInformationController.name));
 
         return appeal;
     }
