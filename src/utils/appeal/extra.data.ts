@@ -64,9 +64,10 @@ export const addPermissionToNavigation = (extraData: ApplicationData, pageURI: s
 };
 
 export const getIllPersonFromIllnessReason = (illnessReasons: Illness): string => {
-    return (illnessReasons.illPerson === IllPerson.someoneElse)
+    const illPerson = illnessReasons.illPerson;
+    return ( illPerson === IllPerson.someoneElse )
             ? illnessReasons.otherPerson!
-            : illnessReasons.illPerson;
+            : illPerson.charAt(0).toUpperCase() + illPerson.substring(1);
 };
 
 export const formatDate = (inputDate: string ): string => {
