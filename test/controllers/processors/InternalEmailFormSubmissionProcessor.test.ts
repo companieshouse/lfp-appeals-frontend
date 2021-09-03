@@ -15,6 +15,7 @@ import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { Reasons } from 'app/models/Reasons';
+import { IllPerson } from 'app/models/fields/IllPerson';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
 
 import { createSubstituteOf } from 'test/SubstituteFactory';
@@ -42,7 +43,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
             }
         };
         const illnessReason = {
-            illPerson: 'director',
+            illPerson: IllPerson.family,
             illnessStart: '2021-03-20',
             illnessImpactFurtherInformation: 'test',
             continuedIllness: 'no'
@@ -212,7 +213,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         reasons: {
                             illness: {
                                 name: 'name',
-                                illPerson: 'director',
+                                illPerson: 'Family',
                                 illnessStart: '20 March 2021',
                                 description: 'test',
                                 attachments: undefined

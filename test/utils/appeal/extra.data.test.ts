@@ -8,6 +8,7 @@ import { Illness } from 'app/models/Illness';
 import { Navigation } from 'app/models/Navigation';
 import { OtherReason } from 'app/models/OtherReason';
 import { Reasons } from 'app/models/Reasons';
+import { IllPerson } from 'app/models/fields/IllPerson';
 import {
     addAttachmentToReason,
     addPermissionToNavigation,
@@ -38,7 +39,7 @@ describe('Appeal Extra Data', () => {
     const appealIllnessReason = {
         reasons: {
             illness: {
-                illPerson: 'director',
+                illPerson: IllPerson.director,
                 illnessStart: '2020-02-03',
                 continuedIllness: 'yes',
                 attachments: [appealReasonAttachments[0]]
@@ -153,7 +154,7 @@ describe('Appeal Extra Data', () => {
 
     it('should return illPerson if someoneElse is not selected', () => {
         const illperson = getIllPersonFromIllnessReason(appealIllnessReason.reasons.illness as Illness);
-        expect(illperson).to.be.equal(appealIllnessReason.reasons.illness?.illPerson);
+        expect(illperson).to.be.equal('Director');
     });
 
     it('should return otherPerson if someoneElse selected', () => {
