@@ -7,7 +7,7 @@ import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { OtherReason } from 'app/models/OtherReason';
@@ -81,8 +81,7 @@ export class ChooseAppealReasonController extends SafeNavigationBaseController<F
             }
         }
 
-        loggerInstance()
-            .debug(`${ChooseAppealReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
+        loggerInstance().debug(loggingMessage(appeal, ChooseAppealReasonController.name));
 
         return appeal;
     }

@@ -7,7 +7,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { loggerInstance } from 'app/middleware/Logger';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
@@ -55,8 +55,8 @@ export class ConfirmationController extends SafeNavigationBaseController<any> {
             userProfile
         };
 
-        loggerInstance()
-            .debug(`${ConfirmationController.name} - prepareViewModelFromSession: ${JSON.stringify(model)}`);
+        loggerInstance().debug(loggingMessage(appealData, ConfirmationController.name));
+
         return model;
     }
 
