@@ -74,6 +74,7 @@
             id: 'relationshipToCompany',
             name: 'relationshipToCompany',
             value: relationshipToCompany | default(''),
+            errorMessage: validationResult.getErrorForField('relationshipToCompany') if validationResult and validationResult.getErrorForField('relationshipToCompany'),
             autocomplete: 'off'
           })
         }}
