@@ -14,6 +14,7 @@ export const schema = Joi.object({
             'string.empty': nameErrorMessage,
             'string.pattern.base': nameErrorMessage
         }),
+    relationshipToCompany: Joi.string().allow('').optional(),
     title: Joi.string()
         .required()
         .pattern(/\w+/)
