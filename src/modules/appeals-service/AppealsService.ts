@@ -32,13 +32,15 @@ export class AppealsService {
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
         const uri: string = `${this.uri}/companies/${companyNumber}/appeals/${appealId}`;
+        const furtherDetails = `company number ${companyNumber} and appealId ${appealId}`;
+
         loggerInstance()
             .debug(`Making a GET request to ${uri}`);
 
         return await this.axiosInstance
             .get(uri)
             .then((response: AxiosResponse<Appeal>) => response.data)
-            .catch(this.handleResponseError('get', appealId));
+            .catch(this.handleResponseError('get', furtherDetails));
 
     }
 
@@ -57,6 +59,8 @@ export class AppealsService {
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
         const uri: string = `${this.uri}/companies/${companyNumber}/appeals`;
+        const furtherDetails = `company number ${companyNumber} and penaltyReference ${penaltyReference}`;
+
         loggerInstance()
             .debug(`Making a GET request to ${uri}?penaltyReference=${penaltyReference}`);
 
@@ -71,7 +75,7 @@ export class AppealsService {
             if (err.response && err.response.status === NOT_FOUND) {
                 return false;
             } else {
-                this.handleResponseError('get');
+                this.handleResponseError('get', furtherDetails);
             }
         }
 
@@ -86,6 +90,11 @@ export class AppealsService {
         this.refreshTokenInterceptor(accessToken, refreshToken);
 
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
+        const penaltyReference = appeal.penaltyIdentifier?.penaltyReference;
+        const companyNumber = appeal.penaltyIdentifier?.companyNumber;
+        const appealDetails = `appealId: ${appeal.id} - userId: ${appeal.createdBy?.id}`;
+        const penaltyDetails = `company number: ${companyNumber} - penaltyReference: ${penaltyReference}`;
+        const furtherDetails = `${appealDetails} and ${penaltyDetails}`;
 
         loggerInstance()
             .debug(`Making a POST request to ${uri}`);
@@ -100,7 +109,7 @@ export class AppealsService {
                 }
                 throw new Error('Could not create appeal resource');
             })
-            .catch(this.handleResponseError('save'));
+            .catch(this.handleResponseError('save', furtherDetails));
     }
 
     private checkArgumentOrThrow<T>(arg: T, errorMessage: string): void {
@@ -109,21 +118,24 @@ export class AppealsService {
         }
     }
 
-    private handleResponseError(operation: 'get' | 'save', subject?: string): (_: AxiosError) => never {
+    private handleResponseError(operation: 'get' | 'save', furtherDetails?: string): (_: AxiosError) => never {
         return (err: AxiosError) => {
-            const concatPrefixToSubject = (prefix: string) => `${subject ? `${prefix ? ` ${prefix} ${subject} ` : ` ${subject} `}` : ' '}`;
             if (err.isAxiosError && err.response != null) {
                 switch (err.response.status) {
                     case NOT_FOUND:
-                        throw new AppealNotFoundError(`${operation} appeal failed because appeal${concatPrefixToSubject('')}was not found`);
+                        throw new AppealNotFoundError(
+                            `${operation} appeal failed because appeal was not found on ${furtherDetails}`);
                     case UNAUTHORIZED:
-                        throw new AppealUnauthorisedError(`${operation} appeal unauthorised`);
+                        throw new AppealUnauthorisedError(
+                            `${operation} appeal unauthorised on ${furtherDetails}`);
                     case UNPROCESSABLE_ENTITY:
-                        throw new AppealUnprocessableEntityError(`${operation} appeal on invalid appeal data`);
+                        throw new AppealUnprocessableEntityError(
+                            `${operation} appeal data invalid on ${furtherDetails}`);
                 }
             }
+
             throw new AppealServiceError(
-                `${operation} appeal failed${concatPrefixToSubject('on appeal')}with message ${err.message || 'unknown error'}: `
+                `${operation} appeal failed on ${furtherDetails} with message: ${err.message || 'unknown error'}.`
             );
         };
     }
