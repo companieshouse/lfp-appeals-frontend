@@ -35,8 +35,9 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
         const otherReason = appeal.reasons?.other;
         const name = appeal.createdBy?.name;
+        const relationshipToCompany = appeal.createdBy?.relationshipToCompany;
 
-        return { ...otherReason, name };
+        return { ...otherReason, name, relationshipToCompany };
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
@@ -46,7 +47,8 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
 
         appeal.createdBy = {
             ...appeal.createdBy,
-            name: value.name
+            name: value.name,
+            relationshipToCompany: value.relationshipToCompany
         };
 
         loggerInstance().debug(loggingMessage(appeal, OtherReasonController.name));

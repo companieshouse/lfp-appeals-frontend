@@ -41,7 +41,8 @@ describe('OtherReasonController', () => {
 
     const appeal = {
         createdBy: {
-            name: 'SomeName'
+            name: 'SomeName',
+            relationshipToCompany: 'SomeRelationship'
         },
         penaltyIdentifier
     } as Appeal;
@@ -100,7 +101,11 @@ describe('OtherReasonController', () => {
             const app = createApp({ appeal: appealWithReason });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
-                .send({...reasons.other, name: appeal.createdBy!.name})
+                .send({
+                    ...reasons.other,
+                    name: appeal.createdBy!.name,
+                    relationshipToCompany: appeal.createdBy!.relationshipToCompany
+                })
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
                     expect(response.header.location).to.include(EVIDENCE_QUESTION_URI);
@@ -111,7 +116,11 @@ describe('OtherReasonController', () => {
             const app = createApp({ appeal });
 
             await request(app).post(OTHER_REASON_PAGE_URI)
-                .send({...reasons.other, name: appeal.createdBy!.name})
+                .send({
+                    ...reasons.other,
+                    name: appeal.createdBy!.name,
+                    relationshipToCompany: appeal.createdBy!.relationshipToCompany
+                })
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                     expect(response.text).to.include(errorServiceProblem);

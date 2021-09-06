@@ -69,6 +69,18 @@
         {{
           govukInput({
             label: {
+              text: 'Your relationship to the company'
+            },
+            id: 'relationshipToCompany',
+            name: 'relationshipToCompany',
+            value: relationshipToCompany | default(''),
+            autocomplete: 'off'
+          })
+        }}
+
+        {{
+          govukInput({
+            label: {
               text: 'Short title for the reason'
             },
             id: 'title',
