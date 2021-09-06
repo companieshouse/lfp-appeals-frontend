@@ -71,8 +71,13 @@
             rows: [
               {
                 key: { text: 'Your Name' },
-                value: { text: appealName },
+                value: { text: createdBy.name },
                 actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'your name') ] }
+              },
+              {
+                key: { text: 'Relationship' },
+                value: { text: createdBy.relationshipToCompany },
+                actions: { items: [ ui.createChangeLinkConfig(paths.OTHER_REASON_PAGE_URI, 'relationship') ] }
               },
               {
                 key: { text: 'Reason' },
@@ -109,7 +114,7 @@
               },
               {
                 key: { text: 'Your Name' },
-                value: { text: appealName },
+                value: { text: createdBy.name },
                 actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'your name') ] }
               },
               {

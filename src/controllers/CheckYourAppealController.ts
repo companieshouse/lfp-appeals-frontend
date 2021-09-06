@@ -61,19 +61,18 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         const reasonType = getReasonType(appealData.reasons);
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
-        const appealName = appealData.createdBy?.name;
         const illPersonName = (reasonType === ReasonType.illness )
                                 ? getIllPersonFromIllnessReason(appealData.reasons.illness) : undefined;
         const illnessStartDate = (reasonType === ReasonType.illness )
                                 ? formatDate(appealData.reasons.illness.illnessStart) : undefined;
 
         const model = {
-          appealReasonDetails,
-          appealPenaltyDetails,
-          userProfile,
-          appealName,
-          illPersonName,
-          illnessStartDate
+            createdBy: appealData.createdBy,
+            appealReasonDetails,
+            appealPenaltyDetails,
+            userProfile,
+            illPersonName,
+            illnessStartDate
         };
 
         loggerInstance().debug(loggingMessage(appealData, CheckYourAppealController.name));
