@@ -52,8 +52,6 @@ export class OtherReasonController extends SafeNavigationBaseController<OtherRea
         };
 
         loggerInstance().debug(loggingMessage(appeal, OtherReasonController.name));
-        loggerInstance()
-            .debug(`${OtherReasonController.name} - prepareSessionModelPriorSave: ${JSON.stringify(appeal)}`);
 
         return appeal;
     }
