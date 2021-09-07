@@ -54,6 +54,9 @@ describe('AppealsService', () => {
         }
     };
 
+    const appealDetails = 'appealId: undefined - userId: undefined';
+    const penaltyDetails = 'company number: 00345567 - penaltyReference: A00000001';
+
     describe('saving appeals', () => {
 
         it('should throw an error when appeal not defined', () => {
@@ -217,6 +220,8 @@ describe('AppealsService', () => {
             } catch (err) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
                 expect(err.message).to.contain('save appeal unauthorised');
+                expect(err.message).to.contain(appealDetails);
+                expect(err.message).to.contain(penaltyDetails);
             }
         });
 
@@ -290,7 +295,9 @@ describe('AppealsService', () => {
                 await appealsService.save(invalidAppeal as Appeal, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).to.be.equal(AppealUnprocessableEntityError.name);
-                expect(err.message).to.contain(`save appeal on invalid appeal data`);
+                expect(err.message).to.contain(`save appeal data invalid`);
+                expect(err.message).to.contain(appealDetails);
+                expect(err.message).to.contain(penaltyDetails);
             }
 
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
@@ -317,7 +324,9 @@ describe('AppealsService', () => {
                 await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
-                expect(err.message).to.include(`save appeal failed with message`);
+                expect(err.message).to.include(`save appeal failed`);
+                expect(err.message).to.contain(appealDetails);
+                expect(err.message).to.contain(penaltyDetails);
             }
 
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
@@ -667,7 +676,8 @@ describe('AppealsService', () => {
                     .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealNotFoundError.name);
-                expect(err.message).to.contain(`get appeal failed because appeal ${APPEAL_ID} was not found`);
+                expect(err.message).to.contain(`get appeal failed because appeal was not found`);
+                expect(err.message).to.contain(`company number 00345567 and appealId 555`);
             }
 
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
@@ -693,7 +703,8 @@ describe('AppealsService', () => {
                     .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
             } catch (err) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
-                expect(err.message).to.include(`get appeal failed on appeal ${APPEAL_ID} with message`);
+                expect(err.message).to.include(`get appeal failed on company number 00345567 and appealId 555`);
+                expect(err.message).to.include(`Request failed with status code 500.`);
             }
             refreshTokenService.didNotReceive().refresh(Arg.any(), Arg.any());
         });
