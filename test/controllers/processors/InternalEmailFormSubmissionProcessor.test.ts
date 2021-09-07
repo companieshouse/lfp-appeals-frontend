@@ -60,7 +60,8 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         const appealWithoutAttachments: Appeal = {
             id: 'abc',
             createdBy: {
-                name: 'name'
+                name: 'name',
+                relationshipToCompany: 'owner'
             },
             penaltyIdentifier: {
                 companyName: 'A Company Name',
@@ -132,6 +133,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         reasons: {
                             other: {
                                 name: 'name',
+                                relationshipToCompany: 'owner',
                                 title: 'I have reasons',
                                 description: 'They are legit',
                                 attachments: undefined
@@ -172,6 +174,7 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                         reasons: {
                             other: {
                                 name: 'name',
+                                relationshipToCompany: 'owner',
                                 title: 'I have reasons',
                                 description: 'They are legit',
                                 attachments: [
