@@ -21,7 +21,7 @@ import { createApp } from 'test/ApplicationFactory';
 
 const pageHeading = 'Tell us why you’re appealing this penalty';
 const otherReasonHint = 'What details should I include to support my appeal?';
-const errorSummaryHeading = 'There is a problem with the information you entered';
+const errorSummaryHeading = 'There is a problem';
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
 const errorServiceProblem = 'Sorry, there is a problem with the service';
