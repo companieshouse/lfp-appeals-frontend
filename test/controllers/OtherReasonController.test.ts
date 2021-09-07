@@ -25,6 +25,7 @@ const errorSummaryHeading = 'There is a problem with the information you entered
 const invalidTitleErrorMessage = 'You must give your reason a title';
 const invalidDescriptionErrorMessage = 'You must give us more information';
 const errorServiceProblem = 'Sorry, there is a problem with the service';
+const invalidRelationshipToCompanyErrorMessage = 'Enter your relationship to the company';
 
 describe('OtherReasonController', () => {
     const reasons = {
@@ -93,6 +94,7 @@ describe('OtherReasonController', () => {
                     expect(response.text).to.include(pageHeading)
                         .and.to.include(errorSummaryHeading)
                         .and.to.include(invalidTitleErrorMessage)
+                        .and.to.include(invalidRelationshipToCompanyErrorMessage)
                         .and.to.include(invalidDescriptionErrorMessage);
                 });
         });
