@@ -45,10 +45,13 @@ const otherReason = {
   attachments
 };
 
+const createdBy = {
+  name: 'someName',
+  relationshipToCompany: 'someRelationshipToCompany'
+};
+
 const baseAppeal = {
-  createdBy: {
-    name: 'name'
-  },
+  createdBy,
   penaltyIdentifier: {
     companyName: 'company-name-test',
     companyNumber: 'NI000000',
@@ -101,6 +104,8 @@ describe('CheckYourAppealController', () => {
             .to.contain(subHeading).and
             .to.contain(applicationData.appeal.reasons.other!.title).and
             .to.contain(applicationData.appeal.reasons.other!.description).and
+            .to.contain(applicationData.appeal.createdBy?.name).and
+            .to.contain(applicationData.appeal.createdBy?.relationshipToCompany).and
             .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('some-file.jpeg').and
             .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
@@ -139,9 +144,11 @@ describe('CheckYourAppealController', () => {
             .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
             .nested.contain('some-file.jpeg').and
             .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
-            .nested.contain('another-file.jpeg');
+            .nested.contain('another-file.jpeg')
+            .not.to.contain(applicationData.appeal.createdBy?.relationshipToCompany);
         });
     });
+  });
 
     describe('POST request', () => {
 
@@ -198,7 +205,7 @@ describe('CheckYourAppealController', () => {
             expect(applicationData.appeal).to.deep.equal({});
             expect(applicationData.submittedAppeal).to.deep.equal({
               ...getAppeal(),
-              createdBy: { emailAddress: 'test', name: 'name' },
+              createdBy: { emailAddress: 'test', ...createdBy },
               id: '1'
             } as Appeal);
           });
@@ -287,11 +294,10 @@ describe('CheckYourAppealController', () => {
         await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
 
         appealsService.received().save(
-          { ...getAppeal(), createdBy: { emailAddress: 'test', name: 'name' }, id: '1' },
+          { ...getAppeal(), createdBy: { emailAddress: 'test', ...createdBy }, id: '1' },
           token,
           refreshToken
         );
       });
     });
-  });
 });
