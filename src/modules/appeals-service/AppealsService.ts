@@ -92,9 +92,9 @@ export class AppealsService {
         const uri: string = `${this.uri}/companies/${appeal.penaltyIdentifier.companyNumber}/appeals`;
         const penaltyReference = appeal.penaltyIdentifier?.penaltyReference;
         const companyNumber = appeal.penaltyIdentifier?.companyNumber;
-        const appealDetails = `appealId: ${appeal.id} - userId: ${appeal.createdBy?.id}`;
+        const appealDetails = `User creating appeal: ${appeal.createdBy?.name}`;
         const penaltyDetails = `company number: ${companyNumber} - penaltyReference: ${penaltyReference}`;
-        const furtherDetails = `${appealDetails} and ${penaltyDetails}`;
+        const furtherDetails = `${appealDetails} - ${penaltyDetails}`;
 
         loggerInstance()
             .debug(`Making a POST request to ${uri}`);

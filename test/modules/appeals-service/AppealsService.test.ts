@@ -39,7 +39,9 @@ describe('AppealsService', () => {
     const APPEALS_HOST: string = 'http://localhost:9000';
     const APPEALS_URI: string = '/companies/00345567/appeals';
 
+    const createdBy = { name: 'SomeName' };
     const appeal: Appeal = {
+        createdBy,
         penaltyIdentifier: {
             companyNumber: '00345567',
             penaltyReference: 'A00000001',
@@ -54,7 +56,7 @@ describe('AppealsService', () => {
         }
     };
 
-    const appealDetails = 'appealId: undefined - userId: undefined';
+    const appealDetails = 'User creating appeal: SomeName';
     const penaltyDetails = 'company number: 00345567 - penaltyReference: A00000001';
 
     describe('saving appeals', () => {
@@ -273,6 +275,7 @@ describe('AppealsService', () => {
             const appealsService = new AppealsService(APPEALS_HOST, refreshTokenService);
 
             const invalidAppeal = {
+                createdBy,
                 'penaltyIdentifier': {
                     'companyNumber': '00345567',
                     'penaltyReference': 'A00000001'
