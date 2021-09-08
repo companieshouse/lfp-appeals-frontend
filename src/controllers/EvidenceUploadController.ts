@@ -71,7 +71,7 @@ const continueButtonValidator: Validator = {
 
         if (!attachments || attachments.length === 0) {
             return new ValidationResult([new ValidationError('file',
-                'You must add a document or click \"Continue without adding documents\"')]);
+                'You must upload a document or click \"Continue without uploading documents\"')]);
         }
 
         return new ValidationResult([]);

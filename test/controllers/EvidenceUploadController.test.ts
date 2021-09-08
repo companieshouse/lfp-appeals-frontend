@@ -151,7 +151,7 @@ describe('EvidenceUploadController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain('There is a problem').and
-                        .to.contain('You must add a document or click &quot;Continue without adding documents&quot;');
+                        .to.contain('You must upload a document or click &quot;Continue without uploading documents&quot;');
                 });
         });
     });

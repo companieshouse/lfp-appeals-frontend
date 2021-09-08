@@ -43,11 +43,7 @@
 
       <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
-          {% if attachments.length > 0 %}
-            Upload a document
-          {% else %}
-            Add a document
-          {% endif %}
+          Upload a document
         {% endset %}
 
         <div class='file-upload'>
@@ -61,17 +57,17 @@
               },
               attributes: {
                 'data-event-id': 'clicked file upload'
-              } 
+              }
             })
           }}
           {{
             govukButton({
-              text: 'Add document',
+              text: 'Upload document',
               classes: 'govuk-button--secondary',
               id: 'add-document',
               attributes: {
                 'data-event-id': 'clicked add document'
-              }  
+              }
             })
           }}
         </div>
@@ -108,7 +104,7 @@
 
       <form method="post" action="{{ navigation.actions.continueWithoutUpload }}">
         <button role="link" type="submit" id="no-evidence-link" class="btn-link" data-event-id="Continue without uploading" >
-          Continue without adding documents
+          Continue without uploading documents
         </button>
       </form>
 
