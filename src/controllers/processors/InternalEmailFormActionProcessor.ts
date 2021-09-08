@@ -34,6 +34,7 @@ function buildEmailReasonContent(appeal: Appeal): any {
         return {
             [ReasonType.other]: {
                 name: appeal.createdBy!.name,
+                relationshipToCompany: appeal.createdBy!.relationshipToCompany,
                 title: appeal.reasons.other!.title,
                 description: appeal.reasons.other!.description,
                 attachments: attachmentsContent,
