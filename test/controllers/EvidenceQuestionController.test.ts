@@ -49,7 +49,7 @@ describe('EvidenceQuestionController', () => {
             await request(app).get(EVIDENCE_QUESTION_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.include('Do you want to add documents to support your application?');
+                    expect(response.text).to.include('Upload documents to support your application');
                 });
         });
 
@@ -66,7 +66,7 @@ describe('EvidenceQuestionController', () => {
             await request(app).get(EVIDENCE_QUESTION_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
-                    expect(response.text).to.include('Do you want to add documents to support your application?');
+                    expect(response.text).to.include('Upload documents to support your application');
                 });
         });
 
@@ -114,7 +114,7 @@ describe('EvidenceQuestionController', () => {
             await request(app).post(EVIDENCE_QUESTION_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
-                    expect(response.text).to.include('Do you want to add documents to support your application?')
+                    expect(response.text).to.include('Upload documents to support your application')
                         .and.to.include('There is a problem')
                         .and.to.include('You must tell us if you want to upload evidence.');
                 });
