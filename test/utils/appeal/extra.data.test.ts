@@ -41,6 +41,7 @@ describe('Appeal Extra Data', () => {
             illness: {
                 illPerson: IllPerson.director,
                 illnessStart: '2020-02-03',
+                illnessEnd: '2020-02-04',
                 continuedIllness: 'yes',
                 attachments: [appealReasonAttachments[0]]
             } as Illness

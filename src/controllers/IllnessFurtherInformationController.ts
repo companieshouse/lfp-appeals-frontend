@@ -11,9 +11,9 @@ import { Appeal } from 'app/models/Appeal';
 import { Illness } from 'app/models/Illness';
 import { Feature } from 'app/utils/Feature';
 import {
+    CONTINUED_ILLNESS_PAGE_URI,
     EVIDENCE_QUESTION_URI,
-    FURTHER_INFORMATION_PAGE_URI,
-    ILLNESS_START_DATE_PAGE_URI
+    FURTHER_INFORMATION_PAGE_URI
 } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -21,7 +21,7 @@ const template = 'illness/illness-information';
 
 const navigation: Navigation = {
     previous(): string {
-        return ILLNESS_START_DATE_PAGE_URI;
+        return CONTINUED_ILLNESS_PAGE_URI;
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
