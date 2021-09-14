@@ -27,11 +27,10 @@ const navigation : Navigation = {
         return ILLNESS_START_DATE_PAGE_URI;
     },
     next(request: Request): string {
-        switch (request.body.continuedIllness) {
-            case YesNo.yes:
-                return FURTHER_INFORMATION_PAGE_URI;
-            default:
-                return ILLNESS_END_DATE_PAGE_URI;
+        if(request.body.continuedIllness === YesNo.yes) {
+            return FURTHER_INFORMATION_PAGE_URI;
+        } else {
+            return ILLNESS_END_DATE_PAGE_URI;
         }
     }
 };
