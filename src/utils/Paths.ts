@@ -18,6 +18,7 @@ export const CHOOSE_REASON_PAGE_URI =`${ROOT_URI}/choose-reason`;
 
 export const ILL_PERSON_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/who-was-ill`;
 export const ILLNESS_START_DATE_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/illness-start-date`;
+export const ILLNESS_END_DATE_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/illness-end-date`;
 export const CONTINUED_ILLNESS_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/continued-illness`;
 export const FURTHER_INFORMATION_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/illness-information`;
 
