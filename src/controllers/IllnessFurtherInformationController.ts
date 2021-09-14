@@ -1,6 +1,5 @@
 import Joi from '@hapi/joi';
 import { SessionMiddleware } from 'ch-node-session-handler';
-import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 import { FormValidator } from './validators/FormValidator';
 
@@ -14,23 +13,15 @@ import { Feature } from 'app/utils/Feature';
 import {
     CONTINUED_ILLNESS_PAGE_URI,
     EVIDENCE_QUESTION_URI,
-    FURTHER_INFORMATION_PAGE_URI,
-    ILLNESS_END_DATE_PAGE_URI
+    FURTHER_INFORMATION_PAGE_URI
 } from 'app/utils/Paths';
-import { getIllnessEndDate } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'illness/illness-information';
 
 const navigation: Navigation = {
-    previous(request: Request): string {
-        const illnessEndDate = getIllnessEndDate(request.session);
-
-        if (illnessEndDate) {
-            return ILLNESS_END_DATE_PAGE_URI;
-        } else {
-            return CONTINUED_ILLNESS_PAGE_URI;
-        }
+    previous(): string {
+        return CONTINUED_ILLNESS_PAGE_URI;
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
