@@ -10,6 +10,7 @@ import 'app/controllers/EvidenceRemovalController';
 import 'app/controllers/EvidenceUploadController';
 import 'app/controllers/HealthCheckController';
 import 'app/controllers/IllPersonController';
+import 'app/controllers/IllnessEndDateController';
 import 'app/controllers/IllnessFurtherInformationController';
 import 'app/controllers/IllnessStartDateController';
 import 'app/controllers/LandingController';

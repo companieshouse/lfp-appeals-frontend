@@ -15,6 +15,7 @@ import {
     findAttachmentByIdFromReasons,
     formatDate,
     getAttachmentsFromReasons,
+    getIllnessEndDate,
     getIllPersonFromIllnessReason,
     getReasonFromReasons,
     isIllnessReason,
@@ -41,6 +42,7 @@ describe('Appeal Extra Data', () => {
             illness: {
                 illPerson: IllPerson.director,
                 illnessStart: '2020-02-03',
+                illnessEnd: '2020-02-04',
                 continuedIllness: 'yes',
                 attachments: [appealReasonAttachments[0]]
             } as Illness
@@ -171,5 +173,50 @@ describe('Appeal Extra Data', () => {
         const data = '2020-02-03';
         const dataFormatted = formatDate(data);
         expect(dataFormatted).to.be.equal('3 February 2020');
+    });
+
+    it('should return undefined when appeal has got an empty Illness object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: { reasons: { illness: {}} } as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const illnessEndDate = getIllnessEndDate(session);
+        expect(illnessEndDate).to.be.equal(undefined);
+    });
+
+    it('should return undefined when appeal has got Other type on reason object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: { reasons: {} } as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const illnessEndDate = getIllnessEndDate(session);
+        expect(illnessEndDate).to.be.equal(undefined);
+    });
+
+    it('should return undefined when appeal has got Other type on reason object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: {} as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const illnessEndDate = getIllnessEndDate(session);
+        expect(illnessEndDate).to.be.equal(undefined);
+    });
+
+    it('should return true when appeal has got Illness type on reason object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: appealIllnessReason as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const illnessEndDate = getIllnessEndDate(session);
+        expect(illnessEndDate).to.be.equal('2020-02-04');
+    });
+
+    it('should return undefined when session is undefined', () => {
+        const illnessEndDate = getIllnessEndDate(undefined);
+        expect(illnessEndDate).to.be.equal(undefined);
     });
 });

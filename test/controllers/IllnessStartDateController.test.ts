@@ -11,8 +11,8 @@ import request from 'supertest';
 import 'app/controllers/EvidenceDownloadController';
 import { Appeal } from 'app/models/Appeal';
 import {
+    CONTINUED_ILLNESS_PAGE_URI,
     ENTRY_PAGE_URI,
-    FURTHER_INFORMATION_PAGE_URI,
     ILLNESS_START_DATE_PAGE_URI
 } from 'app/utils/Paths';
 
@@ -123,7 +123,7 @@ describe('IllnessStartDateController', () => {
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.header.location).to.include(FURTHER_INFORMATION_PAGE_URI);
+                    expect(response.header.location).to.include(CONTINUED_ILLNESS_PAGE_URI);
                 });
         });
 

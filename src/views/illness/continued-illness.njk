@@ -10,17 +10,26 @@
   Appeal due to ill health: Is the person still ill?
 {% endblock %}
 
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{
-        govukErrorSummary ({
-          titleText: 'There is a problem with the details you gave us',
-          errorList: validationResult.errors
-        }) if validationResult and validationResult.errors.length > 0
-      }}
-
       <form method="post">
+
+        {{
+          govukErrorSummary ({
+            titleText: 'There is a problem with the details you gave us',
+            errorList: validationResult.errors
+          }) if validationResult and validationResult.errors.length > 0
+        }}
 
         {{
           govukInput({

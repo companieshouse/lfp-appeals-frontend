@@ -70,6 +70,13 @@ export const getIllPersonFromIllnessReason = (illnessReasons: Illness): string =
             : illPerson.charAt(0).toUpperCase() + illPerson.substring(1);
 };
 
+export const getIllnessEndDate = (session: Session | undefined): string | undefined => {
+    const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
+    const reason = extraData?.appeal?.reasons || {} as Reasons;
+
+    return reason?.illness?.illnessEnd;
+};
+
 export const formatDate = (inputDate: string ): string => {
     return moment(inputDate).format('D MMMM YYYY');
 };
