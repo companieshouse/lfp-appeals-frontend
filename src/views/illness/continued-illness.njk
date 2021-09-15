@@ -59,12 +59,18 @@
               {
                 value: 'yes',
                 text: 'Yes',
-                checked: continuedIllness
+                checked: continuedIllness,
+                attributes: {
+                  'data-event-id': 'yes-selected'
+                }
               },
               {
                 value: 'no',
                 text: 'No',
-                checked: true if continuedIllness === false
+                checked: true if continuedIllness === false,
+                attributes: {
+                  'data-event-id': 'no-selected'
+                }
               }
             ]
           })
