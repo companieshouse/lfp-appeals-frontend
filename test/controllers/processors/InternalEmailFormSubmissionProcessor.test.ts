@@ -45,8 +45,9 @@ describe('InternalEmailFormSubmissionProcessor', () => {
         const illnessReason = {
             illPerson: IllPerson.family,
             illnessStart: '2021-03-20',
+            illnessEnd: '2021-04-12',
             illnessImpactFurtherInformation: 'test',
-            continuedIllness: 'no'
+            continuedIllness: false
         } as Illness;
         const attachmentReason = [
             {
