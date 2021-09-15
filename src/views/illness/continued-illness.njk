@@ -27,10 +27,7 @@
         {{
           govukErrorSummary ({
             titleText: 'There is a problem with the details you gave us',
-            errorList: validationResult.errors,
-            attributes: {
-                  'data-event-id': '{ errorMessage } '
-                }
+            errorList: validationResult.errors
           }) if validationResult and validationResult.errors.length > 0
         }}
 
