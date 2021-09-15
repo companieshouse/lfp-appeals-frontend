@@ -1,11 +1,15 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
+import moment from 'moment';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
+import { Illness} from 'app/models/Illness';
+import { Reasons} from 'app/models/Reasons';
 import { Feature } from 'app/utils/Feature';
 import { CONTINUED_ILLNESS_PAGE_URI, FURTHER_INFORMATION_PAGE_URI, ILLNESS_END_DATE_PAGE_URI} from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -34,10 +38,31 @@ export class IllnessEndDateController extends SafeNavigationBaseController<FormB
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        return appeal;
+        const illness: Illness | undefined = appeal.reasons?.illness;
+        if (!illness?.illnessEnd) {
+            return {};
+        }
+
+        const [year, month, day] = illness.illnessEnd.split('-', 3);
+
+        return {day, month, year};
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal): Appeal {
+    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
+        const illness: Illness | undefined = appeal.reasons?.illness;
+
+        if (illness != null) {
+            illness.illnessEnd = moment(value.date).format('YYYY-MM-DD');
+        } else {
+            appeal.reasons = {
+                illness: {
+                    illnessEnd: moment(value.date).format('YYYY-MM-DD')
+                }
+            } as Reasons;
+        }
+
+        loggerInstance().debug(loggingMessage(appeal, IllnessEndDateController.name));
+
         return appeal;
     }
 }
