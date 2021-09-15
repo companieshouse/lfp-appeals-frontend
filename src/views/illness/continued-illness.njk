@@ -58,11 +58,13 @@
             items: [
               {
                 value: 'yes',
-                text: 'Yes'
+                text: 'Yes',
+                checked: continuedIllness
               },
               {
                 value: 'no',
-                text: 'No'
+                text: 'No',
+                checked: true if continuedIllness === false
               }
             ]
           })
