@@ -27,7 +27,10 @@
         {{
           govukErrorSummary ({
             titleText: 'There is a problem with the details you gave us',
-            errorList: validationResult.errors
+            errorList: validationResult.errors,
+            attributes: {
+                  'data-event-id': '{ errorMessage } '
+                }
           }) if validationResult and validationResult.errors.length > 0
         }}
 
@@ -58,11 +61,17 @@
             items: [
               {
                 value: 'yes',
-                text: 'Yes'
+                text: 'Yes',
+                attributes: {
+                  'data-event-id': 'yes-selected'
+                }
               },
               {
                 value: 'no',
-                text: 'No'
+                text: 'No',
+                attributes: {
+                  'data-event-id': 'no-selected'
+                }
               }
             ]
           })
