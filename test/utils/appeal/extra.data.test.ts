@@ -64,12 +64,12 @@ describe('Appeal Extra Data', () => {
     } as Attachment;
     const navigation: Navigation = { permissions: [] };
 
-    it('shoult return other reason object from Reasons', () => {
+    it('should return other reason object from Reasons', () => {
         const reason = getReasonFromReasons(appealOtherReason.reasons);
         expect(reason).to.be.equal(appealOtherReason.reasons.other);
     });
 
-    it('shoult return illness reason object from Reasons', () => {
+    it('should return illness reason object from Reasons', () => {
         const reason = getReasonFromReasons(appealIllnessReason.reasons);
         expect(reason).to.be.equal(appealIllnessReason.reasons.illness);
     });
