@@ -59,14 +59,16 @@ export class ContinuedIllnessController extends SafeNavigationBaseController<For
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
         const illnessStart = appeal.reasons.illness?.illnessStart;
+        const continuedIllness = appeal.reasons.illness?.continuedIllness;
 
-        return { illnessStart };
+        return { illnessStart, continuedIllness };
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
         if (appeal.reasons?.illness != null) {
-            appeal.reasons.illness.continuedIllness = value.continuedIllness;
-            if (value.continuedIllness === YesNo.yes) {
+            const continuedIllness = value.continuedIllness === YesNo.yes;
+            appeal.reasons.illness.continuedIllness = continuedIllness;
+            if (continuedIllness) {
                 appeal.reasons.illness.illnessEnd = undefined;
             }
         } else {

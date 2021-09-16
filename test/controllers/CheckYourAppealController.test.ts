@@ -11,7 +11,6 @@ import { ApplicationData } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Navigation } from 'app/models/Navigation';
 import { IllPerson } from 'app/models/fields/IllPerson';
-import { YesNo } from 'app/models/fields/YesNo';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
 import { Email } from 'app/modules/email-publisher/Email';
 import { EmailService } from 'app/modules/email-publisher/EmailService';
@@ -34,7 +33,8 @@ const attachments = [
 const illnessReason = {
   illPerson: IllPerson.employee,
   illnessStart: '2020-11-12',
-  continuedIllness: YesNo.no,
+  illnessEnd: '2020-12-12',
+  continuedIllness: false,
   illnessImpactFurtherInformation: 'test',
   attachments
 };
