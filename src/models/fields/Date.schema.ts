@@ -4,7 +4,7 @@ const invalidDayErrorMessage: string = 'You must enter a day';
 const invalidMonthErrorMessage: string = 'You must enter a month';
 const invalidYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
-const startDateInFutureErrorMessage: string = 'Start date must be today or in the past';
+const dateInFutureErrorMessage: string = 'Date must be today or in the past';
 
 const dayMonthRegex: RegExp = /^[0-9]{1,2}$/;
 const yearRegex: RegExp = /^[0-9]{4}$/;
@@ -45,6 +45,6 @@ export const schema = Joi.object({
             'any.required': invalidDateErrorMessage,
             'date.base': invalidDateErrorMessage,
             'date.format': invalidDateErrorMessage,
-            'date.max': startDateInFutureErrorMessage
+            'date.max': dateInFutureErrorMessage
         })
 });
