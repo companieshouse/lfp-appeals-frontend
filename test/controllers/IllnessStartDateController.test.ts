@@ -24,7 +24,7 @@ const invalidStartDayErrorMessage: string = 'You must enter a day';
 const invalidStartMonthErrorMessage: string = 'You must enter a month';
 const invalidStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
-const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+const invalidDateFutureErrorMessage: string = 'Date must be today or in the past';
 const errorLoadingPage = 'Sorry, there is a problem with the service';
 let initialIllnessReasonFeatureFlag: string | undefined;
 

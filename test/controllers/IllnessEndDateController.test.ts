@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import {
     INTERNAL_SERVER_ERROR,
@@ -25,7 +27,8 @@ const invalidStartDayErrorMessage: string = 'You must enter a day';
 const invalidStartMonthErrorMessage: string = 'You must enter a month';
 const invalidStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
-const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+const invalidDateFutureErrorMessage: string = 'Date must be today or in the past';
+const invalidEndDateBeforeStartDate: string = 'End date must be after the start date';
 const errorLoadingPage = 'Sorry, there is a problem with the service';
 let initialIllnessReasonFeatureFlag: string | undefined;
 
@@ -183,7 +186,7 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (non-existing) was submitted',
+        it('should return 422 response with rendered error message invalid end date (non-existing) was submitted',
             async () => {
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
@@ -196,7 +199,7 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (in future) was submitted',
+        it('should return 422 response with rendered error message invalid end date (in future) was submitted',
             async () => {
                 const futureYear = (new Date().getFullYear() + 1).toString();
                 const app = createApp({appeal});
@@ -207,6 +210,29 @@ describe('IllnessEndDateController', () => {
                         expect(response.text).to.include(pageHeading)
                             .and.to.include(errorSummaryHeading)
                             .and.to.include(invalidDateFutureErrorMessage);
+                    });
+            });
+
+        it('should return 422 response with rendered error message invalid end date (before start date) was submitted',
+            async () => {
+
+                appeal.reasons = {
+                    illness: {
+                        illPerson: IllPerson.director,
+                        illnessStart: moment('2021-01-01').format('YYYY-MM-DD'),
+                        continuedIllness: false,
+                        illnessImpactFurtherInformation: 'test'
+                    }
+                };
+
+                const app = createApp({appeal});
+                await request(app).post(ILLNESS_END_DATE_PAGE_URI)
+                    .send({day: '31', month: '12', year: '2020'})
+                    .expect(response => {
+                        expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                        expect(response.text).to.include(pageHeading)
+                            .and.to.include(errorSummaryHeading)
+                            .and.to.include(invalidEndDateBeforeStartDate);
                     });
             });
 

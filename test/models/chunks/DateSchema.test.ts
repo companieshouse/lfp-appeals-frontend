@@ -120,7 +120,7 @@ describe('Date schema', () => {
             date: moment('2030-01-01').toDate()
         });
         assertValidationErrors(validationResult, [
-            new ValidationError(dateField, 'Start date must be today or in the past')
+            new ValidationError(dateField, 'Date must be today or in the past')
         ]);
     });
 
