@@ -46,7 +46,7 @@ export class IllnessEndDateController extends SafeNavigationBaseController<FormB
 
         const [year, month, day] = illness.illnessEnd.split('-', 3);
 
-        return {day, month, year};
+        return {day, month, year, illnessStart};
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
