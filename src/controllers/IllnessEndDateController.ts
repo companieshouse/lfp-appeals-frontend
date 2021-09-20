@@ -38,9 +38,10 @@ export class IllnessEndDateController extends SafeNavigationBaseController<FormB
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        const illnessStart = appeal.reasons.illness?.illnessStart;
         const illness: Illness | undefined = appeal.reasons?.illness;
         if (!illness?.illnessEnd) {
-            return {};
+            return {illnessStart};
         }
 
         const [year, month, day] = illness.illnessEnd.split('-', 3);
