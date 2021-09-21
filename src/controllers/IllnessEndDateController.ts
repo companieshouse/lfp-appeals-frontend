@@ -12,6 +12,7 @@ import { Illness} from 'app/models/Illness';
 import { Reasons} from 'app/models/Reasons';
 import { Feature } from 'app/utils/Feature';
 import { CONTINUED_ILLNESS_PAGE_URI, FURTHER_INFORMATION_PAGE_URI, ILLNESS_END_DATE_PAGE_URI} from 'app/utils/Paths';
+import { formatDate } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template: string = 'illness/illness-end-date';
@@ -38,15 +39,16 @@ export class IllnessEndDateController extends SafeNavigationBaseController<FormB
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
-        const illnessStart = appeal.reasons.illness?.illnessStart;
         const illness: Illness | undefined = appeal.reasons?.illness;
+        const illnessStart = appeal.reasons.illness?.illnessStart || '';
+        const illnessStartedOnDate = `You told us the illness started on ${formatDate(illnessStart)}`;
         if (!illness?.illnessEnd) {
-            return {illnessStart};
+            return {illnessStartedOnDate};
         }
 
         const [year, month, day] = illness.illnessEnd.split('-', 3);
 
-        return {day, month, year, illnessStart};
+        return {day, month, year, illnessStartedOnDate};
     }
 
     protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
