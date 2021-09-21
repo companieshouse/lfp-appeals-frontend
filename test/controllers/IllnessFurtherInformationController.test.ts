@@ -51,7 +51,7 @@ describe('IllnessFurtherInformationController', () => {
         it('should return 200 when trying to access the page with a bare minimum appeal object', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            const app = createApp({ appeal: { penaltyIdentifier: {}, reasons: {} } as Appeal, navigation});
+            const app = createApp({ appeal: { penaltyIdentifier: {}, reasons: { illness: {}} } as Appeal, navigation});
             await request(app).get(FURTHER_INFORMATION_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
                 expect(response.text).to.contain(pageHeading);

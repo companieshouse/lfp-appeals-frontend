@@ -9,6 +9,11 @@ import { Reasons } from 'app/models/Reasons';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { ReasonType } from 'app/models/fields/ReasonType';
 
+const getReasonFromSession = (session: Session | undefined) => {
+    const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
+    return extraData?.appeal.reasons || {} as Reasons;
+};
+
 export const getReasonType = (reasons: Reasons): ReasonType => {
     return (ReasonType.illness in reasons && reasons.illness && !reasons.other)
         ? ReasonType.illness
@@ -48,8 +53,7 @@ export const addAttachmentToReason = (reasons: Reasons, attachment: Attachment):
 };
 
 export const isIllnessReason = (session: Session | undefined): boolean => {
-    const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
-    const reason = extraData?.appeal.reasons || {} as Reasons;
+    const reason = getReasonFromSession(session);
 
     return getReasonType(reason) === ReasonType.illness;
 };
@@ -68,6 +72,12 @@ export const getIllPersonFromIllnessReason = (illnessReasons: Illness): string =
     return ( illPerson === IllPerson.someoneElse )
             ? illnessReasons.otherPerson!
             : illPerson.charAt(0).toUpperCase() + illPerson.substring(1);
+};
+
+export const checkContinuedIllness = (session: Session | undefined): boolean | undefined => {
+    const reason = getReasonFromSession(session);
+
+    return reason?.illness!.continuedIllness;
 };
 
 export const formatDate = (inputDate: string ): string => {

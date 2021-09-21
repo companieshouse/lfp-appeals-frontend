@@ -12,6 +12,7 @@ import { IllPerson } from 'app/models/fields/IllPerson';
 import {
     addAttachmentToReason,
     addPermissionToNavigation,
+    checkContinuedIllness,
     findAttachmentByIdFromReasons,
     formatDate,
     getAttachmentsFromReasons,
@@ -171,5 +172,41 @@ describe('Appeal Extra Data', () => {
         const data = '2020-02-03';
         const dataFormatted = formatDate(data);
         expect(dataFormatted).to.be.equal('3 February 2020');
+    });
+
+    it('should return undefined when appeal has got an empty Illness object', () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: { reasons: { illness: {}} } as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const continuedIllness = checkContinuedIllness(session);
+        expect(continuedIllness).to.be.equal(undefined);
+    });
+
+    it(`should return true when appeal has got Illness type as reason object and
+            illnessEnd date is Not present`, () => {
+        const session = createSession('secret');
+        const mockExtraData = { appeal: appealIllnessReason as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const continuedIllness = checkContinuedIllness(session);
+        expect(continuedIllness).to.be.equal(true);
+    });
+
+    it(`should return false when appeal has got Illness type as reason object and
+            continuedIllness is false so illnessEnd date is present`, () => {
+        const session = createSession('secret');
+        const appealWithEndDate = { ...appealIllnessReason };
+        appealWithEndDate.reasons.illness!.illnessEnd = '2020-03-03';
+        appealWithEndDate.reasons.illness!.continuedIllness = false;
+
+        const mockExtraData = { appeal: appealWithEndDate as Appeal } as ApplicationData;
+
+        session.setExtraData(APPLICATION_DATA_KEY, mockExtraData);
+
+        const continuedIllness = checkContinuedIllness(session);
+        expect(continuedIllness).to.be.equal(false);
     });
 });
