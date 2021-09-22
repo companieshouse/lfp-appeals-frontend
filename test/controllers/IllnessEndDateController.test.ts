@@ -151,7 +151,7 @@ describe('IllnessEndDateController', () => {
         it('should return 422 response with rendered error messages when empty end date was submitted', async () => {
             const app = createApp({appeal});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
-                .send({ illnessStart: '2020-05-01' })
+                .send()
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(pageHeading)
@@ -167,7 +167,7 @@ describe('IllnessEndDateController', () => {
         it('should return 422 response with rendered error messages when partial end date was submitted', async () => {
             const app = createApp({appeal});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
-                .send({month: '01', year: '2020', illnessStart: '2020-05-01' })
+                .send({month: '01', year: '2020'})
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.include(pageHeading)
@@ -182,7 +182,7 @@ describe('IllnessEndDateController', () => {
             async () => {
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
-                    .send({day: '00', month: '00', year: '0000', illnessStart: '2020-05-01'})
+                    .send({day: '00', month: '00', year: '0000'})
                     .expect(response => {
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
@@ -195,7 +195,7 @@ describe('IllnessEndDateController', () => {
             async () => {
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
-                    .send({day: '32', month: '13', year: '2020', illnessStart: '2020-05-01'})
+                    .send({day: '32', month: '13', year: '2020'})
                     .expect(response => {
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
@@ -209,7 +209,7 @@ describe('IllnessEndDateController', () => {
                 const futureYear = (new Date().getFullYear() + 1).toString();
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
-                    .send({day: '01', month: '01', year: futureYear, illnessStart: '2020-05-01'})
+                    .send({day: '01', month: '01', year: futureYear})
                     .expect(response => {
                         expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                         expect(response.text).to.include(pageHeading)
