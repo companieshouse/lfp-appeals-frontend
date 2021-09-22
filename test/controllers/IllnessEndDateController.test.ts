@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import {
     INTERNAL_SERVER_ERROR,
@@ -5,7 +7,6 @@ import {
     OK,
     UNPROCESSABLE_ENTITY
 } from 'http-status-codes';
-import moment from 'moment';
 import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
@@ -25,7 +26,8 @@ const invalidStartDayErrorMessage: string = 'You must enter a day';
 const invalidStartMonthErrorMessage: string = 'You must enter a month';
 const invalidStartYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
-const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+const invalidDateFutureErrorMessage: string = 'Date must be today or in the past';
+const invalidEndDateBeforeStartDate: string = 'End date must be after the start date';
 const errorLoadingPage = 'Sorry, there is a problem with the service';
 let initialIllnessReasonFeatureFlag: string | undefined;
 
@@ -46,6 +48,13 @@ describe('IllnessEndDateController', () => {
         reasons: {}
     } as Appeal;
 
+    const illness = {
+        illPerson: IllPerson.director,
+        illnessStart: '2019-12-31',
+        continuedIllness: false,
+        illnessImpactFurtherInformation: 'test'
+    };
+
     const navigation = { permissions: [ILLNESS_END_DATE_PAGE_URI] };
 
     describe('GET request', () => {
@@ -63,15 +72,8 @@ describe('IllnessEndDateController', () => {
         it('should return 200 when trying to access the page with illness end date populated', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            appeal.reasons = {
-                illness: {
-                    illPerson: IllPerson.director,
-                    illnessStart: moment('2019-12-31').format('YYYY-MM-DD'),
-                    continuedIllness: false,
-                    illnessImpactFurtherInformation: 'test',
-                    illnessEnd: moment('2020-01-01').format('YYYY-MM-DD')
-                }
-            };
+            const localAppeal = { ...appeal };
+            localAppeal.reasons = { illness: { ...illness, illnessEnd: '2020-01-01' } };
 
             const app = createApp({appeal, navigation});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
@@ -122,16 +124,10 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should redirect to Futher Information page when posting a valid date', async () => {
-            appeal.reasons = {
-                illness: {
-                    illPerson: IllPerson.director,
-                    illnessStart: moment('2019-12-31').format('YYYY-MM-DD'),
-                    continuedIllness: false,
-                    illnessImpactFurtherInformation: 'test'
-                }
-            };
+            const localAppeal = { ...appeal };
+            localAppeal.reasons = { illness };
 
-            const app = createApp({appeal});
+            const app = createApp({ appeal: localAppeal });
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
@@ -183,7 +179,7 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (non-existing) was submitted',
+        it('should return 422 response with rendered error message invalid end date (non-existing) was submitted',
             async () => {
                 const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
@@ -196,7 +192,7 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (in future) was submitted',
+        it('should return 422 response with rendered error message invalid end date (in future) was submitted',
             async () => {
                 const futureYear = (new Date().getFullYear() + 1).toString();
                 const app = createApp({appeal});
@@ -207,6 +203,22 @@ describe('IllnessEndDateController', () => {
                         expect(response.text).to.include(pageHeading)
                             .and.to.include(errorSummaryHeading)
                             .and.to.include(invalidDateFutureErrorMessage);
+                    });
+            });
+
+        it('should return 422 response with rendered error message invalid end date (before start date) was submitted',
+            async () => {
+                const localAppeal = { ...appeal };
+                localAppeal.reasons = { illness: { ...illness, illnessStart: '2021-01-01' } };
+
+                const app = createApp({appeal: localAppeal});
+                await request(app).post(ILLNESS_END_DATE_PAGE_URI)
+                    .send({day: '31', month: '12', year: '2020'})
+                    .expect(response => {
+                        expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                        expect(response.text).to.include(pageHeading)
+                            .and.to.include(errorSummaryHeading)
+                            .and.to.include(invalidEndDateBeforeStartDate);
                     });
             });
 

@@ -1,9 +1,9 @@
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller } from 'inversify-express-utils';
 import moment from 'moment';
+import { IllnessEndDateValidator } from './validators/IllnessEndDateValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
@@ -34,7 +34,7 @@ interface FormBody {
 export class IllnessEndDateController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {
-        super(template, navigation, new DateValidator());
+        super(template, navigation, new IllnessEndDateValidator());
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
