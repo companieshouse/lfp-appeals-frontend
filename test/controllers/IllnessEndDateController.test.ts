@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import {
     INTERNAL_SERVER_ERROR,
@@ -9,9 +11,6 @@ import request from 'supertest';
 
 import 'app/controllers/EvidenceDownloadController';
 import { Appeal } from 'app/models/Appeal';
-import { ApplicationData } from 'app/models/ApplicationData';
-import { Illness } from 'app/models/Illness';
-import { Reasons } from 'app/models/Reasons';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import {
     ENTRY_PAGE_URI,
@@ -27,7 +26,8 @@ const invalidEndDayErrorMessage: string = 'You must enter a day';
 const invalidEndMonthErrorMessage: string = 'You must enter a month';
 const invalidEndYearErrorMessage: string = 'You must enter a year';
 const invalidDateErrorMessage: string = 'Enter a real date';
-const invalidDateFutureErrorMessage: string = 'Start date must be today or in the past';
+const invalidDateFutureErrorMessage: string = 'Date must be today or in the past';
+const invalidEndDateBeforeStartDate: string = 'End date must be after the start date';
 const errorLoadingPage = 'Sorry, there is a problem with the service';
 let initialIllnessReasonFeatureFlag: string | undefined;
 
@@ -43,56 +43,29 @@ describe('IllnessEndDateController', () => {
         done();
     });
 
+    const appeal = {
+        penaltyIdentifier: {},
+        reasons: {}
+    } as Appeal;
+
+    const illness = {
+        illPerson: IllPerson.director,
+        illnessStart: '2019-12-31',
+        continuedIllness: false,
+        illnessImpactFurtherInformation: 'test'
+    };
+
     const navigation = { permissions: [ILLNESS_END_DATE_PAGE_URI] };
-    const penaltyIdentifier = {};
-    const reasons = {};
-
-    const appealWithNavigation: Partial<ApplicationData> = {
-        appeal: { penaltyIdentifier, reasons } as Appeal,
-        navigation
-    };
-
-    const appealNoNavigation: Partial<ApplicationData> = {
-        appeal: { penaltyIdentifier, reasons } as Appeal,
-    };
-
-    const appealWithIllnessStartDateAndNavigation : Partial<ApplicationData> = {
-        appeal: {
-            penaltyIdentifier,
-            reasons: {
-                illness: {
-                    illPerson: IllPerson.director,
-                    illnessStart: '2020-05-01',
-                    continuedIllness: false,
-                    illnessImpactFurtherInformation: 'test'
-                } as Illness,
-            } as Reasons,
-         } as Appeal,
-         navigation
-    };
-
-    const appealWithIllnessStartAndEndDateAndNavigation : Partial<ApplicationData> = {
-        appeal: {
-            penaltyIdentifier,
-            reasons: {
-                illness: {
-                    illPerson: IllPerson.director,
-                    illnessStart: '2020-05-01',
-                    continuedIllness: false,
-                    illnessImpactFurtherInformation: 'test',
-                    illnessEnd: '2020-06-01'
-                } as Illness,
-            } as Reasons,
-         } as Appeal,
-         navigation
-    };
 
     describe('GET request', () => {
 
         it('should return 200 when trying to access the page with illnessStart date set', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            const app = createApp(appealWithIllnessStartDateAndNavigation);
+            const localAppeal = { ...appeal };
+            localAppeal.reasons = { illness };
+
+            const app = createApp({appeal: localAppeal, navigation});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
                 expect(response.text).to.contain(pageHeading);
@@ -102,17 +75,21 @@ describe('IllnessEndDateController', () => {
         it('should return 200 when trying to access the page without illnessStart date set', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
                 expect(response.text).to.contain(pageHeading);
             });
         });
 
+
         it('should return 200 when trying to access the page with illness end date populated', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            const app = createApp(appealWithIllnessStartAndEndDateAndNavigation);
+            const localAppeal = { ...appeal };
+            localAppeal.reasons = { illness: { ...illness, illnessEnd: '2020-01-01' } };
+
+            const app = createApp({appeal: localAppeal, navigation});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(OK);
                 expect(response.text).to.contain(pageHeading);
@@ -123,7 +100,7 @@ describe('IllnessEndDateController', () => {
                             navigation permission and feature flag enabled`, async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
-            const app = createApp(appealNoNavigation);
+            const app = createApp({appeal});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
                 expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
                 expect(response.text).to.contain(errorLoadingPage);
@@ -133,7 +110,7 @@ describe('IllnessEndDateController', () => {
         it('should redirect to entry page when illness reason feature is disabled', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -150,8 +127,7 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should redirect to Futher Information page when posting a valid date', async () => {
-
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
@@ -161,8 +137,10 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should redirect to Futher Information page when posting a valid date', async () => {
+            const localAppeal = { ...appeal };
+            localAppeal.reasons = { illness };
 
-            const app = createApp(appealWithIllnessStartDateAndNavigation);
+            const app = createApp({ appeal: localAppeal });
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
@@ -172,7 +150,7 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should return 422 response with rendered error messages when empty end date was submitted', async () => {
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send()
                 .expect(response => {
@@ -188,7 +166,7 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should return 422 response with rendered error messages when partial end date was submitted', async () => {
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({month: '01', year: '2020'})
                 .expect(response => {
@@ -203,7 +181,7 @@ describe('IllnessEndDateController', () => {
 
         it('should return 422 response with rendered error message invalid end date (all zeros) was submitted',
             async () => {
-                const app = createApp(appealWithNavigation);
+                const app = createApp({appeal, navigation});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '00', month: '00', year: '0000'})
                     .expect(response => {
@@ -214,9 +192,9 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (non-existing) was submitted',
+        it('should return 422 response with rendered error message invalid end date (non-existing) was submitted',
             async () => {
-                const app = createApp(appealWithNavigation);
+                const app = createApp({appeal, navigation});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '32', month: '13', year: '2020'})
                     .expect(response => {
@@ -227,10 +205,10 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
-        it('should return 422 response with rendered error message invalid start date (in future) was submitted',
+        it('should return 422 response with rendered error message invalid end date (in future) was submitted',
             async () => {
                 const futureYear = (new Date().getFullYear() + 1).toString();
-                const app = createApp(appealWithNavigation);
+                const app = createApp({appeal, navigation});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '01', month: '01', year: futureYear})
                     .expect(response => {
@@ -241,11 +219,27 @@ describe('IllnessEndDateController', () => {
                     });
             });
 
+        it('should return 422 response with rendered error message invalid end date (before start date) was submitted',
+            async () => {
+                const localAppeal = { ...appeal };
+                localAppeal.reasons = { illness: { ...illness, illnessStart: '2021-01-01' } };
+
+                const app = createApp({appeal: localAppeal});
+                await request(app).post(ILLNESS_END_DATE_PAGE_URI)
+                    .send({day: '31', month: '12', year: '2020'})
+                    .expect(response => {
+                        expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                        expect(response.text).to.include(pageHeading)
+                            .and.to.include(errorSummaryHeading)
+                            .and.to.include(invalidEndDateBeforeStartDate);
+                    });
+            });
+
         it('should redirect to entry page when illness reason feature is disabled', async () => {
 
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
-            const app = createApp(appealWithNavigation);
+            const app = createApp({appeal, navigation});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({})
                 .expect(response => {
