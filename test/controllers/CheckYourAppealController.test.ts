@@ -30,13 +30,21 @@ const attachments = [
   } as Attachment
 ];
 
-const illnessReason = {
-  illPerson: IllPerson.employee,
-  illnessStart: '2020-11-12',
-  illnessEnd: '2020-12-12',
-  continuedIllness: false,
-  illnessImpactFurtherInformation: 'test',
-  attachments
+const illnessReasonContinuedFalse = {
+    illPerson: IllPerson.employee,
+    illnessStart: '2020-11-12',
+    continuedIllness: false,
+    illnessImpactFurtherInformation: 'test',
+    attachments
+};
+
+const illnessReasonContinuedTrue = {
+    illPerson: IllPerson.employee,
+    illnessStart: '2020-11-12',
+    illnessEnd: '2020-12-12',
+    continuedIllness: true,
+    illnessImpactFurtherInformation: 'test',
+    attachments
 };
 
 const otherReason = {
@@ -78,7 +86,7 @@ describe('CheckYourAppealController', () => {
   } as Navigation;
 
   describe('GET request', () => {
-    it('should return 200 with populated session data', async () => {
+    it('should return 200 with populated session data with other reason', async () => {
 
       const applicationData = {
         appeal: {
@@ -113,41 +121,77 @@ describe('CheckYourAppealController', () => {
         });
     });
 
-    it('should show illness reason section with populated data', async () => {
+    it('should show illness reason section and populated data where the continued illness is true', async () => {
 
-      const applicationData = {
-        appeal: {
-          ...baseAppeal,
-          reasons: {
-            illness: illnessReason
-          }
-        },
-        navigation
-      } as ApplicationData;
+          const applicationData = {
+              appeal: {
+                  ...baseAppeal,
+                  reasons: {
+                      illness: illnessReasonContinuedFalse
+                  }
+              },
+              navigation
+          } as ApplicationData;
 
-      const app = createApp(applicationData);
+          const app = createApp(applicationData);
 
-      await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
-        .expect(response => {
-          expect(response.status).to.be.equal(OK);
-          expect(response.text)
-            .to.contain(pageHeading).and
-            .to.contain(applicationData.appeal.penaltyIdentifier.companyName).and
-            .to.contain(applicationData.appeal.penaltyIdentifier.companyNumber).and
-            .to.contain(applicationData.appeal.penaltyIdentifier.penaltyReference).and
-            .to.contain('test').and
-            .to.contain(subHeading).and
-            .to.contain('Employee').and
-            .to.contain('12 November 2020').and
-            .to.contain(applicationData.appeal.createdBy?.name).and
-            .to.contain(applicationData.appeal.reasons.illness?.illnessImpactFurtherInformation)
-            .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
-            .nested.contain('some-file.jpeg').and
-            .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
-            .nested.contain('another-file.jpeg')
-            .not.to.contain(applicationData.appeal.createdBy?.relationshipToCompany);
-        });
-    });
+          await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
+              .expect(response => {
+                  expect(response.status).to.be.equal(OK);
+                  expect(response.text)
+                      .to.contain(pageHeading).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.companyName).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.companyNumber).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.penaltyReference).and
+                      .to.contain('test').and
+                      .to.contain(subHeading).and
+                      .to.contain('Employee').and
+                      .to.contain('12 November 2020').and
+                      .to.contain(applicationData.appeal.createdBy?.name).and
+                      .to.contain(applicationData.appeal.reasons.illness?.illnessImpactFurtherInformation)
+                      .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
+                      .nested.contain('some-file.jpeg').and
+                      .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
+                      .nested.contain('another-file.jpeg')
+                      .not.to.contain(applicationData.appeal.createdBy?.relationshipToCompany);
+              });
+      });
+    it('should show illness reason section and populated data where the continued illness is false', async () => {
+
+          const applicationData = {
+              appeal: {
+                  ...baseAppeal,
+                  reasons: {
+                      illness: illnessReasonContinuedTrue
+                  }
+              },
+              navigation
+          } as ApplicationData;
+
+          const app = createApp(applicationData);
+
+          await request(app).get(CHECK_YOUR_APPEAL_PAGE_URI)
+              .expect(response => {
+                  expect(response.status).to.be.equal(OK);
+                  expect(response.text)
+                      .to.contain(pageHeading).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.companyName).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.companyNumber).and
+                      .to.contain(applicationData.appeal.penaltyIdentifier.penaltyReference).and
+                      .to.contain('test').and
+                      .to.contain(subHeading).and
+                      .to.contain('Employee').and
+                      .to.contain('12 November 2020').and
+                      .to.contain('12 December 2020').and
+                      .to.contain(applicationData.appeal.createdBy?.name).and
+                      .to.contain(applicationData.appeal.reasons.illness?.illnessImpactFurtherInformation)
+                      .to.contain(`href="/appeal-a-penalty/download/data/1/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
+                      .nested.contain('some-file.jpeg').and
+                      .to.contain(`href="/appeal-a-penalty/download/data/2/download?c=${applicationData.appeal.penaltyIdentifier.companyNumber}"`)
+                      .nested.contain('another-file.jpeg')
+                      .not.to.contain(applicationData.appeal.createdBy?.relationshipToCompany);
+              });
+      });
   });
 
     describe('POST request', () => {
