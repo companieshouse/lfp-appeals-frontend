@@ -110,7 +110,7 @@ describe('IllnessEndDateController', () => {
         it('should redirect to entry page when illness reason feature is disabled', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
-            const app = createApp({appeal, navigation});
+            const app = createApp({appeal});
             await request(app).get(ILLNESS_END_DATE_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -127,7 +127,7 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should redirect to Futher Information page when posting a valid date', async () => {
-            const app = createApp({appeal, navigation});
+            const app = createApp({appeal});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({day: '01', month: '01', year: '2020'})
                 .expect(response => {
@@ -150,7 +150,7 @@ describe('IllnessEndDateController', () => {
         });
 
         it('should return 422 response with rendered error messages when empty end date was submitted', async () => {
-            const app = createApp({appeal, navigation});
+            const app = createApp({appeal});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send()
                 .expect(response => {
@@ -181,7 +181,7 @@ describe('IllnessEndDateController', () => {
 
         it('should return 422 response with rendered error message invalid end date (all zeros) was submitted',
             async () => {
-                const app = createApp({appeal, navigation});
+                const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '00', month: '00', year: '0000'})
                     .expect(response => {
@@ -194,7 +194,7 @@ describe('IllnessEndDateController', () => {
 
         it('should return 422 response with rendered error message invalid end date (non-existing) was submitted',
             async () => {
-                const app = createApp({appeal, navigation});
+                const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '32', month: '13', year: '2020'})
                     .expect(response => {
@@ -208,7 +208,7 @@ describe('IllnessEndDateController', () => {
         it('should return 422 response with rendered error message invalid end date (in future) was submitted',
             async () => {
                 const futureYear = (new Date().getFullYear() + 1).toString();
-                const app = createApp({appeal, navigation});
+                const app = createApp({appeal});
                 await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                     .send({day: '01', month: '01', year: futureYear})
                     .expect(response => {
@@ -239,7 +239,7 @@ describe('IllnessEndDateController', () => {
 
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '0';
 
-            const app = createApp({appeal, navigation});
+            const app = createApp({appeal});
             await request(app).post(ILLNESS_END_DATE_PAGE_URI)
                 .send({})
                 .expect(response => {
