@@ -99,6 +99,16 @@ describe('IllnessEndDateController', () => {
             });
         });
 
+        it('should return 200 when trying to access the page without illnessStart date set', async () => {
+            process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
+
+            const app = createApp(appealWithNavigation);
+            await request(app).get(ILLNESS_END_DATE_PAGE_URI).expect(response => {
+                expect(response.status).to.be.equal(OK);
+                expect(response.text).to.contain(pageHeading);
+            });
+        });
+
         it('should return 200 when trying to access the page with illness end date populated', async () => {
             process.env.ILLNESS_REASON_FEATURE_ENABLED = '1';
 
