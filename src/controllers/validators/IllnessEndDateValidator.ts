@@ -43,7 +43,7 @@ export class IllnessEndDateValidator extends DateValidator {
         const validationResult: ValidationResult = await super.validate(request);
 
 
-        const illness: Illness | undefined = appData.appeal.reasons!.illness;
+        const illness: Illness | undefined = appData.appeal.reasons.illness;
         if (illness != null && illness.illnessStart != null) {
 
             const illnessStartDate = moment(illness.illnessStart).toDate();
