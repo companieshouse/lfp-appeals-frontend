@@ -14,11 +14,7 @@ import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ReasonType } from 'app/models/fields/ReasonType';
 import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import {
-    CHECK_YOUR_APPEAL_PAGE_URI,
-    CONFIRMATION_PAGE_URI,
-    EVIDENCE_QUESTION_URI
-} from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI } from 'app/utils/Paths';
 import { Region } from 'app/utils/RegionLookup';
 import {
     formatDate,
@@ -38,7 +34,7 @@ const navigation = {
     }
 };
 
-@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller( CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware )
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor,
@@ -58,13 +54,18 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         }
 
         const appealData = super.prepareViewModelFromSession(session);
-        const reasonType = getReasonType(appealData.reasons);
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
-        const illPersonName = (reasonType === ReasonType.illness )
-                                ? getIllPersonFromIllnessReason(appealData.reasons.illness) : undefined;
-        const illnessStartDate = (reasonType === ReasonType.illness )
-                                ? formatDate(appealData.reasons.illness.illnessStart) : undefined;
+
+        const reasonType = getReasonType(appealData.reasons);
+        const illness = appealData.reasons.illness;
+
+        const illPersonName = ( reasonType === ReasonType.illness )
+                                ? getIllPersonFromIllnessReason(illness ) : undefined;
+        const illnessStartDate = ( reasonType === ReasonType.illness )
+                                ? formatDate(illness.illnessStart) : undefined;
+        const illnessEndDate = ( reasonType === ReasonType.illness && illness.illnessEnd !== undefined )
+                                ? formatDate(illness.illnessEnd) : undefined;
 
         const model = {
             createdBy: appealData.createdBy,
@@ -72,7 +73,8 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
             appealPenaltyDetails,
             userProfile,
             illPersonName,
-            illnessStartDate
+            illnessStartDate,
+            illnessEndDate
         };
 
         loggerInstance().debug(loggingMessage(appealData, CheckYourAppealController.name));

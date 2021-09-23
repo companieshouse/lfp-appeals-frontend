@@ -113,6 +113,11 @@
                 actions: { items: [ ui.createChangeLinkConfig(paths.ILLNESS_START_DATE_PAGE_URI, 'illness start date') ] }
               },
               {
+                key: { text: 'Illness end date' },
+                value: { text: illnessEndDate },
+                actions: { items: [ ui.createChangeLinkConfig(paths.ILLNESS_END_DATE_PAGE_URI, 'illness end date') ] }
+              } if illnessEndDate != null,
+              {
                 key: { text: 'Your Name' },
                 value: { text: createdBy.name },
                 actions: { items: [ ui.createChangeLinkConfig(paths.FURTHER_INFORMATION_PAGE_URI, 'your name') ] }
@@ -131,7 +136,7 @@
           })
         }}
       {% endif %}
-      
+
       <h2 class="govuk-heading-m">Submit your appeal</h2>
       <p>
         By submitting this appeal you are confirming that, to the best of your knowledge, the details you are
