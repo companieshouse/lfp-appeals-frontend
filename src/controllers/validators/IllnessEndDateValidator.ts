@@ -37,22 +37,26 @@ export class IllnessEndDateValidator extends DateValidator {
             throw APPLICATION_DATA_UNDEFINED;
         }
 
+        const validationResult: ValidationResult = await super.validate(request);
+
         request.body.date = moment(`${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`)
             .toDate();
 
-        const validationResult: ValidationResult = await super.validate(request);
+        /* Validate that the illness end date is before the illness start date only if
+           it has passed all other date validation
+         */
+        if ( validationResult.errors.length === 0 ) {
+            const illness: Illness | undefined = appData.appeal.reasons.illness;
+            if (illness != null && illness.illnessStart != null) {
 
+                const illnessStartDate = moment(illness.illnessStart).toDate();
+                if (request.body.date < illnessStartDate) {
+                    loggerInstance().debug(loggingMessage(appData.appeal, IllnessEndDateValidator.name));
 
-        const illness: Illness | undefined = appData.appeal.reasons.illness;
-        if (illness != null && illness.illnessStart != null) {
-
-            const illnessStartDate = moment(illness.illnessStart).toDate();
-            if (request.body.date < illnessStartDate) {
-                loggerInstance().debug(loggingMessage(appData.appeal, IllnessEndDateValidator.name));
-
-                const dateError: ValidationError =
-                    new ValidationError(dateField, this.ILLNESS_END_DATE_BEFORE_ILLNESS_START_DATE);
-                validationResult.errors.push(dateError);
+                    const dateError: ValidationError =
+                        new ValidationError(dateField, this.ILLNESS_END_DATE_BEFORE_ILLNESS_START_DATE);
+                    validationResult.errors.push(dateError);
+                }
             }
         }
 
