@@ -1,21 +1,21 @@
-import {Session, SessionMiddleware} from 'ch-node-session-handler';
-import {SessionKey} from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import {ISignInInfo, IUserProfile} from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
-import {controller} from 'inversify-express-utils';
+import { Session, SessionMiddleware } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { controller } from 'inversify-express-utils';
 
-import {SafeNavigationBaseController} from 'app/controllers/SafeNavigationBaseController';
-import {AppealStorageFormActionProcessor} from 'app/controllers/processors/AppealStorageFormActionProcessor';
-import {InternalEmailFormActionProcessor} from 'app/controllers/processors/InternalEmailFormActionProcessor';
-import {SessionCleanupProcessor} from 'app/controllers/processors/SessionCleanupProcessor';
-import {UserEmailFormActionProcessor} from 'app/controllers/processors/UserEmailFormActionProcessor';
-import {AuthMiddleware} from 'app/middleware/AuthMiddleware';
-import {CompanyAuthMiddleware} from 'app/middleware/CompanyAuthMiddleware';
-import {loggerInstance, loggingMessage} from 'app/middleware/Logger';
-import {Appeal} from 'app/models/Appeal';
-import {ReasonType} from 'app/models/fields/ReasonType';
-import {getEnvOrThrow} from 'app/utils/EnvironmentUtils';
-import {CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI} from 'app/utils/Paths';
-import {Region} from 'app/utils/RegionLookup';
+import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
+import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
+import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
+import { SessionCleanupProcessor } from 'app/controllers/processors/SessionCleanupProcessor';
+import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
+import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
+import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
+import { Appeal } from 'app/models/Appeal';
+import { ReasonType } from 'app/models/fields/ReasonType';
+import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI } from 'app/utils/Paths';
+import { Region } from 'app/utils/RegionLookup';
 import {
     formatDate,
     getIllPersonFromIllnessReason,
@@ -34,7 +34,7 @@ const navigation = {
     }
 };
 
-@controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller( CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware )
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor,
@@ -57,12 +57,12 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         const reasonType = getReasonType(appealData.reasons);
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
-        const illPersonName = (reasonType === ReasonType.illness )
+        const illPersonName = ( reasonType === ReasonType.illness )
                                 ? getIllPersonFromIllnessReason(appealData.reasons.illness) : undefined;
-        const illnessStartDate = (reasonType === ReasonType.illness )
+        const illnessStartDate = ( reasonType === ReasonType.illness )
             ? formatDate(appealData.reasons.illness.illnessStart) : undefined;
-        const illnessEndDate = (reasonType === ReasonType.illness &&
-            appealData.reasons?.illness.illnessEnd !== undefined)
+        const illnessEndDate = ( reasonType === ReasonType.illness &&
+            appealData.reasons?.illness.illnessEnd !== undefined )
             ? formatDate(appealData.reasons.illness.illnessEnd) : undefined;
 
         const model = {
