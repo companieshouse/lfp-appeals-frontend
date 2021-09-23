@@ -54,16 +54,18 @@ export class CheckYourAppealController extends SafeNavigationBaseController<any>
         }
 
         const appealData = super.prepareViewModelFromSession(session);
-        const reasonType = getReasonType(appealData.reasons);
         const appealReasonDetails = getReasonFromReasons(appealData.reasons);
         const appealPenaltyDetails = appealData.penaltyIdentifier;
+
+        const reasonType = getReasonType(appealData.reasons);
+        const illness = appealData.reasons.illness;
+
         const illPersonName = ( reasonType === ReasonType.illness )
-                                ? getIllPersonFromIllnessReason(appealData.reasons.illness) : undefined;
+                                ? getIllPersonFromIllnessReason(illness ) : undefined;
         const illnessStartDate = ( reasonType === ReasonType.illness )
-            ? formatDate(appealData.reasons.illness.illnessStart) : undefined;
-        const illnessEndDate = ( reasonType === ReasonType.illness &&
-            appealData.reasons?.illness.illnessEnd !== undefined )
-            ? formatDate(appealData.reasons.illness.illnessEnd) : undefined;
+                                ? formatDate(illness.illnessStart) : undefined;
+        const illnessEndDate = ( reasonType === ReasonType.illness && illness.illnessEnd !== undefined )
+                                ? formatDate(illness.illnessEnd) : undefined;
 
         const model = {
             createdBy: appealData.createdBy,
