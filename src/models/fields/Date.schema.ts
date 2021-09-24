@@ -46,5 +46,8 @@ export const schema = Joi.object({
             'date.base': invalidDateErrorMessage,
             'date.format': invalidDateErrorMessage,
             'date.max': dateInFutureErrorMessage
-        })
+        }),
+    // Optional field to post illness start date on illness end date page
+    illnessStart: Joi.string()
+        .optional()
 });
