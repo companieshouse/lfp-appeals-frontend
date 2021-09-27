@@ -46,6 +46,9 @@ function buildEmailReasonContent(appeal: Appeal): any {
                 name: appeal.createdBy!.name,
                 illPerson: getIllPersonFromIllnessReason(appeal.reasons.illness!),
                 illnessStart: formatDate(appeal.reasons.illness!.illnessStart),
+                illnessEnd: (appeal.reasons.illness!.illnessEnd)
+                                ? formatDate(appeal.reasons.illness!.illnessEnd)
+                                : undefined,
                 description: appeal.reasons.illness!.illnessImpactFurtherInformation,
                 attachments: attachmentsContent,
             },
