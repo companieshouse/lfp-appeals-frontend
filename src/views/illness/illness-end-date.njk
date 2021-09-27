@@ -4,6 +4,7 @@
 {% from 'govuk/components/error-summary/macro.njk' import govukErrorSummary %}
 {% from 'govuk/components/button/macro.njk' import govukButton %}
 {% from 'govuk/components/date-input/macro.njk' import govukDateInput %}
+{% from 'govuk/components/input/macro.njk' import govukInput %}
 
 {% block pageTitle %}
    Appeal due to ill health: Tell us when the illness ended
@@ -69,6 +70,14 @@
         {% endif %}
 
         {{
+          govukInput({
+            type: 'hidden',
+            name: 'illnessStart',
+            value: illnessStart
+          })
+        }}
+
+        {{
           govukDateInput ({
             id: 'illness-end',
             fieldset: {
@@ -79,7 +88,7 @@
               }
             },
             hint: {
-              text: illnessStartedOnDate
+              text: 'You told us the illness started on ' + illnessStart | date
             },
             errorMessage: illnessEndErrorMessage,
             items: [
