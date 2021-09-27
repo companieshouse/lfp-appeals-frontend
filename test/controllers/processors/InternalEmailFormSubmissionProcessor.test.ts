@@ -219,6 +219,50 @@ describe('InternalEmailFormSubmissionProcessor', () => {
                                 name: 'name',
                                 illPerson: 'Family',
                                 illnessStart: '20 March 2021',
+                                illnessEnd: '12 April 2021',
+                                description: 'test',
+                                attachments: undefined
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        it('should send right email with illness data without end date', async () => {
+            const emailService = createSubstituteOf<EmailService>();
+            const processor = new InternalEmailFormActionProcessor(emailService);
+            const appealData = {
+                ...appealWithoutAttachments,
+                reasons: {
+                    illness: {
+                        illPerson: IllPerson.family,
+                        illnessStart: '2021-03-20',
+                        illnessImpactFurtherInformation: 'test',
+                        continuedIllness: true
+                    }
+                }
+            };
+            await processor.process(createRequestWithAppealInSession(appealData));
+
+            emailService.received().send({
+                to: 'appeals.ch.fake+DEFAULT@gmail.com',
+                subject: `Appeal submitted - 12345678`,
+                body: {
+                    templateName: 'lfp-appeal-submission-internal',
+                    templateData: {
+                        companyName: 'A Company Name',
+                        companyNumber: '12345678',
+                        penaltyReference: 'PEN1A/12345677',
+                        userProfile: {
+                            email: 'user@example.com'
+                        },
+                        reasons: {
+                            illness: {
+                                name: 'name',
+                                illPerson: 'Family',
+                                illnessStart: '20 March 2021',
+                                illnessEnd: undefined,
                                 description: 'test',
                                 attachments: undefined
                             }
