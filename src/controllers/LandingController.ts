@@ -7,7 +7,12 @@ export class LandingController extends BaseHttpController {
 
     @httpGet('')
     public renderView(): void {
-        this.httpContext.response.render('landing');
+        const { start } = this.httpContext.request.params;
+        if (start === "0") {
+            this.httpContext.response.redirect(ENTRY_PAGE_URI);
+        } else {
+            this.httpContext.response.render('landing');
+        }
     }
 
     @httpPost('')
