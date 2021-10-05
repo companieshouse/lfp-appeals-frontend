@@ -46,7 +46,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             return res.redirect(PENALTY_DETAILS_PAGE_URI);
         }
 
-        const companyNumber: string = appeal.penaltyIdentifier.companyNumber;
+        const companyNumber: string = appeal.penaltyIdentifier?.companyNumber;
         const signInInfo: ISignInInfo | undefined = req.session.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (this.isAuthorisedForCompany(signInInfo, companyNumber)){

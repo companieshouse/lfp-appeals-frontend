@@ -4,7 +4,6 @@ import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/m
 import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -26,7 +25,7 @@ const navigation = {
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor() {
-        super(template, navigation, undefined, undefined, [InternalEmailFormActionProcessor]);
+        super(template, navigation);
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
