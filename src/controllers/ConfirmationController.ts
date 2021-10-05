@@ -5,7 +5,6 @@ import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
-import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -27,8 +26,7 @@ const navigation = {
 @controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor() {
-        super(template, navigation, undefined, undefined, [InternalEmailFormActionProcessor,
-            UserEmailFormActionProcessor]);
+        super(template, navigation, undefined, undefined, [InternalEmailFormActionProcessor]);
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {

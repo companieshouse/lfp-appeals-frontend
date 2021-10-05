@@ -5,17 +5,13 @@ import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
-import { InternalEmailFormActionProcessor } from 'app/controllers/processors/InternalEmailFormActionProcessor';
 import { SessionCleanupProcessor } from 'app/controllers/processors/SessionCleanupProcessor';
-import { UserEmailFormActionProcessor } from 'app/controllers/processors/UserEmailFormActionProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ReasonType } from 'app/models/fields/ReasonType';
-import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI } from 'app/utils/Paths';
-import { Region } from 'app/utils/RegionLookup';
 import {
     formatDate,
     getIllPersonFromIllnessReason,
@@ -37,12 +33,7 @@ const navigation = {
 @controller( CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware )
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
-        super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor,
-            InternalEmailFormActionProcessor, UserEmailFormActionProcessor, SessionCleanupProcessor]);
-        // tslint:disable-next-line: forin
-        for (const region in Region) {
-            getEnvOrThrow(`${region}_TEAM_EMAIL`);
-        }
+        super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor, SessionCleanupProcessor]);
     }
 
     protected prepareViewModelFromSession(session: Session): Record<string, any> {
