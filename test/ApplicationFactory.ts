@@ -14,7 +14,6 @@ import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSche
 import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { CompaniesHouseSDK } from 'app/modules/Types';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
 import { JwtEncryptionService } from 'app/modules/jwt-encryption-service/JwtEncryptionService';
 import { RefreshTokenService } from 'app/modules/refresh-token-service/RefreshTokenService';
@@ -82,7 +81,6 @@ export const createApp = (data?: Partial<ApplicationData>,
 
         container.bind(SessionStore).toConstantValue(sessionStore);
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
-        container.bind(EmailService).toConstantValue(Substitute.for<EmailService>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
         container.bind(RefreshTokenService).toConstantValue(Substitute.for<RefreshTokenService>());
         container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
