@@ -23,7 +23,6 @@
   "dependencies": {
     "@companieshouse/structured-logging-node": "1.0.4",
     "@hapi/joi": "^17.1.1",
-    "avsc": "^5.4.21",
     "axios": "^0.21.1",
     "body-parser": "^1.18.2",
     "ch-node-session-handler": "git+ssh://git@github.com/companieshouse/node-session-handler.git#2.1.1",
@@ -38,7 +37,6 @@
     "inversify": "^5.0.1",
     "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",
-    "kafka-node": "^5.0.0",
     "moment": "^2.27.0",
     "multer": "^1.4.2",
     "node-jose": "^2.0.0",

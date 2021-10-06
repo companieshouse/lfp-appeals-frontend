@@ -12,8 +12,6 @@ import { Attachment } from 'app/models/Attachment';
 import { Navigation } from 'app/models/Navigation';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { Email } from 'app/modules/email-publisher/Email';
-import { EmailService } from 'app/modules/email-publisher/EmailService';
 import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
 
 import { createApp } from 'test/ApplicationFactory';
@@ -203,29 +201,6 @@ describe('CheckYourAppealController', () => {
         } as ApplicationData;
       }
 
-      it('should send email with appeal to internal team and submission confirmation to user', async () => {
-        const emailService = createSubstituteOf<EmailService>(service => {
-          service.send(Arg.any()).returns(Promise.resolve());
-        });
-
-        const applicationData = getApplicationData();
-
-        const app = createApp(applicationData, container => {
-          container.rebind(EmailService).toConstantValue(emailService);
-        });
-
-        await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI);
-
-        emailService.received().send(Arg.is((email: Email) => {
-          return email.to === 'appeals.ch.fake+NI@gmail.com'
-            && email.body.templateName === 'lfp-appeal-submission-internal';
-        }));
-        emailService.received().send(Arg.is((email: Email) => {
-          return email.to === 'test'
-            && email.body.templateName === 'lfp-appeal-submission-confirmation';
-        }));
-      });
-
       it('should redirect to confirmation page when email sending succeeded', async () => {
 
         const applicationData = getApplicationData();
@@ -235,10 +210,6 @@ describe('CheckYourAppealController', () => {
         });
 
         const app = createApp(applicationData, container => {
-          container.rebind(EmailService).toConstantValue(createSubstituteOf<EmailService>(service => {
-            service.send(Arg.any()).returns(Promise.resolve());
-          }));
-
           container.rebind(AppealsService).toConstantValue(appealsService);
         });
 
@@ -252,49 +223,6 @@ describe('CheckYourAppealController', () => {
               createdBy: { emailAddress: 'test', ...createdBy },
               id: '1'
             } as Appeal);
-          });
-      });
-
-      it('should not send email to user and render error when internal email did not send', async () => {
-
-        const applicationData = getApplicationData();
-
-        const emailService = createSubstituteOf<EmailService>(service => {
-          service.send(Arg.any()).returns(Promise.reject(Error('Unexpected error')));
-        });
-        const app = createApp(applicationData, container => {
-          container.rebind(EmailService).toConstantValue(emailService);
-        });
-
-        await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
-          .expect(response => {
-            expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
-          });
-
-        emailService.didNotReceive().send(Arg.is((email: Email) => {
-          return email.body.templateName === 'lfp-appeal-submission-confirmation';
-        }));
-      });
-
-      it('should render error when only user email did not send', async () => {
-        const emailService = createSubstituteOf<EmailService>(service => {
-          service.send(Arg.is((email: Email) => {
-            return email.body.templateName === 'lfp-appeal-submission-internal';
-          })).returns(Promise.resolve());
-          service.send(Arg.is((email: Email) => {
-            return email.body.templateName === 'lfp-appeal-submission-confirmation';
-          })).returns(Promise.reject(Error('Unexpected error')));
-        });
-
-        const applicationData = getApplicationData();
-
-        const app = createApp(applicationData, container => {
-          container.rebind(EmailService).toConstantValue(emailService);
-        });
-
-        await request(app).post(CHECK_YOUR_APPEAL_PAGE_URI)
-          .expect(response => {
-            expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
           });
       });
 
