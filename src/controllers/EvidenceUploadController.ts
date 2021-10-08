@@ -48,7 +48,6 @@ const navigation: Navigation = {
         return {
             noAction: changeMode ? '?cm=1' : '?cm=0',
             uploadFile: changeMode ? '?action=upload-file&cm=1' : '?action=upload-file',
-            continueWithoutUpload: '?action=continue-without-upload',
             removeFile: changeMode ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
         };
     }
@@ -80,11 +79,13 @@ const continueButtonValidator: Validator = {
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<any> {
+    // the uploading happens through the FileTransferService class (upload method)
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);
     }
 
     protected prepareViewModelFromAppeal(appeal: Appeal): any {
+        // does not get attachments from session data or return them
         return {
             ...getReasonFromReasons(appeal.reasons),
             companyNumber: appeal.penaltyIdentifier?.companyNumber
@@ -107,6 +108,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
         );
     }
 
+    // this method is called by the POST in the SafeNavigationBaseController class
     protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         const that = this;
 
@@ -139,8 +141,10 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                         }
                     }
 
+                    // gets the attachments from the extra data of reasons
                     const attachments = getAttachmentsFromReasons(appeal.reasons);
 
+                    // shows errors if there is no file or too many files choses to be uploaded.
                     if (!request.file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
                     } else if (attachments && attachments.length >= maxNumberOfFiles) {
@@ -149,6 +153,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
                     let id: string;
 
+                    // gets the chosen file's ID from the FileTransferService
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
                     } catch (err) {
@@ -177,35 +182,6 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                     }
 
                     response.redirect(request.route.path);
-                }
-            },
-            'continue-without-upload': {
-                async handle(request: Request, response: Response): Promise<void> {
-
-                    if (that.formActionProcessors != null) {
-                        for (const actionProcessorType of that.formActionProcessors) {
-                            const actionProcessor = that.httpContext.container.get(actionProcessorType);
-                            await actionProcessor.process(request, response);
-                        }
-                    }
-
-                    const session = request.session;
-                    if (session != null) {
-
-                        let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
-
-                        if (!applicationData) {
-                            applicationData = {} as ApplicationData;
-                            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
-                        }
-
-                        applicationData.appeal =
-                            that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
-
-                        await that.persistSession();
-                    }
-
-                    return response.redirect(that.navigation.next(request));
                 }
             }
         };
