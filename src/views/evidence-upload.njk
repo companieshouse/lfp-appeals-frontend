@@ -21,37 +21,41 @@
 
 {% block content %}
   <div class="govuk-grid-row">
+    {# Div containing error printing #}
     <div class="govuk-grid-column-two-thirds">
-      {{
-        govukErrorSummary({
-          titleText: 'There is a problem',
-          errorList: validationResult.errors
-        }) if validationResult and validationResult.errors.length > 0
-      }}
+
+      <div class="errorSummaryDiv">
+        {{
+          govukErrorSummary({
+            titleText: 'There is a problem',
+            errorList: validationResult.errors
+          }) if validationResult and validationResult.errors.length > 0
+        }}
+      </div>
 
       <h1 class="govuk-heading-xl">
         Upload documents to support your application
       </h1>
 
-   <p>Documents should:</p>
+      <p>Documents should:</p>
 
-    <ul class="govuk-list govuk-list--bullet">
-          <li>show evidence that supports your appeal, such as a doctor's note or an insurance claim</li>
-          <li>show the full name of the person or company affected</li>
-          <li>show any relevant dates to support your appeal</li>
-          </ul>
+      <ul class="govuk-list govuk-list--bullet">
+            <li>show evidence that supports your appeal, such as a doctor's note or an insurance claim</li>
+            <li>show the full name of the person or company affected</li>
+            <li>show any relevant dates to support your appeal</li>
+            </ul>
 
       <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
           Upload a document
         {% endset %}
-
+        {# Div containing file uploading functionality #}
         <div class='file-upload'>
           {{
             govukFileUpload({
-              errorMessage: validationResult.getErrorForField('file') if validationResult,
+              errorMessage: validationResult.getErrorForField('file-upload') if validationResult,
               id: 'file-upload',
-              name: 'file',
+              name: 'file-upload',
               label: {
                 text: uploadText
               },
@@ -73,25 +77,43 @@
             }}
           </noscript>
         </div>
+
+        <div class="upload-status-heading">
+          <h2 class="govuk-heading-s">Uploading document</h2>
+        </div>          
+        <div class="upload-status" role="alert">
+          <h2 class="govuk-heading-m upload-status__title">document.docx</h2>
+          <p class="govuk-body upload-status__status">
+            <span class='upload-status__value' aria-live="assertive"></span>
+          </p>
+          <a href='#' class="govuk-link upload-status__link" data-event-id="Cancel upload of document link">Cancel</a>
+          <div class="progress-bar">
+            <div class="indicator"></div>
+          </div>
+        </div>
+
       </form>
 
-      {% if attachments and attachments.length > 0 %}
-        <dl class="govuk-upload-list">
-          {% for attachment in attachments | reverse %}
-            <div class="ch-upload-list__row  uploaded-file-{{ loop.index0 }}">
-              <dt class="govuk-visually-hidden">
-                Uploaded file
-              </dt>
-              <dd class="ch-upload-list__value">
-                <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download?c={{ companyNumber }}" class="govuk-link">{{ attachment.name }}</a>
-              </dd>
-              <dd class="ch-upload-list__actions">
-                <a class="govuk-link" href="{{ navigation.actions.removeFile }}f={{ attachment.id }}">Remove</a>
-              </dd>
-            </div>
-          {% endfor %}
-        </dl>
-      {% endif %}
+      {# Printing of uploaded files appearing on top of the Continue button#}
+      <div id="fileListDiv">
+        {% if attachments and attachments.length > 0 %}
+          <dl class="govuk-upload-list">
+            {% for attachment in attachments | reverse %}
+              <div class="ch-upload-list__row  uploaded-file-{{ loop.index0 }}">
+                <dt class="govuk-visually-hidden">
+                  Uploaded file
+                </dt>
+                <dd class="ch-upload-list__value">
+                  <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ attachment.id }}/download?c={{ companyNumber }}" class="govuk-link">{{ attachment.name }}</a>
+                </dd>
+                <dd class="ch-upload-list__actions">
+                  <a class="govuk-link" href="{{ navigation.actions.removeFile }}f={{ attachment.id }}">Remove</a>
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        {% endif %}
+      </div>
 
       <form method="post" action="{{ navigation.actions.noAction }}">
         {{
@@ -106,5 +128,5 @@
       
     </div>
   </div>
-  <script scr="{{ cdn.host }}/javascripts/app/lfp-appeals/upload.js"></script>
+  <script src="//{{ cdn.host }}/javascripts/app/lfp-appeals/upload.js"></script>
 {% endblock %}
