@@ -51,10 +51,10 @@
         {{
           govukInput({
             label: {
-              text: 'Reference number'
+              text: 'Penalty reference'
             },
             hint: {
-              text: 'This is the reference shown on the penalty notice.'
+              text: 'Enter the full penalty reference. It will be in the format A0000000, PEN1A/00000000 or PEN2A/00000000.'
             },
             errorMessage: validationResult.getErrorForField('userInputPenaltyReference') if validationResult,
             classes: 'govuk-input--penalty-reference',
@@ -66,6 +66,9 @@
         }}
         <div class="govuk-form-group">
           {% set detailsHTML %}
+            <p>
+              Your company number and penalty reference will be on your penalty notice letter.
+            </p>
             <p>
               Some penalty notices will show the company number and reference number at the bottom.
               The penalty reference will be in the format A00000000.
