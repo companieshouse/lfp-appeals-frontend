@@ -14,7 +14,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
 
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
-            const validPenaltyReference = 'A12345678';
+            const validPenaltyReference = 'A1234567';
             return {
                 companyNumber,
                 penaltyReference: validPenaltyReference,
@@ -191,14 +191,14 @@ describe('PenaltyIdentifierSchemaFactory', () => {
         }
 
         const upperCaseValidPenaltyReferences = [
-            'Z12345678',
-            '12345678',
-            'SC123123',
-            'SO123123',
-            'PEN1A/SC123123',
-            'PEN1A/SC000123',
-            'PEN1A/12345678',
-            'PEN1A/12345'
+            'Z1234567'
+            // 'A1234566',
+            // 'S1123123',
+            // 'SO123123',
+            // 'PEN 1A/12312311',
+            // 'PEN2A/11000123',
+            // 'PEN1A/12345678',
+            // 'PEN 2A/11111111'
         ];
 
         describe('Happy path', () => {

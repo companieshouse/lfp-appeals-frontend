@@ -209,8 +209,8 @@ describe('PenaltyDetailsController', () => {
 
         it('should return 400 when late filling penalty service fails', async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
-                userInputPenaltyReference: 'A12345678',
+                penaltyReference: 'A1234567',
+                userInputPenaltyReference: 'A1234567',
                 companyNumber: 'NI123456'
             };
 
