@@ -2,9 +2,12 @@ import Joi from '@hapi/joi';
 
 export class PenaltyIdentifierSchemaFactory {
 
-    public readonly companyNumberRegex: RegExp;
+    static COMPANY_NUMBER_PATTERN_ERR_MSG: string = 'You must enter your full eight character company number';
+    static COMPANY_NUMBER_EMPTY_ERR_MSG: string = 'You must enter a company number';
+    static PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG: string = 'You must enter your reference number exactly as shown on your penalty notice';
+    static PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG: string = 'You must enter a reference number';
 
-    public readonly penaltyReferenceRegex: RegExp;
+    public readonly companyNumberRegex: RegExp;
 
     constructor(companyNumberPrefixes: string) {
 
@@ -37,9 +40,6 @@ export class PenaltyIdentifierSchemaFactory {
         this.companyNumberRegex = new RegExp(`^(${
             [singleCharacterPrefixRegex, doubleCharacterPrefixRegex, onlyNumbersRegex].join('|')
             })$`, 'i');
-
-        this.penaltyReferenceRegex = /^(([A-Z][0-9]{7})|(PEN ?(1|2)A\/[0-9]{8}))$/i;
-
     }
 
     public getCompanyNumberSchema(): Joi.StringSchema {
@@ -47,18 +47,18 @@ export class PenaltyIdentifierSchemaFactory {
             .required()
             .regex(this.companyNumberRegex)
             .messages({
-                'string.empty': 'You must enter a company number',
-                'string.pattern.base': 'You must enter your full eight character company number'
+                'string.empty': PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_EMPTY_ERR_MSG,
+                'string.pattern.base': PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
             });
     }
 
     public getPenaltyReferenceSchema(): Joi.StringSchema {
         return Joi.string()
             .required()
-            .regex(this.penaltyReferenceRegex)
+            .regex(/^(([A-Z][0-9]{7})|(PEN ?(1|2)A\/[0-9]{8}))$/)
             .messages({
-                'string.empty': 'You must enter a reference number',
-                'string.pattern.base': 'You must enter your reference number exactly as shown on your penalty notice'
+                'string.empty': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG,
+                'string.pattern.base': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
             });
     }
 
