@@ -55,7 +55,7 @@ export class PenaltyIdentifierSchemaFactory {
     public getPenaltyReferenceSchema(): Joi.StringSchema {
         return Joi.string()
             .required()
-            .regex(/^(([A-Z][0-9]{7})|(PEN ?(1|2)A\/[0-9]{8}))$/)
+            .regex(/^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/)
             .messages({
                 'string.empty': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG,
                 'string.pattern.base': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG

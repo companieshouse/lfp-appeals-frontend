@@ -77,7 +77,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         try {
 
-            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{7})$/;
+            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{8})$/;
             const oldPenaltyReferenceRegex: RegExp = /^(PEN ?(1|2)A\/[0-9]{8})$/;
 
             const penalties: Resource<PenaltyList> =

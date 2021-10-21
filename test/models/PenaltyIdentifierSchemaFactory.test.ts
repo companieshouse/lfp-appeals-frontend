@@ -14,7 +14,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
 
     describe('Company Number', () => {
         function createModelWithCompanyNumber(companyNumber: string): PenaltyIdentifier {
-            const validPenaltyReference = 'A1234567';
+            const validPenaltyReference = 'A12345678';
             return {
                 companyNumber,
                 penaltyReference: validPenaltyReference,
@@ -190,8 +190,8 @@ describe('PenaltyIdentifierSchemaFactory', () => {
             };
         }
         const penaltyReferences = [
-            'Z1234567',
-            'A0000000',
+            'Z12345678',
+            'A00000000',
             'PEN 1A/11111111',
             'PEN2A/87654321',
             'PEN1A/12345678',
