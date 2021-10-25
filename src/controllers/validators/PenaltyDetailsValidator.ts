@@ -34,7 +34,6 @@ export class PenaltyDetailsValidator implements Validator {
         @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory
     ) { }
 
-
     private createValidationResultWithErrors(): ValidationResult {
         return new ValidationResult([
             PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR,
@@ -78,7 +77,8 @@ export class PenaltyDetailsValidator implements Validator {
 
         try {
 
-            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{7}|[0-9]{9})$/;
+            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{8})$/;
+            const oldPenaltyReferenceRegex: RegExp = /^(PEN ?(1|2)A\/[0-9]{8})$/;
 
             const penalties: Resource<PenaltyList> =
                 await this.chSdk(new OAuth2(accessToken))
@@ -90,9 +90,11 @@ export class PenaltyDetailsValidator implements Validator {
 
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
 
-            if (modernPenaltyReferenceRegex.test(penaltyReference)) {
+            if (modernPenaltyReferenceRegex.test(penaltyReference) || oldPenaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
+            } else {
+                loggerInstance().info(`${PenaltyDetailsValidator.name}: No match for the penalty number ${penaltyReference}`);
             }
 
             if (!items || items.length === 0) {

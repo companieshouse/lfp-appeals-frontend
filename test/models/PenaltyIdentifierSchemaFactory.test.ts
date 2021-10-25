@@ -66,7 +66,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(fail).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -87,7 +87,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(fail).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -113,7 +113,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter a company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_EMPTY_ERR_MSG
                     }]
                 });
             });
@@ -123,7 +123,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -133,7 +133,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -143,7 +143,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -153,7 +153,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -163,7 +163,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -173,7 +173,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'companyNumber',
-                        text: 'You must enter your full eight character company number'
+                        text: PenaltyIdentifierSchemaFactory.COMPANY_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -182,49 +182,49 @@ describe('PenaltyIdentifierSchemaFactory', () => {
 
     describe('Penalty Reference', () => {
         function createModelWithPenaltyReference(userInputPenaltyReference: string): PenaltyIdentifier {
-            const validCompanyNumber = 'SC123123';
+            const companyNumber = 'SC123123';
             return {
                 userInputPenaltyReference,
                 penaltyReference: userInputPenaltyReference,
-                companyNumber: validCompanyNumber
+                companyNumber
             };
         }
-
-        const upperCaseValidPenaltyReferences = [
+        const penaltyReferences = [
             'Z12345678',
-            '12345678',
-            'SC123123',
-            'SO123123',
-            'PEN1A/SC123123',
-            'PEN1A/SC000123',
+            'A00000000',
+            'PEN 1A/11111111',
+            'PEN2A/87654321',
             'PEN1A/12345678',
-            'PEN1A/12345'
+            'PEN 2A/22222222'
         ];
-
         describe('Happy path', () => {
-            it('should accept valid penalty references (upper and lower case)', () => {
-
-                const lowerCaseValidPenaltyReferences = upperCaseValidPenaltyReferences
-                    .map(value => value.toLowerCase());
-
-                const validPenaltyReferences = lowerCaseValidPenaltyReferences
-                    .concat(upperCaseValidPenaltyReferences);
-
-                validPenaltyReferences.forEach(penaltyReference => {
+            it('should accept valid penalty references all Upper case', () => {
+                penaltyReferences.forEach(penaltyReference => {
                     const result = validator.validate(createModelWithPenaltyReference(penaltyReference));
                     expect(result).to.deep.equal({ errors: [] });
                 });
             });
-
         });
 
         describe('Bad path', () => {
+            it('should reject penalty references in lower case', () => {
+                penaltyReferences.forEach(penaltyReference => {
+                    const result = validator.validate(createModelWithPenaltyReference(penaltyReference.toLowerCase()));
+                    expect(result).to.deep.equal({
+                        errors: [{
+                            field: 'userInputPenaltyReference',
+                            text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
+                        }]
+                    });
+                });
+            });
+
             it('should reject empty field', () => {
                 const result = validator.validate(createModelWithPenaltyReference(''));
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter a reference number'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG
                     }]
                 });
             });
@@ -234,17 +234,17 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
 
-            it('should reject numbers of more than 14 characters', () => {
-                const result = validator.validate(createModelWithPenaltyReference('PEN12A/SC123123'));
+            it('should reject numbers of more than 15 characters', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN 2A/111231239'));
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -254,17 +254,17 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
 
-            it('should reject spaces in penalty references', () => {
-                const result = validator.validate(createModelWithPenaltyReference('L12 34 56 78'));
+            it('should reject if more the one single spaces in penalty references', () => {
+                const result = validator.validate(createModelWithPenaltyReference('PEN  2A/11111111'));
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
@@ -274,7 +274,7 @@ describe('PenaltyIdentifierSchemaFactory', () => {
                 expect(result).to.deep.equal({
                     errors: [{
                         field: 'userInputPenaltyReference',
-                        text: 'You must enter your reference number exactly as shown on your penalty notice'
+                        text: PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
                     }]
                 });
             });
