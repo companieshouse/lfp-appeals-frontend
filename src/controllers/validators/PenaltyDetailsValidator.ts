@@ -88,6 +88,8 @@ export class PenaltyDetailsValidator implements Validator {
                 throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
             }
 
+            loggerInstance().info(`${PenaltyDetailsValidator.name}: Penalties list - ${JSON.stringify(penalties.resource.items)}`);
+
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
 
             if (modernPenaltyReferenceRegex.test(penaltyReference) || oldPenaltyReferenceRegex.test(penaltyReference)) {
