@@ -77,8 +77,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         try {
 
-            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{8})$/;
-            const oldPenaltyReferenceRegex: RegExp = /^(PEN ?(1|2)A\/[0-9]{8})$/;
+            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{7}|[0-9]{9})$/;
 
             const penalties: Resource<PenaltyList> =
                 await this.chSdk(new OAuth2(accessToken))
@@ -88,11 +87,9 @@ export class PenaltyDetailsValidator implements Validator {
                 throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
             }
 
-            loggerInstance().info(`${PenaltyDetailsValidator.name}: Penalties list - ${JSON.stringify(penalties.resource.items)}`);
-
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
 
-            if (modernPenaltyReferenceRegex.test(penaltyReference) || oldPenaltyReferenceRegex.test(penaltyReference)) {
+            if (modernPenaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
             } else {
