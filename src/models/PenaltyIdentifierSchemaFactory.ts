@@ -7,6 +7,7 @@ export class PenaltyIdentifierSchemaFactory {
     static PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG: string = 'You must enter your reference number exactly as shown on your penalty notice';
     static PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG: string = 'You must enter a reference number';
 
+    public readonly penaltyReferenceRegex: RegExp;
     public readonly companyNumberRegex: RegExp;
 
     constructor(companyNumberPrefixes: string) {
@@ -40,6 +41,8 @@ export class PenaltyIdentifierSchemaFactory {
         this.companyNumberRegex = new RegExp(`^(${
             [singleCharacterPrefixRegex, doubleCharacterPrefixRegex, onlyNumbersRegex].join('|')
             })$`, 'i');
+
+        this.penaltyReferenceRegex = /^[a-z0-9/]{8,14}$/i;
     }
 
     public getCompanyNumberSchema(): Joi.StringSchema {
@@ -55,7 +58,7 @@ export class PenaltyIdentifierSchemaFactory {
     public getPenaltyReferenceSchema(): Joi.StringSchema {
         return Joi.string()
             .required()
-            .regex(/^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/)
+            .regex(this.penaltyReferenceRegex)
             .messages({
                 'string.empty': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_EMPTY_ERR_MSG,
                 'string.pattern.base': PenaltyIdentifierSchemaFactory.PENALTY_REFERENCE_NUMBER_PATTERN_ERR_MSG
