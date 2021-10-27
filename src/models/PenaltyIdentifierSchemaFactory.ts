@@ -42,7 +42,7 @@ export class PenaltyIdentifierSchemaFactory {
             [singleCharacterPrefixRegex, doubleCharacterPrefixRegex, onlyNumbersRegex].join('|')
             })$`, 'i');
 
-        this.penaltyReferenceRegex = /^[a-z0-9/]{8,14}$/i;
+        this.penaltyReferenceRegex = /^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/;
     }
 
     public getCompanyNumberSchema(): Joi.StringSchema {
