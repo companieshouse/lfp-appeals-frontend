@@ -174,13 +174,13 @@ describe('PenaltyDetailsValidator', () => {
 
     it('should return an error when no items match the penalty', async () => {
 
-        const penaltyReference = 'A0000001';
+        const penaltyReference = 'A00000001';
         const apiResponse = {
             httpStatusCode: 200,
             resource: {
                 items: [
                     {
-                        id: 'A0000000',
+                        id: 'A00000000',
                         type: 'penalty',
                         madeUpDate: '2020-10-10',
                         transactionDate: '2020-11-10'

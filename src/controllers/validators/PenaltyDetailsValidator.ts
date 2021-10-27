@@ -77,7 +77,7 @@ export class PenaltyDetailsValidator implements Validator {
 
         try {
 
-            const modernPenaltyReferenceRegex: RegExp = /^([A-Z][0-9]{7}|[0-9]{9})$/;
+            const penaltyReferenceRegex: RegExp = /^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/;
 
             const penalties: Resource<PenaltyList> =
                 await this.chSdk(new OAuth2(accessToken))
@@ -89,11 +89,9 @@ export class PenaltyDetailsValidator implements Validator {
 
             let items: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
 
-            if (modernPenaltyReferenceRegex.test(penaltyReference)) {
+            if (penaltyReferenceRegex.test(penaltyReference)) {
                 items = items.filter(penalty => penalty.id === penaltyReference);
                 loggerInstance().info(`${PenaltyDetailsValidator.name}: ${JSON.stringify(request.body)}`);
-            } else {
-                loggerInstance().info(`${PenaltyDetailsValidator.name}: No match for the penalty number ${penaltyReference}`);
             }
 
             if (!items || items.length === 0) {
