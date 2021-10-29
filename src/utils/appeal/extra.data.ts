@@ -89,11 +89,9 @@ export const formatDate = (inputDate: string ): string => {
     return moment(inputDate).format('D MMMM YYYY');
 };
 
-export const getApplicationExtraData = (session: Session) => {
+export const getApplicationExtraData = (session: Session): ApplicationData => {
     const appDataEmpty: ApplicationData = { appeal: {} as Appeal, navigation: { permissions: [] } };
-    const appData: ApplicationData = session.getExtraData(APPLICATION_DATA_KEY) || appDataEmpty;
-
-    return appData;
+    return session.getExtraData(APPLICATION_DATA_KEY) || appDataEmpty;
 };
 
 export const getPenaltiesItems = (
@@ -111,8 +109,9 @@ export const getPenaltiesItems = (
     let filteredPenaltiesItems: Penalty[] = [];
 
     if(penaltyReferenceRegex.test(penaltyReference)){
-        // Penalties filtered with transactionType of type 1 (type penalty) and correct correct format
-        filteredPenaltiesItems = penalties!.resource!.items
+        // Penalties filtered by transactionType of type 1 (type penalty) and
+        // correct penaltyReference format (check penaltyReferenceRegex)
+        filteredPenaltiesItems = penalties.resource.items
                             .filter(penalty => penalty.type === 'penalty')
                             .filter(penalty => penaltyReference.replace(/ /g,'') === penalty.id.replace(/ /g,''));
     }

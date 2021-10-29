@@ -58,7 +58,7 @@ export class PenaltyDetailsValidator implements Validator {
                     .lateFilingPenalties.getPenalties(sanitizedCompanyNumber);
 
             const filteredPenaltiesItems: Penalty[] = getPenaltiesItems(
-                request!.session!,
+                request.session!,
                 accessToken,
                 penalties,
                 penaltyReference
@@ -69,7 +69,7 @@ export class PenaltyDetailsValidator implements Validator {
                 return this.createValidationResultWithErrors();
             }
 
-            penalties!.resource!.items = filteredPenaltiesItems;
+            penalties.resource!.items = filteredPenaltiesItems;
             request.body.penaltyList = penalties.resource;
 
         } catch (err) {
