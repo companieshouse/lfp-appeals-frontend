@@ -1,6 +1,10 @@
 import { Session } from 'ch-node-session-handler';
+import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
+import Resource from 'ch-sdk-node/dist/services/resource';
+import { OK } from 'http-status-codes';
 import moment from 'moment';
 
+import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { Attachment } from 'app/models/Attachment';
 import { Illness } from 'app/models/Illness';
@@ -8,6 +12,7 @@ import { OtherReason } from 'app/models/OtherReason';
 import { Reasons } from 'app/models/Reasons';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { ReasonType } from 'app/models/fields/ReasonType';
+import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
 
 const getReasonFromSession = (session: Session | undefined) => {
     const extraData: ApplicationData | undefined = session?.getExtraData(APPLICATION_DATA_KEY);
@@ -82,4 +87,49 @@ export const checkContinuedIllness = (session: Session | undefined): boolean | u
 
 export const formatDate = (inputDate: string ): string => {
     return moment(inputDate).format('D MMMM YYYY');
+};
+
+export const getApplicationExtraData = (session: Session): ApplicationData => {
+    const appDataEmpty: ApplicationData = { appeal: {} as Appeal, navigation: { permissions: [] } };
+    return session.getExtraData(APPLICATION_DATA_KEY) || appDataEmpty;
+};
+
+export const getPenaltiesItems = (
+    session: Session,
+    accessToken: string,
+    penalties: Resource<PenaltyList>,
+    penaltyReference: string): Penalty[] => {
+
+    const penaltyReferenceRegex: RegExp = /^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/;
+
+    if (penalties.httpStatusCode !== OK || !penalties.resource) {
+        throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
+    }
+
+    let filteredPenaltiesItems: Penalty[] = [];
+
+    if(penaltyReferenceRegex.test(penaltyReference)){
+        // Penalties filtered by transactionType of type 1 (type penalty) and
+        // correct penaltyReference format (check penaltyReferenceRegex)
+        filteredPenaltiesItems = penalties.resource.items
+                            .filter(penalty => penalty.type === 'penalty')
+                            .filter(penalty => penaltyReference.replace(/ /g,'') === penalty.id.replace(/ /g,''));
+    }
+
+    if (filteredPenaltiesItems && filteredPenaltiesItems.length) {
+        if (filteredPenaltiesItems.length === 1) {
+            const applicationData = getApplicationExtraData(session);
+
+            addPermissionToNavigation(applicationData, REVIEW_PENALTY_PAGE_URI);
+            session.setExtraData(APPLICATION_DATA_KEY, applicationData);
+        }
+
+        filteredPenaltiesItems = filteredPenaltiesItems.map(item => {
+            item.madeUpDate = moment(item.madeUpDate).format('D MMMM YYYY');
+            item.transactionDate = moment(item.transactionDate).format('D MMMM YYYY');
+            return item;
+        });
+    }
+
+    return filteredPenaltiesItems;
 };

@@ -205,7 +205,7 @@ describe('PenaltyDetailsValidator', () => {
 
     it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
-        const penaltyReferences: string[] = ['A0000001', 'A0000002'];
+        const penaltyReferences: string[] = ['A00000001', 'A00000002'];
 
         const items = [
             {
