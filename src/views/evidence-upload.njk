@@ -6,6 +6,7 @@
 {% from 'govuk/components/button/macro.njk'        import govukButton %}
 {% from "govuk/components/input/macro.njk"         import govukInput %}
 
+
 {% block pageTitle %}
   Upload documents to support your application
 {% endblock %}
@@ -32,6 +33,12 @@
       <h1 class="govuk-heading-xl">
         Upload documents to support your application
       </h1>
+
+    {% if attachments and attachments.length > 0 %}
+        <div class="govuk-inset-text">
+          You have already uploaded documents as part of this appeal. You can remove them here if you no longer want to include them.
+        </div>
+      {% endif %}
 
    <p>Documents should:</p>
 
