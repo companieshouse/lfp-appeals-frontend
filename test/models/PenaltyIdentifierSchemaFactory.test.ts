@@ -192,10 +192,10 @@ describe('PenaltyIdentifierSchemaFactory', () => {
         const penaltyReferences = [
             'Z12345678',
             'A00000000',
-            'PEN 1A/11111111',
+            'PEN1A/11111111',
             'PEN2A/87654321',
             'PEN1A/12345678',
-            'PEN 2A/22222222'
+            'PEN2A/22222222'
         ];
         describe('Happy path', () => {
             it('should accept valid penalty references all Upper case', () => {

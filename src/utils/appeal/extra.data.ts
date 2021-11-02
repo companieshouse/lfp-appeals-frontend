@@ -97,24 +97,13 @@ export const getApplicationExtraData = (session: Session): ApplicationData => {
 export const getPenaltiesItems = (
     session: Session,
     accessToken: string,
-    penalties: Resource<PenaltyList>,
-    penaltyReference: string): Penalty[] => {
-
-    const penaltyReferenceRegex: RegExp = /^(([A-Z][0-9]{8})|(PEN ?(1|2)A\/[0-9]{8}))$/;
+    penalties: Resource<PenaltyList>): Penalty[] => {
 
     if (penalties.httpStatusCode !== OK || !penalties.resource) {
         throw new Error(`PenaltyDetailsValidator: failed to get penalties from pay API with status code ${penalties.httpStatusCode} with access token ${accessToken}`);
     }
 
-    let filteredPenaltiesItems: Penalty[] = [];
-
-    if(penaltyReferenceRegex.test(penaltyReference)){
-        // Penalties filtered by transactionType of type 1 (type penalty) and
-        // correct penaltyReference format (check penaltyReferenceRegex)
-        filteredPenaltiesItems = penalties.resource.items
-                            .filter(penalty => penalty.type === 'penalty')
-                            .filter(penalty => penaltyReference.replace(/ /g,'') === penalty.id.replace(/ /g,''));
-    }
+    let filteredPenaltiesItems: Penalty[] = penalties.resource.items.filter(penalty => penalty.type === 'penalty');
 
     if (filteredPenaltiesItems && filteredPenaltiesItems.length) {
         if (filteredPenaltiesItems.length === 1) {

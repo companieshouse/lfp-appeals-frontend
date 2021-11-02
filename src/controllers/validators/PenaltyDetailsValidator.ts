@@ -60,8 +60,7 @@ export class PenaltyDetailsValidator implements Validator {
             const filteredPenaltiesItems: Penalty[] = getPenaltiesItems(
                 request.session!,
                 accessToken,
-                penalties,
-                penaltyReference
+                penalties
             );
 
             if (!filteredPenaltiesItems || filteredPenaltiesItems.length === 0) {
