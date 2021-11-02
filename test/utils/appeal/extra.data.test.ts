@@ -212,65 +212,57 @@ describe('Appeal Extra Data', () => {
     });
 
     describe('getPenaltiesItems()', () => {
-        const resource = { items: [
-            { id: 'PEN1A/00000000', type: 'penalty' },
-            { id: 'PEN 2A/00000000', type: 'penalty' }
+        const penaltyResource = { items: [
+            { id: 'PEN2A/00000000', type: 'penalty' }
         ]};
 
-        it(`should throw a message that contains - failed to get penalties from pay API with status code -`, () => {
+        const otherResource = { items: [
+            { id: 'PEN1A/00000000', type: 'other' },
+            { id: 'A0000000', type: 'other' }
+        ]};
+
+        it(`should throw a message that contains - failed to get penalties from pay API with status code - if 422 returned`, () => {
             try {
                 const penalties = {httpStatusCode: '422'} as any;
-                getPenaltiesItems( {} as any, 'any', penalties, 'any');
+                getPenaltiesItems( {} as any, 'any', penalties);
             } catch (err) {
                 expect(err.message).to.contain('failed to get penalties from pay API with status code');
             }
         });
 
-        it('should return empty penalty if not match between penalties in resource and penalty posted', () => {
+        it('should return empty penalty if not penalty type present on penalties items', () => {
             const session = createSession('secret');
-            const penalties = { httpStatusCode: 200, resource } as any;
-            const penaltyReference = 'PEN 2A/99999999';
+            const penalties = { httpStatusCode: 200, resource: otherResource } as any;
 
-            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties, penaltyReference);
+            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties);
             expect(filteredPenaltiesItems.length).to.be.equal(0);
             expect(filteredPenaltiesItems).to.deep.equal([]);
         });
 
-        it('should return one penalty that match (with or without space) the penalty posted - PEN 1A/00000000', () => {
+        it('should return one penalties from penalties items that has got penalty type', () => {
             const session = createSession('secret');
-            const penalties = { httpStatusCode: 200, resource } as any;
-            const penaltyReference = 'PEN 1A/00000000';
+            const penalties = { httpStatusCode: 200, resource: penaltyResource } as any;
 
-            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties, penaltyReference);
+            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties);
             expect(filteredPenaltiesItems.length).to.be.equal(1);
-            expect(filteredPenaltiesItems).to.deep.equal([resource.items[0]]);
+            expect(filteredPenaltiesItems).to.deep.equal(penaltyResource.items);
         });
 
-        it('should return one penalty that match (with or without space) the penalty posted - PEN2A/00000000', () => {
+        it('should return two penalty from penalties items that has got penalty type', () => {
             const session = createSession('secret');
-            const penalties = { httpStatusCode: 200, resource } as any;
-            const penaltyReference = 'PEN2A/00000000';
-
-            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties, penaltyReference);
-            expect(filteredPenaltiesItems.length).to.be.equal(1);
-            expect(filteredPenaltiesItems).to.deep.equal([resource.items[1]]);
-        });
-
-        it('should return two penalties that match (with or without space) the penalty posted - PEN2A/00000000', () => {
-            const session = createSession('secret');
+            const anotherPenalty = [{ id: 'PEN2A/11111111', type: 'penalty' }];
             const moreResource = {
                 items: [
-                    ...resource.items,
-                    { id: 'PEN 1A/00000000', type: 'penalty' },
-                    { id: 'PEN2A/00000000', type: 'penalty' }
+                    ...penaltyResource.items,
+                    ...otherResource.items,
+                    ...anotherPenalty
                 ]
             };
             const penalties = { httpStatusCode: 200, resource: moreResource } as any;
-            const penaltyReference = 'PEN2A/00000000';
 
-            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties, penaltyReference);
+            const filteredPenaltiesItems = getPenaltiesItems( session, 'accessToken', penalties);
             expect(filteredPenaltiesItems.length).to.be.equal(2);
-            expect(filteredPenaltiesItems).to.deep.equal([moreResource.items[1], moreResource.items[3]]);
+            expect(filteredPenaltiesItems).to.deep.equal([...penaltyResource.items, ...anotherPenalty]);
         });
     });
 });

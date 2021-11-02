@@ -172,37 +172,6 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should return an error when no items match the penalty', async () => {
-
-        const penaltyReference = 'A00000001';
-        const apiResponse = {
-            httpStatusCode: 200,
-            resource: {
-                items: [
-                    {
-                        id: 'A00000000',
-                        type: 'penalty',
-                        madeUpDate: '2020-10-10',
-                        transactionDate: '2020-11-10'
-                    } as Penalty
-                ]
-            } as PenaltyList
-        };
-        const penaltyDetailsValidator = new PenaltyDetailsValidator(
-            createSDK(apiResponse),
-            createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
-                config.getCompanyNumberSchema().returns(Joi.string());
-            }
-            ));
-        const request = getRequest(penaltyReference);
-        const results = await penaltyDetailsValidator.validate(request);
-        expect(results.errors.length).to.equal(2);
-
-        const navigation = request.session!.getExtraData<ApplicationData>(APPLICATION_DATA_KEY)?.navigation;
-        expect(navigation?.permissions).to.deep.equal([]);
-
-    });
-
     it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
 
         const penaltyReferences: string[] = ['A00000001', 'A00000002'];
