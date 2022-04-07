@@ -1,0 +1,18 @@
+{
+    "type": "Service",
+    "name": "lfp-appeals-frontend",
+    "description": "The Companies House Web App for LFP Appeals API.",
+    "owned_by": "Titans",
+    "git_repo": "https://github.com/companieshouse/lfp-appeals-frontend",
+    "public": "true",
+    "users": "public",
+    "code_analysis_link": "http://code-analysis.platform.aws.chdev.org:9000/dashboard?id=uk.gov.companieshouse%3Alfp-appeals-frontend#",    
+    "service_area": "Intelligence and Enforcement",
+    "service_component": "LFP",
+    "language": "NodeJS",
+    "integration_outgoing": [
+      "lfp-appeals-api,CALLS_API",
+      "lfp-pay-api,CALLS_API",
+      "file-transfer-api,CALLS_API"
+    ]
+  }
