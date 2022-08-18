@@ -4,6 +4,7 @@ import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import {
@@ -26,7 +27,8 @@ const navigation = {
     }
 };
 
-@controller(OTHER_REASON_DISCLAIMER_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(OTHER_REASON_DISCLAIMER_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
+    CommonVariablesMiddleware)
 export class OtherReasonDisclaimerController extends SafeNavigationBaseController<PenaltyIdentifier>{
     constructor() {
         super(template, navigation);

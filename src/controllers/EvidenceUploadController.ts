@@ -8,6 +8,7 @@ import { FormActionHandler, FormActionHandlerConstructor } from 'app/controllers
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { Validator } from 'app/controllers/validators/Validator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -78,7 +79,8 @@ const continueButtonValidator: Validator = {
     }
 };
 
-@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
+    CommonVariablesMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<any> {
     constructor(@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);

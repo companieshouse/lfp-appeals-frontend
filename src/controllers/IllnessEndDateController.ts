@@ -5,6 +5,7 @@ import { IllnessEndDateValidator } from './validators/IllnessEndDateValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -30,7 +31,7 @@ interface FormBody {
 }
 
 @controller(ILLNESS_END_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
-    AuthMiddleware)
+    AuthMiddleware, CommonVariablesMiddleware)
 export class IllnessEndDateController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {

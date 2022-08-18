@@ -5,6 +5,7 @@ import moment from 'moment';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { DateValidator } from 'app/controllers/validators/DateValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -30,7 +31,7 @@ interface FormBody {
 }
 
 @controller(ILLNESS_START_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
-    AuthMiddleware)
+    AuthMiddleware, CommonVariablesMiddleware)
 export class IllnessStartDateController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {

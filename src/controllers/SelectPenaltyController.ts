@@ -8,6 +8,7 @@ import { FormActionProcessor } from './processors/FormActionProcessor';
 import { MultiplePenaltiesValidator } from './validators/MultipePenaltiesValidator';
 
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
@@ -56,7 +57,7 @@ class Processor implements FormActionProcessor {
 
 // tslint:disable-next-line: max-classes-per-file
 @controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    PenaltyReferenceRouter)
+    PenaltyReferenceRouter, CommonVariablesMiddleware)
 export class SelectPenaltyController extends SafeNavigationBaseController<any> {
 
     constructor() {
