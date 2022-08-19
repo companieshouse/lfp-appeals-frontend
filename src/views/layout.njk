@@ -55,6 +55,19 @@
       html: 'This is a new service – your <a class="govuk-link" href="https://www.smartsurvey.co.uk/s/alfp-feedback/" target="_blank">feedback</a> will help us to improve it.'
     })
   }}
+
+  {% block signoutBar %}
+  {% if userEmail %}
+  {% set email = userEmail | default("Not signed in") %}
+  <ul class="js-signout" id="navigation">
+    <li class="content-email" id="signed-in-user">{{email}}</li>
+    <li class="content">
+      <a href="/appeal-a-penalty/signout" id="user-signout">Sign out</a>
+    </li>
+  </ul>
+  {% endif %}
+  {% endblock %}
+  
   {% block backLink %}{% endblock %}
 {% endblock %}
 

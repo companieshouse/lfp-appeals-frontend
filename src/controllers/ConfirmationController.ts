@@ -5,6 +5,7 @@ import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -22,7 +23,7 @@ const navigation = {
     }
 };
 
-@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation);

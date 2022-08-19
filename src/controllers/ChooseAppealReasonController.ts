@@ -5,6 +5,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
@@ -49,7 +50,7 @@ interface FormBody {
 }
 
 @controller(CHOOSE_REASON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware, AuthMiddleware,
-CompanyAuthMiddleware)
+CompanyAuthMiddleware, CommonVariablesMiddleware)
 export class ChooseAppealReasonController extends SafeNavigationBaseController<FormBody>{
 
     constructor() {

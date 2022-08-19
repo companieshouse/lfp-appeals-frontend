@@ -7,6 +7,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { NavigationPermissionProcessor } from 'app/controllers/processors/NavigationPermissionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
@@ -47,7 +48,7 @@ const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
 
-@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined, [NavigationPermissionProcessor]);
