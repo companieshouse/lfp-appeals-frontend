@@ -1,4 +1,7 @@
+import {getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+
 export const ROOT_URI = '/appeal-a-penalty';
+export const ACCOUNT_URI = String(getEnvOrThrow('ACCOUNT_URL'));
 
 const CATEGORY_PREFIXES = {
     ILLNESS: `${ROOT_URI}/illness`,
@@ -10,6 +13,8 @@ export const HEALTH_CHECK_URI = `${ROOT_URI}/healthcheck`;
 
 // Endpoints Pages
 export const ENTRY_PAGE_URI = `${ROOT_URI}/start`;
+export const ACCOUNTS_SIGNOUT_URI = `${ACCOUNT_URI}/signout`;
+export const SIGNOUT_PAGE_URI = `${ROOT_URI}/signout`;
 export const ACCESSIBILITY_STATEMENT_URI = `${ROOT_URI}/accessibility-statement`;
 export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const SELECT_THE_PENALTY_PAGE_URI = `${ROOT_URI}/select-the-penalty`;

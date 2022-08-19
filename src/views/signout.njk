@@ -1,0 +1,78 @@
+{% extends 'layout.njk' %}
+
+{% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
+{% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
+{% from 'govuk/components/button/macro.njk'         import govukButton %}
+{% from 'govuk/components/radios/macro.njk'         import govukRadios %}
+
+{% block pageTitle %}
+Are you sure you want to sign out?
+{% endblock %}
+
+{% block backLink %}
+  {{
+    govukBackLink({
+      text: 'Back',
+      href: navigation.back.href
+    })
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
+
+      <form method="post" id="sign-out-form">
+        {{
+          govukRadios({
+            idPrefix: 'aignout',
+            name: 'signingOut',
+            fieldset: {
+              describedBy: 'sign-out-hint',
+              legend: {
+                text: 'Are you sure you want to sign out?',
+                isPageHeading: true,
+                classes: 'govuk-fieldset__legend--xl'
+              }
+            },
+            hint: {
+                text: "Your answers will not be saved. You will need to start again if you want to apply to object to appeal to a late filing penalty"
+            },
+            items: [
+              {
+                value: 'yes',
+                text: 'Yes',
+                attributes: {
+                  'data-event-id': 'yes-selected'
+                }
+              },
+              {
+                value: 'no',
+                text: 'No',
+                attributes: {
+                  'data-event-id': 'no-selected'
+                }
+              }
+            ],
+            errorMessage: validationResult.getErrorForField('signingOut') if validationResult
+          })
+        }}
+
+        {{
+          govukButton({
+            text: 'Continue',
+            attributes: {
+              id: 'submit'
+            }
+          })
+        }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
