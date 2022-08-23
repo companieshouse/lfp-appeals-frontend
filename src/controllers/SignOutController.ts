@@ -2,10 +2,11 @@ import Joi from '@hapi/joi';
 import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
+import { BaseController } from './BaseController';
 
-import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import {
@@ -27,6 +28,9 @@ const navigation: Navigation = {
             } else {
                 return ENTRY_PAGE_URI;
         }
+     },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
      }
 };
 
@@ -35,8 +39,8 @@ interface FormBody {
 }
 
 @controller(SIGNOUT_PAGE_URI,
-    SessionMiddleware, AuthMiddleware)
-export class SignOutController extends SafeNavigationBaseController<FormBody>{
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+export class SignOutController extends BaseController<FormBody>{
 
     constructor() {
            const errorMessage = 'Select yes if you want to sign out.';

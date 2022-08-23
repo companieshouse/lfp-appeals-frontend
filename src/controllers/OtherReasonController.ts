@@ -13,7 +13,8 @@ import { schema as formSchema } from 'app/models/OtherReason.schema';
 import {
     EVIDENCE_QUESTION_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
-    OTHER_REASON_PAGE_URI
+    OTHER_REASON_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 
 const template = 'other-reason';
@@ -24,7 +25,10 @@ const navigation = {
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 @controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)

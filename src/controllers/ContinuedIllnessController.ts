@@ -17,7 +17,8 @@ import {
     CONTINUED_ILLNESS_PAGE_URI,
     FURTHER_INFORMATION_PAGE_URI,
     ILLNESS_END_DATE_PAGE_URI,
-    ILLNESS_START_DATE_PAGE_URI
+    ILLNESS_START_DATE_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -33,7 +34,10 @@ const navigation : Navigation = {
         } else {
             return ILLNESS_END_DATE_PAGE_URI;
         }
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 interface FormBody {

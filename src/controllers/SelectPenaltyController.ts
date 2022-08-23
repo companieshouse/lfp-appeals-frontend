@@ -14,7 +14,7 @@ import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'select-the-penalty';
 
@@ -29,7 +29,10 @@ const navigation = {
         return {
             continue:'action=continue'
         };
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 @provide(Processor)

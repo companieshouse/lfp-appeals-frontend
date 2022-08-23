@@ -18,7 +18,8 @@ import {
     EVIDENCE_QUESTION_URI,
     EVIDENCE_UPLOAD_PAGE_URI,
     FURTHER_INFORMATION_PAGE_URI,
-    OTHER_REASON_PAGE_URI
+    OTHER_REASON_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { getAttachmentsFromReasons, getReasonFromReasons, isIllnessReason } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -41,7 +42,10 @@ const navigation: Navigation = {
         } else {
             return CHECK_YOUR_APPEAL_PAGE_URI;
         }
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 const schema: Joi.AnySchema = Joi.object({

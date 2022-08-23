@@ -11,7 +11,7 @@ import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'penalty-details';
 
@@ -21,7 +21,10 @@ const navigation = {
     },
     next(): string {
         return SELECT_THE_PENALTY_PAGE_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {

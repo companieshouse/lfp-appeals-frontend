@@ -12,7 +12,7 @@ import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ReasonType } from 'app/models/fields/ReasonType';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import {
     formatDate,
     getIllPersonFromIllnessReason,
@@ -28,6 +28,9 @@ const navigation = {
     },
     next(): string {
         return CONFIRMATION_PAGE_URI;
+    },
+    signOut(): string{
+        return SIGNOUT_PAGE_URI;
     }
 };
 

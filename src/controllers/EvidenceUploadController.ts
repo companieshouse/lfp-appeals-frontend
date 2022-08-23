@@ -22,7 +22,8 @@ import {
     DOWNLOAD_FILE_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     EVIDENCE_REMOVAL_PAGE_URI,
-    EVIDENCE_UPLOAD_PAGE_URI
+    EVIDENCE_UPLOAD_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { newUriFactory } from 'app/utils/UriFactory';
 import {
@@ -45,6 +46,9 @@ const navigation: Navigation = {
     next(): string {
         return CHECK_YOUR_APPEAL_PAGE_URI;
     },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     },
     actions: (changeMode: boolean) => {
         return {
             noAction: changeMode ? '?cm=1' : '?cm=0',

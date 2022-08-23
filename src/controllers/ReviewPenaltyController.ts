@@ -13,7 +13,8 @@ import {
     CHOOSE_REASON_PAGE_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
     REVIEW_PENALTY_PAGE_URI,
-    SELECT_THE_PENALTY_PAGE_URI
+    SELECT_THE_PENALTY_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -27,7 +28,10 @@ const navigation: Navigation = {
         return (request.app.locals.featureFlags.illnessReasonEnabled)
             ? CHOOSE_REASON_PAGE_URI
             : OTHER_REASON_DISCLAIMER_PAGE_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
