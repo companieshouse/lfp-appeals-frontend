@@ -70,7 +70,7 @@ export class SignOutController extends BaseAsyncHttpController {
         await this.httpContext.container
             .get(SessionStore)
             .store(
-                Cookie.createFrom(req.cookies[sessionConfig.sessionCookieName]), 
+                Cookie.createFrom(req.cookies[sessionConfig.sessionCookieName]),
                 session!.data,
                 sessionConfig.sessionTimeToLiveInSeconds);
 
