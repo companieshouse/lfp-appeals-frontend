@@ -39,3 +39,4 @@ export const DOWNLOAD_FILE_PAGE_URI = `${ROOT_URI}/download`;
 
 // Template Pages
 export const LANDING = 'landing';
+export const SIGNOUT = 'signout';

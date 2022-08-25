@@ -13,7 +13,7 @@ Are you sure you want to sign out?
   {{
     govukBackLink({
       text: 'Back',
-      href: navigation.back.href
+      href: backLinkUrl
     })
   }}
 {% endblock %}
@@ -27,6 +27,24 @@ Are you sure you want to sign out?
           errorList: validationResult.errors
         }) if validationResult and validationResult.errors.length > 0
       }}
+      
+      {% if noInputSelectedError %}
+        {% set detailsErrorMsg = {
+            text: "Select yes if you want to sign out"
+        } %}
+
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+                {
+                text: "Select yes if you want to sign out",
+                href: "#yes"
+                }
+            ]
+        }) }}
+    {% else %}
+        {% set detailsErrorMsg = false %}
+    {% endif %}
 
       <form method="post" id="sign-out-form">
         {{
@@ -60,7 +78,7 @@ Are you sure you want to sign out?
                 }
               }
             ],
-            errorMessage: validationResult.getErrorForField('signingOut') if validationResult
+            errorMessage: detailsErrorMsg
           })
         }}
 
