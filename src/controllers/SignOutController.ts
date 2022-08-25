@@ -1,14 +1,13 @@
 import { Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
 import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import {Request} from 'express';
+import { Request, Response} from 'express';
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 
 import { SIGNOUT_RETURN_URL_SESSION_KEY } from 'app/Constants';
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { loggerInstance } from 'app/middleware/Logger';
 import { SessionStoreConfig } from 'app/models/SessionConfig';
-import { SIGNOUT, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
-import { ACCOUNTS_SIGNOUT_URI } from 'app/utils/Paths';
+import { ACCOUNTS_SIGNOUT_URI, SIGNOUT, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
 const sessionConfig: SessionStoreConfig = SessionStoreConfig.createFromEnvironmentVariables();
 
@@ -18,7 +17,11 @@ export class SignOutController extends BaseAsyncHttpController {
     @httpGet('')
     public async redirectView (): Promise<void> {
         const returnPage = this.saveReturnPageInSession(this.httpContext.request);
-        await this.persistSession();
+        const session: Session | undefined = this.httpContext.request.session;
+        if (!session) {
+            throw new Error('Session was expected but none found');
+        }
+        await this.saveSession(session, this.httpContext.request, this.httpContext.response);
         return this.render(SIGNOUT, {
             backLinkUrl: returnPage
         });
@@ -63,26 +66,26 @@ export class SignOutController extends BaseAsyncHttpController {
             });
     }
 
-    private async persistSession(): Promise<void> {
-        const session: Session | undefined = this.httpContext.request.session;
-
-        if (!session) {
-            throw new Error('Session was expected but none found');
-        }
-
-        await this.httpContext.container.get(SessionStore)
-            .store(Cookie.createFrom(this.httpContext.request.cookies[sessionConfig.sessionCookieName]), session!.data,
+    private async saveSession(session: Session, req: Request, res: Response): Promise<void> {
+        await this.httpContext.container
+            .get(SessionStore)
+            .store(
+                Cookie.createFrom(req.cookies[sessionConfig.sessionCookieName]), 
+                session!.data,
                 sessionConfig.sessionTimeToLiveInSeconds);
 
-        this.httpContext.response
-            .cookie(sessionConfig.sessionCookieName, this.httpContext.request.cookies[sessionConfig.sessionCookieName],
-                {
-                domain: sessionConfig.sessionCookieDomain,
-                path: '/',
-                httpOnly: true,
-                secure: sessionConfig.sessionCookieSecureFlag === 'true',
-                maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
-                encode: String
-            });
+        const cookie = {
+            domain: sessionConfig.sessionCookieDomain,
+            path: '/',
+            httpOnly: true,
+            secure: sessionConfig.sessionCookieSecureFlag === 'true',
+            maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
+            encode: String
+        };
+
+        res.cookie(
+            sessionConfig.sessionCookieName,
+            this.httpContext.request.cookies[sessionConfig.sessionCookieName],
+            cookie);
     }
 }
