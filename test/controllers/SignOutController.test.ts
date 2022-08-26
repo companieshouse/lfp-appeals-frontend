@@ -17,7 +17,7 @@ import { createSession } from 'test/utils/session/SessionFactory';
 
 
 const pageHeading = 'Are you sure you want to sign out?';
-const hint = 'Your answers will not be saved. You will need to start again if you want to apply to object to appeal to a late filing penalty';
+const hint = 'Your answers will not be saved. You will need to start again if you want to appeal a penalty for filing your company accounts late.';
 const errorSummaryHeading = 'There is a problem';
 
 
