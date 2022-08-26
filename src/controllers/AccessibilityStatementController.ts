@@ -2,10 +2,11 @@ import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller, httpGet } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
 import { ACCESSIBILITY_STATEMENT_URI, ROOT_URI } from 'app/utils/Paths';
 
-@controller(ACCESSIBILITY_STATEMENT_URI, SessionMiddleware)
+@controller(ACCESSIBILITY_STATEMENT_URI, SessionMiddleware, CommonVariablesMiddleware)
 export class AccessibilityStatementController extends BaseAsyncHttpController {
 
     @httpGet('')

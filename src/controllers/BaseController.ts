@@ -52,7 +52,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                           @unmanaged() readonly changeModeAction: ChangeModeAction = defaultChangeModeAction) {
         super();
         const navigationControl = createChangeModeAwareNavigationProxy(
-            { next: this.navigation.next, previous: this.navigation.previous },
+            { next: this.navigation.next, previous: this.navigation.previous, signOut: this.navigation.signOut },
             changeModeAction
         );
         this.navigation = { ...navigationControl, actions: this.navigation.actions };
@@ -263,6 +263,9 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                 },
                 forward: {
                     href: this.navigation.next(this.httpContext.request)
+                },
+                signOut: {
+                    href: this.navigation.signOut(this.httpContext.request)
                 },
                 actions: this.navigation.actions ? this.navigation.actions(changeMode) : {}
             }

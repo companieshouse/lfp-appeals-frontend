@@ -7,6 +7,7 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { NavigationPermissionProcessor } from 'app/controllers/processors/NavigationPermissionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { Attachment } from 'app/models/Attachment';
@@ -17,7 +18,8 @@ import {
     EVIDENCE_QUESTION_URI,
     EVIDENCE_UPLOAD_PAGE_URI,
     FURTHER_INFORMATION_PAGE_URI,
-    OTHER_REASON_PAGE_URI
+    OTHER_REASON_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { getAttachmentsFromReasons, getReasonFromReasons, isIllnessReason } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -40,14 +42,17 @@ const navigation: Navigation = {
         } else {
             return CHECK_YOUR_APPEAL_PAGE_URI;
         }
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 const schema: Joi.AnySchema = Joi.object({
     evidence: createSchema('You must tell us if you want to upload evidence.')
 }).unknown(true);
 
-@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined, [NavigationPermissionProcessor]);

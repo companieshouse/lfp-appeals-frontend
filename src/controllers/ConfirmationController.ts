@@ -5,10 +5,11 @@ import { controller } from 'inversify-express-utils';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import { getReasonFromReasons } from 'app/utils/appeal/extra.data';
 
 const template = 'confirmation';
@@ -19,10 +20,13 @@ const navigation = {
     },
     next(): string {
         return '';
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
-@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation);

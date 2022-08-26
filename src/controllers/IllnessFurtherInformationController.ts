@@ -6,6 +6,7 @@ import { FormValidator } from './validators/FormValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -15,7 +16,8 @@ import {
     CONTINUED_ILLNESS_PAGE_URI,
     EVIDENCE_QUESTION_URI,
     FURTHER_INFORMATION_PAGE_URI,
-    ILLNESS_END_DATE_PAGE_URI
+    ILLNESS_END_DATE_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { checkContinuedIllness } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -34,7 +36,10 @@ const navigation: Navigation = {
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 const nameErrorMessage = 'Enter your name';
@@ -53,7 +58,7 @@ const furtherInformationSchema = Joi.object({
 });
 
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class IllnessFurtherInformationController extends SafeNavigationBaseController<Illness> {
     constructor() {
         super(

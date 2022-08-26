@@ -16,7 +16,7 @@ import { Attachment } from 'app/models/Attachment';
 import { YesNo } from 'app/models/fields/YesNo';
 import { createSchema } from 'app/models/fields/YesNo.schema';
 import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI } from 'app/utils/Paths';
+import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import { findAttachmentByIdFromReasons, removeAttachmentFromReasons } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -29,6 +29,9 @@ const navigation: Navigation = {
     next(): string {
         return EVIDENCE_UPLOAD_PAGE_URI;
     },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     },
     actions: (changeMode: boolean) => {
         return {
             noAction: changeMode ? '&cm=1' : ''
