@@ -9,6 +9,7 @@ import { BaseController } from './BaseController';
 import { FormActionProcessor } from 'app/controllers/processors/FormActionProcessor';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { Appeal } from 'app/models/Appeal';
 import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
@@ -19,7 +20,6 @@ import { FileTransferService } from 'app/modules/file-transfer-service/FileTrans
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import { findAttachmentByIdFromReasons, removeAttachmentFromReasons } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
-import {CommonVariablesMiddleware} from "app/middleware/CommonVariablesMiddleware";
 
 const template = 'evidence-removal';
 
