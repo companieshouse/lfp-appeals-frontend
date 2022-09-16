@@ -30,20 +30,12 @@
       }}
 
       <form method="post" action="?f={{ id }}{{ navigation.actions.noAction }}">
-        {{
-          govukInput({
-            type: 'hidden',
-            name: 'id',
-            value: id
-          })
-        }}
-        {{
-          govukInput({
-            type: 'hidden',
-            name: 'name',
-            value: name
-          })
-        }}
+        <div style="display: none" class="govuk-form-group">
+          <input class="govuk-input" name="id" value="{{id}}" type="hidden">
+        </div>
+        <div style="display: none" class="govuk-form-group">
+          <input class="govuk-input" name="name" value="{{name}}" type="hidden">
+        </div>
 
         {{
           govukRadios({
