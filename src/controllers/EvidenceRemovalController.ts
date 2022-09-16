@@ -19,6 +19,7 @@ import { FileTransferService } from 'app/modules/file-transfer-service/FileTrans
 import { EVIDENCE_REMOVAL_PAGE_URI, EVIDENCE_UPLOAD_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import { findAttachmentByIdFromReasons, removeAttachmentFromReasons } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
+import {CommonVariablesMiddleware} from "app/middleware/CommonVariablesMiddleware";
 
 const template = 'evidence-removal';
 
@@ -90,7 +91,8 @@ class Processor implements FormActionProcessor {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-@controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
+    CommonVariablesMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor() {
         super(template, navigation, new FormValidator(schema), undefined,
