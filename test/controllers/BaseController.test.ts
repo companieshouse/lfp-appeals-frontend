@@ -95,7 +95,8 @@ describe('Base controller', () => {
             // @ts-ignore
             response.received().render(response, template, {
                 ...viewModel,
-                ...navigationConfig
+                ...navigationConfig,
+                templateName: template,
             } as any);
         });
     });

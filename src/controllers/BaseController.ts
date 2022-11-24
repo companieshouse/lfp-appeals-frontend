@@ -172,7 +172,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                                 validationResult,
                                 ...that.prepareNavigationConfig()
                             }
-                        );   
+                        );
                     }
                 }
 
