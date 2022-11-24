@@ -71,7 +71,8 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
             this.template,
             {
                 ...this.prepareViewModel(),
-                ...this.prepareNavigationConfig()
+                ...this.prepareNavigationConfig(),
+                templateName: this.template,
             }
         );
     }
@@ -171,7 +172,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                                 validationResult,
                                 ...that.prepareNavigationConfig()
                             }
-                        );
+                        );   
                     }
                 }
 

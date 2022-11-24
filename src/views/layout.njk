@@ -62,7 +62,7 @@
   <ul class="js-signout" id="navigation">
     <li class="content-email" id="signed-in-user">{{email}}</li>
     <li class="content">
-     <a class="govuk-link" href="{{navigation.signOut.href}}"id="user-signout" onclick="_paq.push(['trackEvent', '{{ serviceName }}' , 'Do you want to sign out? ', 'signout link'])" >Sign Out</a>
+     <a class="govuk-link" href="{{navigation.signOut.href}}" data-event-id="sign-out-button-selected" id="user-signout" >Sign Out</a>
     </li>
   </ul>
   {% endif %}

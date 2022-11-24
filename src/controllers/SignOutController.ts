@@ -10,6 +10,7 @@ import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { ACCOUNTS_SIGNOUT_URI, SIGNOUT, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
 const sessionConfig: SessionStoreConfig = SessionStoreConfig.createFromEnvironmentVariables();
+const template = 'signout';
 
 @controller(SIGNOUT_PAGE_URI, SessionMiddleware)
 export class SignOutController extends BaseAsyncHttpController {
@@ -23,7 +24,8 @@ export class SignOutController extends BaseAsyncHttpController {
         }
         await this.saveSession(session, this.httpContext.request, this.httpContext.response);
         return this.render(SIGNOUT, {
-            backLinkUrl: returnPage
+            backLinkUrl: returnPage,
+            templateName : template
         });
     }
 
