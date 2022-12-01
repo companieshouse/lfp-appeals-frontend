@@ -96,6 +96,7 @@ describe('Base controller', () => {
             response.received().render(response, template, {
                 ...viewModel,
                 ...navigationConfig,
+                templateName: template,
             } as any);
         });
     });
