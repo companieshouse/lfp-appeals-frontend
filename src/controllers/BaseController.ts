@@ -72,7 +72,6 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
             {
                 ...this.prepareViewModel(),
                 ...this.prepareNavigationConfig(),
-                templateName: this.template,
             }
         );
     }
