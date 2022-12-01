@@ -14,7 +14,7 @@
   <link href="//{{ cdn.host }}/stylesheets/services/late-filing-penalties/appeals/application.css" rel="stylesheet"/>
   <!--<![endif]-->
 
-  <link rel="SHORTCUT ICON" href="//{{ cdn.host }}/images/govuk-frontend/v3.6.0/images/favicon.ico"
+  
 
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"
           integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
@@ -25,6 +25,9 @@
     window.PIWIK_URL = '{{ piwik.url }}'
     window.PIWIK_SITE_ID = '{{ piwik.site }}'
   </script>
+
+  <link rel="SHORTCUT ICON" href="//{{ cdn.host }}/images/govuk-frontend/v3.6.0/images/favicon.ico"
+
 
   {% block download %}{% endblock %}
 {% endblock %}
@@ -62,7 +65,7 @@
   <ul class="js-signout" id="navigation">
     <li class="content-email" id="signed-in-user">{{email}}</li>
     <li class="content">
-     <a class="govuk-link" href="{{navigation.signOut.href}}">Sign Out</a>
+     <a class="govuk-link" href="{{navigation.signOut.href}}" data-event-id="sign-out-button-selected" id="user-signout" >Sign Out</a>
     </li>
   </ul>
   {% endif %}

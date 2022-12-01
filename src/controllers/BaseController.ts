@@ -67,11 +67,12 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     @httpGet('')
     public async onGet(): Promise<void> {
-        return await this.render(
+        return this.render(
             this.template,
             {
                 ...this.prepareViewModel(),
-                ...this.prepareNavigationConfig()
+                ...this.prepareNavigationConfig(),
+                templateName: this.template,
             }
         );
     }
