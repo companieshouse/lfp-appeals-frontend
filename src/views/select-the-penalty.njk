@@ -45,9 +45,8 @@
                 name: 'selectPenalty',
                 fieldset: {
                   legend: {
-                      text: 'Select the penalty you want to appeal',
-                      isPageHeading: true,
-                      classes: 'govuk-fieldset__legend--xl'
+                      classes: 'govuk-fieldset__legend--xl',
+                      html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>Select the penalty you want to appeal</h1>"
                   }
                 },
                 errorMessage: validationResult.getErrorForField('selectPenalty') if validationResult,

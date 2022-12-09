@@ -36,9 +36,8 @@
             fieldset: {
               describedBy: 'choose-reason-hint',
               legend: {
-                text: 'Why are you appealing this penalty?',
-                isPageHeading: true,
-                classes: 'govuk-fieldset__legend--xl'
+                classes: 'govuk-fieldset__legend--xl',
+                html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>Why are you appealing this penalty?</h1>"
               }
             },
             errorMessage: validationResult.getErrorForField('reason') if validationResult,
