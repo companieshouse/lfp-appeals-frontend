@@ -12,6 +12,7 @@
   <!--[if !IE 8]><!-->
   <link href="//{{ cdn.host }}/stylesheets/govuk-frontend/v3.11.0/govuk-frontend-3.11.0.min.css" rel="stylesheet"/>
   <link href="//{{ cdn.host }}/stylesheets/services/late-filing-penalties/appeals/application.css" rel="stylesheet"/>
+  <link href="//{{ cdn.host }}/stylesheets/session-timeout.css" rel="stylesheet"/>
   <!--<![endif]-->
 
   
@@ -68,6 +69,7 @@
      <a class="govuk-link" href="{{navigation.signOut.href}}" data-event-id="sign-out-button-selected" id="user-signout" >Sign Out</a>
     </li>
   </ul>
+  <script src="//{{ cdn.host }}/javascripts/app/session-timeout.js"></script>
   {% endif %}
   {% endblock %}
 
