@@ -6,7 +6,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">Your document download will start soon</h1>
+      <h1 class="govuk-heading-xl" id="page-title-heading">Your document download will start soon</h1>
       <p class="govuk-body-l">
         <a href="{{ paths.DOWNLOAD_FILE_PAGE_URI }}/data/{{ downloadPath | safe }}" id="downloadLink" class="govuk-link">Click here to download your document</a>
         if the download does not start in 10 seconds.</p>
