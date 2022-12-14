@@ -37,14 +37,18 @@
           <input class="govuk-input" name="name" value="{{name}}" type="hidden">
         </div>
 
+        {% set pageTitleHtml %}
+         <h1 id='page-title-heading' class='govuk-fieldset__heading'> Are you sure you want to remove {{name}}?</h1>
+        {% endset -%}
+
         {{
           govukRadios({
             classes: 'govuk-radios--inline',
             name: 'remove',
             fieldset: {
               legend: {
-                text: 'Are you sure you want to remove ' + name + '?',
-                classes: 'govuk-fieldset__legend--xl'
+                classes: 'govuk-fieldset__legend--xl',
+                html: pageTitleHtml
               }
             },
             items: [
