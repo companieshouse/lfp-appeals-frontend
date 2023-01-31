@@ -21,5 +21,5 @@ export const parseFormData = util.promisify(
             }
             cb(null, true);
         }
-    }).single('file')
+    }).single('file-upload')
 );
