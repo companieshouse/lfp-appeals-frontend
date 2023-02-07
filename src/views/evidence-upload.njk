@@ -61,7 +61,7 @@
         <li>photographs</li>
       </ul>
 
-      <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
+      <form id="upload-form" method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
           Upload a document
         {% endset %}
@@ -80,16 +80,18 @@
               }
             })
           }}
-          {{
-            govukButton({
-              text: 'Upload document',
-              classes: 'govuk-button--secondary',
-              id: 'add-document',
-              attributes: {
-                'data-event-id': 'clicked add document'
-              }
-            })
-          }}
+          <noscript>
+            {{
+              govukButton({
+                text: 'Upload document',
+                classes: 'govuk-button--secondary',
+                id: 'add-document',
+                attributes: {
+                  'data-event-id': 'clicked add document'
+                }
+              })
+            }}
+          </noscript>
         </div>
       </form>
 
@@ -123,4 +125,5 @@
       </form>
     </div>
   </div>
+  <script src="//{{ cdn.host }}/javascripts/app/lfp-appeals/upload.js"></script>
 {% endblock %}
