@@ -30,7 +30,7 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
 
-      <h1 class="govuk-heading-xl">
+      <h1 class="govuk-heading-xl" id="page-title-heading">
         Upload documents to support your application
       </h1>
 
@@ -48,7 +48,20 @@
           <li>show any relevant dates to support your appeal</li>
           </ul>
 
-      <form method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
+   <p>Only upload documents that relate directly to your appeal.</p>
+   
+   <p>Do not upload:</p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>copies of penalty notices or default notices</li>
+        <li>bank statements or other financial information</li>
+        <li>HMRC correspondence</li>
+        <li>copies of documents (or any other information) available on the public record</li>
+        <li>birth or death certificates</li>
+        <li>photographs</li>
+      </ul>
+
+      <form id="upload-form" method="post" enctype="multipart/form-data" action="{{ navigation.actions.uploadFile }}">
         {% set uploadText %}
           Upload a document
         {% endset %}
@@ -67,16 +80,18 @@
               }
             })
           }}
-          {{
-            govukButton({
-              text: 'Upload document',
-              classes: 'govuk-button--secondary',
-              id: 'add-document',
-              attributes: {
-                'data-event-id': 'clicked add document'
-              }
-            })
-          }}
+          <noscript>
+            {{
+              govukButton({
+                text: 'Upload document',
+                classes: 'govuk-button--secondary',
+                id: 'add-document',
+                attributes: {
+                  'data-event-id': 'clicked add document'
+                }
+              })
+            }}
+          </noscript>
         </div>
       </form>
 
@@ -98,8 +113,6 @@
         </dl>
       {% endif %}
 
-       <p>By continuing, you consent to this evidence being used as part of your appeal.</p>
-
       <form method="post" action="{{ navigation.actions.noAction }}">
         {{
           govukButton({
@@ -112,4 +125,5 @@
       </form>
     </div>
   </div>
+  <script src="//{{ cdn.host }}/javascripts/app/late-filing-penalties/appeals/upload.js"></script>
 {% endblock %}

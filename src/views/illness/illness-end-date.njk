@@ -69,22 +69,17 @@
           %}
         {% endif %}
 
-        {{
-          govukInput({
-            type: 'hidden',
-            name: 'illnessStart',
-            value: illnessStart
-          })
-        }}
+        <div style="display: none" class="govuk-form-group">
+          <input class="govuk-input" name="illnessStart" value="{{illnessStart}}" type="hidden">
+        </div>
 
         {{
           govukDateInput ({
             id: 'illness-end',
             fieldset: {
               legend: {
-                text: 'When did the illness end?',
-                isPageHeading: true,
-                classes: 'govuk-fieldset__legend--xl'
+                classes: 'govuk-fieldset__legend--xl',
+                html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>When did the illness end?</h1>"
               }
             },
             hint: {

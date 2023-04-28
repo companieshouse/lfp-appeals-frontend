@@ -22,7 +22,10 @@ const navigation = {
     },
     next(): string {
         return '/next';
-    }
+    },
+    signOut(): string {
+        return  '/signOut';
+    },
 };
 
 type ControllerConfig = {

@@ -4,6 +4,7 @@ import { FormValidator } from './validators/FormValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -11,7 +12,7 @@ import { Illness } from 'app/models/Illness';
 import { IllPerson } from 'app/models/fields/IllPerson';
 import { schema } from 'app/models/fields/IllPerson.schema';
 import { Feature } from 'app/utils/Feature';
-import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI } from 'app/utils/Paths';
+import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
 const template = 'illness/ill-person';
@@ -23,6 +24,9 @@ const navigation : Navigation = {
     next(): string {
         return ILLNESS_START_DATE_PAGE_URI;
     },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     },
     actions: (_: boolean) => {
         return {
             continue:'action=continue'
@@ -36,7 +40,7 @@ interface FormBody {
 }
 
 @controller(ILL_PERSON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class IllPersonController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {

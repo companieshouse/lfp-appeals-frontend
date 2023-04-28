@@ -5,6 +5,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
@@ -18,7 +19,8 @@ import {
     CHOOSE_REASON_PAGE_URI,
     ILL_PERSON_PAGE_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
-    REVIEW_PENALTY_PAGE_URI
+    REVIEW_PENALTY_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { getAttachmentsFromReasons, getReasonType } from 'app/utils/appeal/extra.data';
 import { Navigation } from 'app/utils/navigation/navigation';
@@ -37,6 +39,9 @@ const navigation: Navigation = {
                 return OTHER_REASON_DISCLAIMER_PAGE_URI;
         }
     },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     },
     actions: (_: boolean) => {
         return {
             continue:'action=continue'
@@ -49,7 +54,7 @@ interface FormBody {
 }
 
 @controller(CHOOSE_REASON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware, AuthMiddleware,
-CompanyAuthMiddleware)
+CompanyAuthMiddleware, CommonVariablesMiddleware)
 export class ChooseAppealReasonController extends SafeNavigationBaseController<FormBody>{
 
     constructor() {

@@ -12,10 +12,11 @@
   <!--[if !IE 8]><!-->
   <link href="//{{ cdn.host }}/stylesheets/govuk-frontend/v3.11.0/govuk-frontend-3.11.0.min.css" rel="stylesheet"/>
   <link href="//{{ cdn.host }}/stylesheets/services/late-filing-penalties/appeals/application.css" rel="stylesheet"/>
+  <link href="//{{ cdn.host }}/stylesheets/session-timeout.css" rel="stylesheet"/>
   <!--<![endif]-->
 
-  <link rel="SHORTCUT ICON" href="//{{ cdn.host }}/images/govuk-frontend/v3.6.0/images/favicon.ico"
   
+
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"
           integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
           crossorigin="anonymous"></script>
@@ -25,6 +26,9 @@
     window.PIWIK_URL = '{{ piwik.url }}'
     window.PIWIK_SITE_ID = '{{ piwik.site }}'
   </script>
+
+  <link rel="SHORTCUT ICON" href="//{{ cdn.host }}/images/govuk-frontend/v3.6.0/images/favicon.ico"
+
 
   {% block download %}{% endblock %}
 {% endblock %}
@@ -52,9 +56,23 @@
       tag: {
         text: 'Beta'
       },
-      html: 'This is a new service – your <a class="govuk-link" href="https://www.smartsurvey.co.uk/s/csat-appeallfp/" target="_blank">feedback</a> will help us to improve it.'
+      html: 'This is a new service – your <a class="govuk-link" href="https://www.smartsurvey.co.uk/s/alfp-feedback/" target="_blank">feedback</a> will help us to improve it.'
     })
   }}
+
+  {% block signoutBar %}
+  {% if userEmail %}
+  {% set email = userEmail | default("Not signed in") %}
+  <ul class="js-signout" id="navigation">
+    <li class="content-email" id="signed-in-user">{{email}}</li>
+    <li class="content">
+     <a class="govuk-link" href="{{navigation.signOut.href}}" data-event-id="sign-out-button-selected" id="user-signout" >Sign Out</a>
+    </li>
+  </ul>
+  <script src="//{{ cdn.host }}/javascripts/app/session-timeout.js"></script>
+  {% endif %}
+  {% endblock %}
+
   {% block backLink %}{% endblock %}
 {% endblock %}
 

@@ -19,7 +19,6 @@
 
 {% block content %}
   <div class="govuk-width-container">
-    <main role="main" class="govuk-main-wrapper">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <form method="post" id="penaltyForm">
@@ -46,9 +45,8 @@
                 name: 'selectPenalty',
                 fieldset: {
                   legend: {
-                      text: 'Select the penalty you want to appeal',
-                      isPageHeading: true,
-                      classes: 'govuk-fieldset__legend--xl'
+                      classes: 'govuk-fieldset__legend--xl',
+                      html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>Select the penalty you want to appeal</h1>"
                   }
                 },
                 errorMessage: validationResult.getErrorForField('selectPenalty') if validationResult,
@@ -67,6 +65,5 @@
           </form>
         </div>
       </div>
-    </main>
   </div>
 {% endblock %}

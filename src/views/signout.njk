@@ -2,19 +2,21 @@
 
 {% from 'govuk/components/back-link/macro.njk'      import govukBackLink %}
 {% from 'govuk/components/error-summary/macro.njk'  import govukErrorSummary %}
-{% from 'govuk/components/input/macro.njk'          import govukInput %}
 {% from 'govuk/components/button/macro.njk'         import govukButton %}
 {% from 'govuk/components/radios/macro.njk'         import govukRadios %}
 
 {% block pageTitle %}
-  Appeal due to ill health: Is the person still ill?
+Are you sure you want to sign out?
+{% endblock %}
+
+{% block signoutBar %}
 {% endblock %}
 
 {% block backLink %}
   {{
     govukBackLink({
       text: 'Back',
-      href: navigation.back.href
+      href: backLinkUrl
     })
   }}
 {% endblock %}
@@ -22,40 +24,50 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="post">
+      {{
+        govukErrorSummary ({
+          titleText: 'There is a problem',
+          errorList: validationResult.errors
+        }) if validationResult and validationResult.errors.length > 0
+      }}
+      
+      {% if noInputSelectedError %}
+        {% set detailsErrorMsg = {
+            text: "Select yes if you want to sign out"
+        } %}
 
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [
+                {
+                text: "Select yes if you want to sign out",
+                href: "#yes"
+                }
+            ]
+        }) }}
+    {% else %}
+        {% set detailsErrorMsg = false %}
+    {% endif %}
+
+      <form method="post" id="sign-out-form">
         {{
-          govukErrorSummary ({
-            titleText: 'There is a problem with the details you gave us',
-            errorList: validationResult.errors
-          }) if validationResult and validationResult.errors.length > 0
-        }}
-
-        <div style="display: none" class="govuk-form-group">
-          <input class="govuk-input" name="illnessStart" value="{{illnessStart}}" type="hidden">
-        </div>
-
-        {{ 
           govukRadios({
-            classes: 'govuk-radios--inline',
-            idPrefix: 'continued-illness',
-            name: 'continuedIllness',
+            idPrefix: 'signout',
+            name: 'signingOut',
             fieldset: {
-              describedBy: 'continued-illness-hint',
+              describedBy: 'sign-out-hint',
               legend: {
                 classes: 'govuk-fieldset__legend--xl',
-                html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>Is the person still ill?</h1>"
+                html: "<h1 id='page-title-heading' class='govuk-fieldset__heading'>Are you sure you want to sign out?</h1>"
               }
             },
             hint: {
-              text: 'You told us the illness started on ' + illnessStart | date
+                text: "Your answers will not be saved. You will need to start again if you want to appeal a penalty for filing your company accounts late."
             },
-            errorMessage: validationResult.getErrorForField('continuedIllness') if validationResult,
             items: [
               {
                 value: 'yes',
                 text: 'Yes',
-                checked: continuedIllness,
                 attributes: {
                   'data-event-id': 'yes-selected'
                 }
@@ -63,22 +75,22 @@
               {
                 value: 'no',
                 text: 'No',
-                checked: true if continuedIllness === false,
                 attributes: {
                   'data-event-id': 'no-selected'
                 }
               }
-            ]
+            ],
+            errorMessage: detailsErrorMsg
           })
         }}
 
-        {{ 
+        {{
           govukButton({
             text: 'Continue',
             attributes: {
               id: 'submit'
             }
-          }) 
+          })
         }}
       </form>
     </div>

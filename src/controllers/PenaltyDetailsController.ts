@@ -6,11 +6,12 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
 import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
 import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
 const template = 'penalty-details';
 
@@ -20,7 +21,10 @@ const navigation = {
     },
     next(): string {
         return SELECT_THE_PENALTY_PAGE_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
@@ -34,7 +38,7 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
 };
 
-@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware)
+@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor(@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
         super(

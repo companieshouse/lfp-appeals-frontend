@@ -30,20 +30,16 @@
       }}
 
       <form method="post" action="?f={{ id }}{{ navigation.actions.noAction }}">
-        {{
-          govukInput({
-            type: 'hidden',
-            name: 'id',
-            value: id
-          })
-        }}
-        {{
-          govukInput({
-            type: 'hidden',
-            name: 'name',
-            value: name
-          })
-        }}
+        <div style="display: none" class="govuk-form-group">
+          <input class="govuk-input" name="id" value="{{id}}" type="hidden">
+        </div>
+        <div style="display: none" class="govuk-form-group">
+          <input class="govuk-input" name="name" value="{{name}}" type="hidden">
+        </div>
+
+        {% set pageTitleHtml %}
+         <h1 id='page-title-heading' class='govuk-fieldset__heading'> Are you sure you want to remove {{name}}?</h1>
+        {% endset -%}
 
         {{
           govukRadios({
@@ -51,8 +47,8 @@
             name: 'remove',
             fieldset: {
               legend: {
-                text: 'Are you sure you want to remove ' + name + '?',
-                classes: 'govuk-fieldset__legend--xl'
+                classes: 'govuk-fieldset__legend--xl',
+                html: pageTitleHtml
               }
             },
             items: [

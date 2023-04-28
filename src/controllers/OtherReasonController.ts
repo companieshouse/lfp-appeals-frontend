@@ -4,6 +4,7 @@ import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { FormValidator } from 'app/controllers/validators/FormValidator';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -12,7 +13,8 @@ import { schema as formSchema } from 'app/models/OtherReason.schema';
 import {
     EVIDENCE_QUESTION_URI,
     OTHER_REASON_DISCLAIMER_PAGE_URI,
-    OTHER_REASON_PAGE_URI
+    OTHER_REASON_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 
 const template = 'other-reason';
@@ -23,10 +25,13 @@ const navigation = {
     },
     next(): string {
         return EVIDENCE_QUESTION_URI;
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
-@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware)
+@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)
 export class OtherReasonController extends SafeNavigationBaseController<OtherReason> {
     constructor() {
         super(template, navigation, new FormValidator(formSchema));

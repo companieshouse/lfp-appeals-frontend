@@ -6,6 +6,7 @@ import { FormValidator } from './validators/FormValidator';
 
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
@@ -16,7 +17,8 @@ import {
     CONTINUED_ILLNESS_PAGE_URI,
     FURTHER_INFORMATION_PAGE_URI,
     ILLNESS_END_DATE_PAGE_URI,
-    ILLNESS_START_DATE_PAGE_URI
+    ILLNESS_START_DATE_PAGE_URI,
+    SIGNOUT_PAGE_URI
 } from 'app/utils/Paths';
 import { Navigation } from 'app/utils/navigation/navigation';
 
@@ -32,7 +34,10 @@ const navigation : Navigation = {
         } else {
             return ILLNESS_END_DATE_PAGE_URI;
         }
-    }
+    },
+     signOut(): string{
+        return SIGNOUT_PAGE_URI;
+     }
 };
 
 interface FormBody {
@@ -41,7 +46,7 @@ interface FormBody {
 }
 
 @controller(CONTINUED_ILLNESS_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class ContinuedIllnessController extends SafeNavigationBaseController<FormBody> {
 
     constructor() {

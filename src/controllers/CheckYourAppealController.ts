@@ -7,11 +7,12 @@ import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBase
 import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
 import { SessionCleanupProcessor } from 'app/controllers/processors/SessionCleanupProcessor';
 import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
+import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
 import { CompanyAuthMiddleware } from 'app/middleware/CompanyAuthMiddleware';
 import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
 import { Appeal } from 'app/models/Appeal';
 import { ReasonType } from 'app/models/fields/ReasonType';
-import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI } from 'app/utils/Paths';
+import { CHECK_YOUR_APPEAL_PAGE_URI, CONFIRMATION_PAGE_URI, EVIDENCE_QUESTION_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 import {
     formatDate,
     getIllPersonFromIllnessReason,
@@ -27,10 +28,14 @@ const navigation = {
     },
     next(): string {
         return CONFIRMATION_PAGE_URI;
+    },
+    signOut(): string{
+        return SIGNOUT_PAGE_URI;
     }
 };
 
-@controller( CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware )
+@controller( CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
+    CommonVariablesMiddleware )
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor() {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor, SessionCleanupProcessor]);

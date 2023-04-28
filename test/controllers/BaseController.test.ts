@@ -22,6 +22,9 @@ const navigation = {
     },
     next(): string {
         return '/next';
+    },
+    signOut(): string {
+        return '/signOut';
     }
 };
 
@@ -61,6 +64,9 @@ describe('Base controller', () => {
             forward: {
                 href: '/next'
             },
+            signOut: {
+                href: '/signOut'
+            },
             actions: {}
         }
     };
@@ -89,7 +95,8 @@ describe('Base controller', () => {
             // @ts-ignore
             response.received().render(response, template, {
                 ...viewModel,
-                ...navigationConfig
+                ...navigationConfig,
+                templateName: template,
             } as any);
         });
     });
