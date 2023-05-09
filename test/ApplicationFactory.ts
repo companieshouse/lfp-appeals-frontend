@@ -1,7 +1,7 @@
+import { Session, SessionMiddleware, SessionStore } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
 import Substitute from '@fluffy-spoon/substitute';
-import { Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
@@ -38,6 +38,7 @@ export const createApp = (data?: Partial<ApplicationData>,
 
         const cookieName = getEnvOrThrow('COOKIE_NAME');
         const cookieSecret = getEnvOrThrow('COOKIE_SECRET');
+        const cookieDomain = getEnvOrThrow('COOKIE_DOMAIN');
 
         const session: Session | undefined = data ? configureSession(createSession(cookieSecret)) : undefined;
         session?.setExtraData(APPLICATION_DATA_KEY, data);
@@ -68,7 +69,7 @@ export const createApp = (data?: Partial<ApplicationData>,
             if (session && cookie) {
                 req.cookies[cookieName] = cookie.value;
             }
-            SessionMiddleware({ cookieName, cookieSecret }, sessionStore)(req, res, next);
+            SessionMiddleware({ cookieName, cookieSecret, cookieDomain }, sessionStore)(req, res, next);
         });
 
         container.bind(CompanyAuthMiddleware)

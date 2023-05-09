@@ -1,4 +1,4 @@
-import { CookieConfig, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
+import { CookieConfig, SessionMiddleware, SessionStore } from '@companieshouse/node-session-handler';
 import { Container } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 import IORedis from 'ioredis';
@@ -19,6 +19,7 @@ export function createContainer(): Container {
     const config: CookieConfig = {
         cookieName: getEnvOrThrow('COOKIE_NAME'),
         cookieSecret: getEnvOrThrow('COOKIE_SECRET'),
+        cookieDomain: getEnvOrThrow('COOKIE_DOMAIN'),
     };
     const sessionStore = new SessionStore(new IORedis(`${getEnvOrThrow('CACHE_SERVER')}`));
     container.bind(SessionStore).toConstantValue(sessionStore);

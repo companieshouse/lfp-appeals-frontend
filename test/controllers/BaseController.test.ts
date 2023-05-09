@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
+import { Session } from '@companieshouse/node-session-handler';
 import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
 import * as Joi from '@hapi/joi';
 import * as assert from 'assert';
-import { Session } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
