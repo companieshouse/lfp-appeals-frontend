@@ -1,4 +1,4 @@
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from '@companieshouse/node-session-handler';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';

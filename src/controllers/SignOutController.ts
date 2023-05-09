@@ -1,5 +1,5 @@
-import { Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { Session, SessionMiddleware, SessionStore } from '@companieshouse/node-session-handler';
+import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
 import { Request, Response} from 'express';
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
 

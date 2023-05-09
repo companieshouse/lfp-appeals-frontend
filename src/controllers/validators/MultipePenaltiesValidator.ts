@@ -1,4 +1,4 @@
-import { Session } from 'ch-node-session-handler';
+import { Session } from '@companieshouse/node-session-handler';
 import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { Request } from 'express';
 import { FormValidator } from './FormValidator';

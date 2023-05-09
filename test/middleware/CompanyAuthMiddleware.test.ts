@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
+import { Session, SessionStore } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import { Arg, Substitute} from '@fluffy-spoon/substitute';
-import { Session, SessionStore } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 

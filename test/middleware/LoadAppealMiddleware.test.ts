@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import { createSubstituteOf } from '../SubstituteFactory';

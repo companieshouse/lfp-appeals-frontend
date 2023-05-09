@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
+import { ISession, Session, SessionStore } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
 import { Arg } from '@fluffy-spoon/substitute';
-import { ISession, Session, SessionStore } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
 import { Request, Response } from 'express';
 import { OK } from 'http-status-codes';
 import { Container } from 'inversify';
