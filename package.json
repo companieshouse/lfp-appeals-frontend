@@ -21,11 +21,11 @@
     "analyse-code": "sonar-scanner"
   },
   "dependencies": {
-    "@companieshouse/structured-logging-node": "1.0.4",
+    "@companieshouse/node-session-handler": "^4.1.9",
+    "@companieshouse/structured-logging-node": "^1.0.8",
     "@hapi/joi": "^17.1.1",
     "axios": "^0.21.4",
     "body-parser": "^1.18.2",
-    "@companieshouse/node-session-handler": "^4.1.9",
     "ch-sdk-node": "git+ssh://git@github.com/companieshouse/ch-sdk-node.git#0.2.10",
     "cookie-parser": "^1.4.6",
     "dotenv": "^8.2.0",
