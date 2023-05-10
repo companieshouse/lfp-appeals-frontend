@@ -1,4 +1,4 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { controller, httpGet } from 'inversify-express-utils';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';

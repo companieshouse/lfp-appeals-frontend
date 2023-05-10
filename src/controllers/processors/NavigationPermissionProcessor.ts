@@ -1,4 +1,4 @@
-import { Session } from '@companieshouse/node-session-handler';
+import { Session } from 'ch-node-session-handler';
 import { provide } from 'inversify-binding-decorators';
 
 import { RequestWithNavigation } from 'app/controllers/SafeNavigationBaseController';

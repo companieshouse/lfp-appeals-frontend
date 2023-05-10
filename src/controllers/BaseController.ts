@@ -1,5 +1,5 @@
-import { Session, SessionStore } from '@companieshouse/node-session-handler';
-import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
+import { Session, SessionStore } from 'ch-node-session-handler';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { unmanaged } from 'inversify';

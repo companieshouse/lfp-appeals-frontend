@@ -1,5 +1,5 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
 import Joi from '@hapi/joi';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';

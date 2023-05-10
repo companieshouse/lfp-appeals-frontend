@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { SessionStore } from '@companieshouse/node-session-handler';
+import { SessionStore } from 'ch-node-session-handler';
 import { Application } from 'express';
 import { Redis } from 'ioredis';
 import request from 'supertest';

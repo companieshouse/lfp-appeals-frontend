@@ -1,8 +1,8 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { IAccessToken, ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import Substitute, { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
+import { Session } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
+import { IAccessToken, ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
 
 import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMiddleware';

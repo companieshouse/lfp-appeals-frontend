@@ -1,5 +1,5 @@
-import { Session } from '@companieshouse/node-session-handler/lib/session/model/Session';
-import { generateSessionId, generateSignature } from '@companieshouse/node-session-handler/lib/utils/CookieUtils';
+import { Session } from 'ch-node-session-handler/lib/session/model/Session';
+import { generateSessionId, generateSignature } from 'ch-node-session-handler/lib/utils/CookieUtils';
 
 
 export function createSession(
