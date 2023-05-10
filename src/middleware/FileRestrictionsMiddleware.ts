@@ -1,8 +1,8 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { UserProfileKeys } from '@companieshouse/node-session-handler/lib/session/keys/UserProfileKeys';
-import { ISignInInfo, IUserProfile } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
+import { Session } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
+import { UserProfileKeys } from 'ch-node-session-handler/lib/session/keys/UserProfileKeys';
+import { ISignInInfo, IUserProfile } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';
 import { provide } from 'inversify-binding-decorators';

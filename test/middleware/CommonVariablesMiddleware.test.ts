@@ -1,4 +1,4 @@
-import { Session } from '@companieshouse/node-session-handler';
+import { Session } from 'ch-node-session-handler';
 import { expect } from 'chai';
 import { NextFunction, Request, Response, } from 'express';
 

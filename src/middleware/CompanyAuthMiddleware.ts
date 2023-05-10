@@ -1,8 +1,8 @@
 
-import { Session, SessionStore } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
-import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
+import { Session, SessionStore } from 'ch-node-session-handler';
+import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { BaseMiddleware } from 'inversify-express-utils';
 

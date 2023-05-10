@@ -1,4 +1,4 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
+import { SessionMiddleware } from 'ch-node-session-handler';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
 

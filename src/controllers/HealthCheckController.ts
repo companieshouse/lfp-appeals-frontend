@@ -1,4 +1,4 @@
-import { SessionStore } from '@companieshouse/node-session-handler';
+import { SessionStore } from 'ch-node-session-handler';
 import { INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller, httpGet, BaseHttpController } from 'inversify-express-utils';
