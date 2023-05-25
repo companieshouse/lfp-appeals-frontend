@@ -1,8 +1,8 @@
 
-import { Session, SessionStore } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { Session, SessionStore } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
+import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { BaseMiddleware } from 'inversify-express-utils';
 
@@ -55,7 +55,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         }
 
         try {
-            const uri = await this.getAuthRedirectUri(req, res, companyNumber);
+            const uri = await this.getAuthRedirectUri(req, companyNumber);
 
             loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
             return res.redirect(uri);
@@ -65,7 +65,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
         }
     }
 
-    async getAuthRedirectUri(req: Request, res: Response, companyNumber: string): Promise<string> {
+    async getAuthRedirectUri(req: Request, companyNumber: string): Promise<string> {
 
         const originalUrl: string = req.originalUrl;
         const scope: string = oathScopePrefix + companyNumber;
@@ -75,8 +75,6 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
 
         const mutableSession = req.session as Mutable<Session>;
         mutableSession.data[SessionKey.OAuth2Nonce] = nonce;
-
-        await this.persistMutableSession(req, res, mutableSession);
 
         return `${this.authConfig.accountUrl}/oauth2/authorise`.concat(
             '?',

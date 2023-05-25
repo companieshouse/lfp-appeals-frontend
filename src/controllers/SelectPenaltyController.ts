@@ -1,4 +1,4 @@
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from '@companieshouse/node-session-handler';
 import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';

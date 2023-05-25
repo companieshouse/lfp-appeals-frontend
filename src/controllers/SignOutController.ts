@@ -1,15 +1,13 @@
-import { Session, SessionMiddleware, SessionStore } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
-import { Request, Response} from 'express';
+import { Session, SessionMiddleware } from '@companieshouse/node-session-handler';
+import { Request } from 'express';
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
+import { RedirectResult } from 'inversify-express-utils/dts/results';
 
 import { SIGNOUT_RETURN_URL_SESSION_KEY } from 'app/Constants';
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { loggerInstance } from 'app/middleware/Logger';
-import { SessionStoreConfig } from 'app/models/SessionConfig';
 import { ACCOUNTS_SIGNOUT_URI, SIGNOUT, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
 
-const sessionConfig: SessionStoreConfig = SessionStoreConfig.createFromEnvironmentVariables();
 const template = 'signout';
 
 @controller(SIGNOUT_PAGE_URI, SessionMiddleware)
@@ -22,7 +20,7 @@ export class SignOutController extends BaseAsyncHttpController {
         if (!session) {
             throw new Error('Session was expected but none found');
         }
-        await this.saveSession(session, this.httpContext.request, this.httpContext.response);
+
         return this.render(SIGNOUT, {
             backLinkUrl: returnPage,
             templateName : template
@@ -30,14 +28,14 @@ export class SignOutController extends BaseAsyncHttpController {
     }
 
     @httpPost('')
-    public async postPage(): Promise<void> {
+    public async postPage(): Promise<void | RedirectResult> {
         const returnPage = this.getReturnPageFromSession(this.httpContext.request.session as Session);
 
         switch (this.httpContext.request.body.signingOut) {
             case 'yes':
-                return this.httpContext.response.redirect(ACCOUNTS_SIGNOUT_URI);
+                return this.redirect(ACCOUNTS_SIGNOUT_URI);
             case 'no':
-                return this.httpContext.response.redirect(returnPage);
+                return this.redirect(returnPage);
             default:
                 return this.showMustSelectButtonError(returnPage);
             }
@@ -66,28 +64,5 @@ export class SignOutController extends BaseAsyncHttpController {
                 backLinkUrl: returnPage,
                 noInputSelectedError: true
             });
-    }
-
-    private async saveSession(session: Session, req: Request, res: Response): Promise<void> {
-        await this.httpContext.container
-            .get(SessionStore)
-            .store(
-                Cookie.createFrom(req.cookies[sessionConfig.sessionCookieName]),
-                session.data,
-                sessionConfig.sessionTimeToLiveInSeconds);
-
-        const cookie = {
-            domain: sessionConfig.sessionCookieDomain,
-            path: '/',
-            httpOnly: true,
-            secure: sessionConfig.sessionCookieSecureFlag === 'true',
-            maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
-            encode: String
-        };
-
-        res.cookie(
-            sessionConfig.sessionCookieName,
-            this.httpContext.request.cookies[sessionConfig.sessionCookieName],
-            cookie);
     }
 }

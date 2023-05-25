@@ -1,9 +1,10 @@
-import { Session, SessionStore } from 'ch-node-session-handler';
-import { Cookie } from 'ch-node-session-handler/lib/session/model/Cookie';
+import { Session, SessionStore } from '@companieshouse/node-session-handler';
+import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { unmanaged } from 'inversify';
 import { httpGet, httpPost } from 'inversify-express-utils';
+import { RedirectResult } from 'inversify-express-utils/dts/results';
 
 import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
 import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
@@ -38,7 +39,7 @@ const defaultChangeModeAction = () => CHECK_YOUR_APPEAL_PAGE_URI;
 const sessionConfig: SessionStoreConfig = SessionStoreConfig.createFromEnvironmentVariables();
 
 export interface FormActionHandler {
-    handle(request: Request, response: Response): void | Promise<void>;
+    handle(request: Request, response: Response): void | Promise<void | RedirectResult>;
 }
 
 export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHandler;
@@ -66,7 +67,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * whole session is necessary.
      */
     @httpGet('')
-    public async onGet(): Promise<void> {
+    public async onGet(): Promise<void | RedirectResult> {
         return this.render(
             this.template,
             {
@@ -121,7 +122,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * no matching action handler for action query argument then an error will be thrown.
      */
     @httpPost('')
-    public async onPost(): Promise<void> {
+    public async onPost(): Promise<void | RedirectResult> {
         const action: string | undefined = this.httpContext.request.query.action as string | undefined;
 
         if (action != null) {
@@ -160,7 +161,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
     private getDefaultActionHandler(): FormActionHandler {
         const that = this;
         return {
-            async handle(request: Request, response: Response): Promise<void> {
+            async handle(request: Request): Promise<void | RedirectResult> {
                 if (that.validator != null) {
                     const validationResult: ValidationResult = await that.validator.validate(request);
                     if (validationResult.errors.length > 0) {
@@ -201,11 +202,9 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
                         .prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
 
                     session.setExtraData(APPLICATION_DATA_KEY, applicationData);
-
-                    await that.persistSession();
                 }
 
-                return response.redirect(that.navigation.next(request));
+                return that.redirect(that.navigation.next(request));
             }
         };
     }

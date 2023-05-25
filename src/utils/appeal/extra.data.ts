@@ -1,4 +1,4 @@
-import { Session } from 'ch-node-session-handler';
+import { Session } from '@companieshouse/node-session-handler';
 import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { OK } from 'http-status-codes';

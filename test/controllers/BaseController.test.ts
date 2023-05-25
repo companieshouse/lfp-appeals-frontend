@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
+import { Session } from '@companieshouse/node-session-handler';
 import { Arg } from '@fluffy-spoon/substitute';
 import { AnySchema } from '@hapi/joi';
 import * as Joi from '@hapi/joi';
 import * as assert from 'assert';
-import { Session } from 'ch-node-session-handler';
 import { Request, Response } from 'express';
 import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { Container } from 'inversify';
@@ -171,18 +171,17 @@ describe('Base controller', () => {
 
         it('should redirect to next page when no processors are registered', async () => {
             const response = createSubstituteOf<Response>();
-            await createTestController({
+            const result = await createTestController({
                 httpContext: {
                     request: {
                         query: {},
                         session: undefined
                     },
                     response
-                }
+                },
             }).onPost();
 
-            // @ts-ignore
-            response.received().redirect('/next');
+            assert.equal(result.location, '/next');
         });
 
         it('should redirect to next page when processing is succeeded', async () => {
@@ -197,7 +196,7 @@ describe('Base controller', () => {
                 substitute.get(HappyProcessor).returns(new HappyProcessor());
             });
             const response = createSubstituteOf<Response>();
-            await createTestController({
+            const result = await createTestController({
                 httpContext: {
                     container,
                     request: {
@@ -209,8 +208,7 @@ describe('Base controller', () => {
                 processor: HappyProcessor,
             }).onPost();
 
-            // @ts-ignore
-            response.received().redirect('/next');
+            assert.equal(result.location, '/next');
         });
 
         it('should throw error when processing failed', async () => {
@@ -226,8 +224,9 @@ describe('Base controller', () => {
             });
             const response = createSubstituteOf<Response>();
 
+            let result: any;
             try {
-                await createTestController({
+                result = await createTestController({
                     httpContext: {
                         container,
                         request: {
@@ -242,8 +241,7 @@ describe('Base controller', () => {
                 assert.equal(e.message, ':(');
             }
 
-            // @ts-ignore
-            response.didNotReceive().redirect('/next');
+            assert.equal(result, undefined);
         });
     });
 });
