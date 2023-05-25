@@ -1,6 +1,7 @@
-import { Session } from 'ch-node-session-handler';
+import { Session } from '@companieshouse/node-session-handler';
 import { Request } from 'express';
 import { provide } from 'inversify-binding-decorators';
+import { RedirectResult } from 'inversify-express-utils/dts/results';
 
 import { BaseController, ChangeModeAction, FormSanitizeFunction } from 'app/controllers/BaseController';
 import {
@@ -51,7 +52,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
         ], changeModeAction);
     }
 
-    async onGet(): Promise<void> {
+    async onGet(): Promise<void | RedirectResult> {
 
         const session: Session | undefined = this.httpContext.request.session;
 
@@ -62,7 +63,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
             loggerInstance()
                 .info(`${SafeNavigationBaseController.name} - onGet: No navigation permissions found.`);
             if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
-                return this.httpContext.response.redirect(PENALTY_DETAILS_PAGE_URI);
+                return this.redirect(PENALTY_DETAILS_PAGE_URI);
             }
         } else {
             const permissions = applicationData.navigation.permissions;
@@ -70,7 +71,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
                 loggerInstance()
                     .info(`${SafeNavigationBaseController.name} - onGet: Application did not have navigation permissions to access ${this.httpContext.request.path}.`);
                 if (this.httpContext.request.path !== PENALTY_DETAILS_PAGE_URI) {
-                    return this.httpContext.response.redirect(permissions[permissions.length - 1]);
+                    return this.redirect(permissions[permissions.length - 1]);
                 }
             }
         }
@@ -78,7 +79,7 @@ export abstract class SafeNavigationBaseController<FORM> extends BaseController<
         return super.onGet();
     }
 
-    async onPost(): Promise<void> {
+    async onPost(): Promise<void | RedirectResult> {
         (this.httpContext.request as RequestWithNavigation).navigation = this.navigation;
         return super.onPost();
     }

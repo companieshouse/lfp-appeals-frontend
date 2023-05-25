@@ -1,4 +1,4 @@
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from '@companieshouse/node-session-handler';
 import { controller } from 'inversify-express-utils';
 import { FormValidator } from './validators/FormValidator';
 

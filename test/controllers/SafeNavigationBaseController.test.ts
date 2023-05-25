@@ -1,8 +1,9 @@
 import 'reflect-metadata';
 
+import { ISession, Session, SessionStore } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
 import { Arg } from '@fluffy-spoon/substitute';
-import { ISession, Session, SessionStore } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
+import * as assert from 'assert';
 import { Request, Response } from 'express';
 import { OK } from 'http-status-codes';
 import { Container } from 'inversify';
@@ -54,10 +55,10 @@ function createTestController(config: ControllerConfig): any {
 
 describe('Safe navigation base controller', () => {
     describe('GET handler', () => {
-        it ('should redirect to start of the journey when user holds no navigation passes', () => {
+        it ('should redirect to start of the journey when user holds no navigation passes', async () => {
             const response = createSubstituteOf<Response>();
 
-            createTestController({
+            const result = await createTestController({
                 httpContext: {
                     request: {
                         url: '/summary',
@@ -67,14 +68,13 @@ describe('Safe navigation base controller', () => {
                 }
             }).onGet();
 
-            // @ts-ignore
-            response.received().redirect(PENALTY_DETAILS_PAGE_URI);
+            assert.equal(result.location, PENALTY_DETAILS_PAGE_URI);
         });
 
-        it ('should redirect to last page user progressed to when user holds no navigation pass for page', () => {
+        it ('should redirect to last page user progressed to when user holds no navigation pass for page', async () => {
             const response = createSubstituteOf<Response>();
 
-            createTestController({
+            const result = await createTestController({
                 httpContext: {
                     request: {
                         url: '/summary',
@@ -92,8 +92,7 @@ describe('Safe navigation base controller', () => {
                 }
             }).onGet();
 
-            // @ts-ignore
-            response.received().redirect('/intro');
+            assert.equal(result.location, '/intro');
         });
 
         it ('should render visited page when user holds navigation pass for page', () => {

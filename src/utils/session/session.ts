@@ -1,8 +1,8 @@
-import { Session } from 'ch-node-session-handler';
-import { AccessTokenKeys } from 'ch-node-session-handler/lib/session/keys/AccessTokenKeys';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { Session } from '@companieshouse/node-session-handler';
+import { AccessTokenKeys } from '@companieshouse/node-session-handler/lib/session/keys/AccessTokenKeys';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
+import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from '../CommonErrors';
 
 function getSignInInfo(session: Session | undefined): ISignInInfo | undefined {

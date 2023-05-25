@@ -1,5 +1,5 @@
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { Session } from 'ch-node-session-handler';
+import { Session } from '@companieshouse/node-session-handler';
 import { expect } from 'chai';
 import { BAD_REQUEST, MOVED_TEMPORARILY, OK } from 'http-status-codes';
 import request from 'supertest';

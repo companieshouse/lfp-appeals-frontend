@@ -1,8 +1,9 @@
-import { SessionMiddleware } from 'ch-node-session-handler';
+import { SessionMiddleware } from '@companieshouse/node-session-handler';
 import { Request, Response } from 'express';
 import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import { inject } from 'inversify';
 import { controller } from 'inversify-express-utils';
+import { RedirectResult } from 'inversify-express-utils/dts/results';
 
 import { FormActionHandler, FormActionHandlerConstructor } from 'app/controllers/BaseController';
 import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
@@ -123,7 +124,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
         return {
             'upload-file': {
-                async handle(request: Request, response: Response): Promise<void> {
+                async handle(request: Request, response: Response): Promise<void | RedirectResult> {
 
                     const applicationData: ApplicationData = request.session!
                         .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
@@ -176,17 +177,15 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                         url: `${downloadBaseURI}/prompt/${id}?c=${appeal.penaltyIdentifier.companyNumber}`
                     });
 
-                    await that.persistSession();
-
                     if (request.query.cm === '1') {
-                        return response.redirect(request.route.path + '?cm=1');
+                        return that.redirect(request.route.path + '?cm=1');
                     }
 
-                    response.redirect(request.route.path);
+                    return that.redirect(request.route.path);
                 }
             },
             'continue-without-upload': {
-                async handle(request: Request, response: Response): Promise<void> {
+                async handle(request: Request, response: Response): Promise<RedirectResult> {
 
                     if (that.formActionProcessors != null) {
                         for (const actionProcessorType of that.formActionProcessors) {
@@ -208,10 +207,8 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                         applicationData.appeal =
                             that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
 
-                        await that.persistSession();
                     }
-
-                    return response.redirect(that.navigation.next(request));
+                    return that.redirect(that.navigation.next(request));
                 }
             }
         };

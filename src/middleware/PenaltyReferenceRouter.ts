@@ -1,4 +1,4 @@
-import { Session } from 'ch-node-session-handler';
+import { Session } from '@companieshouse/node-session-handler';
 import { NextFunction, Request, Response } from 'express';
 import { provide } from 'inversify-binding-decorators';
 import { BaseMiddleware } from 'inversify-express-utils';

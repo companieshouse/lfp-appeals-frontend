@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
-import { Session } from 'ch-node-session-handler';
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from 'ch-node-session-handler/lib/session/keys/SignInInfoKeys';
+import { Session } from '@companieshouse/node-session-handler';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
 import { expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import { FORBIDDEN } from 'http-status-codes';

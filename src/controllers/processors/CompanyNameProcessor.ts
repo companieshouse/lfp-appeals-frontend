@@ -1,5 +1,5 @@
-import { SessionKey } from 'ch-node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo } from 'ch-node-session-handler/lib/session/model/SessionInterfaces';
+import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
+import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
 import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
