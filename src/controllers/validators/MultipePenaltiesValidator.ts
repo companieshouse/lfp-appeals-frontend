@@ -1,5 +1,5 @@
+import { PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import { Session } from '@companieshouse/node-session-handler';
-import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { Request } from 'express';
 import { FormValidator } from './FormValidator';
 

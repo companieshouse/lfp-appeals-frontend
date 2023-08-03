@@ -1,4 +1,4 @@
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
+import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import { assert, expect } from 'chai';
 import { NextFunction, Request, Response } from 'express';
 import { createSubstituteOf } from '../SubstituteFactory';

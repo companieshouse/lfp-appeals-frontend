@@ -1,5 +1,5 @@
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
-import Resource from 'ch-sdk-node/dist/services/resource';
+import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp/types';
+import Resource from '@companieshouse/api-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';

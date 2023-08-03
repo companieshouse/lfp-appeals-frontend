@@ -1,4 +1,4 @@
-import { PenaltyList } from 'ch-sdk-node/dist/services/lfp';
+import { PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 
 export interface PenaltyIdentifier {
     companyNumber: string;

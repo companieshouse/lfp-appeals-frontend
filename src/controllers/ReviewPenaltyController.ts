@@ -1,5 +1,5 @@
+import { Penalty } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import { SessionMiddleware } from '@companieshouse/node-session-handler';
-import { Penalty } from 'ch-sdk-node/dist/services/lfp';
 import { Request } from 'express';
 import { controller } from 'inversify-express-utils';
 import { SafeNavigationBaseController } from './SafeNavigationBaseController';

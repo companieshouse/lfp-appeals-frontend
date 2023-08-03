@@ -1,6 +1,6 @@
 // tslint:disable: max-classes-per-file
-import { createApiClient } from 'ch-sdk-node';
-import ApiClient from 'ch-sdk-node/dist/client';
+import { createApiClient } from '@companieshouse/api-sdk-node';
+import ApiClient from '@companieshouse/api-sdk-node/dist/client';
 
 type AuthType = 'OAuth2' | 'ApiKey' | 'None';
 type KeyType = string | undefined;

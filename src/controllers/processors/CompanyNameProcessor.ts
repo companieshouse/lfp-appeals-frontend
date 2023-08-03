@@ -1,7 +1,7 @@
+import { CompanyProfile } from '@companieshouse/api-sdk-node/dist/services/company-profile/types';
+import Resource from '@companieshouse/api-sdk-node/dist/services/resource';
 import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
 import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
-import Resource from 'ch-sdk-node/dist/services/resource';
 import { Request } from 'express';
 import { OK } from 'http-status-codes';
 import { inject } from 'inversify';

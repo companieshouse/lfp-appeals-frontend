@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
+import ApiClient from '@companieshouse/api-sdk-node/dist/client';
+import CompanyProfileService from '@companieshouse/api-sdk-node/dist/services/company-profile/service';
+import { CompanyProfile } from '@companieshouse/api-sdk-node/dist/services/company-profile/types';
 import Substitute, { Arg } from '@fluffy-spoon/substitute';
-import ApiClient from 'ch-sdk-node/dist/client';
-import CompanyProfileService from 'ch-sdk-node/dist/services/company-profile/service';
-import { CompanyProfile } from 'ch-sdk-node/dist/services/company-profile/types';
 import { assert, expect } from 'chai';
 import { Request } from 'express';
 
