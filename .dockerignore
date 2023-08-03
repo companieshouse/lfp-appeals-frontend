@@ -4,10 +4,14 @@
 
 # exceptions from `exclude all` rule
 
-!package.json
-!package-lock.json
-
-!src
-!tsconfig.json
 !tsconfig.prod.json
 !gulpfile.js
+
+!dist
+!docker_start.sh
+!routes.yaml
+!src
+!views
+!package-lock.json
+!package.json
+!tsconfig.json
