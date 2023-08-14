@@ -146,14 +146,7 @@ describe('Safe navigation base controller', () => {
                         query: {},
                         cookies: {},
                         session: new Session({
-                            [SessionKey.Id]: 'cookie-id',
-                            [SessionKey.ExtraData]: {
-                                [APPLICATION_DATA_KEY]: {
-                                    navigation: {
-                                        permissions: ['/intro']
-                                    }
-                                } as Partial<ApplicationData>
-                            }
+                            [SessionKey.Id]: 'cookie-id'
                         })
                     },
                     response: createSubstituteOf<Response>()
