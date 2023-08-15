@@ -10,29 +10,29 @@ locals {
   healthcheck_path          = "/appeal-a-penalty" #healthcheck path for confirmation statement web
   healthcheck_matcher       = "200-302"           # no explicit healthcheck in this service yet, change this when added!
 
-  service_secrets     = jsondecode(data.vault_generic_secret.service_secrets.data_json)
+  service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
 
-  parameter_store_secrets    = {
-    "vpc_name"                  = local.service_secrets["vpc_name"]
-    "chs_api_key"               = local.service_secrets["chs_api_key"]
-    "internal_api_url"          = local.service_secrets["internal_api_url"]
-    "cdn_host"                  = local.service_secrets["cdn_host"]
-    "oauth2_auth_uri"           = local.service_secrets["oauth2_auth_uri"]
-    "oauth2_redirect_uri"       = local.service_secrets["oauth2_redirect_uri"]
-    "account_test_url"          = local.service_secrets["account_test_url"]
-    "account_url"               = local.service_secrets["account_url"]
-    "cache_server"              = local.service_secrets["cache_server"]
+  parameter_store_secrets = {
+    "vpc_name"            = local.service_secrets["vpc_name"]
+    "chs_api_key"         = local.service_secrets["chs_api_key"]
+    "internal_api_url"    = local.service_secrets["internal_api_url"]
+    "cdn_host"            = local.service_secrets["cdn_host"]
+    "oauth2_auth_uri"     = local.service_secrets["oauth2_auth_uri"]
+    "oauth2_redirect_uri" = local.service_secrets["oauth2_redirect_uri"]
+    "account_test_url"    = local.service_secrets["account_test_url"]
+    "account_url"         = local.service_secrets["account_url"]
+    "cache_server"        = local.service_secrets["cache_server"]
   }
 
   vpc_name            = local.service_secrets["vpc_name"]
-  chs_api_key               = local.service_secrets["chs_api_key"]
-  internal_api_url          = local.service_secrets["internal_api_url"]
-  cdn_host                  = local.service_secrets["cdn_host"]
-  oauth2_auth_uri           = local.service_secrets["oauth2_auth_uri"]
-  oauth2_redirect_uri       = local.service_secrets["oauth2_redirect_uri"]
-  account_test_url          = local.service_secrets["account_test_url"]
-  account_url               = local.service_secrets["account_url"]
-  cache_server              = local.service_secrets["cache_server"]
+  chs_api_key         = local.service_secrets["chs_api_key"]
+  internal_api_url    = local.service_secrets["internal_api_url"]
+  cdn_host            = local.service_secrets["cdn_host"]
+  oauth2_auth_uri     = local.service_secrets["oauth2_auth_uri"]
+  oauth2_redirect_uri = local.service_secrets["oauth2_redirect_uri"]
+  account_test_url    = local.service_secrets["account_test_url"]
+  account_url         = local.service_secrets["account_url"]
+  cache_server        = local.service_secrets["cache_server"]
   # TODO: Added these, ask ellis for these and remove this comment
   cookie_secret         = local.service_secrets["cookie_secret"]
   file_transfer_api_key = local.service_secrets["file_transfer_api_key"]
@@ -54,17 +54,17 @@ locals {
   }
 
   task_secrets = [
-    { "name": "CHS_DEVELOPER_CLIENT_ID", "valueFrom": "${local.secrets_arn_map.web-oauth2-client-id}" },
-    { "name": "CHS_DEVELOPER_CLIENT_SECRET", "valueFrom": "${local.secrets_arn_map.web-oauth2-client-secret}" },
-    { "name": "COOKIE_SECRET", "valueFrom": "${local.secrets_arn_map.web-oauth2-cookie-secret}" },
-    { "name": "DEVELOPER_OAUTH2_REQUEST_KEY", "valueFrom": "${local.secrets_arn_map.web-oauth2-request-key}" },
-    { "name": "CHS_API_KEY", "valueFrom": "${local.service_secrets_arn_map.chs_api_key}" },
-    { "name": "CACHE_SERVER", "valueFrom": "${local.service_secrets_arn_map.cache_server}" },
-    { "name": "OAUTH2_REDIRECT_URI", "valueFrom": "${local.service_secrets_arn_map.oauth2_redirect_uri}" },
-    { "name": "OAUTH2_AUTH_URI", "valueFrom": "${local.service_secrets_arn_map.oauth2_auth_uri}" },
-    { "name": "ACCOUNT_URL", "valueFrom": "${local.service_secrets_arn_map.account_url}" },
-    { "name": "ACCOUNT_TEST_URL", "valueFrom": "${local.service_secrets_arn_map.account_test_url}" },
-    { "name": "INTERNAL_API_URL", "valueFrom": "${local.service_secrets_arn_map.internal_api_url}" }
+    { "name" : "CHS_DEVELOPER_CLIENT_ID", "valueFrom" : "${local.secrets_arn_map.web-oauth2-client-id}" },
+    { "name" : "CHS_DEVELOPER_CLIENT_SECRET", "valueFrom" : "${local.secrets_arn_map.web-oauth2-client-secret}" },
+    { "name" : "COOKIE_SECRET", "valueFrom" : "${local.secrets_arn_map.web-oauth2-cookie-secret}" },
+    { "name" : "DEVELOPER_OAUTH2_REQUEST_KEY", "valueFrom" : "${local.secrets_arn_map.web-oauth2-request-key}" },
+    { "name" : "CHS_API_KEY", "valueFrom" : "${local.service_secrets_arn_map.chs_api_key}" },
+    { "name" : "CACHE_SERVER", "valueFrom" : "${local.service_secrets_arn_map.cache_server}" },
+    { "name" : "OAUTH2_REDIRECT_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_redirect_uri}" },
+    { "name" : "OAUTH2_AUTH_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_auth_uri}" },
+    { "name" : "ACCOUNT_URL", "valueFrom" : "${local.service_secrets_arn_map.account_url}" },
+    { "name" : "ACCOUNT_TEST_URL", "valueFrom" : "${local.service_secrets_arn_map.account_test_url}" },
+    { "name" : "INTERNAL_API_URL", "valueFrom" : "${local.service_secrets_arn_map.internal_api_url}" }
   ]
 
   task_environment = [
