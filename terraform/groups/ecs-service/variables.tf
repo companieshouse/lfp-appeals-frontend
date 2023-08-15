@@ -16,7 +16,7 @@ variable "aws_profile" {
   description = "The AWS profile to use for deployment."
 }
 variable "kms_alias" {
-  type        = string
+  type = string
 }
 # ------------------------------------------------------------------------------
 # Terraform
@@ -50,19 +50,19 @@ variable "docker_registry" {
 # Service performance and scaling configs
 # ------------------------------------------------------------------------------
 variable "desired_task_count" {
-  type = number
+  type        = number
   description = "The desired ECS task count for this service"
-  default = 1 # defaulted low for dev environments, override for production
+  default     = 1 # defaulted low for dev environments, override for production
 }
 variable "required_cpus" {
-  type = number
+  type        = number
   description = "The required cpu resource for this service. 1024 here is 1 vCPU"
-  default = 128 # defaulted low for dev environments, override for production
+  default     = 128 # defaulted low for dev environments, override for production
 }
 variable "required_memory" {
-  type = number
+  type        = number
   description = "The required memory for this service"
-  default = 256 # defaulted low for node service in dev environments, override for production
+  default     = 256 # defaulted low for node service in dev environments, override for production
 }
 
 # ------------------------------------------------------------------------------
@@ -80,105 +80,100 @@ variable "lfp_appeals_frontend_version" {
 }
 
 variable "api_url" {
-  type        = string
+  type = string
 }
 
 variable "account_web_url" {
-  type        = string
+  type = string
 }
 
 variable "allowed_company_prefixes" {
-  type        = string
+  type = string
 }
 
 variable "appeals_api_url" {
-  type        = string
+  type = string
 }
 
 variable "cdn_host" {
-  type        = string
+  type = string
 }
 
 variable "chs_url" {
-  type        = string
+  type = string
 }
 
 variable "company_auth_verification_feature_enabled" {
-  type        = string
-  default     = "1"
+  type    = string
+  default = "1"
 }
 
 variable "cookie_domain" {
-  type        = string
+  type = string
 }
 
 variable "cookie_name" {
-  type        = string
-  default     = "__SID"
+  type    = string
+  default = "__SID"
 }
 
 variable "default_session_expiration" {
-  type        = string
-  default     = "3600"
+  type    = string
+  default = "3600"
 }
 
 variable "default_team_email" {
-  type        = string
+  type = string
 }
 
 variable "enquiry_email" {
-  type        = string
+  type = string
 }
 
 variable "file_transfer_api_url" {
-  type        = string
+  type = string
 }
 
 variable "human_log" {
-  type        = string
-  default     = "1"
+  type    = string
+  default = "1"
 }
 
 variable "illness_reason_feature_enabled" {
-  type        = string
-  default     = "1"
+  type    = string
+  default = "1"
 }
 
 variable "kafka_broker_addr" {
-  type        = string
-}
-
-variable "log_level" {
-  type        = string
-  default     = "info"
+  type = string
 }
 
 variable "max_file_size_bytes" {
-  type        = string
-  default     = "4194304"
+  type    = string
+  default = "4194304"
 }
 
 variable "max_number_of_files" {
-  type        = string
-  default     = "10"
+  type    = string
+  default = "10"
 }
 
 variable "ni_team_email" {
-  type        = string
+  type = string
 }
 
 variable "piwik_site_id" {
-  type        = string
+  type = string
 }
 
 variable "piwik_url" {
-  type        = string
+  type = string
 }
 
 variable "sc_team_email" {
-  type        = string
+  type = string
 }
 
 variable "supported_mime_types" {
-  type        = string
+  type = string
 }

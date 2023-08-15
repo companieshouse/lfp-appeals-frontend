@@ -1,0 +1,39 @@
+aws_bucket = "live-eu-west-2.terraform-state.ch.gov.uk"
+remote_state_bucket = "ch-live-terraform-state-london"
+environment = "live"
+deploy_to = "live"
+state_prefix = "env:/live"
+aws_profile = "live-eu-west-2"
+kms_alias = "alias/live-eu-west-2/environment-services-kms"
+
+# service configs
+# Commented params moved to vault service secrets
+# oauth2_auth_uri
+# oauth2_redirect_uri
+# account_url
+# cache_server
+
+# cookie_secret
+# file_transfer_api_key
+# oauth2_client_secret
+# oauth2_request_key
+# oauth2_token_uri
+# oauth2_client_id
+
+account_web_url = "https://account.live.aws.chdev.org"
+api_url = "https://api.live.aws.chdev.org"
+allowed_company_prefixes = "SC,NI,OC,SO,R,AP"
+appeals_api_url = "http://api.chs-dev.internal"
+cdn_host = "d3uvya5a8a1ncx.cloudfront.net"
+chs_url = "https://live.aws.chdev.org"
+cookie_domain = "live.aws.chdev.org"
+company_auth_verification_feature_enabled = "0"
+default_team_email = ""
+enquiry_email = ""
+file_transfer_api_url = "https://6iwnopwp6k-vpce-030b059ca4dfb6eb2.execute-api.eu-west-2.amazonaws.com/live/files"
+kafka_broker_addr = "kafka-broker1-live.live.aws.internal:9092"
+ni_team_email = ""
+piwik_site_id = "7"
+piwik_url = "https://matomo.platform.aws.chdev.org"
+sc_team_email = ""
+supported_mime_types = "application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/octet-stream,application/x-zip-compressed,application/x-zip,multipart/x-zip,image/gif,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

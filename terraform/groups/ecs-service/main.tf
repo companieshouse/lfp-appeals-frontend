@@ -10,23 +10,21 @@ terraform {
     }
   }
 }
-
-provider "aws" {
-  region  = var.aws_region
-}
-
 terraform {
   backend "s3" {}
 }
 
-module "secrets" {
-  source = "./module-secrets"
+provider "aws" {
+  region = var.aws_region
+}
 
-  stack_name  = local.stack_name
+module "secrets" {
+  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/secrets?ref=1.0.191"
+
   name_prefix = "${local.service_name}-${var.environment}"
   environment = var.environment
   kms_key_id  = data.aws_kms_key.kms_key.id
-  secrets     = data.vault_generic_secret.service_secrets.data
+  secrets     = local.parameter_store_secrets
 }
 
 module "ecs-service" {
@@ -40,7 +38,7 @@ module "ecs-service" {
   task_execution_role_arn = data.aws_iam_role.ecs_cluster_iam_role.arn
 
   # Load balancer configuration
-  lb_listener_arn           = data.aws_lb_listener.filing_maintain_lb_listener.arn
+  lb_listener_arn           = data.aws_lb_listener.company_requests_lb_listener.arn
   lb_listener_rule_priority = local.lb_listener_rule_priority
   lb_listener_paths         = local.lb_listener_paths
   healthcheck_path          = local.healthcheck_path
@@ -67,5 +65,5 @@ module "ecs-service" {
   task_environment = local.task_environment
   task_secrets     = local.task_secrets
 
-  depends_on=[module.secrets]
+  depends_on = [module.secrets]
 }
