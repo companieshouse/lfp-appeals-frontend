@@ -4,7 +4,7 @@ locals {
   name_prefix               = "${local.stack_name}-${var.environment}"
   service_name              = "lfp-appeals-frontend"
   container_port            = "3000" # default node port required here until prod docker container is built allowing port change via env var
-  docker_repo               = "lfp_appeals_frontend"
+  docker_repo               = "lfp-appeals-frontend"
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/.*"]
   healthcheck_path          = "/appeal-a-penalty" #healthcheck path for confirmation statement web
