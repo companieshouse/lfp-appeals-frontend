@@ -2,7 +2,7 @@
 locals {
   stack_name                = "company-requests" # this must match the stack name the service deploys into
   name_prefix               = "${local.stack_name}-${var.environment}"
-  service_name              = "lfp_appeals_frontend"
+  service_name              = "lfp-appeals-frontend"
   container_port            = "3000" # default node port required here until prod docker container is built allowing port change via env var
   docker_repo               = "lfp_appeals_frontend"
   lb_listener_rule_priority = 10
