@@ -1,4 +1,4 @@
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
+import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
 import request from 'supertest';

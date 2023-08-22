@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
+import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import { Arg } from '@fluffy-spoon/substitute';
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { expect } from 'chai';
 import { INTERNAL_SERVER_ERROR, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
 import request from 'supertest';

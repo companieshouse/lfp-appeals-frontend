@@ -1,6 +1,6 @@
+import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp/types';
+import Resource from '@companieshouse/api-sdk-node/dist/services/resource';
 import { Session } from '@companieshouse/node-session-handler';
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp/types';
-import Resource from 'ch-sdk-node/dist/services/resource';
 import { OK } from 'http-status-codes';
 import moment from 'moment';
 

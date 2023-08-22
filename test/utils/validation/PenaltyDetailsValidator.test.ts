@@ -1,6 +1,6 @@
+import ApiClient from '@companieshouse/api-sdk-node/dist/client';
+import { LateFilingPenaltyService, Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
 import Joi from '@hapi/joi';
-import ApiClient from 'ch-sdk-node/dist/client';
-import { LateFilingPenaltyService, Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
 import { assert, expect } from 'chai';
 import { Request } from 'express';
 
