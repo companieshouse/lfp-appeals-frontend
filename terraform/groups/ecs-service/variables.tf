@@ -83,10 +83,6 @@ variable "api_url" {
   type = string
 }
 
-variable "account_web_url" {
-  type = string
-}
-
 variable "allowed_company_prefixes" {
   type = string
 }

@@ -21,6 +21,7 @@ locals {
     "oauth2_redirect_uri"   = local.service_secrets["oauth2_redirect_uri"]
     "account_test_url"      = local.service_secrets["account_test_url"]
     "account_url"           = local.service_secrets["account_url"]
+    "account_web_url"       = local.service_secrets["account_web_url"]
     "cache_server"          = local.service_secrets["cache_server"]
     "cookie_secret"         = local.service_secrets["cookie_secret"]
     "file_transfer_api_key" = local.service_secrets["file_transfer_api_key"]
@@ -38,6 +39,7 @@ locals {
   oauth2_redirect_uri   = local.service_secrets["oauth2_redirect_uri"]
   account_test_url      = local.service_secrets["account_test_url"]
   account_url           = local.service_secrets["account_url"]
+  account_web_url       = local.service_secrets["account_web_url"]
   cache_server          = local.service_secrets["cache_server"]
   cookie_secret         = local.service_secrets["cookie_secret"]
   file_transfer_api_key = local.service_secrets["file_transfer_api_key"]
@@ -73,12 +75,12 @@ locals {
     { "name" : "OAUTH2_TOKEN_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_token_uri}" },
     { "name" : "ACCOUNT_URL", "valueFrom" : "${local.service_secrets_arn_map.account_url}" },
     { "name" : "ACCOUNT_TEST_URL", "valueFrom" : "${local.service_secrets_arn_map.account_test_url}" },
+    { "name" : "ACCOUNT_WEB_URL", "valueFrom" : "${local.service_secrets_arn_map.account_web_url}" },
     { "name" : "INTERNAL_API_URL", "valueFrom" : "${local.service_secrets_arn_map.internal_api_url}" },
     { "name" : "FILE_TRANSFER_API_KEY", "valueFrom" : "${local.service_secrets_arn_map.file_transfer_api_key}" }
   ]
 
   task_environment = [
-    { "name" : "ACCOUNT_WEB_URL", "value" : "${var.account_web_url}" },
     { "name" : "ALLOWED_COMPANY_PREFIXES", "value" : "${var.allowed_company_prefixes}" },
     { "name" : "API_URL", "value" : "${var.api_url}" },
     { "name" : "APPEALS_API_URL", "value" : "${var.appeals_api_url}" },
