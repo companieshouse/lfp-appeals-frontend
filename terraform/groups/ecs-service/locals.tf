@@ -7,8 +7,8 @@ locals {
   docker_repo               = "lfp-appeals-frontend"
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/.*"]
-  healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
-  healthcheck_matcher       = "200"
+  healthcheck_path          = "/appeal-a-penalty" #healthcheck path for confirmation statement web
+  healthcheck_matcher       = "200-302"           # no explicit healthcheck in this service yet, change this when added!
 
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
 
@@ -21,7 +21,6 @@ locals {
     "oauth2_redirect_uri"   = local.service_secrets["oauth2_redirect_uri"]
     "account_test_url"      = local.service_secrets["account_test_url"]
     "account_url"           = local.service_secrets["account_url"]
-    "account_web_url"       = local.service_secrets["account_web_url"]
     "cache_server"          = local.service_secrets["cache_server"]
     "cookie_secret"         = local.service_secrets["cookie_secret"]
     "file_transfer_api_key" = local.service_secrets["file_transfer_api_key"]
@@ -39,7 +38,6 @@ locals {
   oauth2_redirect_uri   = local.service_secrets["oauth2_redirect_uri"]
   account_test_url      = local.service_secrets["account_test_url"]
   account_url           = local.service_secrets["account_url"]
-  account_web_url       = local.service_secrets["account_web_url"]
   cache_server          = local.service_secrets["cache_server"]
   cookie_secret         = local.service_secrets["cookie_secret"]
   file_transfer_api_key = local.service_secrets["file_transfer_api_key"]
@@ -75,12 +73,12 @@ locals {
     { "name" : "OAUTH2_TOKEN_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_token_uri}" },
     { "name" : "ACCOUNT_URL", "valueFrom" : "${local.service_secrets_arn_map.account_url}" },
     { "name" : "ACCOUNT_TEST_URL", "valueFrom" : "${local.service_secrets_arn_map.account_test_url}" },
-    { "name" : "ACCOUNT_WEB_URL", "valueFrom" : "${local.service_secrets_arn_map.account_web_url}" },
     { "name" : "INTERNAL_API_URL", "valueFrom" : "${local.service_secrets_arn_map.internal_api_url}" },
     { "name" : "FILE_TRANSFER_API_KEY", "valueFrom" : "${local.service_secrets_arn_map.file_transfer_api_key}" }
   ]
 
   task_environment = [
+    { "name" : "ACCOUNT_WEB_URL", "value" : "${var.account_web_url}" },
     { "name" : "ALLOWED_COMPANY_PREFIXES", "value" : "${var.allowed_company_prefixes}" },
     { "name" : "API_URL", "value" : "${var.api_url}" },
     { "name" : "APPEALS_API_URL", "value" : "${var.appeals_api_url}" },
@@ -105,6 +103,10 @@ locals {
     { "name" : "PIWIK_URL", "value" : "${var.piwik_url}" },
     { "name" : "SC_TEAM_EMAIL", "value" : "${var.sc_team_email}" },
     { "name" : "SUPPORTED_MIME_TYPES", "value" : "${var.supported_mime_types}" },
+    { "name" : "NODE_ENV", "value" : "${var.node_env}" },
+    { "name" : "TZ", "value" : "${var.tz}" },
+
+    
   ]
 
 }

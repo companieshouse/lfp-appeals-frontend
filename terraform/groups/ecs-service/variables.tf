@@ -83,6 +83,10 @@ variable "api_url" {
   type = string
 }
 
+variable "account_web_url" {
+  type = string
+}
+
 variable "allowed_company_prefixes" {
   type = string
 }
@@ -171,5 +175,13 @@ variable "sc_team_email" {
 }
 
 variable "supported_mime_types" {
+  type = string
+}
+
+variable "node_env" {
+  type = string
+}
+
+variable "tz" {
   type = string
 }

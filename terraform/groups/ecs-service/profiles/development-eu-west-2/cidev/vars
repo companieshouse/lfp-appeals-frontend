@@ -20,6 +20,7 @@ kms_alias = "alias/development-eu-west-2/environment-services-kms"
 # oauth2_token_uri
 # oauth2_client_id
 
+account_web_url = "https://account.cidev.aws.chdev.org"
 api_url = "https://api.cidev.aws.chdev.org"
 allowed_company_prefixes = "SC,NI,OC,SO,R,AP"
 appeals_api_url = "http://api.chs-dev.internal"
@@ -35,4 +36,7 @@ ni_team_email = "appeals.ch.fake+NI@gmail.com"
 piwik_site_id = "7"
 piwik_url = "https://matomo.platform.aws.chdev.org"
 sc_team_email = "appeals.ch.fake+SC@gmail.com"
+log_level = "debug"
+node_env = "docker"
+tz = "Europe/London"
 supported_mime_types = "application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/octet-stream,application/x-zip-compressed,application/x-zip,multipart/x-zip,image/gif,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
