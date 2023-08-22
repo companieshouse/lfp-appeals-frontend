@@ -6,8 +6,8 @@ locals {
   container_port            = "3000" # default node port required here until prod docker container is built allowing port change via env var
   docker_repo               = "lfp-appeals-frontend"
   lb_listener_rule_priority = 13
-  lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/.*"]
-  healthcheck_path          = "/appeal-a-penalty" #healthcheck path for confirmation statement web
+  lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/*"]
+  healthcheck_path          = "/appeal-a-penalty" #healthcheck path for lfp-appeals-frontend
   healthcheck_matcher       = "200-302"           # no explicit healthcheck in this service yet, change this when added!
 
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
