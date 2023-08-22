@@ -7,8 +7,8 @@ locals {
   docker_repo               = "lfp-appeals-frontend"
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/.*"]
-  healthcheck_path          = "/appeal-a-penalty" #healthcheck path for confirmation statement web
-  healthcheck_matcher       = "200-302"           # no explicit healthcheck in this service yet, change this when added!
+  healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
+  healthcheck_matcher       = "200"
 
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
 
