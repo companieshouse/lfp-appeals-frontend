@@ -39,7 +39,6 @@ class Processor implements FormActionProcessor {
     }
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export abstract class SafeNavigationBaseController<FORM> extends BaseController<FORM> {
     protected constructor (template: string,
         navigation: Navigation,

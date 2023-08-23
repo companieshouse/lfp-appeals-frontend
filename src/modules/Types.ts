@@ -1,4 +1,3 @@
-// tslint:disable: max-classes-per-file
 import { createApiClient } from "@companieshouse/api-sdk-node";
 import ApiClient from "@companieshouse/api-sdk-node/dist/client";
 

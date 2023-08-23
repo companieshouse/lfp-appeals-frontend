@@ -5,7 +5,6 @@ export function dateFilter (value: string): string {
         throw new Error(`Input should be formatted as yyyy-MM-dd: ${value}`);
     }
 
-    // tslint:disable-next-line: prefer-const
     const [year, month, day] = value.split("-").map(i => {
         return parseInt(i, 10);
     });

@@ -21,7 +21,7 @@ describe("SchemaValidator", () => {
 
         it("should return validation result without errors when validation succeeded", () => {
             const validationResult = validator.validate({ city: "Cardiff" });
-            // tslint:disable-next-line:no-unused-expression
+
             expect(validationResult.errors).to.be.empty;
         });
 

@@ -20,7 +20,7 @@ export function createSession (
         pst: "all",
         signin_info: {
             access_token: {
-                // tslint:disable-next-line: max-line-length
+
                 access_token: "/T+R3ABq5SPPbZWSeePnrDE1122FEZSAGRuhmn21aZSqm5UQt/wqixlSViQPOrWe2iFb8PeYjZzmNehMA3JCJg==",
                 expires_in: 3600,
                 refresh_token: "xUHinh19D17SQV2BYRLnGEZgeovYhcVitzLJMxpGxXW0w+30EYBb+6yF44pDWPsPejI17R5JSwy/Cw5kYQKO2A==",

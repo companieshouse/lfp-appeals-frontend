@@ -41,7 +41,7 @@ type ControllerConfig = {
 };
 
 function createTestController (config: ControllerConfig): any {
-    // tslint:disable-next-line:new-parens
+
     return new class extends BaseController<any> {
         constructor () {
             super(template, navigation, config.formSchema ? new FormValidator(config.formSchema) : undefined,
@@ -186,7 +186,7 @@ describe("Base controller", () => {
         });
 
         it("should redirect to next page when processing is succeeded", async () => {
-            // tslint:disable-next-line:max-classes-per-file
+
             class HappyProcessor implements FormActionProcessor {
                 process (): void | Promise<void> {
                     return Promise.resolve();
@@ -213,7 +213,7 @@ describe("Base controller", () => {
         });
 
         it("should throw error when processing failed", async () => {
-            // tslint:disable-next-line:max-classes-per-file
+
             class SadProcessor implements FormActionProcessor {
                 process (): void | Promise<void> {
                     return Promise.reject(new Error(":("));

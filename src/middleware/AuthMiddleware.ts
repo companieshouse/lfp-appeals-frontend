@@ -42,7 +42,6 @@ export class AuthMiddleware extends BaseMiddleware {
 
 }
 
-// tslint:disable-next-line: max-classes-per-file
 @provide(FileRestrictionsAuthMiddleware) // eslint-disable-line no-use-before-define
 export class FileRestrictionsAuthMiddleware extends AuthMiddleware {
     public getReturnToPage (req: Request): string {

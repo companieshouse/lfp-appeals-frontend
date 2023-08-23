@@ -276,7 +276,6 @@ describe("EvidenceDownloadController", () => {
                     }
                 });
 
-                // tslint:disable-next-line: max-line-length
                 it("should render custom error page when file service fails to download file with FileNotReady", async () => {
 
                     const fileTransferService = createSubstituteOf<FileTransferService>(service => {
@@ -298,7 +297,7 @@ describe("EvidenceDownloadController", () => {
                             fileTransferService.received();
                             appealsService.received();
                             expect(res.status).to.equal(FORBIDDEN);
-                            // tslint:disable-next-line: no-unused-expression
+
                             expect(res.header["content-disposition"]).to.be.undefined;
                             expect(res.text)
                                 .to.contain(expectedDownloadErrorHeading)
@@ -339,7 +338,7 @@ describe("EvidenceDownloadController", () => {
                                 appealsService.received();
                                 fileTransferService.received();
                                 expect(res.status).to.equal(FORBIDDEN);
-                                // tslint:disable-next-line: no-unused-expression
+
                                 expect(res.header["content-disposition"]).to.be.undefined;
                                 expect(res.text)
                                     .to.contain(expectedDownloadErrorHeading)

@@ -90,7 +90,6 @@ class Processor implements FormActionProcessor {
     }
 }
 
-// tslint:disable-next-line: max-classes-per-file
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
     CommonVariablesMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {

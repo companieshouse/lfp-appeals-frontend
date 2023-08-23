@@ -97,7 +97,7 @@ describe("FileTransferService", () => {
                 await fileTransferService.upload(Buffer.from("This is a test"), filename);
                 assert.fail("Test should failed while it did not");
             } catch (err) {
-                // tslint:disable: max-line-length
+
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty("message")
                     .equal(`File upload of "${filename}" file failed due to error: request failed with status code 500`);
             }
@@ -280,7 +280,7 @@ describe("FileTransferService", () => {
                 await fileTransferService.delete(fileId);
                 assert.fail("Test should failed while it did not");
             } catch (err) {
-                // tslint:disable: max-line-length
+
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty("message")
                     .equal(`File deletion of "${fileId}" file failed due to error: request failed with status code 500`);
             }
@@ -292,7 +292,7 @@ describe("FileTransferService", () => {
                 .reply(NO_CONTENT);
 
             const result = await fileTransferService.delete(fileId);
-            // tslint:disable-next-line: no-unused-expression
+
             expect(result).is.undefined;
         });
     });

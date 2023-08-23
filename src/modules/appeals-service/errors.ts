@@ -1,4 +1,3 @@
-// tslint:disable: max-classes-per-file
 export class AppealServiceError extends Error { }
 
 export class AppealNotFoundError extends Error { }

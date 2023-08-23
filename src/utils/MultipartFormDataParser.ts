@@ -11,7 +11,7 @@ export const parseFormData = util.promisify(
             fileSize: Number(getEnvOrThrow("MAX_FILE_SIZE_BYTES"))
         },
         // @ts-ignore
-        // tslint:disable-next-line: typedef
+
         fileFilter (request, file, cb) {
 
             if (!supportedFileTypes.includes(file.mimetype)) {

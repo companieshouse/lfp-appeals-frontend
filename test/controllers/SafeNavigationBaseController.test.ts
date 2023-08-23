@@ -40,7 +40,7 @@ type ControllerConfig = {
 };
 
 function createTestController (config: ControllerConfig): any {
-    // tslint:disable-next-line:new-parens
+
     return new class extends SafeNavigationBaseController<any> {
         constructor () {
             super(template, navigation, undefined, undefined,
@@ -196,7 +196,7 @@ describe("Safe navigation base controller", () => {
         });
 
         it("should not store navigation pass when no redirect is about to be made", () => {
-            // tslint:disable-next-line:max-classes-per-file
+
             class SadProcessor implements FormActionProcessor {
                 process (): void | Promise<void> {
                     return Promise.reject(new Error(":("));

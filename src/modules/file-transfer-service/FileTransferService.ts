@@ -103,7 +103,7 @@ export class FileTransferService {
 
     private handleResponseError (operation: "upload" | "metadata retrieval" | "download" | "deletion", subject: string):
         (err: AxiosError) => never {
-        // tslint:disable: max-line-length
+
         return (err: AxiosError) => {
             if (err.isAxiosError && err.response != null) {
                 switch (err.response.status) {

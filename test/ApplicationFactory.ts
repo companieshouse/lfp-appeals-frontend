@@ -21,7 +21,6 @@ import { getEnvOrThrow } from "app/utils/EnvironmentUtils";
 
 import { createSession } from "test/utils/session/SessionFactory";
 
-// tslint:disable-next-line:no-empty
 export const createAppConfigurable = (configureBindings: (container: Container) => void = () => { }): Application => {
 
     const container = new Container();
@@ -31,7 +30,7 @@ export const createAppConfigurable = (configureBindings: (container: Container) 
 };
 
 export const createApp = (data?: Partial<ApplicationData>,
-    // tslint:disable-next-line:no-empty
+
     configureBindings: (container: Container) => void = () => { },
     configureSession: (session: Session) => Session = (_: Session) => _) =>
     createAppConfigurable(container => {
