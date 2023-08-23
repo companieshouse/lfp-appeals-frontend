@@ -12,7 +12,7 @@ import {
     COMPANY_NAME_RETRIEVAL_ERROR,
     COMPANY_NUMBER_UNDEFINED_ERROR
 } from "app/controllers/processors/CompanyNameProcessor";
-import { AuthMethod, CompaniesHouseSDK } from "app/modules/Types";
+import { AuthMethod, CompaniesHouseSDKFactoryType } from "app/modules/Types";
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from "app/utils/CommonErrors";
 
 import { createSubstituteOf } from "test/SubstituteFactory";
@@ -22,7 +22,7 @@ describe("CompanyNameProcessor", () => {
 
     it("should throw an error if session is not found", async () => {
 
-        const companyNameProcessor = new CompanyNameProcessor(Substitute.for<CompaniesHouseSDK>());
+        const companyNameProcessor = new CompanyNameProcessor(Substitute.for<CompaniesHouseSDKFactoryType>());
         const request = {} as Request;
 
         try {
@@ -35,7 +35,7 @@ describe("CompanyNameProcessor", () => {
     });
     it("should throw an error if access token is missing from session", async () => {
 
-        const companyNameProcessor = new CompanyNameProcessor(Substitute.for<CompaniesHouseSDK>());
+        const companyNameProcessor = new CompanyNameProcessor(Substitute.for<CompaniesHouseSDKFactoryType>());
         const session = createSession("secret", true);
         delete session.data.signin_info?.access_token?.access_token;
 
@@ -53,7 +53,7 @@ describe("CompanyNameProcessor", () => {
     });
     it("should throw an error if company number is not in the request body", async () => {
 
-        const companyNameProcessor = new CompanyNameProcessor(createSubstituteOf<CompaniesHouseSDK>());
+        const companyNameProcessor = new CompanyNameProcessor(createSubstituteOf<CompaniesHouseSDKFactoryType>());
         const session = createSession("secret");
 
         const request = {

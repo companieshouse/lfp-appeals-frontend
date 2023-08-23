@@ -20,7 +20,8 @@
         "quotes": ["error", "double", { "allowTemplateLiterals": true }],
         "semi": [2, "always"],
         "no-unused-vars": "off",
-        "padded-blocks": "off"
+        "padded-blocks": "off",
+        "no-useless-constructor": "off"
     },
     "plugins": [
         "@typescript-eslint"

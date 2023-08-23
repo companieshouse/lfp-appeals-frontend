@@ -8,7 +8,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationDat
 import { EVIDENCE_UPLOAD_PAGE_URI } from "app/utils/Paths";
 import { addPermissionToNavigation } from "app/utils/appeal/extra.data";
 
-@provide(NavigationPermissionProcessor)
+@provide(NavigationPermissionProcessor) // eslint-disable-line no-use-before-define
 export class NavigationPermissionProcessor implements FormActionProcessor {
     process (request: RequestWithNavigation): void {
         const session: Session | undefined = request.session;

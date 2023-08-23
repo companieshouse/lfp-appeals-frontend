@@ -154,12 +154,12 @@ describe("EvidenceDownloadController", () => {
                             case User.Internal: {
                                 expect(res.status).to.eq(200);
                                 expect(res.text).to.contain(`href="${appConfig.links[1]}"`);
-                            }
                                 break;
+                            }
                             case User.External: {
                                 expect(res.status).to.eq(500);
-                            }
                                 break;
+                            }
                             }
                         });
 
@@ -221,13 +221,13 @@ describe("EvidenceDownloadController", () => {
                             case User.External: {
                                 fileTransferService.received().download(Arg.any());
                                 appealsService.didNotReceive().getAppeal(Arg.any());
-                            }
                                 break;
+                            }
                             case User.Internal: {
                                 fileTransferService.received().download(Arg.any());
                                 appealsService.received().getAppeal(Arg.any());
-                            }
                                 break;
+                            }
                             }
 
                             expect(res.header["content-disposition"]).eq(contentDisposition);

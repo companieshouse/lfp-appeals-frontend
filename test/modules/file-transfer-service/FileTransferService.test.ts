@@ -105,7 +105,7 @@ describe("FileTransferService", () => {
 
         it("should return file identifier when supported media upload succeeded", async () => {
 
-            mockRequest("post", URI, new RegExp("form-data; name=\"upload\"; filename=\"test.supported\"", "m"))
+            mockRequest("post", URI, /form-data; name="upload"; filename="test.supported"/m)
                 .reply(CREATED, { id: fileId });
 
             const response = await fileTransferService.upload(Buffer.from("This is a test"), "test.supported");

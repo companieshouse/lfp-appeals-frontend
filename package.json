@@ -15,7 +15,8 @@
     "build:compile": "tsc --project tsconfig.prod.json --outDir dist",
     "watch": "npm run build:clean && gulp start:watch",
     "build:clean": "gulp build:clean",
-    "lint": "tsc --project tsconfig.json --noEmit && tslint --project tsconfig.json --config tslint.json",
+    "lint": "eslint '{src,test}/**/*'",
+    "lint:fix": "eslint '{src,test}/**/*' --fix",
     "test": "NODE_ENV=test mocha 'test/**/*.test.ts'",
     "test:coverage": "nyc npm test",
     "analyse-code": "sonar-scanner"

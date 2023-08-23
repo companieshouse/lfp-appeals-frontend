@@ -2,18 +2,19 @@ import assert from "assert";
 import { expect } from "chai";
 import crypto from "crypto";
 import fs from "fs";
+import path from "path";
 
 import { loadEnvironmentVariablesFromFiles } from "app/utils/ConfigLoader";
 
 function withTemporaryProfileFile (profile: string, content: string, fn: () => void): void {
-    const path = `${__dirname}/../../.env.${profile}`;
+    const envPath = path.join(__dirname, `/../../.env.${profile}`);
 
-    fs.writeFileSync(path, content);
+    fs.writeFileSync(envPath, content);
     try {
         fn();
-        fs.unlinkSync(path);
+        fs.unlinkSync(envPath);
     } catch (error) {
-        fs.unlinkSync(path);
+        fs.unlinkSync(envPath);
         throw error;
     }
 }

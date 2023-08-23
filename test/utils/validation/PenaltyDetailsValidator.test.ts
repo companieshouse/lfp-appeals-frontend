@@ -8,14 +8,14 @@ import { PenaltyDetailsValidator } from "app/controllers/validators/PenaltyDetai
 import { Appeal } from "app/models/Appeal";
 import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
 import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
-import { AuthMethod, CompaniesHouseSDK } from "app/modules/Types";
+import { AuthMethod, CompaniesHouseSDKFactoryType } from "app/modules/Types";
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from "app/utils/CommonErrors";
 
 import { createSubstituteOf } from "test/SubstituteFactory";
 import { createSession } from "test/utils/session/SessionFactory";
 
 describe("PenaltyDetailsValidator", () => {
-    const createSDK = (apiResponse: any): CompaniesHouseSDK => {
+    const createSDK = (apiResponse: any): CompaniesHouseSDKFactoryType => {
         const lateFillingPenaltyService = createSubstituteOf<LateFilingPenaltyService>(config => {
             config.getPenalties(companyNumber).resolves(apiResponse);
         });

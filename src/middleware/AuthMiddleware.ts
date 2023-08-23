@@ -10,7 +10,7 @@ import { getEnvOrDefault } from "app/utils/EnvironmentUtils";
 import { PENALTY_DETAILS_PAGE_URI } from "app/utils/Paths";
 import { newUriFactory } from "app/utils/UriFactory";
 
-@provide(AuthMiddleware)
+@provide(AuthMiddleware) // eslint-disable-line no-use-before-define
 export class AuthMiddleware extends BaseMiddleware {
 
     public getReturnToPage (req: Request): string {
@@ -43,7 +43,7 @@ export class AuthMiddleware extends BaseMiddleware {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-@provide(FileRestrictionsAuthMiddleware)
+@provide(FileRestrictionsAuthMiddleware) // eslint-disable-line no-use-before-define
 export class FileRestrictionsAuthMiddleware extends AuthMiddleware {
     public getReturnToPage (req: Request): string {
         return encodeURIComponent(newUriFactory(req).createAbsoluteUri(req.originalUrl));

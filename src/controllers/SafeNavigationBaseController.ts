@@ -16,7 +16,7 @@ import { Navigation } from "app/utils/navigation/navigation";
 
 export type RequestWithNavigation = Request & { navigation: Navigation; };
 
-@provide(Processor)
+@provide(Processor) // eslint-disable-line no-use-before-define
 class Processor implements FormActionProcessor {
     process (request: RequestWithNavigation): void {
         const session = request.session;

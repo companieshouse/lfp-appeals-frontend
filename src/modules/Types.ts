@@ -29,7 +29,7 @@ export class NoAuth implements NoAuthType {
 
 export type AuthMethod = OAuth2 | ApiKey | NoAuth;
 
-export const CompaniesHouseSDK = (apiBasePath?: string) => (authMethod: AuthMethod) => {
+export const CompaniesHouseSDK = (apiBasePath?: string) => (authMethod: AuthMethod) : ApiClient => {
     switch (authMethod.name) {
     case "ApiKey":
         return createApiClient(authMethod.key, undefined, apiBasePath);
@@ -40,4 +40,4 @@ export const CompaniesHouseSDK = (apiBasePath?: string) => (authMethod: AuthMeth
     }
 };
 
-export type CompaniesHouseSDK = (authMethod: AuthMethod) => ApiClient;
+export type CompaniesHouseSDKFactoryType = (authMethod: AuthMethod) => ApiClient;

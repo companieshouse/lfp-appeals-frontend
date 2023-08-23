@@ -8,7 +8,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationDat
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from "app/utils/CommonErrors";
 import { CONFIRMATION_PAGE_URI } from "app/utils/Paths";
 
-@provide(SessionCleanupProcessor)
+@provide(SessionCleanupProcessor) // eslint-disable-line no-use-before-define
 export class SessionCleanupProcessor implements FormActionProcessor {
 
     public async process (req: Request): Promise<void> {

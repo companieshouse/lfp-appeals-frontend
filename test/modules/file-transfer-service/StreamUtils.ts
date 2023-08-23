@@ -20,7 +20,7 @@ export const convertReadableToString = async (readable: Readable): Promise<strin
         callback();
     };
 
-    await new Promise((res, rej) => readable.pipe(writable).on("finish", res).on("error", rej));
+    await new Promise((resolve, reject) => readable.pipe(writable).on("finish", resolve).on("error", reject));
 
     return Buffer.concat(chunks).toString();
 };
