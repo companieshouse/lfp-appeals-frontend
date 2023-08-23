@@ -7,7 +7,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationDat
 import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from "app/utils/CommonErrors";
 import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from "app/utils/Paths";
 
-@provide(PenaltyReferenceRouter)
+@provide(PenaltyReferenceRouter) // eslint-disable-line no-use-before-define
 export class PenaltyReferenceRouter extends BaseMiddleware {
 
     public static PENALTY_LIST_UNDEFINED_ERROR: Error = new Error("Penalty list in appeal was expected but was undefined");

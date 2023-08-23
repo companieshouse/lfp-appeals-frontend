@@ -8,7 +8,6 @@ import {
     OK,
     UNPROCESSABLE_ENTITY
 } from "http-status-codes";
-import request from "supertest";
 import supertest from "supertest";
 
 import "app/controllers/EvidenceUploadController";
@@ -92,7 +91,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ navigation, appeal: appealNoAttachments });
 
-            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
                 });
@@ -102,7 +101,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ navigation, appeal: appealWithAttachments });
 
-            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .expect((response: supertest.Response) => {
                     expect(response.status).to.be.equal(OK);
                     expect(response.text)
@@ -117,7 +116,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ navigation, appeal: appealNoAttachments });
 
-            await request(app).get(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).get(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("cm=1")
                 .expect(response => {
                     expect(response.status).to.be.equal(OK);
@@ -134,7 +133,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealWithAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("?")
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -146,7 +145,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealNoAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("?")
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -166,7 +165,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealNoAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=upload-file")
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
@@ -185,7 +184,7 @@ describe("EvidenceUploadController", () => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .attach("file", buffer, FILE_NAME)
                 .expect(response => {
@@ -206,7 +205,7 @@ describe("EvidenceUploadController", () => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .query("cm=1")
                 .attach("file", buffer, FILE_NAME)
@@ -229,7 +228,7 @@ describe("EvidenceUploadController", () => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .attach("file", buffer, FILE_NAME)
                 .expect(response => {
@@ -251,7 +250,7 @@ describe("EvidenceUploadController", () => {
                 container.rebind(FileTransferService).toConstantValue(fileTransferService);
             });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .attach("file", buffer, FILE_NAME)
                 .expect(response => {
@@ -265,7 +264,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: undefined });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .attach("file", buffer, FILE_NAME)
                 .expect(response => {
@@ -280,7 +279,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealNoAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=upload-file")
                 .attach("file", buffer, { filename: unsupportedFileName, contentType: "application/json" })
                 .expect(response => {
@@ -294,7 +293,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealWithMaxAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=upload-file")
                 .attach("file", buffer, FILE_NAME)
                 .expect(response => {
@@ -310,7 +309,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealNoAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + UPLOAD_FILE_ACTION)
                 .attach("file", largeBuffer, FILE_NAME)
                 .expect(response => {
@@ -327,7 +326,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealNoAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + NO_UPLOAD_ACTION)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
@@ -339,7 +338,7 @@ describe("EvidenceUploadController", () => {
 
             const app = createApp({ appeal: appealWithAttachments });
 
-            await request(app).post(EVIDENCE_UPLOAD_PAGE_URI)
+            await supertest(app).post(EVIDENCE_UPLOAD_PAGE_URI)
                 .query("action=" + NO_UPLOAD_ACTION)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);

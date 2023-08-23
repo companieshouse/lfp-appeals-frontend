@@ -9,17 +9,17 @@ import { provide } from "inversify-binding-decorators";
 import { FormActionProcessor } from "./FormActionProcessor";
 
 import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
-import { CompaniesHouseSDK, OAuth2 } from "app/modules/Types";
+import { CompaniesHouseSDKFactoryType, OAuth2, CompaniesHouseSDK } from "app/modules/Types";
 import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from "app/utils/CommonErrors";
 import { sanitizeCompany } from "app/utils/CompanyNumberSanitizer";
 
 export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error("Company number expected but was undefined");
 export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
 
-@provide(CompanyNameProcessor)
+@provide(CompanyNameProcessor) // eslint-disable-line no-use-before-define
 export class CompanyNameProcessor implements FormActionProcessor {
 
-    constructor (@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDK) { }
+    constructor (@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDKFactoryType) { }
 
     public async process (request: Request): Promise<void> {
 

@@ -12,7 +12,7 @@ import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationDat
 import { CompanyAuthConfig } from "app/models/CompanyAuthConfig";
 import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
 import { SessionStoreConfig } from "app/models/SessionConfig";
-import { CompaniesHouseSDK } from "app/modules/Types";
+import { CompaniesHouseSDKFactoryType, CompaniesHouseSDK } from "app/modules/Types";
 import { AppealsService } from "app/modules/appeals-service/AppealsService";
 import { FileTransferService } from "app/modules/file-transfer-service/FileTransferService";
 import { JwtEncryptionService } from "app/modules/jwt-encryption-service/JwtEncryptionService";
@@ -84,7 +84,7 @@ export const createApp = (data?: Partial<ApplicationData>,
         container.bind(AppealsService).toConstantValue(Substitute.for<AppealsService>());
         container.bind(FileTransferService).toConstantValue(Substitute.for<FileTransferService>());
         container.bind(RefreshTokenService).toConstantValue(Substitute.for<RefreshTokenService>());
-        container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDK>());
+        container.bind(CompaniesHouseSDK).toConstantValue(Substitute.for<CompaniesHouseSDKFactoryType>());
         container.bind(PenaltyIdentifierSchemaFactory)
             .toConstantValue(Substitute.for<PenaltyIdentifierSchemaFactory>());
         container.bind(JwtEncryptionService).toConstantValue(Substitute.for<JwtEncryptionService>());

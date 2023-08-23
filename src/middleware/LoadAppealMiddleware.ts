@@ -14,7 +14,7 @@ import { SchemaValidator } from "app/utils/validation/SchemaValidator";
 export const APPEAL_ID_QUERY_KEY = "a";
 export const COMPANY_NUMBER_QUERY_KEY = "c";
 
-@provide(LoadAppealMiddleware)
+@provide(LoadAppealMiddleware) // eslint-disable-line no-use-before-define
 export class LoadAppealMiddleware extends BaseMiddleware {
 
     constructor (

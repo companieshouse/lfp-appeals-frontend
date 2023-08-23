@@ -18,7 +18,7 @@ const enquiryEmail: string = getEnvOrThrow("ENQUIRY_EMAIL");
 const customErrorHeading: string = "An Appeal has already been submitted for this penalty";
 const customErrorMessage: string = `If you think this is a mistake, email ${enquiryEmail}.`;
 
-@provide(CheckForDuplicateMiddleware)
+@provide(CheckForDuplicateMiddleware) // eslint-disable-line no-use-before-define
 export class CheckForDuplicateMiddleware extends BaseMiddleware {
 
     constructor (@inject(AppealsService) private readonly appealsService: AppealsService) {

@@ -65,7 +65,7 @@ const findAttachment = (appeal: Appeal, fileId: string | undefined): Attachment 
  * - remote storage used by File Transfer API
  * - list of attachments stored in session
  */
-@provide(Processor)
+@provide(Processor) // eslint-disable-line no-use-before-define
 class Processor implements FormActionProcessor {
     constructor (@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {}
 

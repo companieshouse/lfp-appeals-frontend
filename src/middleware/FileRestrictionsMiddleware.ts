@@ -16,7 +16,7 @@ import { findAttachmentByIdFromReasons } from "app/utils/appeal/extra.data";
 
 const customErrorTemplate = "error-custom";
 
-@provide(FileRestrictionsMiddleware)
+@provide(FileRestrictionsMiddleware) // eslint-disable-line no-use-before-define
 export class FileRestrictionsMiddleware extends BaseMiddleware {
 
     public handler (req: Request, res: Response, next: NextFunction): void {

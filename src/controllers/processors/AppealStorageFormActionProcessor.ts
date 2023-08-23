@@ -10,7 +10,7 @@ import { Appeal } from "app/models/Appeal";
 import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
 import { AppealsService } from "app/modules/appeals-service/AppealsService";
 
-@provide(AppealStorageFormActionProcessor)
+@provide(AppealStorageFormActionProcessor) // eslint-disable-line no-use-before-define
 export class AppealStorageFormActionProcessor implements FormActionProcessor {
 
     constructor (@inject(AppealsService) private readonly appealsService: AppealsService) {

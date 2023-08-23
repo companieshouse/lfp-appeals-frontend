@@ -7,7 +7,7 @@ import request from "supertest";
 
 import "app/controllers/HealthCheckController";
 import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
-import { CompaniesHouseSDK } from "app/modules/Types";
+import { CompaniesHouseSDKFactoryType, CompaniesHouseSDK } from "app/modules/Types";
 import { AppealsService } from "app/modules/appeals-service/AppealsService";
 import { FileTransferService } from "app/modules/file-transfer-service/FileTransferService";
 import { JwtEncryptionService } from "app/modules/jwt-encryption-service/JwtEncryptionService";
@@ -25,7 +25,7 @@ describe("HealthCheckController", () => {
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
             container.bind(JwtEncryptionService).toConstantValue(createSubstituteOf<JwtEncryptionService>());
-            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
+            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDKFactoryType>());
             container.bind(PenaltyIdentifierSchemaFactory)
                 .toConstantValue(createSubstituteOf<PenaltyIdentifierSchemaFactory>());
 
@@ -37,11 +37,11 @@ describe("HealthCheckController", () => {
     it("should return 500 with status when redis database is down", async () => {
         const app = createAppConfigurable(container => {
             container.bind(SessionStore).toConstantValue(new SessionStore(createSubstituteOf<Redis>((redis) => {
-                redis.ping().returns(Promise.reject("ERROR"));
+                redis.ping().returns(Promise.reject(Error("ERROR")));
             })));
             container.bind(FileTransferService).toConstantValue(createSubstituteOf<FileTransferService>());
             container.bind(AppealsService).toConstantValue(createSubstituteOf<AppealsService>());
-            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDK>());
+            container.bind(CompaniesHouseSDK).toConstantValue(createSubstituteOf<CompaniesHouseSDKFactoryType>());
             container.bind(JwtEncryptionService).toConstantValue(createSubstituteOf<JwtEncryptionService>());
             container.bind(PenaltyIdentifierSchemaFactory)
                 .toConstantValue(createSubstituteOf<PenaltyIdentifierSchemaFactory>());

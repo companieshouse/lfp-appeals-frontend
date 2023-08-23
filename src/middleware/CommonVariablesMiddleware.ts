@@ -2,7 +2,7 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import { provide } from "inversify-binding-decorators";
 import { BaseMiddleware } from "inversify-express-utils";
 
-@provide(CommonVariablesMiddleware)
+@provide(CommonVariablesMiddleware) // eslint-disable-line no-use-before-define
 export class CommonVariablesMiddleware extends BaseMiddleware {
     public handler: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
         const session = req.session;

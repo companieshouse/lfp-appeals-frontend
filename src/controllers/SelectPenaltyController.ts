@@ -35,7 +35,7 @@ const navigation = {
     }
 };
 
-@provide(Processor)
+@provide(Processor) // eslint-disable-line no-use-before-define
 class Processor implements FormActionProcessor {
     public process (request: Request): void | Promise<void> {
 

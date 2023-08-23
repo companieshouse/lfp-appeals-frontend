@@ -8,7 +8,7 @@ import { Validator } from "app/controllers/validators/Validator";
 import { loggerInstance } from "app/middleware/Logger";
 import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
 import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
-import { CompaniesHouseSDK, OAuth2 } from "app/modules/Types";
+import { CompaniesHouseSDKFactoryType, OAuth2, CompaniesHouseSDK } from "app/modules/Types";
 import { sanitizeCompany } from "app/utils/CompanyNumberSanitizer";
 import { getPenaltiesItems } from "app/utils/appeal/extra.data";
 import { getAccessToken } from "app/utils/session/session";
@@ -16,14 +16,14 @@ import { SchemaValidator } from "app/utils/validation/SchemaValidator";
 import { ValidationError } from "app/utils/validation/ValidationError";
 import { ValidationResult } from "app/utils/validation/ValidationResult";
 
-@provide(PenaltyDetailsValidator)
+@provide(PenaltyDetailsValidator) // eslint-disable-line no-use-before-define
 export class PenaltyDetailsValidator implements Validator {
 
     public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError("companyNumber", "You must enter your full eight character company number");
     public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError("userInputPenaltyReference", "You must enter your reference number exactly as shown on your penalty notice");
     public static MULTIPLE_PENALTIES_FOUND_ERROR: Error = new Error(`Multiple penalties found. This is currently unsupported`);
     constructor (
-        @inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK,
+        @inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDKFactoryType,
         @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory
     ) { }
 
