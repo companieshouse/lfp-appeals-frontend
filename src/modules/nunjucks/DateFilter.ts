@@ -1,4 +1,4 @@
-export function dateFilter(value: string): string {
+export function dateFilter (value: string): string {
 
     const dateRegex: RegExp = /(\d{4})-(\d{2})-(\d{2})/;
     if (!dateRegex.test(value)) {
@@ -6,7 +6,7 @@ export function dateFilter(value: string): string {
     }
 
     // tslint:disable-next-line: prefer-const
-    const [year, month, day] = value.split('-').map(i => {
+    const [year, month, day] = value.split("-").map(i => {
         return parseInt(i, 10);
     });
 
@@ -15,19 +15,19 @@ export function dateFilter(value: string): string {
     }
 
     const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
     ];
 
-    return `${day} ${months[month-1]} ${year}`;
+    return `${day} ${months[month - 1]} ${year}`;
 }

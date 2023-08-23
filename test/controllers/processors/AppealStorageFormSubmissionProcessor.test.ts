@@ -1,21 +1,21 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { IAccessToken, ISignInInfo, IUserProfile } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { Arg } from '@fluffy-spoon/substitute';
-import * as assert from 'assert';
-import { Request } from 'express';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { IAccessToken, ISignInInfo, IUserProfile } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import { Arg } from "@fluffy-spoon/substitute";
+import * as assert from "assert";
+import { Request } from "express";
 
-import { AppealStorageFormActionProcessor } from 'app/controllers/processors/AppealStorageFormActionProcessor';
-import { Appeal } from 'app/models/Appeal';
-import { APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { AppealStorageFormActionProcessor } from "app/controllers/processors/AppealStorageFormActionProcessor";
+import { Appeal } from "app/models/Appeal";
+import { APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { AppealsService } from "app/modules/appeals-service/AppealsService";
 
-import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createSubstituteOf } from "test/SubstituteFactory";
 
-describe('AppealStorageForSubmissionProcessor', () => {
+describe("AppealStorageForSubmissionProcessor", () => {
 
     const appealsService = createSubstituteOf<AppealsService>();
 
@@ -23,44 +23,44 @@ describe('AppealStorageForSubmissionProcessor', () => {
 
     const appeal: Appeal = {
         penaltyIdentifier: {
-            companyNumber: '00345567',
-            penaltyReference: 'A0000001',
-            userInputPenaltyReference:'A0000001'
+            companyNumber: "00345567",
+            penaltyReference: "A0000001",
+            userInputPenaltyReference: "A0000001"
         },
         reasons: {
             other: {
-                title: 'I have reasons',
-                description: 'they are legit'
+                title: "I have reasons",
+                description: "they are legit"
             }
         },
         createdBy: {
-            emailAddress: 'email@email.com'
+            emailAddress: "email@email.com"
         }
     };
 
-    const accessToken: string = 'abc';
-    const refreshToken: string = 'xyz';
+    const accessToken: string = "abc";
+    const refreshToken: string = "xyz";
 
-    it('should throw error when session does not exist', async () => {
+    it("should throw error when session does not exist", async () => {
 
         try {
-            await processor.process({session: undefined} as Request);
+            await processor.process({ session: undefined } as Request);
             assert.fail();
         } catch (err) {
-            assert.equal(err.message, 'Session is undefined');
+            assert.equal(err.message, "Session is undefined");
         }
 
         appealsService.didNotReceive().save(Arg.any(), Arg.any(), Arg.any());
     });
 
-    it('should store appeal', async () => {
+    it("should store appeal", async () => {
 
         await processor.process({
             session:
                 new Session({
                     [SessionKey.SignInInfo]: {
                         [SignInInfoKeys.UserProfile]: {
-                            emailAddress: 'email@email.com'
+                            emailAddress: "email@email.com"
                         } as IUserProfile,
                         [SignInInfoKeys.AccessToken]: {
                             access_token: accessToken,
@@ -69,7 +69,7 @@ describe('AppealStorageForSubmissionProcessor', () => {
                     } as ISignInInfo,
                     [SessionKey.ExtraData]: {
                         [APPLICATION_DATA_KEY]: {
-                           appeal
+                            appeal
                         }
                     }
                 })

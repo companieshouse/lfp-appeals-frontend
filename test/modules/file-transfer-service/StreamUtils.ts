@@ -1,4 +1,4 @@
-import { Readable, Writable } from 'stream';
+import { Readable, Writable } from "stream";
 
 export const createReadable = (content: string): Readable => {
     const readable = new Readable();
@@ -12,15 +12,15 @@ export const convertReadableToString = async (readable: Readable): Promise<strin
 
     const writable = new Writable();
     writable._write = (chunk: any,
-                       // @ts-ignore
-                       encoding: string,
-                       callback: (error?: Error | null | undefined) => void): void => {
+        // @ts-ignore
+        encoding: string,
+        callback: (error?: Error | null | undefined) => void): void => {
 
         chunks.push(chunk);
         callback();
     };
 
-    await new Promise((res, rej) => readable.pipe(writable).on('finish', res).on('error', rej));
+    await new Promise((res, rej) => readable.pipe(writable).on("finish", res).on("error", rej));
 
     return Buffer.concat(chunks).toString();
 };

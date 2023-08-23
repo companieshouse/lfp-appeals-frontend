@@ -1,4 +1,4 @@
-import { Attachment } from 'app/models/Attachment';
+import { Attachment } from "app/models/Attachment";
 
 export interface OtherReason {
     title: string;

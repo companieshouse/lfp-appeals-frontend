@@ -1,14 +1,14 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from "express";
 
-import { loggerInstance } from 'app/middleware/Logger';
-import { Feature } from 'app/utils/Feature';
-import { isFeatureEnabled } from 'app/utils/FeatureChecker';
-import { ENTRY_PAGE_URI } from 'app/utils/Paths';
+import { loggerInstance } from "app/middleware/Logger";
+import { Feature } from "app/utils/Feature";
+import { isFeatureEnabled } from "app/utils/FeatureChecker";
+import { ENTRY_PAGE_URI } from "app/utils/Paths";
 
-export function FeatureToggleMiddleware(feature: Feature): RequestHandler {
+export function FeatureToggleMiddleware (feature: Feature): RequestHandler {
 
     if (!feature) {
-        throw Error('Feature must be defined');
+        throw Error("Feature must be defined");
     }
 
     return (req: Request, res: Response, next: NextFunction): any => {

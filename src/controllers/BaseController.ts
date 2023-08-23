@@ -1,21 +1,21 @@
-import { Session, SessionStore } from '@companieshouse/node-session-handler';
-import { Cookie } from '@companieshouse/node-session-handler/lib/session/model/Cookie';
-import { Request, Response } from 'express';
-import { UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { unmanaged } from 'inversify';
-import { httpGet, httpPost } from 'inversify-express-utils';
-import { RedirectResult } from 'inversify-express-utils/dts/results';
+import { Session, SessionStore } from "@companieshouse/node-session-handler";
+import { Cookie } from "@companieshouse/node-session-handler/lib/session/model/Cookie";
+import { Request, Response } from "express";
+import { UNPROCESSABLE_ENTITY } from "http-status-codes";
+import { unmanaged } from "inversify";
+import { httpGet, httpPost } from "inversify-express-utils";
+import { RedirectResult } from "inversify-express-utils/dts/results";
 
-import { BaseAsyncHttpController } from 'app/controllers/BaseAsyncHttpController';
-import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
-import { Validator } from 'app/controllers/validators/Validator';
-import { loggerInstance } from 'app/middleware/Logger';
-import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { SessionStoreConfig } from 'app/models/SessionConfig';
-import { CHECK_YOUR_APPEAL_PAGE_URI } from 'app/utils/Paths';
-import { Navigation, NavigationControl } from 'app/utils/navigation/navigation';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { BaseAsyncHttpController } from "app/controllers/BaseAsyncHttpController";
+import { FormActionProcessor, FormActionProcessorConstructor } from "app/controllers/processors/FormActionProcessor";
+import { Validator } from "app/controllers/validators/Validator";
+import { loggerInstance } from "app/middleware/Logger";
+import { Appeal } from "app/models/Appeal";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { SessionStoreConfig } from "app/models/SessionConfig";
+import { CHECK_YOUR_APPEAL_PAGE_URI } from "app/utils/Paths";
+import { Navigation, NavigationControl } from "app/utils/navigation/navigation";
+import { ValidationResult } from "app/utils/validation/ValidationResult";
 
 export type FormSanitizeFunction<T> = (body: T) => T;
 export type ChangeModeAction = (req: Request, step: keyof NavigationControl) => string;
@@ -23,9 +23,9 @@ export type ChangeModeAction = (req: Request, step: keyof NavigationControl) => 
 const createChangeModeAwareNavigationProxy =
     (step: NavigationControl, changeModeAction: ChangeModeAction): NavigationControl => {
         return new Proxy(step, {
-            get(target: NavigationControl, propertyName: keyof NavigationControl): any {
+            get (target: NavigationControl, propertyName: keyof NavigationControl): any {
                 return (req: Request) => {
-                    if (req.query.cm === '1') {
+                    if (req.query.cm === "1") {
                         return changeModeAction(req, propertyName);
                     }
                     return (target[propertyName] as (req: Request) => string).apply(this, [req]);
@@ -45,7 +45,7 @@ export interface FormActionHandler {
 export type FormActionHandlerConstructor = new (...args: any[]) => FormActionHandler;
 
 export class BaseController<FORM> extends BaseAsyncHttpController {
-    protected constructor(@unmanaged() readonly template: string,
+    protected constructor (@unmanaged() readonly template: string,
                           @unmanaged() readonly navigation: Navigation,
                           @unmanaged() readonly validator?: Validator,
                           @unmanaged() readonly formSanitizeFunction?: FormSanitizeFunction<FORM>,
@@ -66,14 +66,14 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * if view model can be rendered purely of appeal data or {@link prepareViewModelFromSession} if access to
      * whole session is necessary.
      */
-    @httpGet('')
-    public async onGet(): Promise<void | RedirectResult> {
+    @httpGet("")
+    public async onGet (): Promise<void | RedirectResult> {
         return this.render(
             this.template,
             {
                 ...this.prepareViewModel(),
                 ...this.prepareNavigationConfig(),
-                templateName: this.template,
+                templateName: this.template
             }
         );
     }
@@ -83,7 +83,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * <p>
      * Designed to be overridden.
      */
-    protected prepareViewModel(): Record<string, any> & FORM {
+    protected prepareViewModel (): Record<string, any> & FORM {
         const session: Session | undefined = this.httpContext.request.session;
 
         return this.prepareViewModelFromSession(session || {} as Session);
@@ -97,7 +97,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      *
      * @param session
      */
-    protected prepareViewModelFromSession(session: Session): Record<string, any> & FORM {
+    protected prepareViewModelFromSession (session: Session): Record<string, any> & FORM {
         const applicationData: ApplicationData = session
             .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
 
@@ -112,7 +112,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * @param appeal
      */
     // @ts-ignore
-    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & FORM {
+    protected prepareViewModelFromAppeal (appeal: Appeal): Record<string, any> & FORM {
         return {} as FORM;
     }
 
@@ -121,8 +121,8 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * or to one of extra handlers defined in {@link getExtraActionHandlers} map if action query is present. If there is
      * no matching action handler for action query argument then an error will be thrown.
      */
-    @httpPost('')
-    public async onPost(): Promise<void | RedirectResult> {
+    @httpPost("")
+    public async onPost (): Promise<void | RedirectResult> {
         const action: string | undefined = this.httpContext.request.query.action as string | undefined;
 
         if (action != null) {
@@ -130,7 +130,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
             if (actionHandler == null) {
                 throw new Error(`Action handler for action ${action} must be registered`);
             }
-            if (typeof actionHandler === 'function') {
+            if (typeof actionHandler === "function") {
                 actionHandler = this.httpContext.container.get(actionHandler) as FormActionHandler;
             }
             return actionHandler.handle(this.httpContext.request, this.httpContext.response);
@@ -144,7 +144,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * <p>
      * Designed to be overridden.
      */
-    protected getExtraActionHandlers(): Record<string, FormActionHandler | FormActionHandlerConstructor> {
+    protected getExtraActionHandlers (): Record<string, FormActionHandler | FormActionHandlerConstructor> {
         return {};
     }
 
@@ -158,10 +158,10 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      *  <p>
      *  Controllers that extend this class can shape session model by overriding {@link prepareSessionModelPriorSave }.
      */
-    private getDefaultActionHandler(): FormActionHandler {
+    private getDefaultActionHandler (): FormActionHandler {
         const that = this;
         return {
-            async handle(request: Request): Promise<void | RedirectResult> {
+            async handle (request: Request): Promise<void | RedirectResult> {
                 if (that.validator != null) {
                     const validationResult: ValidationResult = await that.validator.validate(request);
                     if (validationResult.errors.length > 0) {
@@ -215,7 +215,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      * Designed to be overridden.
      */
     // @ts-ignore
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: FORM): Appeal {
+    protected prepareSessionModelPriorSave (appeal: Appeal, value: FORM): Appeal {
         return appeal;
     }
 
@@ -228,11 +228,11 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      *
      * Warning: it should not be overridden.
      */
-    protected async persistSession(): Promise<void> {
+    protected async persistSession (): Promise<void> {
         const session: Session | undefined = this.httpContext.request.session;
 
         if (!session) {
-            throw new Error('Session was expected but none found');
+            throw new Error("Session was expected but none found");
         }
 
         await this.httpContext.container.get(SessionStore)
@@ -242,19 +242,19 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
         this.httpContext.response
             .cookie(sessionConfig.sessionCookieName, this.httpContext.request.cookies[sessionConfig.sessionCookieName],
                 {
-                domain: sessionConfig.sessionCookieDomain,
-                path: '/',
-                httpOnly: true,
-                secure: sessionConfig.sessionCookieSecureFlag === 'true',
-                maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
-                encode: String
-            });
+                    domain: sessionConfig.sessionCookieDomain,
+                    path: "/",
+                    httpOnly: true,
+                    secure: sessionConfig.sessionCookieSecureFlag === "true",
+                    maxAge: sessionConfig.sessionTimeToLiveInSeconds * 1000,
+                    encode: String
+                });
     }
 
-    protected prepareNavigationConfig(): any {
+    protected prepareNavigationConfig (): any {
 
         const cmQuery = this.httpContext.request.query.cm;
-        const changeMode: boolean = cmQuery ? cmQuery === '1' : false;
+        const changeMode: boolean = cmQuery ? cmQuery === "1" : false;
 
         return {
             navigation: {

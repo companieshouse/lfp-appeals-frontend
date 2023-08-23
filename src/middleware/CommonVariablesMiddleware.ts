@@ -1,6 +1,6 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { provide } from 'inversify-binding-decorators';
-import { BaseMiddleware } from 'inversify-express-utils';
+import { NextFunction, Request, RequestHandler, Response } from "express";
+import { provide } from "inversify-binding-decorators";
+import { BaseMiddleware } from "inversify-express-utils";
 
 @provide(CommonVariablesMiddleware)
 export class CommonVariablesMiddleware extends BaseMiddleware {
@@ -14,5 +14,5 @@ export class CommonVariablesMiddleware extends BaseMiddleware {
         }
 
         next();
-    }
+    };
 }

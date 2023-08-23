@@ -1,27 +1,27 @@
-import { CompanyProfile } from '@companieshouse/api-sdk-node/dist/services/company-profile/types';
-import Resource from '@companieshouse/api-sdk-node/dist/services/resource';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { Request } from 'express';
-import { OK } from 'http-status-codes';
-import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
-import { FormActionProcessor } from './FormActionProcessor';
+import { CompanyProfile } from "@companieshouse/api-sdk-node/dist/services/company-profile/types";
+import Resource from "@companieshouse/api-sdk-node/dist/services/resource";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { ISignInInfo } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import { Request } from "express";
+import { OK } from "http-status-codes";
+import { inject } from "inversify";
+import { provide } from "inversify-binding-decorators";
+import { FormActionProcessor } from "./FormActionProcessor";
 
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
-import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
+import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
+import { CompaniesHouseSDK, OAuth2 } from "app/modules/Types";
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from "app/utils/CommonErrors";
+import { sanitizeCompany } from "app/utils/CompanyNumberSanitizer";
 
-export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error('Company number expected but was undefined');
+export const COMPANY_NUMBER_UNDEFINED_ERROR: Error = new Error("Company number expected but was undefined");
 export const COMPANY_NAME_RETRIEVAL_ERROR = (companyNumber: string) => Error(`Could not retrieve company name for ${companyNumber}`);
 
 @provide(CompanyNameProcessor)
 export class CompanyNameProcessor implements FormActionProcessor {
 
-    constructor(@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDK) { }
+    constructor (@inject(CompaniesHouseSDK) private readonly chSdk: CompaniesHouseSDK) { }
 
-    public async process(request: Request): Promise<void> {
+    public async process (request: Request): Promise<void> {
 
         const session = request?.session;
 

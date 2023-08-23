@@ -1,6 +1,6 @@
-import { CreatedBy } from 'app/models/CreatedBy';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { Reasons } from 'app/models/Reasons';
+import { CreatedBy } from "app/models/CreatedBy";
+import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
+import { Reasons } from "app/models/Reasons";
 
 export interface Appeal {
     id?: string;
@@ -8,4 +8,3 @@ export interface Appeal {
     penaltyIdentifier: PenaltyIdentifier;
     reasons: Reasons;
 }
-

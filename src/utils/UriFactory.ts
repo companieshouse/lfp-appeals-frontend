@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request } from "express";
 
 export interface UriFactory {
     createAbsoluteUri(path: string): string;
@@ -6,7 +6,7 @@ export interface UriFactory {
 
 export const newUriFactory = (req: Request): UriFactory => {
     return {
-        createAbsoluteUri(path: string): string {
+        createAbsoluteUri (path: string): string {
             return new URL(path, `${req.protocol}://${req.headers.host}`).href;
         }
     };

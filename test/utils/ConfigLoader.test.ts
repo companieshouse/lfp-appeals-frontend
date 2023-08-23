@@ -1,11 +1,11 @@
-import assert from 'assert';
-import { expect } from 'chai';
-import crypto from 'crypto';
-import fs from 'fs';
+import assert from "assert";
+import { expect } from "chai";
+import crypto from "crypto";
+import fs from "fs";
 
-import { loadEnvironmentVariablesFromFiles } from 'app/utils/ConfigLoader';
+import { loadEnvironmentVariablesFromFiles } from "app/utils/ConfigLoader";
 
-function withTemporaryProfileFile(profile: string, content: string, fn: () => void): void {
+function withTemporaryProfileFile (profile: string, content: string, fn: () => void): void {
     const path = `${__dirname}/../../.env.${profile}`;
 
     fs.writeFileSync(path, content);
@@ -18,23 +18,23 @@ function withTemporaryProfileFile(profile: string, content: string, fn: () => vo
     }
 }
 
-describe('ConfigLoader', () => {
+describe("ConfigLoader", () => {
     beforeEach(() => {
-        process.env.NODE_ENV = crypto.randomBytes(8).toString('hex');
+        process.env.NODE_ENV = crypto.randomBytes(8).toString("hex");
     });
 
-    it('should load environment variables from existing profile file', () => {
-        withTemporaryProfileFile(process.env.NODE_ENV!, 'ENABLED=1', () => {
+    it("should load environment variables from existing profile file", () => {
+        withTemporaryProfileFile(process.env.NODE_ENV!, "ENABLED=1", () => {
             loadEnvironmentVariablesFromFiles();
-            expect(process.env.ENABLED).to.be.equal('1');
+            expect(process.env.ENABLED).to.be.equal("1");
         });
     });
 
-    it('should ignore profile file that does not exist', () => {
+    it("should ignore profile file that does not exist", () => {
         try {
             loadEnvironmentVariablesFromFiles();
         } catch (e) {
-            assert.fail('Loading profile that does not exist should have succeeded');
+            assert.fail("Loading profile that does not exist should have succeeded");
         }
     });
 });

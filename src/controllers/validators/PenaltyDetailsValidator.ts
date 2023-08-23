@@ -1,40 +1,40 @@
-import { Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp/types';
-import Resource from '@companieshouse/api-sdk-node/dist/services/resource';
-import { Request } from 'express';
-import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
+import { Penalty, PenaltyList } from "@companieshouse/api-sdk-node/dist/services/lfp/types";
+import Resource from "@companieshouse/api-sdk-node/dist/services/resource";
+import { Request } from "express";
+import { inject } from "inversify";
+import { provide } from "inversify-binding-decorators";
 
-import { Validator } from 'app/controllers/validators/Validator';
-import { loggerInstance } from 'app/middleware/Logger';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { CompaniesHouseSDK, OAuth2 } from 'app/modules/Types';
-import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { getPenaltiesItems } from 'app/utils/appeal/extra.data';
-import { getAccessToken } from 'app/utils/session/session';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
-import { ValidationError } from 'app/utils/validation/ValidationError';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { Validator } from "app/controllers/validators/Validator";
+import { loggerInstance } from "app/middleware/Logger";
+import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
+import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
+import { CompaniesHouseSDK, OAuth2 } from "app/modules/Types";
+import { sanitizeCompany } from "app/utils/CompanyNumberSanitizer";
+import { getPenaltiesItems } from "app/utils/appeal/extra.data";
+import { getAccessToken } from "app/utils/session/session";
+import { SchemaValidator } from "app/utils/validation/SchemaValidator";
+import { ValidationError } from "app/utils/validation/ValidationError";
+import { ValidationResult } from "app/utils/validation/ValidationResult";
 
 @provide(PenaltyDetailsValidator)
 export class PenaltyDetailsValidator implements Validator {
 
-    public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError('companyNumber', 'You must enter your full eight character company number');
-    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError('userInputPenaltyReference', 'You must enter your reference number exactly as shown on your penalty notice');
+    public static COMPANY_NUMBER_VALIDATION_ERROR: ValidationError = new ValidationError("companyNumber", "You must enter your full eight character company number");
+    public static PENALTY_REFERENCE_VALIDATION_ERROR: ValidationError = new ValidationError("userInputPenaltyReference", "You must enter your reference number exactly as shown on your penalty notice");
     public static MULTIPLE_PENALTIES_FOUND_ERROR: Error = new Error(`Multiple penalties found. This is currently unsupported`);
-    constructor(
+    constructor (
         @inject(CompaniesHouseSDK) readonly chSdk: CompaniesHouseSDK,
         @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory
     ) { }
 
-    private createValidationResultWithErrors(): ValidationResult {
+    private createValidationResultWithErrors (): ValidationResult {
         return new ValidationResult([
             PenaltyDetailsValidator.COMPANY_NUMBER_VALIDATION_ERROR,
             PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR
         ]);
     }
 
-    async validate(request: Request): Promise<ValidationResult> {
+    async validate (request: Request): Promise<ValidationResult> {
 
         const schemaResults: ValidationResult = new SchemaValidator(this.schemaFactory.getPenaltyIdentifierSchema())
             .validate(request.body);
@@ -48,8 +48,8 @@ export class PenaltyDetailsValidator implements Validator {
         const sanitizedCompanyNumber: string = sanitizeCompany(companyNumber);
         const penaltyReference: string = (request.body as PenaltyIdentifier).userInputPenaltyReference;
 
-        const mapErrorMessage = 'Cannot read property \'map\' of null';
-        const etagErrorMessage = 'Cannot read property \'etag\' of null';
+        const mapErrorMessage = "Cannot read property 'map' of null";
+        const etagErrorMessage = "Cannot read property 'etag' of null";
 
         try {
 
