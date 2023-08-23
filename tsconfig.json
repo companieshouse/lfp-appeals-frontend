@@ -17,9 +17,6 @@
         "importHelpers": true,
         "skipLibCheck": true,
         "plugins": [
-            {
-                "name": "typescript-tslint-plugin"
-            }
         ],
         "paths": {
             "app/*": ["./*"],
