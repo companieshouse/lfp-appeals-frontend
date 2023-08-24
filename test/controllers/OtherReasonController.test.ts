@@ -1,49 +1,49 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { expect } from 'chai';
+import { expect } from "chai";
 import {
     INTERNAL_SERVER_ERROR,
     MOVED_TEMPORARILY,
     OK,
     UNPROCESSABLE_ENTITY
-} from 'http-status-codes';
-import request from 'supertest';
+} from "http-status-codes";
+import request from "supertest";
 
-import 'app/controllers/OtherReasonController';
-import { Appeal } from 'app/models/Appeal';
-import { Reasons } from 'app/models/Reasons';
+import "app/controllers/OtherReasonController";
+import { Appeal } from "app/models/Appeal";
+import { Reasons } from "app/models/Reasons";
 import {
     EVIDENCE_QUESTION_URI,
     OTHER_REASON_PAGE_URI
-} from 'app/utils/Paths';
+} from "app/utils/Paths";
 
-import { createApp } from 'test/ApplicationFactory';
+import { createApp } from "test/ApplicationFactory";
 
-const pageHeading = 'Tell us why you’re appealing this penalty';
-const otherReasonHint = 'What details should I include to support my appeal?';
-const errorSummaryHeading = 'There is a problem';
-const invalidTitleErrorMessage = 'You must give your reason a title';
-const invalidDescriptionErrorMessage = 'You must give us more information';
-const errorServiceProblem = 'Sorry, there is a problem with the service';
-const invalidRelationshipToCompanyErrorMessage = 'Enter your relationship to the company';
+const pageHeading = "Tell us why you’re appealing this penalty";
+const otherReasonHint = "What details should I include to support my appeal?";
+const errorSummaryHeading = "There is a problem";
+const invalidTitleErrorMessage = "You must give your reason a title";
+const invalidDescriptionErrorMessage = "You must give us more information";
+const errorServiceProblem = "Sorry, there is a problem with the service";
+const invalidRelationshipToCompanyErrorMessage = "Enter your relationship to the company";
 
-describe('OtherReasonController', () => {
+describe("OtherReasonController", () => {
     const reasons = {
         other: {
-            title: 'I have reasons',
-            description: 'they are legit'
+            title: "I have reasons",
+            description: "they are legit"
         }
     } as Reasons;
 
     const penaltyIdentifier = {
-        companyNumber: 'NI000000',
-        penaltyReference: 'A00000001'
+        companyNumber: "NI000000",
+        penaltyReference: "A00000001"
     };
 
     const appeal = {
         createdBy: {
-            name: 'SomeName',
-            relationshipToCompany: 'SomeRelationship'
+            name: "SomeName",
+            relationshipToCompany: "SomeRelationship"
         },
         penaltyIdentifier
     } as Appeal;
@@ -51,8 +51,8 @@ describe('OtherReasonController', () => {
     const appealWithReason = { ...appeal, reasons } as Appeal;
     const navigation = { permissions: [OTHER_REASON_PAGE_URI] };
 
-    describe('GET request', () => {
-        it('should return 200 response', async () => {
+    describe("GET request", () => {
+        it("should return 200 response", async () => {
             const applicationData = {
                 appeal: appealWithReason,
                 navigation
@@ -69,7 +69,7 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it('should return 200 response on empty appeal reason and createdBy object', async () => {
+        it("should return 200 response on empty appeal reason and createdBy object", async () => {
             const app = createApp({ appeal: { penaltyIdentifier } as Appeal, navigation });
 
             await request(app).get(OTHER_REASON_PAGE_URI)
@@ -82,8 +82,8 @@ describe('OtherReasonController', () => {
         });
     });
 
-    describe('POST request', () => {
-        it('should return 422 response with rendered error messages when invalid data was submitted', async () => {
+    describe("POST request", () => {
+        it("should return 422 response with rendered error messages when invalid data was submitted", async () => {
 
             const app = createApp({ appeal });
 
@@ -99,7 +99,7 @@ describe('OtherReasonController', () => {
                 });
         });
 
-        it('should redirect to evidence upload page when valid data was submitted', async () => {
+        it("should redirect to evidence upload page when valid data was submitted", async () => {
             const app = createApp({ appeal: appealWithReason });
 
             await request(app).post(OTHER_REASON_PAGE_URI)

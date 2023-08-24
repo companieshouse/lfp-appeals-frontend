@@ -1,27 +1,28 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import makeAsyncRequestHandler from 'express-async-handler';
-import { inject } from 'inversify';
-import { provide } from 'inversify-binding-decorators';
-import { BaseMiddleware } from 'inversify-express-utils';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { ISignInInfo } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import { NextFunction, Request, RequestHandler, Response } from "express";
+import makeAsyncRequestHandler from "express-async-handler";
+import { inject } from "inversify";
+import { provide } from "inversify-binding-decorators";
+import { BaseMiddleware } from "inversify-express-utils";
 
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { SchemaValidator } from 'app/utils/validation/SchemaValidator';
-export const APPEAL_ID_QUERY_KEY = 'a';
-export const COMPANY_NUMBER_QUERY_KEY = 'c';
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
+import { AppealsService } from "app/modules/appeals-service/AppealsService";
+import { SchemaValidator } from "app/utils/validation/SchemaValidator";
+export const APPEAL_ID_QUERY_KEY = "a";
+export const COMPANY_NUMBER_QUERY_KEY = "c";
 
-@provide(LoadAppealMiddleware)
+@provide(LoadAppealMiddleware) // eslint-disable-line no-use-before-define
 export class LoadAppealMiddleware extends BaseMiddleware {
 
-    constructor(
+    constructor (
         @inject(AppealsService) private readonly appealsService: AppealsService,
         @inject(PenaltyIdentifierSchemaFactory) private readonly schemaFactory: PenaltyIdentifierSchemaFactory) {
         super();
     }
+
     public handler: RequestHandler = makeAsyncRequestHandler(
         // @ts-ignore
         async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -32,7 +33,7 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             const session: Session | undefined = req.session;
 
             if (!session) {
-                throw new Error('Session is undefined');
+                throw new Error("Session is undefined");
             }
 
             let applicationData: ApplicationData | undefined = session.getExtraData(APPLICATION_DATA_KEY);
@@ -45,19 +46,19 @@ export class LoadAppealMiddleware extends BaseMiddleware {
             try {
                 new SchemaValidator(this.schemaFactory.getCompanyNumberSchema()).validate(companyNumber);
             } catch (err) {
-                throw new Error('Tried to load appeal from an invalid company number');
+                throw new Error("Tried to load appeal from an invalid company number");
             }
 
             const signInInfo: ISignInInfo | undefined = session.get<ISignInInfo>(SessionKey.SignInInfo);
 
             const accessToken: string | undefined = signInInfo?.access_token?.access_token;
             if (!accessToken) {
-                throw new Error('Could not retrieve access token from session');
+                throw new Error("Could not retrieve access token from session");
             }
 
             const refreshToken: string | undefined = signInInfo?.access_token?.refresh_token;
             if (!refreshToken) {
-                throw new Error('Could not retrieve refresh token from session');
+                throw new Error("Could not retrieve refresh token from session");
             }
 
             if (appealId) {

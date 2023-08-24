@@ -1,30 +1,30 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
-import { inject } from 'inversify';
-import { controller } from 'inversify-express-utils';
+import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { inject } from "inversify";
+import { controller } from "inversify-express-utils";
 
-import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
-import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
-import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
-import { Appeal } from 'app/models/Appeal';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { sanitizeCompany } from 'app/utils/CompanyNumberSanitizer';
-import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
+import { SafeNavigationBaseController } from "app/controllers/SafeNavigationBaseController";
+import { CompanyNameProcessor } from "app/controllers/processors/CompanyNameProcessor";
+import { PenaltyDetailsValidator } from "app/controllers/validators/PenaltyDetailsValidator";
+import { AuthMiddleware } from "app/middleware/AuthMiddleware";
+import { CommonVariablesMiddleware } from "app/middleware/CommonVariablesMiddleware";
+import { loggerInstance, loggingMessage } from "app/middleware/Logger";
+import { Appeal } from "app/models/Appeal";
+import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
+import { sanitizeCompany } from "app/utils/CompanyNumberSanitizer";
+import { PENALTY_DETAILS_PAGE_URI, ROOT_URI, SELECT_THE_PENALTY_PAGE_URI, SIGNOUT_PAGE_URI } from "app/utils/Paths";
 
-const template = 'penalty-details';
+const template = "penalty-details";
 
 const navigation = {
-    previous(): string {
+    previous (): string {
         return ROOT_URI;
     },
-    next(): string {
+    next (): string {
         return SELECT_THE_PENALTY_PAGE_URI;
     },
-     signOut(): string{
+    signOut (): string {
         return SIGNOUT_PAGE_URI;
-     }
+    }
 };
 
 const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
@@ -40,7 +40,7 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
 @controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
-    constructor(@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
+    constructor (@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
         super(
             template,
             navigation,
@@ -50,11 +50,11 @@ export class PenaltyDetailsController extends SafeNavigationBaseController<Penal
         );
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): Record<string, any> & PenaltyIdentifier {
+    protected prepareViewModelFromAppeal (appeal: Appeal): Record<string, any> & PenaltyIdentifier {
         return appeal.penaltyIdentifier;
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: any): Appeal {
+    protected prepareSessionModelPriorSave (appeal: Appeal, value: any): Appeal {
 
         if (value.penaltyList.items.length === 1) {
             value.penaltyReference = value.penaltyList.items[0].id;

@@ -1,19 +1,19 @@
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { ISignInInfo, IUserProfile } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { provide } from 'inversify-binding-decorators';
-import { BaseMiddleware } from 'inversify-express-utils';
-import { loggerInstance } from './Logger';
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { ISignInInfo, IUserProfile } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import { NextFunction, Request, RequestHandler, Response } from "express";
+import { provide } from "inversify-binding-decorators";
+import { BaseMiddleware } from "inversify-express-utils";
+import { loggerInstance } from "./Logger";
 
-import { getEnvOrDefault } from 'app/utils/EnvironmentUtils';
-import { PENALTY_DETAILS_PAGE_URI } from 'app/utils/Paths';
-import { newUriFactory } from 'app/utils/UriFactory';
+import { getEnvOrDefault } from "app/utils/EnvironmentUtils";
+import { PENALTY_DETAILS_PAGE_URI } from "app/utils/Paths";
+import { newUriFactory } from "app/utils/UriFactory";
 
-@provide(AuthMiddleware)
+@provide(AuthMiddleware) // eslint-disable-line no-use-before-define
 export class AuthMiddleware extends BaseMiddleware {
 
-    public getReturnToPage(req: Request): string {
+    public getReturnToPage (req: Request): string {
         return newUriFactory(req).createAbsoluteUri(PENALTY_DETAILS_PAGE_URI);
     }
 
@@ -31,21 +31,20 @@ export class AuthMiddleware extends BaseMiddleware {
         const userId: string | undefined = userProfile?.id;
 
         if (!signedIn) {
-            const redirectURI = `${getEnvOrDefault('ACCOUNT_WEB_URL', '')}/signin?return_to=${this.getReturnToPage(req)}`;
+            const redirectURI = `${getEnvOrDefault("ACCOUNT_WEB_URL", "")}/signin?return_to=${this.getReturnToPage(req)}`;
             loggerInstance().info(`${AuthMiddleware.name} - handler: userId=${userId}, Not signed in... Redirecting to: ${redirectURI}`);
             return res.redirect(redirectURI);
         }
 
         loggerInstance().debug(`${AuthMiddleware.name} - handler: userId=${userId}, Going to controller....`);
         next();
-    }
+    };
 
 }
 
-// tslint:disable-next-line: max-classes-per-file
-@provide(FileRestrictionsAuthMiddleware)
+@provide(FileRestrictionsAuthMiddleware) // eslint-disable-line no-use-before-define
 export class FileRestrictionsAuthMiddleware extends AuthMiddleware {
-    public getReturnToPage(req: Request): string {
+    public getReturnToPage (req: Request): string {
         return encodeURIComponent(newUriFactory(req).createAbsoluteUri(req.originalUrl));
     }
 }

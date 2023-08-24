@@ -1,22 +1,21 @@
-import ApiClient from '@companieshouse/api-sdk-node/dist/client';
-import { LateFilingPenaltyService, Penalty, PenaltyList } from '@companieshouse/api-sdk-node/dist/services/lfp';
-import Joi from '@hapi/joi';
-import { assert, expect } from 'chai';
-import { Request } from 'express';
+import ApiClient from "@companieshouse/api-sdk-node/dist/client";
+import { LateFilingPenaltyService, Penalty, PenaltyList } from "@companieshouse/api-sdk-node/dist/services/lfp";
+import Joi from "@hapi/joi";
+import { assert, expect } from "chai";
+import { Request } from "express";
 
-import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
-import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { AuthMethod, CompaniesHouseSDK } from 'app/modules/Types';
-import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from 'app/utils/CommonErrors';
+import { PenaltyDetailsValidator } from "app/controllers/validators/PenaltyDetailsValidator";
+import { Appeal } from "app/models/Appeal";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
+import { AuthMethod, CompaniesHouseSDKFactoryType } from "app/modules/Types";
+import { SESSION_NOT_FOUND_ERROR, TOKEN_MISSING_ERROR } from "app/utils/CommonErrors";
 
-import { createSubstituteOf } from 'test/SubstituteFactory';
-import { createSession } from 'test/utils/session/SessionFactory';
+import { createSubstituteOf } from "test/SubstituteFactory";
+import { createSession } from "test/utils/session/SessionFactory";
 
-
-describe('PenaltyDetailsValidator', () => {
-    const createSDK = (apiResponse: any): CompaniesHouseSDK => {
+describe("PenaltyDetailsValidator", () => {
+    const createSDK = (apiResponse: any): CompaniesHouseSDKFactoryType => {
         const lateFillingPenaltyService = createSubstituteOf<LateFilingPenaltyService>(config => {
             config.getPenalties(companyNumber).resolves(apiResponse);
         });
@@ -25,9 +24,9 @@ describe('PenaltyDetailsValidator', () => {
         });
         return (_: AuthMethod) => chApi;
     };
-    const companyNumber = 'NI000000';
+    const companyNumber = "NI000000";
     const getRequest = (userInputPenaltyReference: string): Request => {
-        const session = createSession('secret', true);
+        const session = createSession("secret", true);
 
         session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
             appeal: {} as Appeal,
@@ -44,7 +43,7 @@ describe('PenaltyDetailsValidator', () => {
         } as Request;
     };
 
-    it('should throw an error if session is undefined', async () => {
+    it("should throw an error if session is undefined", async () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(
             createSDK({}),
             createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
@@ -53,19 +52,19 @@ describe('PenaltyDetailsValidator', () => {
             ));
         try {
             await penaltyDetailsValidator.validate({} as Request);
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
         } catch (err) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
     });
 
-    it('should throw an error if access token is undefined', async () => {
+    it("should throw an error if access token is undefined", async () => {
         const penaltyDetailsValidator = new PenaltyDetailsValidator(
             createSDK({}),
             createSubstituteOf<PenaltyIdentifierSchemaFactory>(config => {
                 config.getCompanyNumberSchema().returns(Joi.string());
             }
-            )); const session = createSession('secret', false);
+            )); const session = createSession("secret", false);
         delete session.data.signin_info?.access_token?.access_token;
 
         session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
@@ -77,26 +76,25 @@ describe('PenaltyDetailsValidator', () => {
             await penaltyDetailsValidator.validate({
                 session
             } as Request);
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
         } catch (err) {
             expect(err.message).to.equal(TOKEN_MISSING_ERROR.message);
         }
     });
 
-    it('should return validation error if company number not in E5', async () => {
-        const mapErrorMessage = 'Cannot read property \'map\' of null';
+    it("should return validation error if company number not in E5", async () => {
+        const mapErrorMessage = "Cannot read property 'map' of null";
 
         const lfpService = createSubstituteOf<LateFilingPenaltyService>();
 
-        lfpService.getPenalties('SC123123').throws(new Error(mapErrorMessage));
+        lfpService.getPenalties("SC123123").throws(new Error(mapErrorMessage));
 
         const apiClient = createSubstituteOf<ApiClient>(sdk => {
             sdk.lateFilingPenalties.returns!(lfpService);
         });
         const companiesHouseSDK = (_: AuthMethod) => apiClient;
 
-
-        const session = createSession('secret', true);
+        const session = createSession("secret", true);
         session.setExtraData<ApplicationData>(APPLICATION_DATA_KEY, {
             appeal: {} as Appeal,
             navigation: { permissions: [] }
@@ -111,8 +109,8 @@ describe('PenaltyDetailsValidator', () => {
         const result = await penaltyDetailsValidator.validate({
             session,
             body: {
-                companyNumber: 'SC123123',
-                userInputPenaltyReference: 'A00000000'
+                companyNumber: "SC123123",
+                userInputPenaltyReference: "A00000000"
             }
         } as Request);
 
@@ -121,14 +119,13 @@ describe('PenaltyDetailsValidator', () => {
             PenaltyDetailsValidator.PENALTY_REFERENCE_VALIDATION_ERROR
         ]);
 
-
     });
 
-    it('should throw an error if ch-sdk fails', async () => {
-        const penaltyReference = 'A0000001';
+    it("should throw an error if ch-sdk fails", async () => {
+        const penaltyReference = "A0000001";
 
         const chApi: ApiClient = createSubstituteOf<ApiClient>(config => {
-            config.lateFilingPenalties.throws!(new Error('Some error'));
+            config.lateFilingPenalties.throws!(new Error("Some error"));
         });
         const chSDK = (_: AuthMethod) => chApi;
 
@@ -141,14 +138,14 @@ describe('PenaltyDetailsValidator', () => {
 
         try {
             await penaltyDetailsValidator.validate(getRequest(penaltyReference));
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
         } catch (err) {
             expect(err.message).to.equal(`Can't access API: Error: Some error`);
         }
     });
 
-    it('should return a validation error if no penalty items are received', async () => {
-        const penaltyReference = 'A0000001';
+    it("should return a validation error if no penalty items are received", async () => {
+        const penaltyReference = "A0000001";
 
         const apiResponse = {
             httpStatusCode: 200,
@@ -172,30 +169,30 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should return no validation errors and add penalty to request body for modern PR numbers', async () => {
+    it("should return no validation errors and add penalty to request body for modern PR numbers", async () => {
 
-        const penaltyReferences: string[] = ['A00000001', 'A00000002'];
+        const penaltyReferences: string[] = ["A00000001", "A00000002"];
 
         const items = [
             {
                 id: penaltyReferences[0],
-                type: 'penalty',
-                madeUpDate: '2020-10-10',
-                transactionDate: '2020-11-10'
+                type: "penalty",
+                madeUpDate: "2020-10-10",
+                transactionDate: "2020-11-10"
             } as Penalty,
             {
                 id: penaltyReferences[1],
-                type: 'penalty',
-                madeUpDate: '2020-10-10',
-                transactionDate: '2020-11-10'
+                type: "penalty",
+                madeUpDate: "2020-10-10",
+                transactionDate: "2020-11-10"
             } as Penalty
         ];
         const mappedItems = [
             {
                 id: penaltyReferences[0],
-                type: 'penalty',
-                madeUpDate: '10 October 2020',
-                transactionDate: '10 November 2020'
+                type: "penalty",
+                madeUpDate: "10 October 2020",
+                transactionDate: "10 November 2020"
             } as Penalty
         ];
 
@@ -223,7 +220,7 @@ describe('PenaltyDetailsValidator', () => {
 
     });
 
-    it('should return no validation errors and add penalty to request body for deprecated PR numbers', () => {
+    it("should return no validation errors and add penalty to request body for deprecated PR numbers", () => {
 
         const penaltyReferences = [
             `PEN1A/${companyNumber}`,
@@ -233,18 +230,18 @@ describe('PenaltyDetailsValidator', () => {
 
         const items = [
             {
-                id: 'A0000001',
-                type: 'penalty',
-                madeUpDate: '2020-10-10',
-                transactionDate: '2020-11-10'
+                id: "A0000001",
+                type: "penalty",
+                madeUpDate: "2020-10-10",
+                transactionDate: "2020-11-10"
             } as Penalty
         ];
         const mappedItems = [
             {
-                id: 'A0000001',
-                type: 'penalty',
-                madeUpDate: '10 October 2020',
-                transactionDate: '10 November 2020'
+                id: "A0000001",
+                type: "penalty",
+                madeUpDate: "10 October 2020",
+                transactionDate: "10 November 2020"
             } as Penalty
         ];
         const apiResponse = {

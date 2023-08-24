@@ -1,22 +1,22 @@
-import { Request } from 'express';
-import moment from 'moment';
-import { FormValidator } from './FormValidator';
+import { Request } from "express";
+import moment from "moment";
+import { FormValidator } from "./FormValidator";
 
-import { schema } from 'app/models/fields/Date.schema';
-import { ValidationError } from 'app/utils/validation/ValidationError';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { schema } from "app/models/fields/Date.schema";
+import { ValidationError } from "app/utils/validation/ValidationError";
+import { ValidationResult } from "app/utils/validation/ValidationResult";
 
 export class DateValidator extends FormValidator {
-    constructor() {
+    constructor () {
         super(schema);
     }
 
-    public async validate(request: Request): Promise<ValidationResult> {
+    public async validate (request: Request): Promise<ValidationResult> {
 
-        const dayField: string = 'day';
-        const monthField: string = 'month';
-        const yearField: string = 'year';
-        const dateField: string = 'date';
+        const dayField: string = "day";
+        const monthField: string = "month";
+        const yearField: string = "year";
+        const dateField: string = "date";
 
         request.body.date = moment(`${request.body[yearField]}-${request.body[monthField]}-${request.body[dayField]}`)
             .toDate();

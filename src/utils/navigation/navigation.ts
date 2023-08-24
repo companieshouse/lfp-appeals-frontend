@@ -1,6 +1,4 @@
-import { Request } from 'express';
-
-export type Navigation = NavigationControl & NavigationActions;
+import { Request } from "express";
 
 export type NavigationControl = {
     previous(req: Request): string;
@@ -10,3 +8,5 @@ export type NavigationControl = {
 export type NavigationActions = {
     actions?: (changeMode: boolean) => { [action: string]: string }
 };
+
+export type Navigation = NavigationControl & NavigationActions;

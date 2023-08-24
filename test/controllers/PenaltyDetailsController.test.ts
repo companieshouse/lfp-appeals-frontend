@@ -1,43 +1,43 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import ApiClient from '@companieshouse/api-sdk-node/dist/client';
-import { LateFilingPenaltyService } from '@companieshouse/api-sdk-node/dist/services/lfp';
-import { Arg } from '@fluffy-spoon/substitute';
-import { expect } from 'chai';
-import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import request from 'supertest';
+import ApiClient from "@companieshouse/api-sdk-node/dist/client";
+import { LateFilingPenaltyService } from "@companieshouse/api-sdk-node/dist/services/lfp";
+import { Arg } from "@fluffy-spoon/substitute";
+import { expect } from "chai";
+import { INTERNAL_SERVER_ERROR, MOVED_TEMPORARILY, OK, UNPROCESSABLE_ENTITY } from "http-status-codes";
+import request from "supertest";
 
-import 'app/controllers/PenaltyDetailsController';
-import { CompanyNameProcessor } from 'app/controllers/processors/CompanyNameProcessor';
-import { PenaltyDetailsValidator } from 'app/controllers/validators/PenaltyDetailsValidator';
-import { Appeal } from 'app/models/Appeal';
-import { ApplicationData } from 'app/models/ApplicationData';
-import { Navigation } from 'app/models/Navigation';
-import { PenaltyIdentifier } from 'app/models/PenaltyIdentifier';
-import { PenaltyIdentifierSchemaFactory } from 'app/models/PenaltyIdentifierSchemaFactory';
-import { AuthMethod } from 'app/modules/Types';
-import { getEnvOrThrow } from 'app/utils/EnvironmentUtils';
-import { PENALTY_DETAILS_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from 'app/utils/Paths';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import "app/controllers/PenaltyDetailsController";
+import { CompanyNameProcessor } from "app/controllers/processors/CompanyNameProcessor";
+import { PenaltyDetailsValidator } from "app/controllers/validators/PenaltyDetailsValidator";
+import { Appeal } from "app/models/Appeal";
+import { ApplicationData } from "app/models/ApplicationData";
+import { Navigation } from "app/models/Navigation";
+import { PenaltyIdentifier } from "app/models/PenaltyIdentifier";
+import { PenaltyIdentifierSchemaFactory } from "app/models/PenaltyIdentifierSchemaFactory";
+import { AuthMethod } from "app/modules/Types";
+import { getEnvOrThrow } from "app/utils/EnvironmentUtils";
+import { PENALTY_DETAILS_PAGE_URI, SELECT_THE_PENALTY_PAGE_URI } from "app/utils/Paths";
+import { ValidationResult } from "app/utils/validation/ValidationResult";
 
-import { createApp } from 'test/ApplicationFactory';
-import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createApp } from "test/ApplicationFactory";
+import { createSubstituteOf } from "test/SubstituteFactory";
 
-const pageHeading = 'What are the penalty details?';
-const errorSummaryHeading = 'There is a problem with the information you entered';
+const pageHeading = "What are the penalty details?";
+const errorSummaryHeading = "There is a problem with the information you entered";
 
-describe('PenaltyDetailsController', () => {
+describe("PenaltyDetailsController", () => {
 
     const navigation = {} as Navigation;
 
-    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory(getEnvOrThrow('ALLOWED_COMPANY_PREFIXES'));
+    const companyNumberSchemaFactory = new PenaltyIdentifierSchemaFactory(getEnvOrThrow("ALLOWED_COMPANY_PREFIXES"));
 
-    describe('GET request', () => {
+    describe("GET request", () => {
 
         const appeal = {
             penaltyIdentifier: {
-                companyNumber: '00345567',
-                userInputPenaltyReference: 'A00000001',
+                companyNumber: "00345567",
+                userInputPenaltyReference: "A00000001"
             }
         } as Appeal;
 
@@ -46,7 +46,7 @@ describe('PenaltyDetailsController', () => {
             navigation
         } as ApplicationData;
 
-        it('should return 200 when trying to access page with a session', async () => {
+        it("should return 200 when trying to access page with a session", async () => {
 
             const app = createApp(applicationData);
 
@@ -61,16 +61,16 @@ describe('PenaltyDetailsController', () => {
         });
     });
 
-    describe('POST request', () => {
-        it('should return 302 and redirect to disclaimer page when posting valid penalty details', async () => {
+    describe("POST request", () => {
+        it("should return 302 and redirect to disclaimer page when posting valid penalty details", async () => {
 
             const appeal = {
                 penaltyIdentifier: {
-                    companyNumber: 'SC123123',
-                    userInputPenaltyReference: 'A12345678',
-                    penaltyReference: 'A12345678',
+                    companyNumber: "SC123123",
+                    userInputPenaltyReference: "A12345678",
+                    penaltyReference: "A12345678",
                     penaltyList: {
-                        items: [{ id: 'A12345678' }]
+                        items: [{ id: "A12345678" }]
                     }
                 }
             } as Appeal;
@@ -91,17 +91,17 @@ describe('PenaltyDetailsController', () => {
                 .send(appeal.penaltyIdentifier)
                 .expect(response => {
                     expect(response.status).to.be.equal(MOVED_TEMPORARILY);
-                    expect(response.get('Location')).to.be.equal(SELECT_THE_PENALTY_PAGE_URI);
+                    expect(response.get("Location")).to.be.equal(SELECT_THE_PENALTY_PAGE_URI);
                 });
 
         });
 
-        it('should render error page when company profile is unavailable ', async () => {
+        it("should render error page when company profile is unavailable ", async () => {
 
             const appeal = {
                 penaltyIdentifier: {
-                    companyNumber: 'SC123123',
-                    userInputPenaltyReference: 'A12345678'
+                    companyNumber: "SC123123",
+                    userInputPenaltyReference: "A12345678"
                 }
             } as Appeal;
 
@@ -113,7 +113,7 @@ describe('PenaltyDetailsController', () => {
                 ));
                 container.rebind(CompanyNameProcessor).toConstantValue(
                     createSubstituteOf<CompanyNameProcessor>(config => {
-                        config.process(Arg.any()).throws(new Error('An error occurred'));
+                        config.process(Arg.any()).throws(new Error("An error occurred"));
                     })
                 );
             });
@@ -122,16 +122,16 @@ describe('PenaltyDetailsController', () => {
                 .send(appeal.penaltyIdentifier)
                 .expect(response => {
                     expect(response.status).to.be.equal(INTERNAL_SERVER_ERROR);
-                    expect(response.text).to.contain('Sorry, there is a problem with the service');
+                    expect(response.text).to.contain("Sorry, there is a problem with the service");
                 });
 
         });
 
-        it('should return 400 when posting empty penalty reference', async () => {
+        it("should return 400 when posting empty penalty reference", async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: '',
-                userInputPenaltyReference: '',
-                companyNumber: 'SC123123'
+                penaltyReference: "",
+                userInputPenaltyReference: "",
+                companyNumber: "SC123123"
             };
 
             const app = createApp({}, container => {
@@ -143,15 +143,15 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You must enter a reference number');
+                        .and.to.contain("You must enter a reference number");
                 });
         });
 
-        it('should return 400 when posting invalid penalty reference', async () => {
+        it("should return 400 when posting invalid penalty reference", async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: '0',
-                userInputPenaltyReference: '0',
-                companyNumber: 'SC123123'
+                penaltyReference: "0",
+                userInputPenaltyReference: "0",
+                companyNumber: "SC123123"
             };
 
             const app = createApp({}, container => {
@@ -163,15 +163,15 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You must enter your reference number exactly as shown on your penalty notice');
+                        .and.to.contain("You must enter your reference number exactly as shown on your penalty notice");
                 });
         });
 
-        it('should return 400 when posting empty company number', async () => {
+        it("should return 400 when posting empty company number", async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
-                userInputPenaltyReference: 'A12345678',
-                companyNumber: ''
+                penaltyReference: "A12345678",
+                userInputPenaltyReference: "A12345678",
+                companyNumber: ""
             };
 
             const app = createApp({}, container => {
@@ -183,15 +183,15 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You must enter a company number');
+                        .and.to.contain("You must enter a company number");
                 });
         });
 
-        it('should return 400 when posting invalid company number', async () => {
+        it("should return 400 when posting invalid company number", async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
-                userInputPenaltyReference: 'A12345678',
-                companyNumber: 'AB66666666'
+                penaltyReference: "A12345678",
+                userInputPenaltyReference: "A12345678",
+                companyNumber: "AB66666666"
             };
 
             const app = createApp({}, container => {
@@ -203,21 +203,21 @@ describe('PenaltyDetailsController', () => {
                 .expect(response => {
                     expect(response.status).to.be.equal(UNPROCESSABLE_ENTITY);
                     expect(response.text).to.contain(pageHeading)
-                        .and.to.contain('You must enter your full eight character company number');
+                        .and.to.contain("You must enter your full eight character company number");
                 });
         });
 
-        it('should return 400 when late filling penalty service fails', async () => {
+        it("should return 400 when late filling penalty service fails", async () => {
             const penaltyIdentifier: PenaltyIdentifier = {
-                penaltyReference: 'A12345678',
-                userInputPenaltyReference: 'A12345678',
-                companyNumber: 'NI123456'
+                penaltyReference: "A12345678",
+                userInputPenaltyReference: "A12345678",
+                companyNumber: "NI123456"
             };
 
             const app = createApp({}, container => {
 
                 const lateFillingPenaltiesService = createSubstituteOf<LateFilingPenaltyService>(config => {
-                    config.getPenalties('NI123456').rejects(new Error('Cannot read property \'map\' of null'));
+                    config.getPenalties("NI123456").rejects(new Error("Cannot read property 'map' of null"));
                 });
 
                 const api = createSubstituteOf<ApiClient>(config => {
@@ -228,7 +228,6 @@ describe('PenaltyDetailsController', () => {
                     .toConstantValue(new PenaltyDetailsValidator((_: AuthMethod) => api, companyNumberSchemaFactory));
 
             });
-
 
             await request(app).post(PENALTY_DETAILS_PAGE_URI)
                 .send(penaltyIdentifier)

@@ -1,29 +1,29 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { Request } from 'express';
-import moment from 'moment';
+import { Session } from "@companieshouse/node-session-handler";
+import { Request } from "express";
+import moment from "moment";
 
-import { DateValidator } from 'app/controllers/validators/DateValidator';
-import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { Illness } from 'app/models/Illness';
-import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { ValidationError } from 'app/utils/validation/ValidationError';
-import { ValidationResult } from 'app/utils/validation/ValidationResult';
+import { DateValidator } from "app/controllers/validators/DateValidator";
+import { loggerInstance, loggingMessage } from "app/middleware/Logger";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { Illness } from "app/models/Illness";
+import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from "app/utils/CommonErrors";
+import { ValidationError } from "app/utils/validation/ValidationError";
+import { ValidationResult } from "app/utils/validation/ValidationResult";
 
 export class IllnessEndDateValidator extends DateValidator {
 
-    private ILLNESS_END_DATE_BEFORE_ILLNESS_START_DATE: string = 'End date must be after the start date';
+    private ILLNESS_END_DATE_BEFORE_ILLNESS_START_DATE: string = "End date must be after the start date";
 
-    constructor() {
+    constructor () {
         super();
     }
 
-    public async validate(request: Request): Promise<ValidationResult> {
+    public async validate (request: Request): Promise<ValidationResult> {
 
-        const dayField: string = 'day';
-        const monthField: string = 'month';
-        const yearField: string = 'year';
-        const dateField: string = 'date';
+        const dayField: string = "day";
+        const monthField: string = "month";
+        const yearField: string = "year";
+        const dateField: string = "date";
 
         const session: Session | undefined = request.session;
 
@@ -45,7 +45,7 @@ export class IllnessEndDateValidator extends DateValidator {
         /* Validate that the illness end date is before the illness start date only if
            it has passed all other date validation
          */
-        if ( validationResult.errors.length === 0 ) {
+        if (validationResult.errors.length === 0) {
             const illness: Illness | undefined = appData.appeal.reasons.illness;
             if (illness != null && illness.illnessStart != null) {
 

@@ -1,26 +1,26 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { expect } from 'chai';
-import { NextFunction, Request, Response } from 'express';
-import { FORBIDDEN } from 'http-status-codes';
-import { createSubstituteOf } from '../SubstituteFactory';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { expect } from "chai";
+import { NextFunction, Request, Response } from "express";
+import { FORBIDDEN } from "http-status-codes";
+import { createSubstituteOf } from "../SubstituteFactory";
 import {
     createDefaultAppeal,
     createDefaultAttachments
-} from '../models/AppDataFactory';
-import { createSession } from '../utils/session/SessionFactory';
+} from "../models/AppDataFactory";
+import { createSession } from "../utils/session/SessionFactory";
 
-import { FileRestrictionsMiddleware } from 'app/middleware/FileRestrictionsMiddleware';
-import { Appeal } from 'app/models/Appeal';
-import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
+import { FileRestrictionsMiddleware } from "app/middleware/FileRestrictionsMiddleware";
+import { Appeal } from "app/models/Appeal";
+import { AppealsPermissionKeys } from "app/models/AppealsPermissionKeys";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
 
-describe('FileRestrictionsMiddleware', () => {
+describe("FileRestrictionsMiddleware", () => {
 
-    const userId = 'someUserId';
+    const userId = "someUserId";
 
     const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
@@ -30,8 +30,8 @@ describe('FileRestrictionsMiddleware', () => {
         data?: Partial<ApplicationData>,
         permissions?: any): Request => {
 
-        const session: Session = createSession('secret', true, admin, permissions);
-        session.setExtraData(APPLICATION_DATA_KEY, { ...data } || undefined );
+        const session: Session = createSession("secret", true, admin, permissions);
+        session.setExtraData(APPLICATION_DATA_KEY, { ...data } || undefined);
 
         session.data[SessionKey.SignInInfo]![SignInInfoKeys.UserProfile]!.id = userId;
 
@@ -43,14 +43,14 @@ describe('FileRestrictionsMiddleware', () => {
 
     const isAdmin = true;
 
-    describe('As an Internal User session', () => {
+    describe("As an Internal User session", () => {
         const appeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
-        appeal.createdBy = { id: 'SomeExternalUser' };
+        appeal.createdBy = { id: "SomeExternalUser" };
 
         const appData: Partial<ApplicationData> = { appeal };
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
 
-        it('should call next if the correct permissions are present in the session', () => {
+        it("should call next if the correct permissions are present in the session", () => {
 
             const request = getRequestSubstitute(
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
@@ -67,7 +67,7 @@ describe('FileRestrictionsMiddleware', () => {
             response.didNotReceive();
         });
 
-        it('should redirect to an error page if user does not have permissions', () => {
+        it("should redirect to an error page if user does not have permissions", () => {
 
             const requestNoPermissions = getRequestSubstitute({ fileId: DEFAULT_ATTACHMENTS[0].id }, isAdmin, appData);
             const response = createSubstituteOf<Response>();
@@ -76,19 +76,19 @@ describe('FileRestrictionsMiddleware', () => {
             fileRestrictionsMiddleware.handler(requestNoPermissions, response, next);
 
             response.received().status(FORBIDDEN);
-            response.received().render('error-custom', {
-                heading: 'You are not authorised to download this document'
+            response.received().render("error-custom", {
+                heading: "You are not authorised to download this document"
             });
             next.didNotReceive();
         });
 
-        it('should redirect to an error page if user does not have the correct permission', () => {
+        it("should redirect to an error page if user does not have the correct permission", () => {
 
             const requestInvalidPermissions = getRequestSubstitute(
                 { fileId: DEFAULT_ATTACHMENTS[0].id },
                 isAdmin,
                 appData,
-                { '/some-permission/not-appeals': 1 }
+                { "/some-permission/not-appeals": 1 }
             );
 
             const response = createSubstituteOf<Response>();
@@ -97,15 +97,15 @@ describe('FileRestrictionsMiddleware', () => {
             fileRestrictionsMiddleware.handler(requestInvalidPermissions, response, next);
 
             response.received().status(FORBIDDEN);
-            response.received().render('error-custom', {
-                heading: 'You are not authorised to download this document'
+            response.received().render("error-custom", {
+                heading: "You are not authorised to download this document"
             });
             next.didNotReceive();
         });
 
-        it('should throw an error if the attachment is not in the appeal object', () => {
+        it("should throw an error if the attachment is not in the appeal object", () => {
             const request = getRequestSubstitute(
-                { fileId: 'I do not exist' },
+                { fileId: "I do not exist" },
                 isAdmin,
                 appData,
                 { [AppealsPermissionKeys.download]: 1, [AppealsPermissionKeys.view]: 1 }
@@ -117,15 +117,15 @@ describe('FileRestrictionsMiddleware', () => {
             fileRestrictionsMiddleware.handler(request, response, next);
 
             response.received().status(FORBIDDEN);
-            response.received().render('error-custom', {
-                heading: 'You are not authorised to download this document'
+            response.received().render("error-custom", {
+                heading: "You are not authorised to download this document"
             });
             next.didNotReceive();
 
         });
     });
 
-    describe('External User', () => {
+    describe("External User", () => {
 
         const getSubmittedAppeal = (): Appeal => {
             const { penaltyIdentifier, reasons } = createDefaultAppeal(DEFAULT_ATTACHMENTS);
@@ -138,9 +138,9 @@ describe('FileRestrictionsMiddleware', () => {
 
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
 
-        describe('Appeal is loaded via API', () => {
+        describe("Appeal is loaded via API", () => {
 
-            it('should call next when file id is in attachments', () => {
+            it("should call next when file id is in attachments", () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
 
@@ -159,12 +159,12 @@ describe('FileRestrictionsMiddleware', () => {
                 response.didNotReceive().status(FORBIDDEN);
             });
 
-            it('should redirect to error page if file id is not in appeal attachments', () => {
+            it("should redirect to error page if file id is not in appeal attachments", () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
 
                 const request = getRequestSubstitute(
-                    { fileId: 'somethingTotallyWrong' },
+                    { fileId: "somethingTotallyWrong" },
                     !isAdmin,
                     appData
                 );
@@ -175,16 +175,16 @@ describe('FileRestrictionsMiddleware', () => {
                 fileRestrictionsMiddleware.handler(request, response, next);
 
                 response.received().status(FORBIDDEN);
-                response.received().render('error-custom', {
-                    heading: 'You are not authorised to download this document'
+                response.received().render("error-custom", {
+                    heading: "You are not authorised to download this document"
                 });
                 next.didNotReceive();
             });
 
-            it('should redirect to error page if user tries to access appeal not created by the same user', () => {
+            it("should redirect to error page if user tries to access appeal not created by the same user", () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getSubmittedAppeal() };
-                appData.appeal!.createdBy! = { id: 'SomeoneElse' };
+                appData.appeal!.createdBy! = { id: "SomeoneElse" };
 
                 const request = getRequestSubstitute(
                     { fileId: DEFAULT_ATTACHMENTS[0].id },
@@ -198,15 +198,15 @@ describe('FileRestrictionsMiddleware', () => {
                 fileRestrictionsMiddleware.handler(request, response, next);
 
                 response.received().status(FORBIDDEN);
-                response.received().render('error-custom', {
-                    heading: 'You are not authorised to download this document'
+                response.received().render("error-custom", {
+                    heading: "You are not authorised to download this document"
                 });
                 next.didNotReceive();
             });
 
         });
 
-        describe('User still has not submitted the appeal', () => {
+        describe("User still has not submitted the appeal", () => {
 
             const getWorkInProgressAppeal = (): Appeal => {
                 const { penaltyIdentifier, reasons } = createDefaultAppeal(DEFAULT_ATTACHMENTS);
@@ -216,7 +216,7 @@ describe('FileRestrictionsMiddleware', () => {
                 };
             };
 
-            it('should call next if user has not yet submitted the appeal and fileId is in the attachments', () => {
+            it("should call next if user has not yet submitted the appeal and fileId is in the attachments", () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
@@ -235,12 +235,12 @@ describe('FileRestrictionsMiddleware', () => {
                 response.didNotReceive().status(FORBIDDEN);
             });
 
-            it('should redirect to error page when the user tries to access a fileId not in the attachments', () => {
+            it("should redirect to error page when the user tries to access a fileId not in the attachments", () => {
 
                 const appData: Partial<ApplicationData> = { appeal: getWorkInProgressAppeal() };
 
                 const request = getRequestSubstitute(
-                    { fileId: 'somethingTotallyWrong' },
+                    { fileId: "somethingTotallyWrong" },
                     !isAdmin,
                     appData
                 );
@@ -251,21 +251,21 @@ describe('FileRestrictionsMiddleware', () => {
                 fileRestrictionsMiddleware.handler(request, response, next);
 
                 response.received().status(FORBIDDEN);
-                response.received().render('error-custom', {
-                    heading: 'You are not authorised to download this document'
+                response.received().render("error-custom", {
+                    heading: "You are not authorised to download this document"
                 });
                 next.didNotReceive();
             });
         });
     });
 
-    describe('Exceptional use cases', () => {
+    describe("Exceptional use cases", () => {
 
         const fileRestrictionsMiddleware = new FileRestrictionsMiddleware();
 
-        it('should throw an error when an appeal object is not in session', () => {
+        it("should throw an error when an appeal object is not in session", () => {
 
-            const session = createSession('secret', true, false);
+            const session = createSession("secret", true, false);
             session.setExtraData(APPLICATION_DATA_KEY, {
                 appeal: undefined
             });
@@ -285,9 +285,9 @@ describe('FileRestrictionsMiddleware', () => {
             response.didNotReceive();
         });
 
-        it('should throw an error when the profile is missing in session', () => {
+        it("should throw an error when the profile is missing in session", () => {
 
-            const session: Session = createSession('secret', true, false);
+            const session: Session = createSession("secret", true, false);
             session.setExtraData(APPLICATION_DATA_KEY, {
                 appeal: createDefaultAppeal(DEFAULT_ATTACHMENTS)
             });

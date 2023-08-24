@@ -1,34 +1,33 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
-import { expect } from 'chai';
-import { Application } from 'express';
-import { FORBIDDEN, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
-import { Container } from 'inversify';
-import request from 'supertest';
-import { createSubstituteOf } from '../SubstituteFactory';
-import { createDefaultAppeal, createDefaultAttachments } from '../models/AppDataFactory';
-import { createReadable } from '../modules/file-transfer-service/StreamUtils';
-import { createSession } from '../utils/session/SessionFactory';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
+import { expect } from "chai";
+import { Application } from "express";
+import { FORBIDDEN, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from "http-status-codes";
+import { Container } from "inversify";
+import request from "supertest";
+import { createSubstituteOf } from "../SubstituteFactory";
+import { createDefaultAppeal, createDefaultAttachments } from "../models/AppDataFactory";
+import { createReadable } from "../modules/file-transfer-service/StreamUtils";
+import { createSession } from "../utils/session/SessionFactory";
 
-import 'app/controllers/EvidenceDownloadController';
-import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealsService } from 'app/modules/appeals-service/AppealsService';
-import { FileMetadata } from 'app/modules/file-transfer-service/FileMetadata';
-import { FileTransferService } from 'app/modules/file-transfer-service/FileTransferService';
-import { FileNotReadyError } from 'app/modules/file-transfer-service/errors';
-import { DOWNLOAD_FILE_PAGE_URI } from 'app/utils/Paths';
+import "app/controllers/EvidenceDownloadController";
+import { AppealsPermissionKeys } from "app/models/AppealsPermissionKeys";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { AppealsService } from "app/modules/appeals-service/AppealsService";
+import { FileMetadata } from "app/modules/file-transfer-service/FileMetadata";
+import { FileTransferService } from "app/modules/file-transfer-service/FileTransferService";
+import { FileNotReadyError } from "app/modules/file-transfer-service/errors";
+import { DOWNLOAD_FILE_PAGE_URI } from "app/utils/Paths";
 
-import { createApp } from 'test/ApplicationFactory';
+import { createApp } from "test/ApplicationFactory";
 
+describe("EvidenceDownloadController", () => {
 
-describe('EvidenceDownloadController', () => {
-
-    const DEFAULT_USER_ID = 'abc';
+    const DEFAULT_USER_ID = "abc";
     const DEFAULT_ATTACHMENTS = createDefaultAttachments();
 
     const internalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
@@ -36,7 +35,7 @@ describe('EvidenceDownloadController', () => {
 
     const externalUserAppeal = createDefaultAppeal(DEFAULT_ATTACHMENTS);
 
-    function createExternalUserAppConfig(
+    function createExternalUserAppConfig (
         fileTransferService: FileTransferService,
         appealsService: AppealsService): Application {
 
@@ -53,7 +52,7 @@ describe('EvidenceDownloadController', () => {
         );
     }
 
-    function createInternalUserAppConfig(
+    function createInternalUserAppConfig (
         fileTransferService: FileTransferService,
         appealsService: AppealsService): Application {
 
@@ -75,8 +74,8 @@ describe('EvidenceDownloadController', () => {
     }
 
     enum User {
-        Internal = 'Internal CH user',
-        External = 'External CH user '
+        Internal = "Internal CH user",
+        External = "External CH user "
     }
 
     type AppConfig = {
@@ -86,9 +85,8 @@ describe('EvidenceDownloadController', () => {
         configureApp: (fileTransferService: FileTransferService, appealsService: AppealsService) => Application;
     };
 
-
     const FILE_ID = DEFAULT_ATTACHMENTS[0].id;
-    const APPEAL_ID = '345';
+    const APPEAL_ID = "345";
 
     const appConfigs: AppConfig[] = [
         {
@@ -112,7 +110,7 @@ describe('EvidenceDownloadController', () => {
         }
     ];
 
-    function generateTests(appConfig: AppConfig): void {
+    function generateTests (appConfig: AppConfig): void {
 
         const { user, appData, configureApp } = appConfig;
 
@@ -120,23 +118,23 @@ describe('EvidenceDownloadController', () => {
 
             const contentDisposition = `attachment; filename=${DEFAULT_ATTACHMENTS[0].name}`;
 
-            const expectedGenericErrorMessage = 'Sorry, there is a problem with the service';
-            const expectedDownloadErrorHeading = 'The file can not be downloaded at this moment';
-            const expectedDownloadErrorMessage = 'Please try again later';
+            const expectedGenericErrorMessage = "Sorry, there is a problem with the service";
+            const expectedDownloadErrorHeading = "The file can not be downloaded at this moment";
+            const expectedDownloadErrorMessage = "Please try again later";
 
             const metadataClean: FileMetadata = {
-                av_status: 'clean',
+                av_status: "clean",
                 content_type: DEFAULT_ATTACHMENTS[0].contentType,
                 id: DEFAULT_ATTACHMENTS[0].id,
                 name: DEFAULT_ATTACHMENTS[0].name,
                 size: DEFAULT_ATTACHMENTS[0].size
             };
-            describe('GET request: renderPrompt', () => {
+            describe("GET request: renderPrompt", () => {
 
-                it('should render the prompt page correctly', async () => {
+                it("should render the prompt page correctly", async () => {
 
                     const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                        service.download(Arg.any()).resolves(createReadable(''));
+                        service.download(Arg.any()).resolves(createReadable(""));
                         service.getFileMetadata(Arg.any()).resolves(metadataClean);
                     });
 
@@ -153,21 +151,21 @@ describe('EvidenceDownloadController', () => {
                             fileTransferService.received();
 
                             switch (user) {
-                                case User.Internal: {
-                                    expect(res.status).to.eq(200);
-                                    expect(res.text).to.contain(`href="${appConfig.links[1]}"`);
-                                }
-                                    break;
-                                case User.External: {
-                                    expect(res.status).to.eq(500);
-                                }
-                                    break;
+                            case User.Internal: {
+                                expect(res.status).to.eq(200);
+                                expect(res.text).to.contain(`href="${appConfig.links[1]}"`);
+                                break;
+                            }
+                            case User.External: {
+                                expect(res.status).to.eq(500);
+                                break;
+                            }
                             }
                         });
 
                 });
 
-                it('should redirect to generic error page if file Id or company number is missing', async () => {
+                it("should redirect to generic error page if file Id or company number is missing", async () => {
 
                     const urls = [
                         `${DOWNLOAD_FILE_PAGE_URI}/data/${FILE_ID}/download?a=${APPEAL_ID}`,
@@ -178,7 +176,7 @@ describe('EvidenceDownloadController', () => {
                     for (const url of urls) {
 
                         const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                            service.download(Arg.any()).resolves(createReadable(''));
+                            service.download(Arg.any()).resolves(createReadable(""));
                             service.getFileMetadata(Arg.any()).resolves(metadataClean);
                         });
 
@@ -201,12 +199,12 @@ describe('EvidenceDownloadController', () => {
                 });
             });
 
-            describe('GET request: download', () => {
+            describe("GET request: download", () => {
 
-                it('should start downloading the file when the file is valid', async () => {
+                it("should start downloading the file when the file is valid", async () => {
 
                     const fileTransferService = createSubstituteOf<FileTransferService>(service => {
-                        service.download(Arg.any()).resolves(createReadable(''));
+                        service.download(Arg.any()).resolves(createReadable(""));
                         service.getFileMetadata(Arg.any()).resolves(metadataClean);
                     });
 
@@ -220,25 +218,25 @@ describe('EvidenceDownloadController', () => {
                         .get(appConfig.links[1])
                         .then(res => {
                             switch (appConfig.user) {
-                                case User.External: {
-                                    fileTransferService.received().download(Arg.any());
-                                    appealsService.didNotReceive().getAppeal(Arg.any());
-                                }
-                                    break;
-                                case User.Internal: {
-                                    fileTransferService.received().download(Arg.any());
-                                    appealsService.received().getAppeal(Arg.any());
-                                }
-                                    break;
+                            case User.External: {
+                                fileTransferService.received().download(Arg.any());
+                                appealsService.didNotReceive().getAppeal(Arg.any());
+                                break;
+                            }
+                            case User.Internal: {
+                                fileTransferService.received().download(Arg.any());
+                                appealsService.received().getAppeal(Arg.any());
+                                break;
+                            }
                             }
 
-                            expect(res.header['content-disposition']).eq(contentDisposition);
+                            expect(res.header["content-disposition"]).eq(contentDisposition);
                             expect(res.status).to.eq(OK);
                         });
 
                 });
 
-                it('should render an error page when the file service fails to download file', async () => {
+                it("should render an error page when the file service fails to download file", async () => {
 
                     const appealsService = createSubstituteOf<AppealsService>(service => {
                         service.getAppeal(Arg.any()).resolves(appData.appeal!);
@@ -278,8 +276,7 @@ describe('EvidenceDownloadController', () => {
                     }
                 });
 
-                // tslint:disable-next-line: max-line-length
-                it('should render custom error page when file service fails to download file with FileNotReady', async () => {
+                it("should render custom error page when file service fails to download file with FileNotReady", async () => {
 
                     const fileTransferService = createSubstituteOf<FileTransferService>(service => {
                         service.download(Arg.any()).rejects(
@@ -300,15 +297,15 @@ describe('EvidenceDownloadController', () => {
                             fileTransferService.received();
                             appealsService.received();
                             expect(res.status).to.equal(FORBIDDEN);
-                            // tslint:disable-next-line: no-unused-expression
-                            expect(res.header['content-disposition']).to.be.undefined;
+
+                            expect(res.header["content-disposition"]).to.be.undefined;
                             expect(res.text)
                                 .to.contain(expectedDownloadErrorHeading)
                                 .and.to.contain(expectedDownloadErrorMessage);
                         });
                 });
 
-                it('should render custom error page during download when the status is invalid', async () => {
+                it("should render custom error page during download when the status is invalid", async () => {
 
                     const createMetadata = (status: string): FileMetadata => {
                         return {
@@ -320,7 +317,7 @@ describe('EvidenceDownloadController', () => {
                         };
                     };
 
-                    for (const status of ['infected', 'not-scanned']) {
+                    for (const status of ["infected", "not-scanned"]) {
 
                         const fileTransferService = createSubstituteOf<FileTransferService>(service => {
                             service.download(Arg.any()).rejects(
@@ -341,8 +338,8 @@ describe('EvidenceDownloadController', () => {
                                 appealsService.received();
                                 fileTransferService.received();
                                 expect(res.status).to.equal(FORBIDDEN);
-                                // tslint:disable-next-line: no-unused-expression
-                                expect(res.header['content-disposition']).to.be.undefined;
+
+                                expect(res.header["content-disposition"]).to.be.undefined;
                                 expect(res.text)
                                     .to.contain(expectedDownloadErrorHeading)
                                     .and.to.contain(expectedDownloadErrorMessage);
@@ -353,7 +350,6 @@ describe('EvidenceDownloadController', () => {
             });
 
         });
-
 
     }
 

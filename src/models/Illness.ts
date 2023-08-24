@@ -1,5 +1,5 @@
-import { Attachment } from 'app/models/Attachment';
-import { IllPerson } from 'app/models/fields/IllPerson';
+import { Attachment } from "app/models/Attachment";
+import { IllPerson } from "app/models/fields/IllPerson";
 
 export interface Illness {
     illPerson: IllPerson;

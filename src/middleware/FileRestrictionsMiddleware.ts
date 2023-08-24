@@ -1,32 +1,32 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { UserProfileKeys } from '@companieshouse/node-session-handler/lib/session/keys/UserProfileKeys';
-import { ISignInInfo, IUserProfile } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import { NextFunction, Request, Response } from 'express';
-import { FORBIDDEN } from 'http-status-codes';
-import { provide } from 'inversify-binding-decorators';
-import { BaseMiddleware } from 'inversify-express-utils';
-import { loggerInstance } from './Logger';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { UserProfileKeys } from "@companieshouse/node-session-handler/lib/session/keys/UserProfileKeys";
+import { ISignInInfo, IUserProfile } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import { NextFunction, Request, Response } from "express";
+import { FORBIDDEN } from "http-status-codes";
+import { provide } from "inversify-binding-decorators";
+import { BaseMiddleware } from "inversify-express-utils";
+import { loggerInstance } from "./Logger";
 
-import { Appeal } from 'app/models/Appeal';
-import { AppealsPermissionKeys } from 'app/models/AppealsPermissionKeys';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { findAttachmentByIdFromReasons } from 'app/utils/appeal/extra.data';
+import { Appeal } from "app/models/Appeal";
+import { AppealsPermissionKeys } from "app/models/AppealsPermissionKeys";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { findAttachmentByIdFromReasons } from "app/utils/appeal/extra.data";
 
-const customErrorTemplate = 'error-custom';
+const customErrorTemplate = "error-custom";
 
-@provide(FileRestrictionsMiddleware)
+@provide(FileRestrictionsMiddleware) // eslint-disable-line no-use-before-define
 export class FileRestrictionsMiddleware extends BaseMiddleware {
 
-    public handler(req: Request, res: Response, next: NextFunction): void {
+    public handler (req: Request, res: Response, next: NextFunction): void {
 
         const session: Session | undefined = req.session;
 
         const signInInfo: ISignInInfo | undefined = session!.get<ISignInInfo>(SessionKey.SignInInfo);
 
         if (!signInInfo) {
-            throw new Error('Sign in info was expected in session, but none found');
+            throw new Error("Sign in info was expected in session, but none found");
         }
 
         const applicationData: ApplicationData = session!.getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
@@ -34,7 +34,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         const appeal: Appeal = applicationData.appeal;
 
         if (!appeal) {
-            throw new Error('Appeal was expected in session but none found');
+            throw new Error("Appeal was expected in session but none found");
         }
 
         const userProfile: IUserProfile | undefined = signInInfo![SignInInfoKeys.UserProfile];
@@ -46,7 +46,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         const fileId: string = req.params.fileId;
 
         if (!fileId) {
-            throw Error('File id must not be null');
+            throw Error("File id must not be null");
         }
 
         const hasSufficientPermissions = () =>
@@ -63,7 +63,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         return this.renderForbiddenError(res);
     }
 
-    private hasAppealsPermissions(userProfile: IUserProfile): boolean {
+    private hasAppealsPermissions (userProfile: IUserProfile): boolean {
 
         const permissions = userProfile[UserProfileKeys.Permissions];
 
@@ -72,7 +72,7 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
             permissions[AppealsPermissionKeys.view] === 1;
     }
 
-    private hasUserPermission(userProfile: IUserProfile, appeal: Appeal): boolean {
+    private hasUserPermission (userProfile: IUserProfile, appeal: Appeal): boolean {
 
         // User must be creating a new appeal.
         if (!appeal.createdBy) {
@@ -82,10 +82,10 @@ export class FileRestrictionsMiddleware extends BaseMiddleware {
         return appeal.createdBy?.id === userProfile.id;
     }
 
-    private renderForbiddenError(res: Response): void {
+    private renderForbiddenError (res: Response): void {
         res.status(FORBIDDEN);
         res.render(customErrorTemplate, {
-            heading: 'You are not authorised to download this document'
+            heading: "You are not authorised to download this document"
         });
     }
 }

@@ -1,18 +1,18 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { NextFunction, Request, Response } from 'express';
-import { provide } from 'inversify-binding-decorators';
-import { BaseMiddleware } from 'inversify-express-utils';
+import { Session } from "@companieshouse/node-session-handler";
+import { NextFunction, Request, Response } from "express";
+import { provide } from "inversify-binding-decorators";
+import { BaseMiddleware } from "inversify-express-utils";
 
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from "app/utils/CommonErrors";
+import { PENALTY_DETAILS_PAGE_URI, REVIEW_PENALTY_PAGE_URI } from "app/utils/Paths";
 
-@provide(PenaltyReferenceRouter)
+@provide(PenaltyReferenceRouter) // eslint-disable-line no-use-before-define
 export class PenaltyReferenceRouter extends BaseMiddleware {
 
-    public static PENALTY_LIST_UNDEFINED_ERROR: Error = new Error('Penalty list in appeal was expected but was undefined');
+    public static PENALTY_LIST_UNDEFINED_ERROR: Error = new Error("Penalty list in appeal was expected but was undefined");
 
-    public handler(req: Request, res: Response, next: NextFunction): void {
+    public handler (req: Request, res: Response, next: NextFunction): void {
         const session: Session | undefined = req.session;
 
         if (!session) {
