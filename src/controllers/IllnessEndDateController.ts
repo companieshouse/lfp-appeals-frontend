@@ -1,32 +1,32 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
-import { controller } from 'inversify-express-utils';
-import moment from 'moment';
-import { IllnessEndDateValidator } from './validators/IllnessEndDateValidator';
+import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { controller } from "inversify-express-utils";
+import moment from "moment";
+import { IllnessEndDateValidator } from "./validators/IllnessEndDateValidator";
 
-import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
-import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
-import { Appeal } from 'app/models/Appeal';
-import { Illness} from 'app/models/Illness';
-import { Reasons} from 'app/models/Reasons';
-import { Feature } from 'app/utils/Feature';
-import { CONTINUED_ILLNESS_PAGE_URI, FURTHER_INFORMATION_PAGE_URI, ILLNESS_END_DATE_PAGE_URI, SIGNOUT_PAGE_URI} from 'app/utils/Paths';
-import { Navigation } from 'app/utils/navigation/navigation';
+import { SafeNavigationBaseController } from "app/controllers/SafeNavigationBaseController";
+import { AuthMiddleware } from "app/middleware/AuthMiddleware";
+import { CommonVariablesMiddleware } from "app/middleware/CommonVariablesMiddleware";
+import { FeatureToggleMiddleware } from "app/middleware/FeatureToggleMiddleware";
+import { loggerInstance, loggingMessage } from "app/middleware/Logger";
+import { Appeal } from "app/models/Appeal";
+import { Illness } from "app/models/Illness";
+import { Reasons } from "app/models/Reasons";
+import { Feature } from "app/utils/Feature";
+import { CONTINUED_ILLNESS_PAGE_URI, FURTHER_INFORMATION_PAGE_URI, ILLNESS_END_DATE_PAGE_URI, SIGNOUT_PAGE_URI } from "app/utils/Paths";
+import { Navigation } from "app/utils/navigation/navigation";
 
-const template: string = 'illness/illness-end-date';
+const template: string = "illness/illness-end-date";
 
 const navigation: Navigation = {
-    previous(): string {
+    previous (): string {
         return CONTINUED_ILLNESS_PAGE_URI;
     },
-    next(): string {
+    next (): string {
         return FURTHER_INFORMATION_PAGE_URI;
     },
-     signOut(): string{
+    signOut (): string {
         return SIGNOUT_PAGE_URI;
-     }
+    }
 };
 
 interface FormBody {
@@ -37,32 +37,32 @@ interface FormBody {
     AuthMiddleware, CommonVariablesMiddleware)
 export class IllnessEndDateController extends SafeNavigationBaseController<FormBody> {
 
-    constructor() {
+    constructor () {
         super(template, navigation, new IllnessEndDateValidator());
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+    protected prepareViewModelFromAppeal (appeal: Appeal): any {
         const illness: Illness | undefined = appeal.reasons?.illness;
         const illnessStart = appeal.reasons.illness?.illnessStart;
 
         if (!illness?.illnessEnd) {
-            return {illnessStart};
+            return { illnessStart };
         }
 
-        const [year, month, day] = illness.illnessEnd.split('-', 3);
+        const [year, month, day] = illness.illnessEnd.split("-", 3);
 
-        return {day, month, year, illnessStart};
+        return { day, month, year, illnessStart };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
+    protected prepareSessionModelPriorSave (appeal: Appeal, value: FormBody): Appeal {
         const illness: Illness | undefined = appeal.reasons?.illness;
 
         if (illness != null) {
-            illness.illnessEnd = moment(value.date).format('YYYY-MM-DD');
+            illness.illnessEnd = moment(value.date).format("YYYY-MM-DD");
         } else {
             appeal.reasons = {
                 illness: {
-                    illnessEnd: moment(value.date).format('YYYY-MM-DD')
+                    illnessEnd: moment(value.date).format("YYYY-MM-DD")
                 }
             } as Reasons;
         }

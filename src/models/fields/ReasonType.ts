@@ -1,4 +1,4 @@
 export enum ReasonType {
-    illness = 'illness',
-    other = 'other'
+    illness = "illness",
+    other = "other"
 }

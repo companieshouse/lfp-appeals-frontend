@@ -1,30 +1,30 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { Session } from '@companieshouse/node-session-handler';
-import { Arg } from '@fluffy-spoon/substitute';
-import { AnySchema } from '@hapi/joi';
-import * as Joi from '@hapi/joi';
-import * as assert from 'assert';
-import { Request, Response } from 'express';
-import { OK, UNPROCESSABLE_ENTITY } from 'http-status-codes';
-import { Container } from 'inversify';
+import { Session } from "@companieshouse/node-session-handler";
+import { Arg } from "@fluffy-spoon/substitute";
+import { AnySchema } from "@hapi/joi";
+import * as Joi from "@hapi/joi";
+import * as assert from "assert";
+import { Request, Response } from "express";
+import { OK, UNPROCESSABLE_ENTITY } from "http-status-codes";
+import { Container } from "inversify";
 
-import { BaseController } from 'app/controllers/BaseController';
-import { FormActionProcessor, FormActionProcessorConstructor } from 'app/controllers/processors/FormActionProcessor';
-import { FormValidator } from 'app/controllers/validators/FormValidator';
+import { BaseController } from "app/controllers/BaseController";
+import { FormActionProcessor, FormActionProcessorConstructor } from "app/controllers/processors/FormActionProcessor";
+import { FormValidator } from "app/controllers/validators/FormValidator";
 
-import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createSubstituteOf } from "test/SubstituteFactory";
 
-const template = 'template';
+const template = "template";
 const navigation = {
-    previous(): string {
-        return '/previous';
+    previous (): string {
+        return "/previous";
     },
-    next(): string {
-        return '/next';
+    next (): string {
+        return "/next";
     },
-    signOut(): string {
-        return '/signOut';
+    signOut (): string {
+        return "/signOut";
     }
 };
 
@@ -40,44 +40,45 @@ type ControllerConfig = {
     viewModel?: {};
 };
 
-function createTestController(config: ControllerConfig): any {
-    // tslint:disable-next-line:new-parens
+function createTestController (config: ControllerConfig): any {
+
     return new class extends BaseController<any> {
-        constructor() {
+        constructor () {
             super(template, navigation, config.formSchema ? new FormValidator(config.formSchema) : undefined,
                 config.formSanitizeFn, config.processor ? [config.processor] : []);
             // @ts-ignore: ignores the fact that http context is readonly
             this.httpContext = config.httpContext;
         }
-        protected prepareViewModelFromAppeal(): any {
+
+        protected prepareViewModelFromAppeal (): any {
             return config.viewModel;
         }
-    };
+    }();
 }
 
-describe('Base controller', () => {
+describe("Base controller", () => {
     const navigationConfig = {
         navigation: {
             back: {
-                href: '/previous'
+                href: "/previous"
             },
             forward: {
-                href: '/next'
+                href: "/next"
             },
             signOut: {
-                href: '/signOut'
+                href: "/signOut"
             },
             actions: {}
         }
     };
 
-    describe('GET handler', () => {
-        it('should render view with prepared view model', async () => {
+    describe("GET handler", () => {
+        it("should render view with prepared view model", async () => {
             const response = createSubstituteOf<Response>(substitute => {
                 substitute.status(Arg.any()).returns(substitute);
             });
             const viewModel = {
-                company: 'XYZ'
+                company: "XYZ"
             };
 
             await createTestController({
@@ -96,18 +97,18 @@ describe('Base controller', () => {
             response.received().render(response, template, {
                 ...viewModel,
                 ...navigationConfig,
-                templateName: template,
+                templateName: template
             } as any);
         });
     });
 
-    describe('POST handler', () => {
-        it('should sanitize form body when sanitise function is provided', async () => {
+    describe("POST handler", () => {
+        it("should sanitize form body when sanitise function is provided", async () => {
             const response = createSubstituteOf<Response>(substitute => {
                 substitute.status(Arg.any()).returns(substitute);
             });
             const formBody = {
-                signature: 'Tooth Fairy'
+                signature: "Tooth Fairy"
             };
 
             await createTestController({
@@ -125,15 +126,15 @@ describe('Base controller', () => {
                 }
             }).onPost();
 
-            assert.equal(formBody.signature, 'TOOTH FAIRY');
+            assert.equal(formBody.signature, "TOOTH FAIRY");
         });
 
-        it('should render view with form body and error messages when validation failed', async () => {
+        it("should render view with form body and error messages when validation failed", async () => {
             const response = createSubstituteOf<Response>(substitute => {
                 substitute.status(Arg.any()).returns(substitute);
             });
             const formBody = {
-                signature: ''
+                signature: ""
             };
 
             await createTestController({
@@ -147,7 +148,7 @@ describe('Base controller', () => {
                 },
                 formSchema: Joi.object({
                     signature: Joi.string().required()
-                }),
+                })
             }).onPost();
 
             response.received().status(UNPROCESSABLE_ENTITY);
@@ -159,8 +160,8 @@ describe('Base controller', () => {
                     validationResult: {
                         errors: [
                             {
-                                field: 'signature',
-                                text: '"signature" is not allowed to be empty'
+                                field: "signature",
+                                text: "\"signature\" is not allowed to be empty"
                             }
                         ]
                     },
@@ -169,7 +170,7 @@ describe('Base controller', () => {
             }));
         });
 
-        it('should redirect to next page when no processors are registered', async () => {
+        it("should redirect to next page when no processors are registered", async () => {
             const response = createSubstituteOf<Response>();
             const result = await createTestController({
                 httpContext: {
@@ -178,16 +179,16 @@ describe('Base controller', () => {
                         session: undefined
                     },
                     response
-                },
+                }
             }).onPost();
 
-            assert.equal(result.location, '/next');
+            assert.equal(result.location, "/next");
         });
 
-        it('should redirect to next page when processing is succeeded', async () => {
-            // tslint:disable-next-line:max-classes-per-file
+        it("should redirect to next page when processing is succeeded", async () => {
+
             class HappyProcessor implements FormActionProcessor {
-                process(): void | Promise<void> {
+                process (): void | Promise<void> {
                     return Promise.resolve();
                 }
             }
@@ -205,17 +206,17 @@ describe('Base controller', () => {
                     },
                     response
                 },
-                processor: HappyProcessor,
+                processor: HappyProcessor
             }).onPost();
 
-            assert.equal(result.location, '/next');
+            assert.equal(result.location, "/next");
         });
 
-        it('should throw error when processing failed', async () => {
-            // tslint:disable-next-line:max-classes-per-file
+        it("should throw error when processing failed", async () => {
+
             class SadProcessor implements FormActionProcessor {
-                process(): void | Promise<void> {
-                    return Promise.reject(new Error(':('));
+                process (): void | Promise<void> {
+                    return Promise.reject(new Error(":("));
                 }
             }
 
@@ -230,15 +231,15 @@ describe('Base controller', () => {
                     httpContext: {
                         container,
                         request: {
-                            query: {},
+                            query: {}
                         },
                         response
                     },
-                    processor: SadProcessor,
+                    processor: SadProcessor
                 }).onPost();
-                assert.fail('Method should have thrown error');
+                assert.fail("Method should have thrown error");
             } catch (e) {
-                assert.equal(e.message, ':(');
+                assert.equal(e.message, ":(");
             }
 
             assert.equal(result, undefined);

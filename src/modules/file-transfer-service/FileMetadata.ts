@@ -3,5 +3,5 @@ export type FileMetadata = {
     name: string;
     content_type: string;
     size: number;
-    av_status: 'not-scanned' | 'clean' | 'infected';
+    av_status: "not-scanned" | "clean" | "infected";
 };

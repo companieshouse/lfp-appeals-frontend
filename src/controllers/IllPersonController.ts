@@ -1,35 +1,35 @@
-import { SessionMiddleware } from '@companieshouse/node-session-handler';
-import { controller } from 'inversify-express-utils';
-import { FormValidator } from './validators/FormValidator';
+import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { controller } from "inversify-express-utils";
+import { FormValidator } from "./validators/FormValidator";
 
-import { SafeNavigationBaseController } from 'app/controllers/SafeNavigationBaseController';
-import { AuthMiddleware } from 'app/middleware/AuthMiddleware';
-import { CommonVariablesMiddleware } from 'app/middleware/CommonVariablesMiddleware';
-import { FeatureToggleMiddleware } from 'app/middleware/FeatureToggleMiddleware';
-import { loggerInstance, loggingMessage } from 'app/middleware/Logger';
-import { Appeal } from 'app/models/Appeal';
-import { Illness } from 'app/models/Illness';
-import { IllPerson } from 'app/models/fields/IllPerson';
-import { schema } from 'app/models/fields/IllPerson.schema';
-import { Feature } from 'app/utils/Feature';
-import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI, SIGNOUT_PAGE_URI } from 'app/utils/Paths';
-import { Navigation } from 'app/utils/navigation/navigation';
+import { SafeNavigationBaseController } from "app/controllers/SafeNavigationBaseController";
+import { AuthMiddleware } from "app/middleware/AuthMiddleware";
+import { CommonVariablesMiddleware } from "app/middleware/CommonVariablesMiddleware";
+import { FeatureToggleMiddleware } from "app/middleware/FeatureToggleMiddleware";
+import { loggerInstance, loggingMessage } from "app/middleware/Logger";
+import { Appeal } from "app/models/Appeal";
+import { Illness } from "app/models/Illness";
+import { IllPerson } from "app/models/fields/IllPerson";
+import { schema } from "app/models/fields/IllPerson.schema";
+import { Feature } from "app/utils/Feature";
+import { CHOOSE_REASON_PAGE_URI, ILL_PERSON_PAGE_URI, ILLNESS_START_DATE_PAGE_URI, SIGNOUT_PAGE_URI } from "app/utils/Paths";
+import { Navigation } from "app/utils/navigation/navigation";
 
-const template = 'illness/ill-person';
+const template = "illness/ill-person";
 
 const navigation : Navigation = {
-    previous(): string {
+    previous (): string {
         return CHOOSE_REASON_PAGE_URI;
     },
-    next(): string {
+    next (): string {
         return ILLNESS_START_DATE_PAGE_URI;
     },
-     signOut(): string{
+    signOut (): string {
         return SIGNOUT_PAGE_URI;
-     },
+    },
     actions: (_: boolean) => {
         return {
-            continue:'action=continue'
+            continue: "action=continue"
         };
     }
 };
@@ -43,7 +43,7 @@ interface FormBody {
     SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
 export class IllPersonController extends SafeNavigationBaseController<FormBody> {
 
-    constructor() {
+    constructor () {
         super(
             template,
             navigation,
@@ -51,7 +51,7 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
         );
     }
 
-    protected prepareViewModelFromAppeal(appeal: Appeal): any {
+    protected prepareViewModelFromAppeal (appeal: Appeal): any {
         const illness: Illness | undefined = appeal.reasons?.illness;
 
         if (!illness) {
@@ -64,7 +64,7 @@ export class IllPersonController extends SafeNavigationBaseController<FormBody> 
         };
     }
 
-    protected prepareSessionModelPriorSave(appeal: Appeal, value: FormBody): Appeal {
+    protected prepareSessionModelPriorSave (appeal: Appeal, value: FormBody): Appeal {
         appeal.reasons.illness!.illPerson = value.illPerson;
 
         if (value.illPerson === IllPerson.someoneElse) {

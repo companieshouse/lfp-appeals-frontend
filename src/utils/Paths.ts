@@ -1,7 +1,7 @@
-import {getEnvOrThrow } from 'app/utils/EnvironmentUtils';
+import { getEnvOrThrow } from "app/utils/EnvironmentUtils";
 
-export const ROOT_URI = '/appeal-a-penalty';
-export const ACCOUNT_URI = String(getEnvOrThrow('ACCOUNT_URL'));
+export const ROOT_URI = "/appeal-a-penalty";
+export const ACCOUNT_URI = String(getEnvOrThrow("ACCOUNT_URL"));
 
 const CATEGORY_PREFIXES = {
     ILLNESS: `${ROOT_URI}/illness`,
@@ -18,8 +18,8 @@ export const SIGNOUT_PAGE_URI = `${ROOT_URI}/signout`;
 export const ACCESSIBILITY_STATEMENT_URI = `${ROOT_URI}/accessibility-statement`;
 export const PENALTY_DETAILS_PAGE_URI = `${ROOT_URI}/penalty-reference`;
 export const SELECT_THE_PENALTY_PAGE_URI = `${ROOT_URI}/select-the-penalty`;
-export const REVIEW_PENALTY_PAGE_URI =`${ROOT_URI}/review-penalty`;
-export const CHOOSE_REASON_PAGE_URI =`${ROOT_URI}/choose-reason`;
+export const REVIEW_PENALTY_PAGE_URI = `${ROOT_URI}/review-penalty`;
+export const CHOOSE_REASON_PAGE_URI = `${ROOT_URI}/choose-reason`;
 
 export const ILL_PERSON_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/who-was-ill`;
 export const ILLNESS_START_DATE_PAGE_URI = `${CATEGORY_PREFIXES.ILLNESS}/illness-start-date`;
@@ -38,5 +38,5 @@ export const CONFIRMATION_PAGE_URI = `${ROOT_URI}/confirmation`;
 export const DOWNLOAD_FILE_PAGE_URI = `${ROOT_URI}/download`;
 
 // Template Pages
-export const LANDING = 'landing';
-export const SIGNOUT = 'signout';
+export const LANDING = "landing";
+export const SIGNOUT = "signout";

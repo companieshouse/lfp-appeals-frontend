@@ -1,17 +1,17 @@
-import { Penalty, PenaltyList } from 'ch-sdk-node/dist/services/lfp';
-import { assert, expect } from 'chai';
-import { NextFunction, Request, Response } from 'express';
-import { createSubstituteOf } from '../SubstituteFactory';
-import { createSession } from '../utils/session/SessionFactory';
+import { Penalty, PenaltyList } from "@companieshouse/api-sdk-node/dist/services/lfp";
+import { assert, expect } from "chai";
+import { NextFunction, Request, Response } from "express";
+import { createSubstituteOf } from "../SubstituteFactory";
+import { createSession } from "../utils/session/SessionFactory";
 
-import { PenaltyReferenceRouter } from 'app/middleware/PenaltyReferenceRouter';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { Reasons } from 'app/models/Reasons';
-import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from 'app/utils/CommonErrors';
-import { REVIEW_PENALTY_PAGE_URI } from 'app/utils/Paths';
+import { PenaltyReferenceRouter } from "app/middleware/PenaltyReferenceRouter";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { Reasons } from "app/models/Reasons";
+import { APPLICATION_DATA_UNDEFINED, SESSION_NOT_FOUND_ERROR } from "app/utils/CommonErrors";
+import { REVIEW_PENALTY_PAGE_URI } from "app/utils/Paths";
 
-describe('PenaltyReferenceRouter', () => {
-    it('should throw an exception if the session does not exist', () => {
+describe("PenaltyReferenceRouter", () => {
+    it("should throw an exception if the session does not exist", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
         try {
@@ -20,42 +20,42 @@ describe('PenaltyReferenceRouter', () => {
                 createSubstituteOf<Response>(),
                 createSubstituteOf<NextFunction>()
             );
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
         } catch (err) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
 
     });
-    it('should throw an exception if there is no application data', () => {
+    it("should throw an exception if there is no application data", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
         try {
-            const session = createSession('secret', true);
+            const session = createSession("secret", true);
             penaltyReferenceRouter.handler(
                 { session } as Request,
                 createSubstituteOf<Response>(),
                 createSubstituteOf<NextFunction>()
             );
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
         } catch (err) {
             expect(err.message).to.equal(APPLICATION_DATA_UNDEFINED.message);
         }
 
     });
-    it('should throw an exception if the penalty list is undefined', () => {
+    it("should throw an exception if the penalty list is undefined", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
         try {
 
-            const session = createSession('secret', true);
+            const session = createSession("secret", true);
 
             session.setExtraData<Partial<ApplicationData>>(APPLICATION_DATA_KEY, {
                 appeal: {
                     penaltyIdentifier: {
-                        companyNumber: 'NI000000',
-                        userInputPenaltyReference: 'A0000001',
-                        penaltyReference: 'A0000001',
-                        companyName: 'test'
+                        companyNumber: "NI000000",
+                        userInputPenaltyReference: "A0000001",
+                        penaltyReference: "A0000001",
+                        companyName: "test"
                     },
                     reasons: {} as Reasons
                 }
@@ -67,28 +67,28 @@ describe('PenaltyReferenceRouter', () => {
                 createSubstituteOf<NextFunction>()
             );
 
-            assert.fail('Should have thrown an error');
+            assert.fail("Should have thrown an error");
 
         } catch (err) {
             expect(err.message).to.equal(PenaltyReferenceRouter.PENALTY_LIST_UNDEFINED_ERROR.message);
         }
 
     });
-    it('should call redirect to the review penalty page if there is one penalty in the list', () => {
+    it("should call redirect to the review penalty page if there is one penalty in the list", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
 
-        const session = createSession('secret', true);
+        const session = createSession("secret", true);
 
         session.setExtraData<Partial<ApplicationData>>(APPLICATION_DATA_KEY, {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    userInputPenaltyReference: 'A0000001',
-                    penaltyReference: 'A0000001',
-                    companyName: 'test',
+                    companyNumber: "NI000000",
+                    userInputPenaltyReference: "A0000001",
+                    penaltyReference: "A0000001",
+                    companyName: "test",
                     penaltyList: {
-                        items: [{ id: 'A0000001' } as Penalty]
+                        items: [{ id: "A0000001" } as Penalty]
                     } as PenaltyList
                 },
                 reasons: {} as Reasons
@@ -111,21 +111,21 @@ describe('PenaltyReferenceRouter', () => {
         nextFunction.didNotReceive();
 
     });
-    it('should call next if there are more than one penalty in the list', () => {
+    it("should call next if there are more than one penalty in the list", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
 
-        const session = createSession('secret', true);
+        const session = createSession("secret", true);
 
         session.setExtraData<Partial<ApplicationData>>(APPLICATION_DATA_KEY, {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    userInputPenaltyReference: 'PEN1A/ABCEFG',
-                    penaltyReference: 'PEN1A/ABCEFG',
-                    companyName: 'test',
+                    companyNumber: "NI000000",
+                    userInputPenaltyReference: "PEN1A/ABCEFG",
+                    penaltyReference: "PEN1A/ABCEFG",
+                    companyName: "test",
                     penaltyList: {
-                        items: [{ id: 'A0000001' } as Penalty, { id: 'A0000002' } as Penalty]
+                        items: [{ id: "A0000001" } as Penalty, { id: "A0000002" } as Penalty]
                     } as PenaltyList
                 },
                 reasons: {} as Reasons
@@ -145,21 +145,21 @@ describe('PenaltyReferenceRouter', () => {
         nextFunction.received();
     });
 
-    it('should redirect to the penalty details page when list contains 1 penalty and back button flag is set', () => {
+    it("should redirect to the penalty details page when list contains 1 penalty and back button flag is set", () => {
 
         const penaltyReferenceRouter = new PenaltyReferenceRouter();
 
-        const session = createSession('secret', true);
+        const session = createSession("secret", true);
 
         session.setExtraData<Partial<ApplicationData>>(APPLICATION_DATA_KEY, {
             appeal: {
                 penaltyIdentifier: {
-                    companyNumber: 'NI000000',
-                    userInputPenaltyReference: 'PEN1A/ABCEFG',
-                    penaltyReference: 'PEN1A/ABCEFG',
-                    companyName: 'test',
+                    companyNumber: "NI000000",
+                    userInputPenaltyReference: "PEN1A/ABCEFG",
+                    penaltyReference: "PEN1A/ABCEFG",
+                    companyName: "test",
                     penaltyList: {
-                        items: [{ id: 'A0000001' } as Penalty]
+                        items: [{ id: "A0000001" } as Penalty]
                     } as PenaltyList
                 },
                 reasons: {} as Reasons
@@ -172,7 +172,7 @@ describe('PenaltyReferenceRouter', () => {
         penaltyReferenceRouter.handler(
             {
                 query: {
-                    back: 'true'
+                    back: "true"
                 } as any,
                 session
             } as Request,

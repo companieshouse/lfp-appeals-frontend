@@ -50,3 +50,7 @@ endif
 sonar:
 	npm run analyse-code
 
+.PHONY: security-check
+security-check:
+	npm audit
+

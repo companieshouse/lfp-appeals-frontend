@@ -1,39 +1,39 @@
-import { Session } from '@companieshouse/node-session-handler';
-import { SessionKey } from '@companieshouse/node-session-handler/lib/session/keys/SessionKey';
-import { SignInInfoKeys } from '@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys';
-import { IAccessToken, ISignInInfo } from '@companieshouse/node-session-handler/lib/session/model/SessionInterfaces';
-import Substitute, { Arg, SubstituteOf } from '@fluffy-spoon/substitute';
-import { NextFunction, Request, Response } from 'express';
+import { Session } from "@companieshouse/node-session-handler";
+import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
+import { SignInInfoKeys } from "@companieshouse/node-session-handler/lib/session/keys/SignInInfoKeys";
+import { IAccessToken, ISignInInfo } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
+import Substitute, { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
+import { NextFunction, Request, Response } from "express";
 
-import { CheckForDuplicateMiddleware } from 'app/middleware/CheckForDuplicateMiddleware';
-import { Appeal } from 'app/models/Appeal';
-import { ApplicationData, APPLICATION_DATA_KEY } from 'app/models/ApplicationData';
-import { AppealsService } from 'app/modules/appeals-service/AppealsService';
+import { CheckForDuplicateMiddleware } from "app/middleware/CheckForDuplicateMiddleware";
+import { Appeal } from "app/models/Appeal";
+import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
+import { AppealsService } from "app/modules/appeals-service/AppealsService";
 
-import { createSubstituteOf } from 'test/SubstituteFactory';
+import { createSubstituteOf } from "test/SubstituteFactory";
 
-describe('CheckForDuplicateMiddleware', () => {
+describe("CheckForDuplicateMiddleware", () => {
 
     const accessTokenData: IAccessToken = {
-        access_token: 'abc',
-        refresh_token: 'xyz'
+        access_token: "abc",
+        refresh_token: "xyz"
     };
 
     const appeal: Appeal = {
         penaltyIdentifier: {
-            companyNumber: 'SC123123',
-            userInputPenaltyReference: 'A1231234',
-            penaltyReference: 'A1231234'
+            companyNumber: "SC123123",
+            userInputPenaltyReference: "A1231234",
+            penaltyReference: "A1231234"
         },
         reasons: {
             other: {
-                title: '',
-                description: ''
+                title: "",
+                description: ""
             }
         }
     };
 
-    const createAppealService = (method: 'resolves' | 'rejects', data?: Appeal | any): SubstituteOf<AppealsService> => {
+    const createAppealService = (method: "resolves" | "rejects", data?: Appeal | any): SubstituteOf<AppealsService> => {
         const service = Substitute.for<AppealsService>();
         service.hasExistingAppeal(Arg.all())[method](data);
         return service;
@@ -55,8 +55,8 @@ describe('CheckForDuplicateMiddleware', () => {
         } as Request;
     };
 
-    it('should call next with an error when session is undefined', async () => {
-        const appealService = createAppealService('rejects', new Error('Something failed'));
+    it("should call next with an error when session is undefined", async () => {
+        const appealService = createAppealService("rejects", new Error("Something failed"));
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
@@ -69,11 +69,11 @@ describe('CheckForDuplicateMiddleware', () => {
 
     });
 
-    it('should call next with an error when access token is undefined', async () => {
+    it("should call next with an error when access token is undefined", async () => {
 
         const appData = { appeal };
 
-        const appealService = createAppealService('resolves', true);
+        const appealService = createAppealService("resolves", true);
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
@@ -86,11 +86,11 @@ describe('CheckForDuplicateMiddleware', () => {
 
     });
 
-    it('should call next when the user does not have a duplicate appeal', async () => {
+    it("should call next when the user does not have a duplicate appeal", async () => {
 
         const appData = { appeal };
 
-        const appealService = createAppealService('resolves', false);
+        const appealService = createAppealService("resolves", false);
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
@@ -103,11 +103,11 @@ describe('CheckForDuplicateMiddleware', () => {
 
     });
 
-    it('should not call next when the user does have a duplicate appeal', async () => {
+    it("should not call next when the user does have a duplicate appeal", async () => {
 
         const appData = { appeal };
 
-        const appealService = createAppealService('resolves', true);
+        const appealService = createAppealService("resolves", true);
         const checkForDuplicateMiddleware = new CheckForDuplicateMiddleware(appealService);
 
         const nextFunction = createSubstituteOf<NextFunction>();
