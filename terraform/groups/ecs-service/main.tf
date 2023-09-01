@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 module "secrets" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/secrets?ref=1.0.191"
+  source = "git@github.com:companieshouse/terraform-modules/aws/ecs/secrets?ref=1.0.191"
 
   name_prefix = "${local.service_name}-${var.environment}"
   environment = var.environment
