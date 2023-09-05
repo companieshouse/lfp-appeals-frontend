@@ -16,7 +16,6 @@ locals {
     "vpc_name"              = local.service_secrets["vpc_name"]
     "chs_api_key"           = local.service_secrets["chs_api_key"]
     "internal_api_url"      = local.service_secrets["internal_api_url"]
-    "cdn_host"              = local.service_secrets["cdn_host"]
     "oauth2_auth_uri"       = local.service_secrets["oauth2_auth_uri"]
     "oauth2_redirect_uri"   = local.service_secrets["oauth2_redirect_uri"]
     "account_test_url"      = local.service_secrets["account_test_url"]
