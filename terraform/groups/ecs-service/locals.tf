@@ -10,6 +10,7 @@ locals {
   healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
   healthcheck_matcher       = "200"           # no explicit healthcheck in this service yet, change this when added!
 
+  kms_alias       = "alias/${var.aws_profile}/environment-services-kms"
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
 
   parameter_store_secrets = {
@@ -44,6 +45,9 @@ locals {
   oauth2_request_key    = local.service_secrets["oauth2_request_key"]
   oauth2_token_uri      = local.service_secrets["oauth2_token_uri"]
   oauth2_client_id      = local.service_secrets["oauth2_client_id"]
+  default_team_email    = local.service_secrets["default_team_email"]
+  ni_team_email         = local.service_secrets["ni_team_email"]
+  sc_team_email         = local.service_secrets["sc_team_email"]
 
   # create a map of secret name => secret arn to pass into ecs service module
   # using the trimprefix function to remove the prefixed path from the secret name
@@ -87,7 +91,7 @@ locals {
     { "name" : "COOKIE_DOMAIN", "value" : "${var.cookie_domain}" },
     { "name" : "COOKIE_NAME", "value" : "${var.cookie_name}" },
     { "name" : "DEFAULT_SESSION_EXPIRATION", "value" : "${var.default_session_expiration}" },
-    { "name" : "DEFAULT_TEAM_EMAIL", "value" : "${var.default_team_email}" },
+    { "name" : "DEFAULT_TEAM_EMAIL", "value" : "${local.default_team_email}" },
     { "name" : "ENQUIRY_EMAIL", "value" : "${var.enquiry_email}" },
     { "name" : "FILE_TRANSFER_API_URL", "value" : "${var.file_transfer_api_url}" },
     { "name" : "HUMAN_LOG", "value" : "${var.human_log}" },
@@ -97,10 +101,10 @@ locals {
     { "name" : "LOG_LEVEL", "value" : "${var.log_level}" },
     { "name" : "MAX_FILE_SIZE_BYTES", "value" : "${var.max_file_size_bytes}" },
     { "name" : "MAX_NUMBER_OF_FILES", "value" : "${var.max_number_of_files}" },
-    { "name" : "NI_TEAM_EMAIL", "value" : "${var.ni_team_email}" },
+    { "name" : "NI_TEAM_EMAIL", "value" : "${local.ni_team_email}" },
     { "name" : "PIWIK_SITE_ID", "value" : "${var.piwik_site_id}" },
     { "name" : "PIWIK_URL", "value" : "${var.piwik_url}" },
-    { "name" : "SC_TEAM_EMAIL", "value" : "${var.sc_team_email}" },
+    { "name" : "SC_TEAM_EMAIL", "value" : "${local.sc_team_email}" },
     { "name" : "SUPPORTED_MIME_TYPES", "value" : "${var.supported_mime_types}" },
     { "name" : "NODE_ENV", "value" : "${var.node_env}" },
     { "name" : "TZ", "value" : "${var.tz}" },

@@ -1,24 +1,5 @@
-aws_bucket = "development-eu-west-2.terraform-state.ch.gov.uk"
-remote_state_bucket = "ch-development-terraform-state-london"
 environment = "cidev"
-deploy_to = "development"
-state_prefix = "env:/development"
 aws_profile = "development-eu-west-2"
-kms_alias = "alias/development-eu-west-2/environment-services-kms"
-
-# service configs
-# Commented params moved to vault service secrets
-# oauth2_auth_uri
-# oauth2_redirect_uri
-# account_url
-# cache_server
-
-# cookie_secret
-# file_transfer_api_key
-# oauth2_client_secret
-# oauth2_request_key
-# oauth2_token_uri
-# oauth2_client_id
 
 account_web_url = "https://account.cidev.aws.chdev.org"
 api_url = "https://api.cidev.aws.chdev.org"
@@ -28,14 +9,11 @@ cdn_host = "d3uvya5a8a1ncx.cloudfront.net"
 chs_url = "https://cidev.aws.chdev.org"
 cookie_domain = "cidev.aws.chdev.org"
 company_auth_verification_feature_enabled = "0"
-default_team_email = "appeals.ch.fake+DEFAULT@gmail.com"
 enquiry_email = "enquiries@companieshouse.gov.uk"
 file_transfer_api_url = "https://6iwnopwp6k-vpce-030b059ca4dfb6eb2.execute-api.eu-west-2.amazonaws.com/cidev/files"
 kafka_broker_addr = "kafka-broker1-cidev.development.aws.internal:9092"
-ni_team_email = "appeals.ch.fake+NI@gmail.com"
 piwik_site_id = "7"
 piwik_url = "https://matomo.platform.aws.chdev.org"
-sc_team_email = "appeals.ch.fake+SC@gmail.com"
 log_level = "trace"
 node_env = "docker"
 tz = "Europe/London"
