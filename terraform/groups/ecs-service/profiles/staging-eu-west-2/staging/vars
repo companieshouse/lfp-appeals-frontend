@@ -1,5 +1,5 @@
-environment = "cidev"
-aws_profile = "development-eu-west-2"
+environment = "staging"
+aws_profile = "staging-eu-west-2"
 
 account_web_url = "https://identity-staging.company-information.service.gov.uk"
 api_url = "https://private-api-staging.company-information.service.gov.uk"
