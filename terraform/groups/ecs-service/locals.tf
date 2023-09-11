@@ -8,7 +8,7 @@ locals {
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/*"]
   healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
-  healthcheck_matcher       = "200"           # no explicit healthcheck in this service yet, change this when added!
+  healthcheck_matcher       = "200"                           # no explicit healthcheck in this service yet, change this when added!
 
   kms_alias       = "alias/${var.aws_profile}/environment-services-kms"
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
@@ -28,6 +28,9 @@ locals {
     "oauth2_request_key"    = local.service_secrets["oauth2_request_key"]
     "oauth2_token_uri"      = local.service_secrets["oauth2_token_uri"]
     "oauth2_client_id"      = local.service_secrets["oauth2_client_id"]
+    "default_team_email"    = local.service_secrets["default_team_email"]
+    "ni_team_email"         = local.service_secrets["ni_team_email"]
+    "sc_team_email"         = local.service_secrets["sc_team_email"]
   }
 
   vpc_name              = local.service_secrets["vpc_name"]
@@ -108,7 +111,7 @@ locals {
     { "name" : "NODE_ENV", "value" : "${var.node_env}" },
     { "name" : "TZ", "value" : "${var.tz}" },
 
-    
+
   ]
 
 }
