@@ -109,9 +109,7 @@ locals {
     { "name" : "SC_TEAM_EMAIL", "value" : "${local.sc_team_email}" },
     { "name" : "SUPPORTED_MIME_TYPES", "value" : "${var.supported_mime_types}" },
     { "name" : "NODE_ENV", "value" : "${var.node_env}" },
-    { "name" : "TZ", "value" : "${var.tz}" },
-
-
+    { "name" : "TZ", "value" : "${var.tz}" }
   ]
 
 }
