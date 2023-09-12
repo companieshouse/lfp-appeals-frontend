@@ -8,7 +8,7 @@ locals {
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/*"]
   healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
-  healthcheck_matcher       = "200"           # no explicit healthcheck in this service yet, change this when added!
+  healthcheck_matcher       = "200"                           # no explicit healthcheck in this service yet, change this when added!
 
   kms_alias       = "alias/${var.aws_profile}/environment-services-kms"
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
@@ -28,12 +28,14 @@ locals {
     "oauth2_request_key"    = local.service_secrets["oauth2_request_key"]
     "oauth2_token_uri"      = local.service_secrets["oauth2_token_uri"]
     "oauth2_client_id"      = local.service_secrets["oauth2_client_id"]
+    "default_team_email"    = local.service_secrets["default_team_email"]
+    "ni_team_email"         = local.service_secrets["ni_team_email"]
+    "sc_team_email"         = local.service_secrets["sc_team_email"]
   }
 
   vpc_name              = local.service_secrets["vpc_name"]
   chs_api_key           = local.service_secrets["chs_api_key"]
   internal_api_url      = local.service_secrets["internal_api_url"]
-  cdn_host              = local.service_secrets["cdn_host"]
   oauth2_auth_uri       = local.service_secrets["oauth2_auth_uri"]
   oauth2_redirect_uri   = local.service_secrets["oauth2_redirect_uri"]
   account_test_url      = local.service_secrets["account_test_url"]
@@ -107,9 +109,7 @@ locals {
     { "name" : "SC_TEAM_EMAIL", "value" : "${local.sc_team_email}" },
     { "name" : "SUPPORTED_MIME_TYPES", "value" : "${var.supported_mime_types}" },
     { "name" : "NODE_ENV", "value" : "${var.node_env}" },
-    { "name" : "TZ", "value" : "${var.tz}" },
-
-    
+    { "name" : "TZ", "value" : "${var.tz}" }
   ]
 
 }
