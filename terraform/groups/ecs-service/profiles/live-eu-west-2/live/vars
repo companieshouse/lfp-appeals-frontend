@@ -1,6 +1,8 @@
 environment = "live"
 aws_profile = "live-eu-west-2"
 
+desired_task_count = 2
+
 account_web_url = "https://identity.company-information.service.gov.uk"
 api_url = "https://api.company-information.service.gov.uk"
 allowed_company_prefixes = "SC,NI,OC,SO,R"
