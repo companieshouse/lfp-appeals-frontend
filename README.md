@@ -31,7 +31,7 @@ IntelliJ does not have a Nunjuck plugin.
 ## How to run it locally
 
 1. Ensure [`docker-chs-development`](https://github.com/companieshouse/docker-chs-development) is set up.
-2. In the `docker-chs-development` directory, enable the `lft-appeals` module:
+2. In the `docker-chs-development` directory, enable the `lfp-appeals` module:
    ```
    ./bin/chs-dev modules enable lfp-appeals
    ```
