@@ -1,5 +1,5 @@
 # LFP Appeals Frontend
-This repo contains the frontend code for the LFP appeals service. It's currenty `WIP`.
+This repo contains the frontend code for the LFP appeals service. It's currently `WIP`.
 
 ## Technologies
 
@@ -11,26 +11,76 @@ This repo contains the frontend code for the LFP appeals service. It's currenty 
 
 ## Recommendations
 
-We recommend the use of Visual Studio Code for development as it allows the installation of the TSLint and the Nunjucks plugins. These plugins will make linting of TS and Nunjuck much better than mmost code editors.
+We recommend the use of Visual Studio Code for development as it allows the installation of the TSLint and the Nunjucks plugins. These plugins will make linting of TS and Nunjuck much better than most code editors.
 
-IntelliJ does not have a Nunjuck plugin
+IntelliJ does not have a Nunjuck plugin.
 
-## How to run it
+## Build 
 
-- Create a redis docker instance with `docker run --name redis-instance -p 6379:6379 -d redis`
-- Ensure the variables in `.env.local` are set according to your setup.
-- `npm install`
-- `npm start`
-- Then open your browswer and go to http://localhost:3000.
+1. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Config Files:
+2. To build the project, run:
+   ```
+   npm run build
+   ```
+   This should produce JavaScript files in the `dist` folder.
 
-- `.env.local` is the config file for running the app in a local environment.
-- If you want a different configuration create `.env.<NODE_ENV>` file with the necessary secrets and variables as described on this README. Note that the `NODE_ENV` variable has to be set with the same name as the config name pretended.
+## How to run it locally
 
-## Docker support
+1. Ensure [`docker-chs-development`](https://github.com/companieshouse/docker-chs-development) is set up.
+2. In the `docker-chs-development` directory, enable the `lfp-appeals` module:
+   ```
+   ./bin/chs-dev modules enable lfp-appeals
+   ```
+3. Tilt up:
+   ```
+   tilt up
+   ```
 
-Pull image from private CH registry by running `docker pull 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest` or run the following steps to build image locally:
+### For Local Development
 
-1. `export SSH_PRIVATE_KEY_PASSPHRASE='[your SSH key passhprase goes here]'` (optional, set only if SSH key is passphrase protected)
-2. `DOCKER_BUILDKIT=0 docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest .`
+After following the steps to run locally:
+
+1. Enable the service in development mode:
+   ```
+   ./bin/chs-dev modules development lfp-appeals-frontend
+   ```
+   This will clone the https://github.com/companieshouse/lfp-appeals-frontend/ into the repositories directory. Any changes in the code in that repository will be automatically reloaded.
+
+2. Start the services and its dependencies with `tilt up`.
+
+### Configuration
+
+To configure the service locally, edit the environment section of the docker compose file located at `services/modules/lfp-appeals/lfp-appeals-frontend.docker-compose.yaml`.
+
+## Configuration & Deployment to Remote Server
+
+1. **Configuration**: Handled by the `terraform/groups/ecs-service/profiles` directory. Edit the var file for the corresponding environment.
+
+2. **Deployment**: Run the pipelines found at [CI platform](https://ci-platform.companieshouse.gov.uk/teams/team-development/pipelines/lfp-appeals-frontend).
+
+## Testing
+
+To run the unit tests for `lfp-appeals-frontend`, use:
+
+```
+npm run test
+```
+
+## Docker Support
+
+Pull image from private CH registry by running:
+```
+docker pull 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest
+```
+
+Or run the following steps to build image locally:
+
+1. `export SSH_PRIVATE_KEY_PASSPHRASE='[your SSH key passphrase goes here]'` (optional, set only if SSH key is passphrase protected)
+2. Build the image:
+   ```
+   DOCKER_BUILDKIT=0 docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest .
+   ```
