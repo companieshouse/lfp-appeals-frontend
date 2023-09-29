@@ -35,7 +35,6 @@ IntelliJ does not have a Nunjuck plugin.
    ```
    ./bin/chs-dev modules enable lfp-appeals
    ```
-
 3. Tilt up:
    ```
    tilt up
@@ -75,7 +74,7 @@ npm run test
 
 Pull image from private CH registry by running:
 ```
-docker pull 169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/lfp-appeals-frontend:latest
+docker pull 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest
 ```
 
 Or run the following steps to build image locally:
@@ -83,5 +82,5 @@ Or run the following steps to build image locally:
 1. `export SSH_PRIVATE_KEY_PASSPHRASE='[your SSH key passphrase goes here]'` (optional, set only if SSH key is passphrase protected)
 2. Build the image:
    ```
-   DOCKER_BUILDKIT=0 docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/lfp-appeals-frontend:latest .
+   DOCKER_BUILDKIT=0 docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest .
    ```
