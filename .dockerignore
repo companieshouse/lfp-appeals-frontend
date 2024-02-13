@@ -9,7 +9,7 @@
 
 !dist
 !docker_start.sh
-!routes.yaml
+!node_modules
 !src
 !views
 !package-lock.json
