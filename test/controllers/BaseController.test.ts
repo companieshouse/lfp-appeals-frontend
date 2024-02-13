@@ -238,7 +238,7 @@ describe("Base controller", () => {
                     processor: SadProcessor
                 }).onPost();
                 assert.fail("Method should have thrown error");
-            } catch (e) {
+            } catch (e:any) {
                 assert.equal(e.message, ":(");
             }
 

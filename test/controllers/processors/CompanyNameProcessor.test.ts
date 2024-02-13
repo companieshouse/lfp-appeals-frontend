@@ -28,7 +28,7 @@ describe("CompanyNameProcessor", () => {
         try {
             await companyNameProcessor.process(request);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
 
@@ -46,7 +46,7 @@ describe("CompanyNameProcessor", () => {
         try {
             await companyNameProcessor.process(request);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(TOKEN_MISSING_ERROR.message);
         }
 
@@ -65,7 +65,7 @@ describe("CompanyNameProcessor", () => {
         try {
             await companyNameProcessor.process(request);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(COMPANY_NUMBER_UNDEFINED_ERROR.message);
         }
     });
@@ -95,7 +95,7 @@ describe("CompanyNameProcessor", () => {
         try {
             await companyNameProcessor.process(request);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             companyProfileService.received().getCompanyProfile(companyNumber);
             expect(err.message).to.equal(COMPANY_NAME_RETRIEVAL_ERROR(companyNumber).message);
         }

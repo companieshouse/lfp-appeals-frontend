@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosRequestHeaders } from "axios";
 import { CREATED, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from "http-status-codes";
 import {
     AppealNotFoundError,
@@ -71,7 +71,7 @@ export class AppealsService {
             if (res.status === OK && res.data) {
                 return true;
             }
-        } catch (err) {
+        } catch (err: any) {
             if (err.response && err.response.status === NOT_FOUND) {
                 return false;
             } else {
@@ -140,7 +140,7 @@ export class AppealsService {
         };
     }
 
-    private getHeaders (token: string): AxiosRequestConfig["headers"] {
+    private getHeaders (token: string): AxiosRequestHeaders["headers"] {
         return {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -150,7 +150,7 @@ export class AppealsService {
 
     private refreshTokenInterceptor (accessToken: string, refreshToken: string): void {
 
-        this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
+        this.axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
             if (!config.headers.Authorization) {
                 config.headers = this.getHeaders(accessToken);
             }

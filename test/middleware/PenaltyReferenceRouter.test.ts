@@ -21,7 +21,7 @@ describe("PenaltyReferenceRouter", () => {
                 createSubstituteOf<NextFunction>()
             );
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
 
@@ -37,7 +37,7 @@ describe("PenaltyReferenceRouter", () => {
                 createSubstituteOf<NextFunction>()
             );
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(APPLICATION_DATA_UNDEFINED.message);
         }
 
@@ -69,7 +69,7 @@ describe("PenaltyReferenceRouter", () => {
 
             assert.fail("Should have thrown an error");
 
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(PenaltyReferenceRouter.PENALTY_LIST_UNDEFINED_ERROR.message);
         }
 

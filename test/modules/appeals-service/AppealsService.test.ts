@@ -68,7 +68,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async appealData => {
                 try {
                     await appealsService.save(appealData as any, BEARER_TOKEN, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Appeal data is missing");
                 }
@@ -82,7 +82,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async invalidToken => {
                 try {
                     await appealsService.save(appeal, invalidToken as any, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Access token is missing");
                 }
@@ -96,7 +96,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async invalidToken => {
                 try {
                     await appealsService.save(appeal, BEARER_TOKEN, invalidToken as any);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Refresh token is missing");
                 }
@@ -188,7 +188,7 @@ describe("AppealsService", () => {
             try {
                 await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN);
                 assert.fail();
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.message).to.contain("Could not create appeal resource");
             }
 
@@ -219,7 +219,7 @@ describe("AppealsService", () => {
 
             try {
                 await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
                 expect(err.message).to.contain("save appeal unauthorised");
                 expect(err.message).to.contain(appealDetails);
@@ -263,7 +263,7 @@ describe("AppealsService", () => {
 
             try {
                 await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
                 expect(err.message).to.contain("save appeal unauthorised");
             }
@@ -296,7 +296,7 @@ describe("AppealsService", () => {
 
             try {
                 await appealsService.save(invalidAppeal as Appeal, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).to.be.equal(AppealUnprocessableEntityError.name);
                 expect(err.message).to.contain(`save appeal data invalid`);
                 expect(err.message).to.contain(appealDetails);
@@ -325,7 +325,7 @@ describe("AppealsService", () => {
 
             try {
                 await appealsService.save(appeal, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
                 expect(err.message).to.include(`save appeal failed`);
                 expect(err.message).to.contain(appealDetails);
@@ -348,7 +348,7 @@ describe("AppealsService", () => {
                 try {
                     await appealsService.hasExistingAppeal(companyNumber!, testPenaltyReference,
                         BEARER_TOKEN, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Company number is missing");
                 }
@@ -358,7 +358,7 @@ describe("AppealsService", () => {
                 try {
                     await appealsService.hasExistingAppeal(testCompanyNumber, penaltyReference!,
                         BEARER_TOKEN, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("penaltyReference is missing");
                 }
@@ -367,7 +367,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async invalidToken => {
                 try {
                     await appealsService.hasExistingAppeal(testCompanyNumber, APPEAL_ID, invalidToken!, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Access token is missing");
                 }
@@ -376,7 +376,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async refreshToken => {
                 try {
                     await appealsService.hasExistingAppeal(testCompanyNumber, APPEAL_ID, BEARER_TOKEN, refreshToken!);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Refresh token is missing");
                 }
@@ -469,7 +469,7 @@ describe("AppealsService", () => {
                 await appealsService
                     .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
                 expect(err.message).to.contain(`get appeal unauthorised`);
             }
@@ -517,7 +517,7 @@ describe("AppealsService", () => {
                 await appealsService
                     .hasExistingAppeal(appeal.penaltyIdentifier.companyNumber,
                         appeal.penaltyIdentifier.penaltyReference, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
                 expect(err.message).to.include(`get appeal failed on appeal with penalty reference ${appeal.penaltyIdentifier.penaltyReference} with message`);
             }
@@ -536,7 +536,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async companyNumber => {
                 try {
                     await appealsService.getAppeal(companyNumber!, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Company number is missing");
                 }
@@ -545,7 +545,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async testAppealId => {
                 try {
                     await appealsService.getAppeal(testCompanyNumber, testAppealId!, BEARER_TOKEN, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Appeal id is missing");
                 }
@@ -554,7 +554,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async invalidToken => {
                 try {
                     await appealsService.getAppeal(testCompanyNumber, APPEAL_ID, invalidToken!, REFRESH_TOKEN);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Access token is missing");
                 }
@@ -563,7 +563,7 @@ describe("AppealsService", () => {
             [undefined, null].forEach(async refreshToken => {
                 try {
                     await appealsService.getAppeal(testCompanyNumber, APPEAL_ID, BEARER_TOKEN, refreshToken!);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Refresh token is missing");
                 }
@@ -653,7 +653,7 @@ describe("AppealsService", () => {
             try {
                 await appealsService
                     .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).to.be.equal(AppealUnauthorisedError.name);
                 expect(err.message).to.contain(`get appeal unauthorised`);
             }
@@ -677,7 +677,7 @@ describe("AppealsService", () => {
             try {
                 await appealsService
                     .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).eq(AppealNotFoundError.name);
                 expect(err.message).to.contain(`get appeal failed because appeal was not found`);
                 expect(err.message).to.contain(`company number 00345567 and appealId 555`);
@@ -704,7 +704,7 @@ describe("AppealsService", () => {
             try {
                 await appealsService
                     .getAppeal(appeal.penaltyIdentifier.companyNumber, APPEAL_ID, BEARER_TOKEN, REFRESH_TOKEN);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.constructor.name).eq(AppealServiceError.name);
                 expect(err.message).to.include(`get appeal failed on company number 00345567 and appealId 555`);
                 expect(err.message).to.include(`Request failed with status code 500.`);

@@ -61,7 +61,7 @@ export class CheckForDuplicateMiddleware extends BaseMiddleware {
                     message: customErrorMessage
                 });
             }
-        } catch (err) {
+        } catch (err: any) {
             return next(err);
         }
 

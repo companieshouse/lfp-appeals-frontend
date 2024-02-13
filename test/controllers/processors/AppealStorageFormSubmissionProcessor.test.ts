@@ -46,7 +46,7 @@ describe("AppealStorageForSubmissionProcessor", () => {
         try {
             await processor.process({ session: undefined } as Request);
             assert.fail();
-        } catch (err) {
+        } catch (err: any) {
             assert.equal(err.message, "Session is undefined");
         }
 

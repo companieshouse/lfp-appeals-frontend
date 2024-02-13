@@ -21,7 +21,7 @@ describe("NavigationPermissionProcessor", () => {
         try {
             await processor.process({ session: undefined } as RequestWithNavigation);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
     });
@@ -31,7 +31,7 @@ describe("NavigationPermissionProcessor", () => {
             const session = createSession("secret", true);
             await processor.process({ session } as RequestWithNavigation);
             assert.fail("Expected to throw error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(APPLICATION_DATA_UNDEFINED.message);
         }
     });

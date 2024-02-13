@@ -71,7 +71,7 @@ export class PenaltyDetailsValidator implements Validator {
             penalties.resource!.items = filteredPenaltiesItems;
             request.body.penaltyList = penalties.resource;
 
-        } catch (err) {
+        } catch (err: any) {
             if (err.message === mapErrorMessage || err.message === etagErrorMessage) {
                 loggerInstance().error(`${PenaltyDetailsValidator.name}: company number ${companyNumber} could not be found: ${err}`);
                 return this.createValidationResultWithErrors();

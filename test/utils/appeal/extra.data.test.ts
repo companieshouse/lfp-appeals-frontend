@@ -229,7 +229,7 @@ describe("Appeal Extra Data", () => {
             try {
                 const penalties = { httpStatusCode: "422" } as any;
                 getPenaltiesItems({} as any, "any", penalties);
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.message).to.contain("failed to get penalties from pay API with status code");
             }
         });

@@ -12,7 +12,7 @@ describe("IllnessEndDateValidator", () => {
         try {
             await illnessEndDateValidator.validate({} as Request);
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
     });
@@ -24,7 +24,7 @@ describe("IllnessEndDateValidator", () => {
         try {
             await illnessEndDateValidator.validate({ session } as Request);
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(APPLICATION_DATA_UNDEFINED.message);
         }
     });

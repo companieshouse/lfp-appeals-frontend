@@ -59,7 +59,7 @@ export class CompanyAuthMiddleware extends BaseMiddleware {
             loggerInstance().debug(`CompanyAuthMiddleware: Redirecting to ${uri}`);
             return res.redirect(uri);
 
-        } catch (err) {
+        } catch (err: any) {
             next(err);
         }
     };
