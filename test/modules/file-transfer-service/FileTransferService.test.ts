@@ -46,7 +46,7 @@ describe("FileTransferService", () => {
                 try {
                     await fileTransferService.upload(file!, "filename");
                     assert.fail("Test should failed while it did not");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty("message")
                         .equal("File is missing");
                 }
@@ -59,7 +59,7 @@ describe("FileTransferService", () => {
                 try {
                     await fileTransferService.upload(Buffer.from("This is a test"), filename!);
                     assert.fail("Test should failed while it did not");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty("message")
                         .equal("File name is missing");
                 }
@@ -78,7 +78,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.upload(Buffer.from("This is a test"), filename);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(UnsupportedFileTypeError).and.to.haveOwnProperty("message")
                     .equal(`File upload failed because type of "${filename}" file is not supported`);
             }
@@ -96,7 +96,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.upload(Buffer.from("This is a test"), filename);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
 
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty("message")
                     .equal(`File upload of "${filename}" file failed due to error: request failed with status code 500`);
@@ -121,7 +121,7 @@ describe("FileTransferService", () => {
                 try {
                     await fileTransferService.getFileMetadata(invalidFileId!);
                     assert.fail("Test should failed while it did not");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty("message")
                         .equal("File ID is missing");
                 }
@@ -138,7 +138,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.getFileMetadata(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty("message")
                     .equal(`File metadata retrieval failed because "${fileId}" file does not exist`);
             }
@@ -171,7 +171,7 @@ describe("FileTransferService", () => {
                 try {
                     await fileTransferService.download(invalidFileId!);
                     assert.fail("Test should failed while it did not");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty("message")
                         .equal("File ID is missing");
                 }
@@ -188,7 +188,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.download(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty("message")
                     .equal(`File download failed because "${fileId}" file does not exist`);
             }
@@ -204,7 +204,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.download(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(FileNotReadyError).and.to.haveOwnProperty("message")
                     .equal(`File download failed because "${fileId}" file is either infected or has not been scanned yet`);
             }
@@ -220,7 +220,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.download(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty("message")
                     .equal(`File download of "${fileId}" file failed due to error: request failed with status code 500`);
             }
@@ -246,7 +246,7 @@ describe("FileTransferService", () => {
             [undefined, null].forEach(async invalidFileId => {
                 try {
                     await fileTransferService.delete(invalidFileId!);
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error).and.to.haveOwnProperty("message")
                         .equal("File ID is missing");
                 }
@@ -263,7 +263,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.delete(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(FileNotFoundError).and.to.haveOwnProperty("message")
                     .equal(`File deletion failed because "${fileId}" file does not exist`);
             }
@@ -279,7 +279,7 @@ describe("FileTransferService", () => {
             try {
                 await fileTransferService.delete(fileId);
                 assert.fail("Test should failed while it did not");
-            } catch (err) {
+            } catch (err: any) {
 
                 expect(err).to.be.instanceOf(FileTransferError).and.to.haveOwnProperty("message")
                     .equal(`File deletion of "${fileId}" file failed due to error: request failed with status code 500`);

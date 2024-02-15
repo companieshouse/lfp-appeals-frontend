@@ -53,7 +53,7 @@ describe("PenaltyDetailsValidator", () => {
         try {
             await penaltyDetailsValidator.validate({} as Request);
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(SESSION_NOT_FOUND_ERROR.message);
         }
     });
@@ -77,7 +77,7 @@ describe("PenaltyDetailsValidator", () => {
                 session
             } as Request);
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(TOKEN_MISSING_ERROR.message);
         }
     });
@@ -139,7 +139,7 @@ describe("PenaltyDetailsValidator", () => {
         try {
             await penaltyDetailsValidator.validate(getRequest(penaltyReference));
             assert.fail("Should have thrown an error");
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.equal(`Can't access API: Error: Some error`);
         }
     });

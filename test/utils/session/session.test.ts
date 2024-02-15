@@ -13,14 +13,14 @@ describe("SessionUtils test suite", () => {
     it("call getAccessToken() should throw Session Expected but was undefined", () => {
         try {
             getAccessToken(undefined as unknown as Session);
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.contain("Session Expected but was undefined");
         }
     });
     it("call getAccessToken() should throw Access token missing from session", () => {
         try {
             getAccessToken({ data: {} } as Session);
-        } catch (err) {
+        } catch (err: any) {
             expect(err.message).to.contain("Access token missing from session");
         }
     });

@@ -39,7 +39,6 @@ endif
 	cp -r ./dist $(tmpdir)
 	cp -r ./package.json $(tmpdir)
 	cp -r ./package-lock.json $(tmpdir)
-	cp ./routes.yaml $(tmpdir)
 	cd $(tmpdir) && npm install --production
 	rm $(tmpdir)/package.json $(tmpdir)/package-lock.json
 	cd $(tmpdir) && zip -r ../$(artifact_name)-$(version).zip .

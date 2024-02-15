@@ -12,7 +12,6 @@ import { CONFIRMATION_PAGE_URI } from "app/utils/Paths";
 export class SessionCleanupProcessor implements FormActionProcessor {
 
     public async process (req: Request): Promise<void> {
-
         const session: Session | undefined = req.session;
 
         if (!session) {
@@ -27,11 +26,15 @@ export class SessionCleanupProcessor implements FormActionProcessor {
 
         appData.submittedAppeal = appData.appeal;
 
-        delete appData.appeal;
+        const appDataWithAppeal = appData as ApplicationData & { appeal?: any };
 
-        appData.navigation.permissions = [CONFIRMATION_PAGE_URI];
+        if (appDataWithAppeal.appeal !== undefined) {
+            delete appDataWithAppeal.appeal;
+        }
 
-        session.setExtraData(APPLICATION_DATA_KEY, appData);
+        appDataWithAppeal.navigation.permissions = [CONFIRMATION_PAGE_URI];
+
+        session.setExtraData(APPLICATION_DATA_KEY, appDataWithAppeal);
 
         loggerInstance().info(`${SessionCleanupProcessor.name} - Session data cleared`);
 

@@ -54,7 +54,7 @@ export class EvidenceDownloadController extends BaseAsyncHttpController {
             res.setHeader("content-disposition", `attachment; filename=${metadata.name}`);
             return this.pipeDataIntoStream(downloadStream, res);
 
-        } catch (err) {
+        } catch (err: any) {
 
             if (err instanceof FileNotReadyError) {
                 return this.renderDownloadError();

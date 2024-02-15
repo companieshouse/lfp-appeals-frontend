@@ -73,7 +73,7 @@ describe("Company Authentication Middleware", () => {
 
         try {
             await companyAuthMiddleware.handler(request, response, nextFunction);
-        } catch (err) {
+        } catch (err: any) {
             expect(err).to.equal(SESSION_NOT_FOUND_ERROR);
         }
 

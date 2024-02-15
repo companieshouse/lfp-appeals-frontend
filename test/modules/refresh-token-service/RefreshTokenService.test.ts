@@ -38,7 +38,7 @@ describe("RefreshTokenService", () => {
                 try {
                     await refreshTokenService.refresh(accessToken as any, REFRESH_TOKEN);
                     assert.fail("Should have thrown an error");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Access token is missing");
                 }
@@ -53,7 +53,7 @@ describe("RefreshTokenService", () => {
                 try {
                     await refreshTokenService.refresh(ACCESS_TOKEN, refreshToken as any);
                     assert.fail("Should have thrown an error");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.haveOwnProperty("message").equal("Refresh token is missing");
                 }
@@ -85,7 +85,7 @@ describe("RefreshTokenService", () => {
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
                 assert.fail("Could not refresh token");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(Error)
                     .and.to.haveOwnProperty("message").equal("Could not refresh token");
             }
@@ -102,7 +102,7 @@ describe("RefreshTokenService", () => {
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
                 assert.fail("Should have thrown an error");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(Error)
                     .and.to.haveOwnProperty("message").equal("Request failed with status code 400");
             }
@@ -119,7 +119,7 @@ describe("RefreshTokenService", () => {
             try {
                 await refreshTokenService.refresh(ACCESS_TOKEN, REFRESH_TOKEN);
                 assert.fail("Should have thrown an error");
-            } catch (err) {
+            } catch (err: any) {
                 expect(err).to.be.instanceOf(Error)
                     .and.to.haveOwnProperty("message").equal("Request failed with status code 500");
             }

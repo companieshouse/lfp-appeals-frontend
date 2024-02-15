@@ -113,7 +113,7 @@ export class BaseController<FORM> extends BaseAsyncHttpController {
      */
     // @ts-ignore
     protected prepareViewModelFromAppeal (appeal: Appeal): Record<string, any> & FORM {
-        return {} as FORM;
+        return {} as Record<string, any> & FORM;
     }
 
     /**

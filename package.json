@@ -22,11 +22,11 @@
     "analyse-code": "sonar-scanner"
   },
   "dependencies": {
-    "@companieshouse/api-sdk-node": "^2.0.103",
-    "@companieshouse/node-session-handler": "^4.1.9",
-    "@companieshouse/structured-logging-node": "^1.0.8",
+    "@companieshouse/api-sdk-node": "^2.0.147",
+    "@companieshouse/node-session-handler": "^5.0.1",
+    "@companieshouse/structured-logging-node": "^2.0.1",
     "@hapi/joi": "^17.1.1",
-    "axios": "^0.21.4",
+    "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^8.2.0",
@@ -61,8 +61,8 @@
     "@types/node-jose": "^1.1.4",
     "@types/nunjucks": "^3.2.2",
     "@types/supertest": "^2.0.9",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
     "chai": "^4.2.0",
     "del": "^5.1.0",
     "eslint": "^8.47.0",
@@ -83,7 +83,7 @@
     "sonarqube-scanner": "^2.9.1",
     "supertest": "^4.0.2",
     "ts-node": "^8.10.1",
-    "typescript": "^3.9.3"
+    "typescript": "^4.9.4"
   },
   "overrides": {
     "glob-parent": "6.0.2",

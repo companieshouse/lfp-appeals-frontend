@@ -62,7 +62,7 @@ describe("LoadAppealMiddleware", () => {
 
         try {
             await loadAppealMiddleware.handler(request, response, nextFunction);
-        } catch (err) {
+        } catch (err: any) {
             expect(err.constructor.name).to.eq(exceptionName);
             nextFunction.didNotReceive();
             response.didNotReceive();
@@ -170,7 +170,7 @@ describe("LoadAppealMiddleware", () => {
                 nextFunction.didNotReceive();
                 appealService.didNotReceive().getAppeal(Arg.all());
 
-            } catch (err) {
+            } catch (err: any) {
                 expect(err.message).to.equal("Tried to load appeal from an invalid company number");
             }
         });

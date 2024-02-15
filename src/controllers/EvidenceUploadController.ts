@@ -137,7 +137,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
                     try {
                         await parseFormData(request, response);
-                    } catch (error) {
+                    } catch (error: any) {
                         switch (error.code) {
                         case "LIMIT_FILE_SIZE":
                             return await that.renderUploadError(appeal, fileTooLargeError);
@@ -158,7 +158,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
                     try {
                         id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
-                    } catch (err) {
+                    } catch (err: any) {
                         if (err instanceof UnsupportedFileTypeError) {
                             return await that.renderUploadError(appeal, fileNotSupportedError);
                         } else {

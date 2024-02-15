@@ -38,7 +38,7 @@ describe("PenaltyIdentifierSchemaFactory", () => {
                 try {
                     new PenaltyIdentifierSchemaFactory("").getPenaltyIdentifierSchema();
                     assert.fail("It should have thrown an error");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err.message).to.equal("Prefix list formatting error. Make sure list is comma separated e.g. NI,SI,R");
                 }
             });
@@ -47,7 +47,7 @@ describe("PenaltyIdentifierSchemaFactory", () => {
                 try {
                     new PenaltyIdentifierSchemaFactory("A,,A,B,NI").getPenaltyIdentifierSchema();
                     assert.fail("It should have thrown an error");
-                } catch (err) {
+                } catch (err: any) {
                     expect(err.message).to.equal("Prefix list formatting error. Make sure list is comma separated e.g. NI,SI,R");
                 }
             });
