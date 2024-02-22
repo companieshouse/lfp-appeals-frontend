@@ -47,7 +47,9 @@ locals {
 
   # TASK SECRET: GLOBAL SECRET + SERVICE SECRET
   task_secrets = concat(local.global_secret_list,local.service_secret_list,[
-
+      { "name" : "CHS_DEVELOPER_CLIENT_ID", "valueFrom" : "${local.global_secrets_arn_map.oauth2_client_id}" },
+      { "name" : "CHS_DEVELOPER_CLIENT_SECRET", "valueFrom" : "${local.global_secrets_arn_map.oauth2_client_secret}" },
+      { "name" : "DEVELOPER_OAUTH2_REQUEST_KEY", "valueFrom" : "${local.global_secrets_arn_map.oauth2_request_key}" }
   ])
 
   # GLOBAL: create a map of secret name and secret version to pass into ecs service module
@@ -66,7 +68,7 @@ locals {
 
   # TASK ENVIRONMENT: GLOBAL SECRET Version + SERVICE SECRET Version
   task_environment = concat(local.ssm_global_version_map,local.ssm_service_version_map,[
-      { "name" : "NODE_PORT", "value" : "${local.container_port}" }
+      { "name" : "LFP_APPEALS_FRONTEND_VERSION", "value" : "${var.lfp_appeals_frontend_version}" }
   ])
 
 }
