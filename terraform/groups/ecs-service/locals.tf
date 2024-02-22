@@ -2,114 +2,71 @@
 locals {
   stack_name                = "company-requests" # this must match the stack name the service deploys into
   name_prefix               = "${local.stack_name}-${var.environment}"
+  global_prefix             = "global-${var.environment}"
   service_name              = "lfp-appeals-frontend"
   container_port            = "3000" # default node port required here until prod docker container is built allowing port change via env var
   docker_repo               = "lfp-appeals-frontend"
+  kms_alias                 = "alias/${var.aws_profile}/environment-services-kms"
   lb_listener_rule_priority = 13
   lb_listener_paths         = ["/appeal-a-penalty", "/appeal-a-penalty/*"]
   healthcheck_path          = "/appeal-a-penalty/healthcheck" #healthcheck path for lfp-appeals-frontend
   healthcheck_matcher       = "200"                           # no explicit healthcheck in this service yet, change this when added!
+  vpc_name = local.service_secrets["vpc_name"]
+  application_subnet_ids      = data.aws_subnets.application.ids
+  application_subnet_pattern  = local.stack_secrets["application_subnet_pattern"]
 
-  kms_alias       = "alias/${var.aws_profile}/environment-services-kms"
-  service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
+  # Environment Files
+  use_set_environment_files   = var.use_set_environment_files
+  app_environment_filename    = "lfp-appeals-frontend.env"
 
-  parameter_store_secrets = {
-    "vpc_name"              = local.service_secrets["vpc_name"]
-    "chs_api_key"           = local.service_secrets["chs_api_key"]
-    "internal_api_url"      = local.service_secrets["internal_api_url"]
-    "oauth2_auth_uri"       = local.service_secrets["oauth2_auth_uri"]
-    "oauth2_redirect_uri"   = local.service_secrets["oauth2_redirect_uri"]
-    "account_test_url"      = local.service_secrets["account_test_url"]
-    "account_url"           = local.service_secrets["account_url"]
-    "cache_server"          = local.service_secrets["cache_server"]
-    "cookie_secret"         = local.service_secrets["cookie_secret"]
-    "file_transfer_api_key" = local.service_secrets["file_transfer_api_key"]
-    "oauth2_client_secret"  = local.service_secrets["oauth2_client_secret"]
-    "oauth2_request_key"    = local.service_secrets["oauth2_request_key"]
-    "oauth2_token_uri"      = local.service_secrets["oauth2_token_uri"]
-    "oauth2_client_id"      = local.service_secrets["oauth2_client_id"]
-    "default_team_email"    = local.service_secrets["default_team_email"]
-    "ni_team_email"         = local.service_secrets["ni_team_email"]
-    "sc_team_email"         = local.service_secrets["sc_team_email"]
+  # Secrets
+  stack_secrets               = jsondecode(data.vault_generic_secret.stack_secrets.data_json)
+  service_secrets             = jsondecode(data.vault_generic_secret.service_secrets.data_json)
+
+  # GLOBAL: create a map of secret name => secret arn to pass into ecs service module
+  global_secrets_arn_map = {
+      for sec in data.aws_ssm_parameter.global_secret :
+      trimprefix(sec.name, "/${local.global_prefix}/") => sec.arn
   }
 
-  vpc_name              = local.service_secrets["vpc_name"]
-  chs_api_key           = local.service_secrets["chs_api_key"]
-  internal_api_url      = local.service_secrets["internal_api_url"]
-  oauth2_auth_uri       = local.service_secrets["oauth2_auth_uri"]
-  oauth2_redirect_uri   = local.service_secrets["oauth2_redirect_uri"]
-  account_test_url      = local.service_secrets["account_test_url"]
-  account_url           = local.service_secrets["account_url"]
-  cache_server          = local.service_secrets["cache_server"]
-  cookie_secret         = local.service_secrets["cookie_secret"]
-  file_transfer_api_key = local.service_secrets["file_transfer_api_key"]
-  oauth2_client_secret  = local.service_secrets["oauth2_client_secret"]
-  oauth2_request_key    = local.service_secrets["oauth2_request_key"]
-  oauth2_token_uri      = local.service_secrets["oauth2_token_uri"]
-  oauth2_client_id      = local.service_secrets["oauth2_client_id"]
-  default_team_email    = local.service_secrets["default_team_email"]
-  ni_team_email         = local.service_secrets["ni_team_email"]
-  sc_team_email         = local.service_secrets["sc_team_email"]
+  # GLOBAL: create a list of secret name => secret arn to pass into ecs service module
+  global_secret_list = flatten([for key, value in local.global_secrets_arn_map :
+      { "name" = upper(key), "valueFrom" = value }
+  ])
 
-  # create a map of secret name => secret arn to pass into ecs service module
-  # using the trimprefix function to remove the prefixed path from the secret name
-  secrets_arn_map = {
-    for sec in data.aws_ssm_parameter.secret :
-    trimprefix(sec.name, "/${local.name_prefix}/") => sec.arn
-  }
-
+  # SERVICE: create a map of secret name => secret arn to pass into ecs service module
   service_secrets_arn_map = {
-    for sec in module.secrets.secrets :
-    trimprefix(sec.name, "/${local.service_name}-${var.environment}/") => sec.arn
+      for sec in module.secrets.secrets :
+      trimprefix(sec.name, "/${local.service_name}-${var.environment}/") => sec.arn
   }
 
-  task_secrets = [
-    { "name" : "CHS_DEVELOPER_CLIENT_ID", "valueFrom" : "${local.secrets_arn_map.web-oauth2-client-id}" },
-    { "name" : "CHS_DEVELOPER_CLIENT_SECRET", "valueFrom" : "${local.secrets_arn_map.web-oauth2-client-secret}" },
-    { "name" : "COOKIE_SECRET", "valueFrom" : "${local.secrets_arn_map.web-oauth2-cookie-secret}" },
-    { "name" : "DEVELOPER_OAUTH2_REQUEST_KEY", "valueFrom" : "${local.secrets_arn_map.web-oauth2-request-key}" },
-    { "name" : "CHS_API_KEY", "valueFrom" : "${local.service_secrets_arn_map.chs_api_key}" },
-    { "name" : "CACHE_SERVER", "valueFrom" : "${local.service_secrets_arn_map.cache_server}" },
-    { "name" : "OAUTH2_REDIRECT_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_redirect_uri}" },
-    { "name" : "OAUTH2_AUTH_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_auth_uri}" },
-    { "name" : "OAUTH2_CLIENT_ID", "valueFrom" : "${local.service_secrets_arn_map.oauth2_client_id}" },
-    { "name" : "OAUTH2_CLIENT_SECRET", "valueFrom" : "${local.service_secrets_arn_map.oauth2_client_secret}" },
-    { "name" : "OAUTH2_REQUEST_KEY", "valueFrom" : "${local.service_secrets_arn_map.oauth2_request_key}" },
-    { "name" : "OAUTH2_TOKEN_URI", "valueFrom" : "${local.service_secrets_arn_map.oauth2_token_uri}" },
-    { "name" : "ACCOUNT_URL", "valueFrom" : "${local.service_secrets_arn_map.account_url}" },
-    { "name" : "ACCOUNT_TEST_URL", "valueFrom" : "${local.service_secrets_arn_map.account_test_url}" },
-    { "name" : "INTERNAL_API_URL", "valueFrom" : "${local.service_secrets_arn_map.internal_api_url}" },
-    { "name" : "FILE_TRANSFER_API_KEY", "valueFrom" : "${local.service_secrets_arn_map.file_transfer_api_key}" }
+  # SERVICE: create a list of secret name => secret arn to pass into ecs service module
+  service_secret_list = flatten([for key, value in local.service_secrets_arn_map :
+      { "name" = upper(key), "valueFrom" = value }
+  ])
+
+  # TASK SECRET: GLOBAL SECRET + SERVICE SECRET
+  task_secrets = concat(local.global_secret_list,local.service_secret_list,[
+
+  ])
+
+  # GLOBAL: create a map of secret name and secret version to pass into ecs service module
+  ssm_global_version_map = [
+      for sec in data.aws_ssm_parameter.global_secret : {
+          name = "GLOBAL_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", value = sec.version
+      }
   ]
 
-  task_environment = [
-    { "name" : "ACCOUNT_WEB_URL", "value" : "${var.account_web_url}" },
-    { "name" : "ALLOWED_COMPANY_PREFIXES", "value" : "${var.allowed_company_prefixes}" },
-    { "name" : "API_URL", "value" : "${var.api_url}" },
-    { "name" : "APPEALS_API_URL", "value" : "${var.appeals_api_url}" },
-    { "name" : "CDN_HOST", "value" : "${var.cdn_host}" },
-    { "name" : "CHS_URL", "value" : "${var.chs_url}" },
-    { "name" : "COMPANY_AUTH_VERIFICATION_FEATURE_ENABLED", "value" : "${var.company_auth_verification_feature_enabled}" },
-    { "name" : "COOKIE_DOMAIN", "value" : "${var.cookie_domain}" },
-    { "name" : "COOKIE_NAME", "value" : "${var.cookie_name}" },
-    { "name" : "DEFAULT_SESSION_EXPIRATION", "value" : "${var.default_session_expiration}" },
-    { "name" : "DEFAULT_TEAM_EMAIL", "value" : "${local.default_team_email}" },
-    { "name" : "ENQUIRY_EMAIL", "value" : "${var.enquiry_email}" },
-    { "name" : "FILE_TRANSFER_API_URL", "value" : "${var.file_transfer_api_url}" },
-    { "name" : "HUMAN_LOG", "value" : "${var.human_log}" },
-    { "name" : "ILLNESS_REASON_FEATURE_ENABLED", "value" : "${var.illness_reason_feature_enabled}" },
-    { "name" : "KAFKA_BROKER_ADDR", "value" : "${var.kafka_broker_addr}" },
-    { "name" : "LFP_APPEALS_FRONTEND_VERSION", "value" : "${var.lfp_appeals_frontend_version}" },
-    { "name" : "LOG_LEVEL", "value" : "${var.log_level}" },
-    { "name" : "MAX_FILE_SIZE_BYTES", "value" : "${var.max_file_size_bytes}" },
-    { "name" : "MAX_NUMBER_OF_FILES", "value" : "${var.max_number_of_files}" },
-    { "name" : "NI_TEAM_EMAIL", "value" : "${local.ni_team_email}" },
-    { "name" : "PIWIK_SITE_ID", "value" : "${var.piwik_site_id}" },
-    { "name" : "PIWIK_URL", "value" : "${var.piwik_url}" },
-    { "name" : "SC_TEAM_EMAIL", "value" : "${local.sc_team_email}" },
-    { "name" : "SUPPORTED_MIME_TYPES", "value" : "${var.supported_mime_types}" },
-    { "name" : "NODE_ENV", "value" : "${var.node_env}" },
-    { "name" : "TZ", "value" : "${var.tz}" }
+  # SERVICE: create a map of secret name and secret version to pass into ecs service module
+  ssm_service_version_map = [
+      for sec in module.secrets.secrets : {
+          name = "${replace(upper(local.service_name), "-", "_")}_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", value = sec.version
+      }
   ]
+
+  # TASK ENVIRONMENT: GLOBAL SECRET Version + SERVICE SECRET Version
+  task_environment = concat(local.ssm_global_version_map,local.ssm_service_version_map,[
+      { "name" : "NODE_PORT", "value" : "${local.container_port}" }
+  ])
 
 }

@@ -1,22 +1,8 @@
 environment = "live"
 aws_profile = "live-eu-west-2"
 
-desired_task_count = 2
+# service configs
+use_set_environment_files = true
 
-account_web_url = "https://identity.company-information.service.gov.uk"
-api_url = "https://api.company-information.service.gov.uk"
-allowed_company_prefixes = "SC,NI,OC,SO,R"
-appeals_api_url = "https://internal-api.company-information.service.gov.uk"
-cdn_host = "db2062spq951s.cloudfront.net"
-chs_url = "https://find-and-update.company-information.service.gov.uk"
-cookie_domain = "company-information.service.gov.uk"
-company_auth_verification_feature_enabled = "0"
-enquiry_email = "enquiries@companieshouse.gov.uk"
-file_transfer_api_url = "https://al667mr2rb-vpce-096f225ff8fe22e80.execute-api.eu-west-2.amazonaws.com/live/files"
-kafka_broker_addr = "kafka-broker1-live.live.aws.internal:9092,kafka-broker2-live.live.aws.internal:9092,kafka-broker3-live.live.aws.internal:9092"
-piwik_site_id = "14"
-piwik_url = "https://matomo.companieshouse.gov.uk"
-log_level = "info"
-node_env = "live"
-tz = "Europe/London"
-supported_mime_types = "application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/octet-stream,application/x-zip-compressed,application/x-zip,multipart/x-zip,image/gif,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+# Scaling configs
+desired_task_count = 2 # use multi instance in live
