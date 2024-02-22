@@ -1,20 +1,12 @@
 environment = "staging"
 aws_profile = "staging-eu-west-2"
 
-account_web_url = "https://identity-staging.company-information.service.gov.uk"
-api_url = "https://private-api-staging.company-information.service.gov.uk"
-allowed_company_prefixes = "SC,NI,OC,SO,R,AP"
-appeals_api_url = "https://internal-api-staging.company-information.service.gov.uk"
-cdn_host = "d6nh3dxv55e16.cloudfront.net"
-chs_url = "https://staging.company-information.service.gov.uk"
-cookie_domain = "company-information.service.gov.uk"
-company_auth_verification_feature_enabled = "0"
-enquiry_email = "enquiries@companieshouse.gov.uk"
-file_transfer_api_url = "https://9rwq9ydff0-vpce-0ffeb1a278a21fc36.execute-api.eu-west-2.amazonaws.com/staging/files"
-kafka_broker_addr = "kafka-broker1.staging.aws.internal:9092,kafka-broker2.staging.aws.internal:9092,kafka-broker3.staging.aws.internal:9092"
-piwik_site_id = "15"
-piwik_url = "https://matomo.platform.aws.chdev.org"
-log_level = "debug"
-node_env = "docker"
-tz = "Europe/London"
-supported_mime_types = "application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/octet-stream,application/x-zip-compressed,application/x-zip,multipart/x-zip,image/gif,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+# service configs
+use_set_environment_files = true
+
+# Scaling configs
+desired_task_count = 2 # use multi instance in staging
+
+# Scheduled scaling of tasks
+service_scaledown_schedule = "55 19 * * ? *"
+service_scaleup_schedule   = "5 6 * * ? *"
