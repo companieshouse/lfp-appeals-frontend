@@ -6,7 +6,6 @@ import { provide } from "inversify-binding-decorators";
 import { BaseMiddleware } from "inversify-express-utils";
 import { loggerInstance } from "./Logger";
 
-import { getEnvOrDefault } from "app/utils/EnvironmentUtils";
 import { PENALTY_DETAILS_PAGE_URI } from "app/utils/Paths";
 import { newUriFactory } from "app/utils/UriFactory";
 
