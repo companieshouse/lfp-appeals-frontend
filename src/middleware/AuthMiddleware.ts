@@ -6,7 +6,6 @@ import { provide } from "inversify-binding-decorators";
 import { BaseMiddleware } from "inversify-express-utils";
 import { loggerInstance } from "./Logger";
 
-import { getEnvOrDefault } from "app/utils/EnvironmentUtils";
 import { PENALTY_DETAILS_PAGE_URI } from "app/utils/Paths";
 import { newUriFactory } from "app/utils/UriFactory";
 
@@ -31,7 +30,7 @@ export class AuthMiddleware extends BaseMiddleware {
         const userId: string | undefined = userProfile?.id;
 
         if (!signedIn) {
-            const redirectURI = `${getEnvOrDefault("ACCOUNT_WEB_URL", "")}/signin?return_to=${this.getReturnToPage(req)}`;
+            const redirectURI = `/signin?return_to=${this.getReturnToPage(req)}`;
             loggerInstance().info(`${AuthMiddleware.name} - handler: userId=${userId}, Not signed in... Redirecting to: ${redirectURI}`);
             return res.redirect(redirectURI);
         }
