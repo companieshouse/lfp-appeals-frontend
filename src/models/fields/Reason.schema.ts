@@ -3,6 +3,7 @@ import Joi from "@hapi/joi";
 export const errorMessage: string = "You must select a reason";
 
 export const schema = Joi.object({
+    _csrf: Joi.string().optional(),
     reason: Joi.string()
         .required()
         .valid("illness", "other")

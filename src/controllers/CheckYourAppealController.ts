@@ -1,4 +1,5 @@
 import { Session, SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
 import { ISignInInfo, IUserProfile } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
 import { controller } from "inversify-express-utils";
@@ -35,7 +36,7 @@ const navigation = {
 };
 
 @controller(CHECK_YOUR_APPEAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CommonVariablesMiddleware)
+    CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class CheckYourAppealController extends SafeNavigationBaseController<any> {
     constructor () {
         super(template, navigation, undefined, undefined, [AppealStorageFormActionProcessor, SessionCleanupProcessor]);

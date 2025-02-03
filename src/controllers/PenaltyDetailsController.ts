@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { inject } from "inversify";
 import { controller } from "inversify-express-utils";
 
@@ -38,7 +39,7 @@ const sanitizeForm = (body: PenaltyIdentifier): PenaltyIdentifier => {
 
 };
 
-@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+@controller(PENALTY_DETAILS_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class PenaltyDetailsController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor (@inject(PenaltyDetailsValidator) penaltyDetailsValidator: PenaltyDetailsValidator) {
         super(

@@ -4,6 +4,7 @@
 {% from 'govuk/components/footer/macro.njk'       import govukFooter %}
 {% from 'govuk/components/header/macro.njk'       import govukHeader %}
 {% from 'govuk/components/phase-banner/macro.njk' import govukPhaseBanner %}
+{% from "web-security-node/components/csrf-token-input/macro.njk" import csrfTokenInput %}
 
 {% set serviceName = 'Appeal a late filing penalty' %}
 
@@ -15,7 +16,7 @@
   <link href="//{{ cdn.host }}/stylesheets/session-timeout.css" rel="stylesheet"/>
   <!--<![endif]-->
 
-  
+
 
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"
           integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="

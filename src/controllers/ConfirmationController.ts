@@ -1,4 +1,5 @@
 import { Session, SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
 import { ISignInInfo, IUserProfile } from "@companieshouse/node-session-handler/lib/session/model/SessionInterfaces";
 import { controller } from "inversify-express-utils";
@@ -26,7 +27,7 @@ const navigation = {
     }
 };
 
-@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+@controller(CONFIRMATION_PAGE_URI, SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class ConfirmationController extends SafeNavigationBaseController<any> {
     constructor () {
         super(template, navigation);

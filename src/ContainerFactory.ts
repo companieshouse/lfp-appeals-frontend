@@ -1,4 +1,5 @@
 import { CookieConfig, SessionMiddleware, SessionStore } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Container } from "inversify";
 import { buildProviderModule } from "inversify-binding-decorators";
 import IORedis from "ioredis";
@@ -24,6 +25,13 @@ export function createContainer (): Container {
     const sessionStore = new SessionStore(new IORedis(`${getEnvOrThrow("CACHE_SERVER")}`));
     container.bind(SessionStore).toConstantValue(sessionStore);
     container.bind(SessionMiddleware).toConstantValue(SessionMiddleware(config, sessionStore));
+    container.bind(CsrfProtectionMiddleware).toConstantValue(CsrfProtectionMiddleware(
+        {
+            sessionStore,
+            enabled: true,
+            sessionCookieName: config.cookieName
+        }
+    ));
 
     const refreshTokenService = new RefreshTokenService(getEnvOrThrow(`OAUTH2_TOKEN_URI`),
         getEnvOrThrow(`OAUTH2_CLIENT_ID`),

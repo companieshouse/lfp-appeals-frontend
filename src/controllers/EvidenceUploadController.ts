@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Request, Response } from "express";
 import { UNPROCESSABLE_ENTITY } from "http-status-codes";
 import { inject } from "inversify";
@@ -85,7 +86,7 @@ const continueButtonValidator: Validator = {
 };
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CommonVariablesMiddleware)
+    CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<any> {
     constructor (@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);

@@ -15,7 +15,7 @@ We recommend the use of Visual Studio Code for development as it allows the inst
 
 IntelliJ does not have a Nunjuck plugin.
 
-## Build 
+## Build
 
 1. Install dependencies:
    ```
@@ -84,3 +84,43 @@ Or run the following steps to build image locally:
    ```
    DOCKER_BUILDKIT=0 docker build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)" --build-arg SSH_PRIVATE_KEY_PASSPHRASE -t 416670754337.dkr.ecr.eu-west-2.amazonaws.com/lfp-appeals-frontend:latest .
    ```
+
+## Endpoints
+
+Path                                                                   | Method   | Description
+---------------------------------------------------------------------- | -------- | --------------------------------------------------------------------
+*` /appeal-a-penalty/healthcheck `*                                    | GET      | Return healthcheck status
+*` /appeal-a-penalty/start `*                                          | GET      | Redirect to /penalty-reference
+*` /appeal-a-penalty/penalty-reference `*                              | GET      | Display penalty details form ( company number and penalty reference )
+*` /appeal-a-penalty/penalty-reference `*                              | POST     | Save and redirect to select-the-penalty
+*` /appeal-a-penalty/accessibility-statement `*                        | GET      | Display accessibility statement
+*` /appeal-a-penalty/select-the-penalty `*                             | GET      | Display the penalty selection radio buttons
+*` /appeal-a-penalty/select-the-penalty `*                             | POST     | Save go to review-penalty
+*` /appeal-a-penalty/review-penalty `*                                 | GET      | Display penalty details
+*` /appeal-a-penalty/review-penalty `*                                 | POST     | Review penalty details and continue to choose reason screen
+*` /appeal-a-penalty/choose-reason `*                                  | GET      | Display reason-for-appeal radio buttons
+*` /appeal-a-penalty/choose-reason `*                                  | POST     | Save choice and go to who-was-ill screen or other reason screen
+*` /appeal-a-penalty/illness/who-was-ill `*                            | GET      | Display who-was-ill screen
+*` /appeal-a-penalty/illness/who-was-ill `*                            | POST     | Save who-was-ill choice and go to start date
+*` /appeal-a-penalty/illness/illness-start-date `*                     | GET      | Display start date screen
+*` /appeal-a-penalty/illness/illness-start-date `*                     | POST     | Save start date and go to continued illness screen
+*` /appeal-a-penalty/illness/illness-end-date `*                       | GET      | Display end date screen
+*` /appeal-a-penalty/illness/illness-end-date `*                       | POST     | Save end date and go to illness infirmation screen
+*` /appeal-a-penalty/illness/continued-illness `*                      | GET      | Display continued illness screen
+*` /appeal-a-penalty/illness/continued-illness `*                      | POST     | Save name and description and go to evidence screen
+*` /appeal-a-penalty/other/other-reason-entry `*                       | GET      | Display other-reason screen
+*` /appeal-a-penalty/other/other-reason-entry `*                       | POST     | Review information and continue to reason-other screen
+*` /appeal-a-penalty/other/reason-other `*                             | GET      | Display reason details form
+*` /appeal-a-penalty/other/reason-other `*                             | POST     | Save details and go to evidence screen
+*` /appeal-a-penalty/evidence `*                                       | GET      | Display upload evidence choice screen
+*` /appeal-a-penalty/evidence `*                                       | POST     | Save upload choice and go to upload screen or check-your-answers screen
+*` /appeal-a-penalty/evidence-upload `*                                | GET      | Display evidence upload screen
+*` /appeal-a-penalty/evidence-upload `*                                | POST     | Save uploaded file and go to check-your-answers screen
+*` /appeal-a-penalty/remove-document `*                                | GET      |
+*` /appeal-a-penalty/remove-document `*                                | POST     |
+*` /appeal-a-penalty/check-your-answers `*                             | GET      | Display check-your-answers screen
+*` /appeal-a-penalty/check-your-answers `*                             | POST     | Submit appeal and go to confirmation screen
+*` /appeal-a-penalty/confirmation `*                                   | GET      | Display confirmation of submission
+*` /appeal-a-penalty/download `*                                       | -        |
+*` /appeal-a-penalty/illness/illness-information `*                    | GET      | Display illness information screen
+*` /appeal-a-penalty/illness/illness-information `*                    | POST     | Save information and go to evidence screen

@@ -32,6 +32,7 @@
         What are the penalty details?
       </h1>
       <form method="post" action="">
+        {% include "csrf-token.njk" %}
         {{
           govukInput({
             label: {
@@ -45,7 +46,7 @@
             id: 'company-number',
             name: 'companyNumber',
             value: companyNumber,
-            autocomplete: 'off'
+            autocomplete: 'on'
           })
         }}
         {{
@@ -61,7 +62,7 @@
             id: 'penalty-reference',
             name: 'userInputPenaltyReference',
             value: userInputPenaltyReference,
-            autocomplete: 'off'
+            autocomplete: 'on'
           })
         }}
         <div class="govuk-form-group">

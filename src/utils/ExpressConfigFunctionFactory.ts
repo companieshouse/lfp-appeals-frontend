@@ -1,4 +1,7 @@
 import { createLoggerMiddleware } from "@companieshouse/structured-logging-node";
+// import { Container } from "inversify";
+// import { SessionMiddleware } from "@companieshouse/node-session-handler";
+// import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -11,12 +14,15 @@ import { getEnv, getEnvOrDefault, getEnvOrThrow } from "app/utils/EnvironmentUti
 import * as Paths from "app/utils/Paths";
 
 export const createExpressConfigFunction = (directory: string) => (app: express.Application): void => {
+// export const createExpressConfigFunction = (directory: string, container: Container) => (app: express.Application): void => {
     app.use(Paths.ROOT_URI, express.static(path.join(directory, "/node_modules/govuk-frontend")));
     app.use(Paths.ROOT_URI, express.static(path.join(directory, "/node_modules/govuk-frontend/govuk")));
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
+    // app.use(container.get(SessionMiddleware));
+    // app.use(container.get(CsrfProtectionMiddleware));
 
     const loggingMiddleware = createLoggerMiddleware(APP_NAME);
     app.use(loggingMiddleware);
@@ -26,8 +32,10 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
         "dist/views",
         "views",
         "node_modules/govuk-frontend",
-        "node_modules/govuk-frontend/components"
+        "node_modules/govuk-frontend/components",
+        "node_modules/@companieshouse/"
     ], {
+        noCache: true,
         autoescape: true,
         express: app
     });

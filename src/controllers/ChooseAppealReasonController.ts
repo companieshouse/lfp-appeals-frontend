@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
 
@@ -54,7 +55,7 @@ interface FormBody {
 }
 
 @controller(CHOOSE_REASON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware, AuthMiddleware,
-    CompanyAuthMiddleware, CommonVariablesMiddleware)
+    CompanyAuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class ChooseAppealReasonController extends SafeNavigationBaseController<FormBody> {
 
     constructor () {

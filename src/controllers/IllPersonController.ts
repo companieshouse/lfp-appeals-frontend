@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { controller } from "inversify-express-utils";
 import { FormValidator } from "./validators/FormValidator";
 
@@ -40,7 +41,7 @@ interface FormBody {
 }
 
 @controller(ILL_PERSON_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class IllPersonController extends SafeNavigationBaseController<FormBody> {
 
     constructor () {

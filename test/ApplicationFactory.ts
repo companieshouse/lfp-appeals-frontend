@@ -1,4 +1,5 @@
 import { Session, SessionMiddleware, SessionStore } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { SessionKey } from "@companieshouse/node-session-handler/lib/session/keys/SessionKey";
 import { Cookie } from "@companieshouse/node-session-handler/lib/session/model/Cookie";
 import Substitute from "@fluffy-spoon/substitute";
@@ -41,6 +42,7 @@ export const createApp = (data?: Partial<ApplicationData>,
 
         const session: Session | undefined = data ? configureSession(createSession(cookieSecret)) : undefined;
         session?.setExtraData(APPLICATION_DATA_KEY, data);
+        session?.setExtraData("csrf-token", "test-csrf-token");
 
         // @ts-ignore
         session?.data.signin_info.company_number = "NI000000";
@@ -70,6 +72,10 @@ export const createApp = (data?: Partial<ApplicationData>,
             }
             SessionMiddleware({ cookieName, cookieSecret, cookieDomain }, sessionStore)(req, res, next);
         });
+
+        container.bind(CsrfProtectionMiddleware).toConstantValue(
+            (_req: Request, _res: Response, next: NextFunction) => next()
+        );
 
         container.bind(CompanyAuthMiddleware)
             .toConstantValue(new CompanyAuthMiddleware(

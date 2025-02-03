@@ -67,6 +67,7 @@ export class PenaltyIdentifierSchemaFactory {
 
     public getPenaltyIdentifierSchema (): Joi.ObjectSchema {
         return Joi.object({
+            _csrf: Joi.string().optional(),
             companyNumber: this.getCompanyNumberSchema(),
             userInputPenaltyReference: this.getPenaltyReferenceSchema(),
             penaltyReference: Joi.allow()

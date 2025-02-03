@@ -19,6 +19,7 @@
 
 {% block content %}
   <form method="post" action="">
+    {% include "csrf-token.njk" %}
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds">
@@ -27,7 +28,7 @@
             </h1>
             <h2 class="govuk-heading-m">Accounts period made up to {{ penalty.madeUpDate }}</h2>
 
-            {{ 
+            {{
               govukTable({
                 caption: 'Penalty reference: ' + penalty.id,
                 firstCellIsHeader: false,
@@ -42,8 +43,8 @@
                   }],
                 rows: [
                   [
-                    {                     
-                        text: 'Late Filing Penalty' if penalty.type == 'penalty' else 'Other' 
+                    {
+                        text: 'Late Filing Penalty' if penalty.type == 'penalty' else 'Other'
                     },
                     {
                         text: penalty.transactionDate
@@ -64,16 +65,16 @@
                     }
                   ]
                 ]
-              }) 
+              })
             }}
 
-            {{ 
+            {{
               govukButton({
                 text: 'Continue',
                 attributes: {
                   id: 'submit'
                 }
-              }) 
+              })
             }}
           </div>
         </div>

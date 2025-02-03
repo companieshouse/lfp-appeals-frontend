@@ -29,6 +29,7 @@
         }) if validationResult and validationResult.errors.length > 0
       }}
       <form method="post">
+        {% include "csrf-token.njk" %}
         {{
           govukRadios({
             classes: 'govuk-radios--inline',

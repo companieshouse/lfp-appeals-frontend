@@ -143,6 +143,7 @@
         providing are true.
       </p>
       <form method="post">
+        {% include "csrf-token.njk" %}
         {{
           govukButton({
             text: 'Confirm and submit appeal',

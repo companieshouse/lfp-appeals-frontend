@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import Joi from "@hapi/joi";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
@@ -46,12 +47,13 @@ interface FormBody {
 }
 
 @controller(CONTINUED_ILLNESS_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class ContinuedIllnessController extends SafeNavigationBaseController<FormBody> {
 
     constructor () {
         const errorMessage = "You must tell us if this is a continued illness";
         const schema: Joi.AnySchema = Joi.object({
+            _csrf: Joi.string().optional(),
             continuedIllness: createSchema(errorMessage)
         }).unknown(true);
 
