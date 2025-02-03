@@ -12,6 +12,7 @@ import { Validator } from "app/controllers/validators/Validator";
 import { AuthMiddleware } from "app/middleware/AuthMiddleware";
 import { CommonVariablesMiddleware } from "app/middleware/CommonVariablesMiddleware";
 import { CompanyAuthMiddleware } from "app/middleware/CompanyAuthMiddleware";
+import { MultipartMiddleware } from "app/middleware/MultipartMiddleware";
 import { Appeal } from "app/models/Appeal";
 import { ApplicationData, APPLICATION_DATA_KEY } from "app/models/ApplicationData";
 import { Attachment } from "app/models/Attachment";
@@ -86,7 +87,7 @@ const continueButtonValidator: Validator = {
 };
 
 @controller(EVIDENCE_UPLOAD_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CommonVariablesMiddleware, CsrfProtectionMiddleware)
+    CommonVariablesMiddleware, MultipartMiddleware, CsrfProtectionMiddleware)
 export class EvidenceUploadController extends SafeNavigationBaseController<any> {
     constructor (@inject(FileTransferService) private readonly fileTransferService: FileTransferService) {
         super(template, navigation, continueButtonValidator, undefined, undefined);
@@ -135,7 +136,11 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                     if (!appeal) {
                         throw new Error("Appeal was expected in session but none found");
                     }
+                    console.log("NSDBG upload-file request.body._csrf:", request.body._csrf);
+                    console.log("NSDBG upload-file request.files:", request.files);
+                    const file = request.files && "file" in request.files ? request.files.file[0] : undefined;
 
+                    console.log("NSDBG upload-file before parseFormData request.body:", request.body);
                     try {
                         await parseFormData(request, response);
                     } catch (error: any) {
@@ -145,11 +150,15 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                         case "LIMIT_UNEXPECTED_FILE":
                             return await that.renderUploadError(appeal, fileNotSupportedError);
                         }
+                        console.log("NSDBG ignoring parser error:", error);
                     }
+                    console.log("NSDBG upload-file after parseFormData request.body:", request.body);
 
                     const attachments = getAttachmentsFromReasons(appeal.reasons);
 
-                    if (!request.file) {
+                    console.log("NSDBG2 upload-file request.files:", request.files);
+                    console.log("NSDBG2 upload-file file:", file);
+                    if (!file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
                     } else if (attachments && attachments.length >= maxNumberOfFiles) {
                         return await that.renderUploadError(appeal, tooManyFilesError);
@@ -158,7 +167,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                     let id: string;
 
                     try {
-                        id = await that.fileTransferService.upload(request.file.buffer, request.file.originalname);
+                        id = await that.fileTransferService.upload(file.buffer, file.originalname);
                     } catch (err: any) {
                         if (err instanceof UnsupportedFileTypeError) {
                             return await that.renderUploadError(appeal, fileNotSupportedError);
@@ -172,9 +181,9 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
                     addAttachmentToReason(appeal.reasons, {
                         id,
-                        name: request.file.originalname,
-                        contentType: request.file.mimetype,
-                        size: request.file.size,
+                        name: file.originalname,
+                        contentType: file.mimetype,
+                        size: file.size,
                         url: `${downloadBaseURI}/prompt/${id}?c=${appeal.penaltyIdentifier.companyNumber}`
                     });
 
@@ -188,6 +197,8 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
             "continue-without-upload": {
                 async handle (request: Request, response: Response): Promise<RedirectResult> {
 
+                    console.log("NSDBG continue-without-upload Request body:", request.body);
+                    console.log("NSDBG continue-without-upload CSRF Token in body:", request.body._csrf);
                     if (that.formActionProcessors != null) {
                         for (const actionProcessorType of that.formActionProcessors) {
                             const actionProcessor = that.httpContext.container.get(actionProcessorType);
