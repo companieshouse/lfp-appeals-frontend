@@ -56,7 +56,6 @@ const navigation: Navigation = {
         return {
             noAction: changeMode ? "?cm=1" : "?cm=0",
             uploadFile: changeMode ? "?action=upload-file&cm=1" : "?action=upload-file",
-            continueWithoutUpload: "?action=continue-without-upload",
             removeFile: changeMode ? `${EVIDENCE_REMOVAL_PAGE_URI}?cm=1&` : `${EVIDENCE_REMOVAL_PAGE_URI}?`
         };
     }
@@ -192,35 +191,6 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                     }
 
                     return that.redirect(request.route.path);
-                }
-            },
-            "continue-without-upload": {
-                async handle (request: Request, response: Response): Promise<RedirectResult> {
-
-                    console.log("NSDBG continue-without-upload Request body:", request.body);
-                    console.log("NSDBG continue-without-upload CSRF Token in body:", request.body._csrf);
-                    if (that.formActionProcessors != null) {
-                        for (const actionProcessorType of that.formActionProcessors) {
-                            const actionProcessor = that.httpContext.container.get(actionProcessorType);
-                            await actionProcessor.process(request, response);
-                        }
-                    }
-
-                    const session = request.session;
-                    if (session != null) {
-
-                        let applicationData: ApplicationData | undefined = session!.getExtraData(APPLICATION_DATA_KEY);
-
-                        if (!applicationData) {
-                            applicationData = {} as ApplicationData;
-                            session!.setExtraData(APPLICATION_DATA_KEY, applicationData);
-                        }
-
-                        applicationData.appeal =
-                            that.prepareSessionModelPriorSave(applicationData.appeal || {}, request.body);
-
-                    }
-                    return that.redirect(that.navigation.next(request));
                 }
             }
         };
