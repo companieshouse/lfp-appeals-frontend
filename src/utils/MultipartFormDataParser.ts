@@ -14,7 +14,6 @@ export const parseFormData = util.promisify(
 
         fileFilter (request, file, cb) {
 
-            console.log("NSDBG fileFilter inside parseFormData request.body:", request.body);
             if (!supportedFileTypes.includes(file.mimetype)) {
                 const error = new MulterError("LIMIT_UNEXPECTED_FILE");
                 error.message = `${file.mimetype} is not a supported mime type`;

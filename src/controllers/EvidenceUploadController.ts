@@ -19,7 +19,6 @@ import { Attachment } from "app/models/Attachment";
 import { FileTransferService } from "app/modules/file-transfer-service/FileTransferService";
 import { UnsupportedFileTypeError } from "app/modules/file-transfer-service/errors";
 import { getEnvOrThrow } from "app/utils/EnvironmentUtils";
-import { parseFormData } from "app/utils/MultipartFormDataParser";
 import {
     CHECK_YOUR_APPEAL_PAGE_URI,
     DOWNLOAD_FILE_PAGE_URI,
@@ -37,6 +36,11 @@ import {
 import { Navigation } from "app/utils/navigation/navigation";
 import { ValidationError } from "app/utils/validation/ValidationError";
 import { ValidationResult } from "app/utils/validation/ValidationResult";
+import { MulterError } from "multer";
+
+interface FileUploadRequest extends Request {
+    fileUploadError?: MulterError;
+}
 
 const maxNumberOfFiles: number = Number(getEnvOrThrow("MAX_NUMBER_OF_FILES"));
 
@@ -125,7 +129,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
         return {
             "upload-file": {
-                async handle (request: Request, response: Response): Promise<void | RedirectResult> {
+                async handle (request: FileUploadRequest, response: Response): Promise<void | RedirectResult> {
 
                     const applicationData: ApplicationData = request.session!
                         .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
@@ -135,28 +139,19 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
                     if (!appeal) {
                         throw new Error("Appeal was expected in session but none found");
                     }
-                    console.log("NSDBG upload-file request.body._csrf:", request.body._csrf);
-                    console.log("NSDBG upload-file request.files:", request.files);
                     const file = request.files && "file" in request.files ? request.files.file[0] : undefined;
 
-                    console.log("NSDBG upload-file before parseFormData request.body:", request.body);
-                    try {
-                        await parseFormData(request, response);
-                    } catch (error: any) {
-                        switch (error.code) {
+                    if (request.fileUploadError) {
+                        switch (request.fileUploadError.code) {
                         case "LIMIT_FILE_SIZE":
                             return await that.renderUploadError(appeal, fileTooLargeError);
                         case "LIMIT_UNEXPECTED_FILE":
                             return await that.renderUploadError(appeal, fileNotSupportedError);
                         }
-                        console.log("NSDBG ignoring parser error:", error);
                     }
-                    console.log("NSDBG upload-file after parseFormData request.body:", request.body);
 
                     const attachments = getAttachmentsFromReasons(appeal.reasons);
 
-                    console.log("NSDBG2 upload-file request.files:", request.files);
-                    console.log("NSDBG2 upload-file file:", file);
                     if (!file) {
                         return await that.renderUploadError(appeal, noFileSelectedError);
                     } else if (attachments && attachments.length >= maxNumberOfFiles) {
