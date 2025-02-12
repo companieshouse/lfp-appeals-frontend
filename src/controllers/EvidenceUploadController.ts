@@ -129,7 +129,7 @@ export class EvidenceUploadController extends SafeNavigationBaseController<any> 
 
         return {
             "upload-file": {
-                async handle (request: FileUploadRequest, response: Response): Promise<void | RedirectResult> {
+                async handle (request: FileUploadRequest, _response: Response): Promise<void | RedirectResult> {
 
                     const applicationData: ApplicationData = request.session!
                         .getExtraData(APPLICATION_DATA_KEY) || {} as ApplicationData;
