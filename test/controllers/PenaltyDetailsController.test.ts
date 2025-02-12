@@ -36,7 +36,6 @@ describe("PenaltyDetailsController", () => {
 
         const appeal = {
             penaltyIdentifier: {
-                // _csrf: "512aa632-6847-4bdf-9398-a5f874528f8e",
                 companyNumber: "00345567",
                 userInputPenaltyReference: "A00000001"
             }
