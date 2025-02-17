@@ -30,6 +30,7 @@
       }}
 
       <form method="post" action="?f={{ id }}{{ navigation.actions.noAction }}">
+        {% include "csrf-token.njk" %}
         <div style="display: none" class="govuk-form-group">
           <input class="govuk-input" name="id" value="{{id}}" type="hidden">
         </div>

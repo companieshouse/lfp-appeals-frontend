@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import Joi from "@hapi/joi";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
@@ -45,6 +46,7 @@ const navigation: Navigation = {
 const nameErrorMessage = "Enter your name";
 const descriptionErrorMessage = "You must tell us how this affected your ability to file on time";
 const furtherInformationSchema = Joi.object({
+    _csrf: Joi.string().optional(),
     name: Joi.string().required().pattern(/\w+/).messages({
         "any.required": nameErrorMessage,
         "string.empty": nameErrorMessage,
@@ -58,7 +60,7 @@ const furtherInformationSchema = Joi.object({
 });
 
 @controller(FURTHER_INFORMATION_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON),
-    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware)
+    SessionMiddleware, AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class IllnessFurtherInformationController extends SafeNavigationBaseController<Illness> {
     constructor () {
         super(

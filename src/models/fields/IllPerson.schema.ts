@@ -6,6 +6,7 @@ export const emptySelectionErrorMessage = "You must select a person";
 export const emptyOtherPersonErrorMessage = "You must tell us more information";
 
 export const schema = Joi.object({
+    _csrf: Joi.string().optional(),
     illPerson: Joi.string()
         .required()
         .valid(...getIllPersonValues())

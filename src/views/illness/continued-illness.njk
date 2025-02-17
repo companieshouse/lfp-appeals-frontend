@@ -23,6 +23,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <form method="post">
+        {% include "csrf-token.njk" %}
 
         {{
           govukErrorSummary ({
@@ -35,7 +36,7 @@
           <input class="govuk-input" name="illnessStart" value="{{illnessStart}}" type="hidden">
         </div>
 
-        {{ 
+        {{
           govukRadios({
             classes: 'govuk-radios--inline',
             idPrefix: 'continued-illness',
@@ -72,13 +73,13 @@
           })
         }}
 
-        {{ 
+        {{
           govukButton({
             text: 'Continue',
             attributes: {
               id: 'submit'
             }
-          }) 
+          })
         }}
       </form>
     </div>

@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import Joi from "@hapi/joi";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
@@ -49,10 +50,11 @@ const navigation: Navigation = {
 };
 
 const schema: Joi.AnySchema = Joi.object({
+    _csrf: Joi.string().optional(),
     evidence: createSchema("You must tell us if you want to upload evidence.")
 }).unknown(true);
 
-@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)
+@controller(EVIDENCE_QUESTION_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class EvidenceQuestionController extends SafeNavigationBaseController<Attachment> {
     constructor () {
         super(template, navigation, new FormValidator(schema), undefined, [NavigationPermissionProcessor]);

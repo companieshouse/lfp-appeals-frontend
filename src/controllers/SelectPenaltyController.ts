@@ -1,5 +1,6 @@
 import { PenaltyList } from "@companieshouse/api-sdk-node/dist/services/lfp";
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Request } from "express";
 import { provide } from "inversify-binding-decorators";
 import { controller } from "inversify-express-utils";
@@ -59,7 +60,7 @@ class Processor implements FormActionProcessor {
 }
 
 @controller(SELECT_THE_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    PenaltyReferenceRouter, CommonVariablesMiddleware)
+    PenaltyReferenceRouter, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class SelectPenaltyController extends SafeNavigationBaseController<any> {
 
     constructor () {

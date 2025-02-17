@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { controller } from "inversify-express-utils";
 
 import { SafeNavigationBaseController } from "app/controllers/SafeNavigationBaseController";
@@ -31,7 +32,7 @@ const navigation = {
     }
 };
 
-@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware)
+@controller(OTHER_REASON_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class OtherReasonController extends SafeNavigationBaseController<OtherReason> {
     constructor () {
         super(template, navigation, new FormValidator(formSchema));

@@ -1,5 +1,6 @@
 import { Penalty } from "@companieshouse/api-sdk-node/dist/services/lfp";
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
 import { SafeNavigationBaseController } from "./SafeNavigationBaseController";
@@ -35,7 +36,7 @@ const navigation: Navigation = {
 };
 
 @controller(REVIEW_PENALTY_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CheckForDuplicateMiddleware, CommonVariablesMiddleware)
+    CheckForDuplicateMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class ReviewPenaltyController extends SafeNavigationBaseController<Penalty> {
 
     public static PENALTY_EXPECTED_ERROR: string = "Penalty object expected but none found";

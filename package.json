@@ -22,9 +22,10 @@
     "analyse-code": "sonar-scanner"
   },
   "dependencies": {
-    "@companieshouse/api-sdk-node": "^2.0.147",
+    "@companieshouse/api-sdk-node": "^2.0.152",
     "@companieshouse/node-session-handler": "^5.0.1",
     "@companieshouse/structured-logging-node": "^2.0.1",
+    "@companieshouse/web-security-node": "^4.4.4",
     "@hapi/joi": "^17.1.1",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
@@ -53,7 +54,7 @@
     "@types/chai": "^4.2.11",
     "@types/cookie-parser": "^1.4.3",
     "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.9",
+    "@types/express": "^4.17.21",
     "@types/hapi__joi": "^17.1.0",
     "@types/ioredis": "^4.16.2",
     "@types/mocha": "^7.0.2",

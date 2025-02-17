@@ -30,6 +30,7 @@
       }}
 
       <form method="post">
+        {% include "csrf-token.njk" %}
         {% set otherPersonHtml %}
           {{
             govukInput({

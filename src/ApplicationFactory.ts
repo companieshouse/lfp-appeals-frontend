@@ -8,6 +8,7 @@ import { createExpressConfigFunction } from "app/utils/ExpressConfigFunctionFact
 
 export class ApplicationFactory {
     public static createInstance (container: Container = createContainer()): Application {
+
         const server = new InversifyExpressServer(container);
         server.setConfig(createExpressConfigFunction(__dirname));
 

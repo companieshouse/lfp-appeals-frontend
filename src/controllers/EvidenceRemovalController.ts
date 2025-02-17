@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import Joi from "@hapi/joi";
 import { Request } from "express";
 import { inject } from "inversify";
@@ -43,6 +44,7 @@ const navigation: Navigation = {
 const changeModeAction = () => EVIDENCE_UPLOAD_PAGE_URI + "?cm=1";
 
 const schema: Joi.AnySchema = Joi.object({
+    _csrf: Joi.string().optional(),
     remove: createSchema("You must tell us if you want to remove the document")
 }).unknown(true);
 
@@ -91,7 +93,7 @@ class Processor implements FormActionProcessor {
 }
 
 @controller(EVIDENCE_REMOVAL_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CommonVariablesMiddleware)
+    CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class EvidenceRemovalController extends BaseController<Attachment> {
     constructor () {
         super(template, navigation, new FormValidator(schema), undefined,

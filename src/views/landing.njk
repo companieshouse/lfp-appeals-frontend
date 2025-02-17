@@ -29,6 +29,7 @@
         </div>
       <p>It may take up to 30 minutes to complete this application.</p>
       <form method="post">
+        {% include "csrf-token.njk" %}
         {{
           govukButton({
             text: 'Start now',

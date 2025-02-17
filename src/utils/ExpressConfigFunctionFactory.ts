@@ -26,7 +26,8 @@ export const createExpressConfigFunction = (directory: string) => (app: express.
         "dist/views",
         "views",
         "node_modules/govuk-frontend",
-        "node_modules/govuk-frontend/components"
+        "node_modules/govuk-frontend/components",
+        "node_modules/@companieshouse/"
     ], {
         autoescape: true,
         express: app

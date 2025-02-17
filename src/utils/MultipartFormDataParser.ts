@@ -21,5 +21,5 @@ export const parseFormData = util.promisify(
             }
             cb(null, true);
         }
-    }).single("file")
+    }).fields([{ name: "file", maxCount: 1 }, { name: "_csrf", maxCount: 1 }])
 );

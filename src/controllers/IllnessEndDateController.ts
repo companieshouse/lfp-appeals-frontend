@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { controller } from "inversify-express-utils";
 import moment from "moment";
 import { IllnessEndDateValidator } from "./validators/IllnessEndDateValidator";
@@ -34,7 +35,7 @@ interface FormBody {
 }
 
 @controller(ILLNESS_END_DATE_PAGE_URI, FeatureToggleMiddleware(Feature.ILLNESS_REASON), SessionMiddleware,
-    AuthMiddleware, CommonVariablesMiddleware)
+    AuthMiddleware, CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class IllnessEndDateController extends SafeNavigationBaseController<FormBody> {
 
     constructor () {

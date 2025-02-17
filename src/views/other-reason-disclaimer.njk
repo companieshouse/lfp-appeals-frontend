@@ -33,6 +33,7 @@
           <li>another director is responsible for preparing the accounts</li>
         </ul>
         <form method="post">
+          {% include "csrf-token.njk" %}
           {{
             govukButton({
               text: 'Continue with appeal',

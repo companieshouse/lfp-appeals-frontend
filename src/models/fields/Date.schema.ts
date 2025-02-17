@@ -10,6 +10,7 @@ const dayMonthRegex: RegExp = /^[0-9]{1,2}$/;
 const yearRegex: RegExp = /^[0-9]{4}$/;
 
 export const schema = Joi.object({
+    _csrf: Joi.string().optional(),
     day: Joi.string()
         .required()
         .pattern(dayMonthRegex)

@@ -10,11 +10,11 @@
 {% endblock %}
 
 {% block backLink %}
-  {{ 
+  {{
     govukBackLink({
       text: 'Back',
       href: navigation.back.href
-    }) 
+    })
   }}
 {% endblock %}
 
@@ -29,7 +29,8 @@
       }}
 
       <form method="post" id="choose-reasons-form">
-        {{ 
+        {% include "csrf-token.njk" %}
+        {{
           govukRadios({
             idPrefix: 'choose-reason',
             name: 'reason',
@@ -62,13 +63,13 @@
           })
         }}
 
-        {{ 
+        {{
           govukButton({
             text: 'Continue',
             attributes: {
               id: 'submit'
             }
-          }) 
+          })
         }}
       </form>
     </div>

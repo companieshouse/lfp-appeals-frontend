@@ -9,11 +9,11 @@
 {% endblock %}
 
 {% block backLink %}
-  {{ 
+  {{
     govukBackLink({
       text: 'Back',
       href: navigation.back.href
-    }) 
+    })
   }}
 {% endblock %}
 
@@ -22,6 +22,7 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <form method="post" id="penaltyForm">
+            {% include "csrf-token.njk" %}
 
             {% set penalties = [] %}
             {% for penalty in penaltyList %}
@@ -39,7 +40,7 @@
               %}
             {% endfor %}
 
-            {{ 
+            {{
               govukRadios({
                 idPrefix: 'select-the-penalty',
                 name: 'selectPenalty',
@@ -54,13 +55,13 @@
               })
             }}
 
-            {{ 
+            {{
               govukButton({
                 text: 'Continue',
                 attributes: {
                   id: 'submit'
                 }
-              }) 
+              })
             }}
           </form>
         </div>

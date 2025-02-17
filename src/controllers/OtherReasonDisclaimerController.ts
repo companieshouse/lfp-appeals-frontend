@@ -1,4 +1,5 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
+import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
 
@@ -32,7 +33,7 @@ const navigation = {
 };
 
 @controller(OTHER_REASON_DISCLAIMER_PAGE_URI, SessionMiddleware, AuthMiddleware, CompanyAuthMiddleware,
-    CommonVariablesMiddleware)
+    CommonVariablesMiddleware, CsrfProtectionMiddleware)
 export class OtherReasonDisclaimerController extends SafeNavigationBaseController<PenaltyIdentifier> {
     constructor () {
         super(template, navigation);

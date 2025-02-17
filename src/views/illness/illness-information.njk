@@ -55,6 +55,7 @@
       {% endset -%}
 
       <form method="post">
+        {% include "csrf-token.njk" %}
         {{
           govukInput({
             label: {

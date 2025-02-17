@@ -6,6 +6,7 @@ const titleErrorMessage = "You must give your reason a title";
 const descriptionErrorMessage = "You must give us more information";
 
 export const schema = Joi.object({
+    _csrf: Joi.string().optional(),
     name: Joi.string()
         .required()
         .pattern(/\w+/)
