@@ -53,7 +53,7 @@ export function createContainer (): Container {
         .toConstantValue(new PenaltyIdentifierSchemaFactory(getEnvOrThrow("ALLOWED_COMPANY_PREFIXES")));
 
     const companyAuthConfig: CompanyAuthConfig = {
-        accountUrl: getEnvOrThrow("ACCOUNT_URL"),
+        accountUrl: getEnvOrThrow("ACCOUNT_PRIVATE_URL"),
         accountRequestKey: getEnvOrThrow("OAUTH2_REQUEST_KEY"),
         accountClientId: getEnvOrThrow("OAUTH2_CLIENT_ID"),
         chsUrl: getEnvOrThrow("CHS_URL")
