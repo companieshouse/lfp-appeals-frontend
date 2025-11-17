@@ -35,9 +35,9 @@ IntelliJ does not have a Nunjucks plugin.
    ```
    ./bin/chs-dev modules enable lfp-appeals
    ```
-3. Tilt up:
+3. Chs-dev up:
    ```
-   tilt up
+   chs-dev up
    ```
 
 ### For Local Development
@@ -50,7 +50,7 @@ After following the steps to run locally:
    ```
    This will clone the https://github.com/companieshouse/lfp-appeals-frontend/ into the repositories directory. Any changes in the code in that repository will be automatically reloaded.
 
-2. Start the services and its dependencies with `tilt up`.
+2. Start the service and its dependencies with `chs-dev up`.
 
 ### Configuration
 
