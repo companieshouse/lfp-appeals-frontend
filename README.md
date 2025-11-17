@@ -50,7 +50,7 @@ After following the steps to run locally:
    ```
    This will clone the https://github.com/companieshouse/lfp-appeals-frontend/ into the repositories directory. Any changes in the code in that repository will be automatically reloaded.
 
-2. Start the services and its dependencies with `chs-dev up`.
+2. Start the service and its dependencies with `chs-dev up`.
 
 ### Configuration
 
