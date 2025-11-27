@@ -45,6 +45,7 @@
     "node-jose": "^2.2.0",
     "nunjucks": "^3.2.4",
     "reflect-metadata": "^0.1.13",
+    "tsconfig-paths": "^3.9.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
