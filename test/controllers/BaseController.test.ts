@@ -2,8 +2,8 @@ import "reflect-metadata";
 
 import { Session } from "@companieshouse/node-session-handler";
 import { Arg } from "@fluffy-spoon/substitute";
-import { AnySchema } from "@hapi/joi";
-import * as Joi from "@hapi/joi";
+import { AnySchema } from "joi";
+import * as Joi from "joi";
 import * as assert from "assert";
 import { Request, Response } from "express";
 import { OK, UNPROCESSABLE_ENTITY } from "http-status-codes";

@@ -1,6 +1,6 @@
 import { SessionMiddleware } from "@companieshouse/node-session-handler";
 import { CsrfProtectionMiddleware } from "@companieshouse/web-security-node";
-import Joi from "@hapi/joi";
+import Joi from "joi";
 import { Request } from "express";
 import { controller } from "inversify-express-utils";
 

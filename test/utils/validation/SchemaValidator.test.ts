@@ -1,4 +1,4 @@
-import * as Joi from "@hapi/joi";
+import * as Joi from "joi";
 import { expect } from "chai";
 
 import { SchemaValidator } from "app/utils/validation/SchemaValidator";

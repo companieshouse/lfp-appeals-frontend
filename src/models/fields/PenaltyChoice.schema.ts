@@ -1,4 +1,4 @@
-import Joi from "@hapi/joi";
+import Joi from "joi";
 
 export const errorMessage: string = "Select the penalty you want to appeal";
 

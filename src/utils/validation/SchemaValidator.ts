@@ -1,4 +1,4 @@
-import { AnySchema, ValidationOptions } from "@hapi/joi";
+import { AnySchema, ValidationOptions } from "joi";
 
 import { ValidationError } from "app/utils/validation/ValidationError";
 import { ValidationResult } from "app/utils/validation/ValidationResult";

@@ -1,4 +1,4 @@
-import * as Joi from "@hapi/joi";
+import * as Joi from "joi";
 
 const nameErrorMessage = "Enter your name";
 const relationshipToCompanyErrorMessage = "Enter your relationship to the company";
