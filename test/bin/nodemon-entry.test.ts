@@ -1,6 +1,7 @@
 import "reflect-metadata";
 
 import { expect } from "chai";
+import type Module from "module";
 
 import { ApplicationFactory } from "app/ApplicationFactory";
 
@@ -12,11 +13,13 @@ describe("nodemon-entry", () => {
     const controllersPath = require.resolve("app/controllers/index");
     const originalControllers = require.cache[controllersPath];
 
+    let createInstanceCalls: number;
     let settings: Record<string, unknown>;
     let listenPort: number | undefined;
     let logged: string[];
 
     beforeEach(() => {
+        createInstanceCalls = 0;
         settings = {};
         listenPort = undefined;
         logged = [];
@@ -29,10 +32,13 @@ describe("nodemon-entry", () => {
             }
         };
 
-        ApplicationFactory.createInstance = (() => fakeApp) as any;
+        ApplicationFactory.createInstance = (() => {
+            createInstanceCalls += 1;
+            return fakeApp;
+        }) as typeof ApplicationFactory.createInstance;
         console.log = (...args: unknown[]) => { logged.push(args.join(" ")); };
         delete require.cache[entryPath];
-        require.cache[controllersPath] = { id: controllersPath, filename: controllersPath, loaded: true, exports: {} } as NodeModule;
+        require.cache[controllersPath] = { id: controllersPath, filename: controllersPath, loaded: true, exports: {} } as unknown as Module;
     });
 
     afterEach(() => {
@@ -49,6 +55,7 @@ describe("nodemon-entry", () => {
     it("should create the application and set the port to 3000", () => {
         require(entryPath);
 
+        expect(createInstanceCalls).to.equal(1);
         expect(settings.port).to.equal(3000);
     });
 
