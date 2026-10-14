@@ -1,4 +1,4 @@
-import Joi from "@hapi/joi";
+import Joi from "joi";
 
 import { YesNo } from "app/models/fields/YesNo";
 import { createSchema } from "app/models/fields/YesNo.schema";

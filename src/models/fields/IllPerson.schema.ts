@@ -1,4 +1,4 @@
-import Joi from "@hapi/joi";
+import Joi from "joi";
 
 import { getIllPersonValues, IllPerson } from "app/models/fields/IllPerson";
 

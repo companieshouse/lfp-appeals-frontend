@@ -1,4 +1,4 @@
-import { AnySchema } from "@hapi/joi";
+import { AnySchema } from "joi";
 import { Request } from "express";
 
 import { Validator } from "app/controllers/validators/Validator";
