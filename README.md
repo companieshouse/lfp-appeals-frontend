@@ -105,7 +105,7 @@ Or run the following steps to build image locally:
 | *` /appeal-a-penalty/illness/illness-start-date `*  | GET    | Display start date screen                                               |
 | *` /appeal-a-penalty/illness/illness-start-date `*  | POST   | Save start date and go to continued illness screen                      |
 | *` /appeal-a-penalty/illness/illness-end-date `*    | GET    | Display end date screen                                                 |
-| *` /appeal-a-penalty/illness/illness-end-date `*    | POST   | Save end date and go to illness infirmation screen                      |
+| *` /appeal-a-penalty/illness/illness-end-date `*    | POST   | Save end date and go to illness information screen                      |
 | *` /appeal-a-penalty/illness/continued-illness `*   | GET    | Display continued illness screen                                        |
 | *` /appeal-a-penalty/illness/continued-illness `*   | POST   | Save name and description and go to evidence screen                     |
 | *` /appeal-a-penalty/other/other-reason-entry `*    | GET    | Display other-reason screen                                             |
